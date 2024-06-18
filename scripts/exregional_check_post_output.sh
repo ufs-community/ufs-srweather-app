@@ -46,7 +46,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user workflow global verification constants ; do
+for sect in user nco workflow global verification constants task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

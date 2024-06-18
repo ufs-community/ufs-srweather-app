@@ -57,7 +57,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user workflow task_get_extrn_lbcs task_get_extrn_ics ; do
+for sect in user nco workflow task_get_extrn_lbcs task_get_extrn_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 . $USHdir/job_preamble.sh

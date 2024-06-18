@@ -87,7 +87,7 @@
 #
 . $USHdir/source_util_funcs.sh
 set -x
-for sect in user platform  workflow global cpl_aqm_parm constants task_get_extrn_lbcs task_make_lbcs ; do
+for sect in user nco platform  workflow global cpl_aqm_parm constants task_get_extrn_lbcs task_make_lbcs ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

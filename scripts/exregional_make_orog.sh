@@ -89,7 +89,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user platform workflow constants grid_params task_make_grid task_make_orog task_make_grid ; do
+for sect in user nco platform workflow constants grid_params task_make_grid task_make_orog task_make_grid ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 

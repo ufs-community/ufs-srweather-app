@@ -116,7 +116,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user platform workflow global cpl_aqm_parm constants fixed_files \
+for sect in user nco platform workflow global cpl_aqm_parm constants fixed_files \
   task_get_extrn_lbcs task_run_fcst task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -920,7 +920,7 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
       create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
       fi
       # DBN alert
-      if [ $SENDDBN = "TRUE" ]; then
+      if [ "$SENDDBN" = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done

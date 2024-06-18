@@ -224,7 +224,7 @@ Launching J-job (jjob_fp) for task \"${task_name}\" ...
   jjob_fp = \"${jjob_fp}\"
 "
 
-/bin/bash "${jjob_fp}"
+source "${jjob_fp}"
 
 #
 #-----------------------------------------------------------------------
