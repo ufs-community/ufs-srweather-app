@@ -728,7 +728,7 @@ A standard set of environment variables has been established for *nco* mode to s
 ``SENDECF_default``: (Default: "NO")
    Boolean variable used to control ``ecflow_client`` child commands.
 
-``SENDDBN_default``: (Default: NO)
+``SENDDBN_default``: (Default: "NO")
    Boolean variable used to control sending products off WCOSS2.
 
 ``SENDDBN_NTC_default``: (Default: "NO")
