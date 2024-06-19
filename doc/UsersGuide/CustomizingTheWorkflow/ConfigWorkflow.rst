@@ -740,7 +740,7 @@ A standard set of environment variables has been established for *nco* mode to s
 ``SENDWEB_default``: (Default: "NO")
    Boolean variable used to control sending products to a web server, often ``ncorzdm``.
 
-``KEEPDATA_default``: (Default: YES)
+``KEEPDATA_default``: (Default: "YES")
    Boolean variable used to specify whether or not the working directory should be kept upon successful job completion.
 
 ``MAILTO_default``: (Default: "")
