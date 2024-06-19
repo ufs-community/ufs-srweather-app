@@ -1381,7 +1381,7 @@ POINT_SOURCE Configuration Parameters
 Non-default parameters for the ``task_point_source`` tasks are set in the ``task_point_source:`` section of the ``config.yaml`` file.
 
 ``PT_SRC_SUBDIR``: (Default: ``"NEI2016v1/v2023-01-PT"``)
-   Sub-directory structure of point source data under FIXemis.
+   Subdirectory structure of point source data under ``FIXemis``.
    Full path: ``FIXemis/PT_SRC_SUBDIR``
 
 BIAS_CORRECTION_O3 Configuration Parameters
