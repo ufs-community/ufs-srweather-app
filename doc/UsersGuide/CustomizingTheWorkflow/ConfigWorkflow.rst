@@ -1746,7 +1746,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 ``COMINairnow_default``: (Default: "/path/to/airnow/obaservation/data")
    Path to the directory containing AIRNOW observation data.
 
-``COMINfire_default``:(Default: "")
+``COMINfire_default``: (Default: "")
    Path to the directory containing AQM fire files.
 
 ``COMINgefs_default``:(Default: "")
