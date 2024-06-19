@@ -1365,7 +1365,7 @@ Non-default parameters for the ``nexus_emission_*`` tasks are set in the ``task_
    Processes per node for the ``nexus_emission_*`` tasks. 
 
 ``NNODES_NEXUS_EMISSION``: (Default: 4)
-   The number of nodes to request from the job scheduler for the nexus emission task.
+   The number of nodes to request from the job scheduler for the NEXUS emission task.
 
 ``KMP_AFFINITY_NEXUS_EMISSION``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``nexus_emission_*`` tasks. See :ref:`this note <thread-affinity>` for more information on thread affinity.
