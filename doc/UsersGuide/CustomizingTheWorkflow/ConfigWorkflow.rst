@@ -725,7 +725,7 @@ A standard set of environment variables has been established for *nco* mode to s
 ``DBNROOT_default``: (Default: "")
    Root directory for the data-alerting utilities.
    
-``SENDECF_default``: (Default: NO)
+``SENDECF_default``: (Default: "NO")
    Boolean variable used to control ``ecflow_client`` child commands.
 
 ``SENDDBN_default``: (Default: NO)
