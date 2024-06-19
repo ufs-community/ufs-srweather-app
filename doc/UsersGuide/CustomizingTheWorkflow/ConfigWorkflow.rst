@@ -734,7 +734,7 @@ A standard set of environment variables has been established for *nco* mode to s
 ``SENDDBN_NTC_default``: (Default: "NO")
    Boolean variable used to control sending products with WMO headers off WCOSS2.
 
-``SENDCOM_default``: (Default: YES)
+``SENDCOM_default``: (Default: "YES")
    Boolean variable to control data copies to ``$COMOUT``.
 
 ``SENDWEB_default``: (Default: NO)
