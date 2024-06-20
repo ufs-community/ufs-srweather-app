@@ -719,7 +719,7 @@ A standard set of environment variables has been established for *nco* mode to s
    ``RUN_default``: (Default: "srw")
       Name of model run (third level of ``com`` directory structure). In general, same as ``${NET_default}``.
 
-``PTMP_default``: (Default "")
+``PTMP``: (Default ``'{{ workflow.EXPT_BASEDIR }}/../nco_dirs'``)
    User-defined path to the com type directories (``OPSROOT=$PTMP/$envir``).
 
 ``DBNROOT_default``: (Default: "")
