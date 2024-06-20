@@ -720,7 +720,7 @@ A standard set of environment variables has been established for *nco* mode to s
       Name of model run (third level of ``com`` directory structure). In general, same as ``${NET_default}``.
 
 ``PTMP_default``: (Default "")
-   User-defined path to the com type directories (OPSROOT=$PTMP/$envir).
+   User-defined path to the com type directories (``OPSROOT=$PTMP/$envir``).
 
 ``DBNROOT_default``: (Default: "")
    Root directory for the data-alerting utilities.
