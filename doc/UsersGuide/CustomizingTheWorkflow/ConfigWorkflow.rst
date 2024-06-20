@@ -1389,7 +1389,7 @@ BIAS_CORRECTION_O3 Configuration Parameters
 
 Non-default parameters for the ``bias_correction_o3`` tasks are set in the ``task_bias_correction_o3:`` section of the ``config.yaml`` file. 
 
-``KMP_AFFINITY_BIAS_CORRECTION_O3``: "scatter"
+``KMP_AFFINITY_BIAS_CORRECTION_O3``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``bias_correction_o3`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
 ``OMP_NUM_THREADS_BIAS_CORRECTION_O3``: (Default: 32)
