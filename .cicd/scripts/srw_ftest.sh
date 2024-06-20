@@ -66,6 +66,9 @@ sed "s|^workflow:|workflow:\n  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}
 # Decrease forecast length since we are running all the steps
 sed "s|^  FCST_LEN_HRS: 12|  FCST_LEN_HRS: 6|g" -i ush/config.yaml
 
+# Update compiler 
+sed "s|^  COMPILER: intel|  COMPILER: ${SRW_COMPILER}|g" -i ush/config.yaml
+
 # DATA_LOCATION differs on each platform ... find it.
 export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform,,}.yaml | awk '{printf "%s", $2}')
 echo "DATA_LOCATION=${DATA_LOCATION}"
