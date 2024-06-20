@@ -1,13 +1,10 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_CONUScompact_25km grid using the HRRR
+    completes successfully on the RRFS_CONUScompact_25km grid using the RRFS_v1beta
     physics suite with ICs and LBCs derived from the RRFS forecasts mapped onto
     3-km regular grid (rrfs*.conus.grib2). This test uses old v1 sfc_data,
     not the v2 fractional grid sfc_data.
-    Note that this test also sets various resource parameters for several
-    of the rocoto tasks in order to more efficiently run the code on this
-    (very large) grid.
 user:
   RUN_ENVIR: community
 workflow:
@@ -15,7 +12,7 @@ workflow:
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2024060517'
   DATE_LAST_CYCL: '2024060517'
-  FCST_LEN_HRS: 3
+  FCST_LEN_HRS: 9
   PREEXISTING_DIR_METHOD: rename
 task_make_orog:
   OMP_NUM_THREADS_MAKE_OROG: 24
@@ -36,11 +33,3 @@ global:
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
-    task_make_orog:
-      walltime: 01:00:00
-    metatask_run_ensemble:
-      task_make_lbcs_mem#mem#:
-        walltime: 02:00:00
-      task_run_fcst_mem#mem#:
-        walltime: 02:00:00
-
