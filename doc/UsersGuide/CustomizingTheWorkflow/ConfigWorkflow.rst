@@ -720,27 +720,27 @@ A standard set of environment variables has been established for *nco* mode to s
       Name of model run (third level of ``com`` directory structure). In general, same as ``${NET_default}``.
 
 ``PTMP_default``: (Default "")
-   User-defined path to the com type directories (OPSROOT=$PTMP/$envir).
+   User-defined path to the com type directories (``OPSROOT=$PTMP/$envir``).
 
 ``DBNROOT_default``: (Default: "")
    Root directory for the data-alerting utilities.
    
-``SENDECF_default``: (Default: NO)
+``SENDECF_default``: (Default: "NO")
    Boolean variable used to control ``ecflow_client`` child commands.
 
-``SENDDBN_default``: (Default: NO)
+``SENDDBN_default``: (Default: "NO")
    Boolean variable used to control sending products off WCOSS2.
 
-``SENDDBN_NTC_default``: (Default: NO)
+``SENDDBN_NTC_default``: (Default: "NO")
    Boolean variable used to control sending products with WMO headers off WCOSS2.
 
-``SENDCOM_default``: (Default: YES)
+``SENDCOM_default``: (Default: "YES")
    Boolean variable to control data copies to ``$COMOUT``.
 
-``SENDWEB_default``: (Default: NO)
+``SENDWEB_default``: (Default: "NO")
    Boolean variable used to control sending products to a web server, often ``ncorzdm``.
 
-``KEEPDATA_default``: (Default: YES)
+``KEEPDATA_default``: (Default: "YES")
    Boolean variable used to specify whether or not the working directory should be kept upon successful job completion.
 
 ``MAILTO_default``: (Default: "")
@@ -1365,7 +1365,7 @@ Non-default parameters for the ``nexus_emission_*`` tasks are set in the ``task_
    Processes per node for the ``nexus_emission_*`` tasks. 
 
 ``NNODES_NEXUS_EMISSION``: (Default: 4)
-   The number of nodes to request from the job scheduler for the nexus emission task.
+   The number of nodes to request from the job scheduler for the NEXUS emission task.
 
 ``KMP_AFFINITY_NEXUS_EMISSION``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``nexus_emission_*`` tasks. See :ref:`this note <thread-affinity>` for more information on thread affinity.
@@ -1380,8 +1380,8 @@ POINT_SOURCE Configuration Parameters
 ------------------------------------------------
 Non-default parameters for the ``task_point_source`` tasks are set in the ``task_point_source:`` section of the ``config.yaml`` file.
 
-``PT_SRC_SUBDIR``: (Default: ``NEI2016v1/v2023-01-PT``)
-   Sub-directory structure of point source data under FIXemis.
+``PT_SRC_SUBDIR``: (Default: ``"NEI2016v1/v2023-01-PT"``)
+   Subdirectory structure of point source data under ``FIXemis``.
    Full path: ``FIXemis/PT_SRC_SUBDIR``
 
 BIAS_CORRECTION_O3 Configuration Parameters
@@ -1743,10 +1743,10 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 ``DO_AQM_SAVE_FIRE``: (Default: false)
    Archive fire emission file to HPSS.
    
-``COMINairnow_default``: (Default: "/path/to/airnow/obaservation/data")
+``COMINairnow_default``: (Default: "/path/to/airnow/observation/data")
    Path to the directory containing AIRNOW observation data.
 
-``COMINfire_default``:(Default: "")
+``COMINfire_default``: (Default: "")
    Path to the directory containing AQM fire files.
 
 ``COMINgefs_default``:(Default: "")
