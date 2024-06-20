@@ -547,8 +547,9 @@ The ``data:`` section of the machine file can point to various data sources that
          nemsio: /Users/username/DATA/UFS/FV3GFS/nemsio
          grib2: /Users/username/DATA/UFS/FV3GFS/grib2
          netcdf: /Users/username/DATA/UFS/FV3GFS/netcdf
-      RAP: /Users/username/DATA/UFS/RAP/grib2
-      HRRR: /Users/username/DATA/UFS/HRRR/grib2
+      RAP: /Users/username/DATA/UFS/RAP
+      HRRR: /Users/username/DATA/UFS/HRRR
+      RRFS: /Users/username/DATA/UFS/RRFS
 
 This can be helpful when conducting multiple experiments with different types of data. 
 

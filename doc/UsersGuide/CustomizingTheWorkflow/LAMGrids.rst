@@ -75,7 +75,7 @@ The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite
 The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for the :term:`UPP` to read in and correctly process the data.
 
 .. note::
-   While it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data (such as HRRR or RAP data) that has a resolution similar to that of the native FV3-LAM (predefined) grid.
+   While it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data (such as HRRR, RRFS or RAP data) that has a resolution similar to that of the native FV3-LAM (predefined) grid.
 
 
 Predefined SUBCONUS Grid Over Indianapolis

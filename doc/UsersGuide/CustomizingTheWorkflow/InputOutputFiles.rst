@@ -21,7 +21,8 @@ ways, including:
 
    * Pulled from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__,
    * Pulled from the NOAA High Performance Storage System (:term:`HPSS`) during the workflow execution (requires user access), or 
-   * Obtained and staged by the user from a different source. 
+   * Obtained and staged by the user from a different source,
+   * Pulled from the `NOAA-RRFS AWS S3 bucket <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`__, a description could be found in `NOAA Rapid Refresh Forecast System (RRFS) <https://registry.opendata.aws/noaa-rrfs/>`__.
 
 The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More information on downloading and setting up the external model data can be found in :numref:`Section %s <DownloadingStagingInput>`. Once the data is set up, the end-to-end application will run the system and write output files to disk.
 
@@ -246,7 +247,7 @@ The environment variables ``FIXgsm``, ``FIXorg``, and ``FIXsfc`` indicate the pa
 
 Initial Condition/Lateral Boundary Condition File Formats and Source
 -----------------------------------------------------------------------
-The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
+The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR, RRFS). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
 
 To download the model input data for the 12-hour "out-of-the-box" experiment configuration in ``config.community.yaml`` file, run:
 
@@ -273,7 +274,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
 
-The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <ICs/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path/to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <ICs/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR,RRFS), data format for (e.g., grib2, nemsio, netcdf), and date (in ``YYYYMMDDHH`` format). For example: ``/path/to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like this:
 
@@ -290,11 +291,12 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
 
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
+* RRFS (GRIB2): ``rrfs.t{cycle}z.prslev.f{fhr}.conus.grib2``
 
 where:
 
    * ``{cycle}`` corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
-   * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS/GDAS data and 2 digits for RAP/HRRR data). 
+   * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS/GDAS/RRFS data and 2 digits for RAP/HRRR data). 
 
 For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a ``{cycle}`` value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``.
 
@@ -353,6 +355,8 @@ AWS S3 Data Buckets:
 * GDAS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
 * HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
 * A list of the NOAA Open Data Dissemination (NODD) datasets can be found here: https://www.noaa.gov/nodd/datasets
+* RRFS - experimental data is available starting 02/01/2024 for deteministic forecasts out to 60 hours at 00, 06, 12, and 18 UTC, and out to 18 hours for other cycles. Earlier dates, from 05/01/2023 to 01/31/2024, may contain only forecasts at 00, 06, 12, 18 UTC; user needs to verify that data exist for needed dates.
+  https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/
 
 NCEI Archive:
 
