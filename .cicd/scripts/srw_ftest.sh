@@ -85,6 +85,8 @@ source etc/lmod-setup.sh ${platform,,}
 module use modulefiles
 module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
+# Deactivate conflicting conda env on GCP
+[[ "${SRW_PLATFORM}" =~ "gclusternoaa" ]] && conda deactivate
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
 conda activate srw_app
