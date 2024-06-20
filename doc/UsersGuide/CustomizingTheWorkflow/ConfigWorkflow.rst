@@ -1743,7 +1743,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 ``DO_AQM_SAVE_FIRE``: (Default: false)
    Archive fire emission file to HPSS.
    
-``COMINairnow_default``: (Default: "/path/to/airnow/obaservation/data")
+``COMINairnow_default``: (Default: "/path/to/airnow/observation/data")
    Path to the directory containing AIRNOW observation data.
 
 ``COMINfire_default``: (Default: "")
