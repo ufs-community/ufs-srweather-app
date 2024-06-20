@@ -7,7 +7,6 @@ whatis([===[Loads libraries needed for running SRW on Orion ]===])
 
 load("contrib")
 load("rocoto")
-load("wget")
 
 
 unload("python")
