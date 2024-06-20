@@ -538,7 +538,7 @@ CCPP Parameter
 ``CCPP_PHYS_SUITE_FP``: (Default: ``'{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'``)
    The full path to the suite definition file (SDF) in the experiment directory. 
 
-``CCPP_PHYS_DIR``: (Default: ``'{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics"] |path_join }}'``)
+``CCPP_PHYS_DIR``: (Default: ``'{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics", "SFC_Models", "Land", "Noahmp"] |path_join }}'``)
    The directory containing the CCPP physics source code. This is needed to link table(s) contained in that repository. 
 
 Field Dictionary Parameters
