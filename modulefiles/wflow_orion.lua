@@ -6,9 +6,8 @@ the MSU machine Orion
 whatis([===[Loads libraries needed for running SRW on Orion ]===])
 
 load("contrib")
-load("rocoto")
-load("wget")
-
+load("ruby/3.2.3")
+load("rocoto/1.3.7")
 
 unload("python")
 load("conda")
