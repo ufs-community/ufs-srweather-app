@@ -1,6 +1,6 @@
 suite nco_aqm
   family primary
-    edit aqm_ver 'v7.0.1'
+    edit aqm_ver 'v7.1.0'
     edit PACKAGEHOME '/lfs/h2/emc/physics/noscrub/%EMC_USER%/nwdev/packages/aqm.%aqm_ver%'
     edit NET 'aqm'
     edit RUN 'aqm'

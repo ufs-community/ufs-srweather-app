@@ -82,7 +82,7 @@ fi
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/parm/aqm_utils}"
 
-TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
+TMP_STDAY=`${NDATE} -2160 ${PDY}${cyc} | cut -c1-8`  # 1 year back
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}
 
 #env
