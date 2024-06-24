@@ -2,9 +2,8 @@ metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
     completes successfully on the RRFS_CONUScompact_25km grid using the RRFS_v1beta
-    physics suite with ICs and LBCs derived from the RRFS forecasts mapped onto
-    3-km regular grid (rrfs*.conus.grib2). This test uses old v1 sfc_data,
-    not the v2 fractional grid sfc_data.
+    physics suite. It uses RRFS forecasts mapped onto 3-km regular grid (rrfs*.conus.grib2 for
+    ICs and LBCs. This test uses old v1 sfc_data, not the v2 fractional grid sfc_data.
 user:
   RUN_ENVIR: community
 workflow:
