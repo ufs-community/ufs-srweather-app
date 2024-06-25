@@ -20,8 +20,8 @@ The external model files needed for initializing an experiment can be obtained i
 ways, including: 
 
    * Pulled from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__,
-   * Pulled from the NOAA High Performance Storage System (:term:`HPSS`) during the workflow execution (requires user access), or 
-   * Obtained and staged by the user from a different source,
+   * Pulled from the NOAA High Performance Storage System (:term:`HPSS`) during the workflow execution (requires user access), 
+   * Obtained and staged by the user from a different source, or 
    * Pulled from the `NOAA-RRFS AWS S3 bucket <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`__, a description could be found in `NOAA Rapid Refresh Forecast System (RRFS) <https://registry.opendata.aws/noaa-rrfs/>`__.
 
 The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More information on downloading and setting up the external model data can be found in :numref:`Section %s <DownloadingStagingInput>`. Once the data is set up, the end-to-end application will run the system and write output files to disk.
@@ -274,7 +274,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
 
-The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <ICs/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR,RRFS), data format for (e.g., grib2, nemsio, netcdf), and date (in ``YYYYMMDDHH`` format). For example: ``/path/to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <ICs/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR, RRFS), data format (e.g., grib2, nemsio, netcdf), and date (in ``YYYYMMDDHH`` format). For example: ``/path/to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like this:
 
