@@ -32,6 +32,7 @@ To remove the ``build`` directory, run:
    
    ./devclean.sh --remove
 
+
 To remove all build artifacts (including ``build``, ``exec``, ``lib``, and ``share``), run: 
 
 .. code-block:: console
@@ -40,13 +41,26 @@ To remove all build artifacts (including ``build``, ``exec``, ``lib``, and ``sha
    OR
    ./devclean.sh -a
 
+To remove the ``conda`` directory, run:
+
+.. code-block:: console
+   
+   ./devclean.sh --remove-conda
+
 To remove external submodules, run: 
 
 .. code-block:: console
    
    ./devclean.sh --sub-modules
 
+
 Users will need to check out the external submodules again before building the application. 
+
+If using non-standard directory names build, binaries, or conda install directories under the SRW tree with the ``devbuild.sh`` script, these optional directory names could be cleaned as needed by providing the variables ``BUILD_DIR``, ``BIN_DIR``, or ``CONDA_DIR`` as optional arguments to the ``devclean.sh`` script. They would accompany the options shown above (``--remove``, ``--clean``, or ``--remove-conda``) and given in the following form:
+
+.. code-block:: console
+   
+   ./devclean.sh [--build-dir=BUILD_DIR] [--bin-dir=BIN_DIR] [--conda-dir=CONDA_DIR]
 
 In addition to the options above, many standard terminal commands can be run to remove unwanted files and directories (e.g., ``rm -rf expt_dirs``). A complete explanation of these options is beyond the scope of this User's Guide. 
 
