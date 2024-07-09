@@ -108,7 +108,7 @@ while :; do
   shift
 done
 
-# Make sure to be in the SRW main directory before any removeing or cleaning
+# Make sure to be in the SRW main directory before any removing or cleaning
 cd ${SRW_DIR}
 
 # choose defaults to clean
