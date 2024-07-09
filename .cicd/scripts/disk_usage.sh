@@ -36,6 +36,7 @@ function disk_usage() {
     (
     cd $directory || exit 1
     echo "Platform,Build,Owner,Group,Inodes,${size:-k}bytes,Access Time,Filename"
+    sleep 120
     du -Px -d ${depth:-1} --inode --exclude='./workspace' | \
         while read line ; do
             arr=($line); inode=${arr[0]}; filename=${arr[1]};
