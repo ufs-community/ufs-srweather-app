@@ -163,8 +163,11 @@ cannot be empty:
 #-----------------------------------------------------------------------
 #
   case "${METplus_time_fmt}" in
-    "%Y%m%d%H"|"%Y%m%d"|"%H%M%S"|"%H")
+    "%Y%m%d%H"|"%Y%m%d"|"%H%M%S")
       fmt="${METplus_time_fmt}"
+      ;;
+    "%H")
+      fmt="%02.0f"
       ;;
     "%HHH")
 #
