@@ -167,7 +167,18 @@ cannot be empty:
       fmt="${METplus_time_fmt}"
       ;;
     "%H")
-      fmt="%02.0f"
+#
+# The "%H" format needs to be treated differently depending on if it's
+# formatting a "lead" time type or another (e.g. "init" or "vald") because
+# for "lead", the printf function is used below (which doesn't understand
+# the "%H" format) whereas for the others, the date utility is used (which
+# does understand "%H").
+#
+      if [ "${METplus_time_type}" = "lead" ]; then
+        fmt="%02.0f"
+      else
+        fmt="${METplus_time_fmt}"
+      fi
       ;;
     "%HHH")
 #
