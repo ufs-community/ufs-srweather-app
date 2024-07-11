@@ -1,6 +1,6 @@
 default_task_verify_det: &default_task_verify_det
   account: '&ACCOUNT;'
-  attrs:
+  attrs: &default_attrs
     cycledefs: forecast
     maxtries: '1'
   envars: &default_vars
@@ -30,6 +30,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
     task_run_MET_GridStat_vx_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task_verify_det
       attrs:
+        <<: *default_attrs
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
@@ -62,6 +63,7 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
     task_run_MET_GridStat_vx_ASNOW#ACCUM_HH#h_mem#mem#:
       <<: *default_task_verify_det
       attrs:
+        <<: *default_attrs
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
