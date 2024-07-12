@@ -103,7 +103,6 @@ if [ ${REMOVE_SUB_MODULES} == true ]; then
   if [ "${VERBOSE}" = true ] ; then
     printf '%s\n' "Note: Need to check out submodules again for any subsequent builds, " \
       " by running ${SRW_DIR}/manage_externals/checkout_externals "
-#    removal_list+=( "${removal_list[@]}" "${submodules[@]}" )
   fi
 fi
 
@@ -111,8 +110,15 @@ fi
 if [ "${REMOVE_CONDA}" = true ] ; then
   # Do not read "conda_loc" file to determine location of conda install; if the user has changed it to a different location
   # they likely do not want to remove it!
-  removal_list+=("${SRW_DIR}/conda_loc")
-  removal_list+=("${SRW_DIR}/conda")
+  conda_location=$(<${SRW_DIR}/conda_loc)
+  echo "conda_location=$conda_location"
+  if [ "${conda_location}" == "${SRW_DIR}/conda" ]; then
+    removal_list+=("${SRW_DIR}/conda_loc")
+    removal_list+=("${SRW_DIR}/conda")
+  else
+    echo "WARNING: location of conda build in ${SRW_DIR}/conda_loc is not the default location!"
+    echo "Will not attempt to remove conda!"
+  fi
 fi
 
 while [ ${REMOVE} == false ]; do
@@ -122,7 +128,7 @@ while [ ${REMOVE} == false ]; do
      echo "$i"
   done
   echo ""
-  read -p "Confirm that you want to delete these files/directories! (Yes/No):" choice
+  read -p "Confirm that you want to delete these files/directories! (Yes/No): " choice
   case ${choice} in
     Yes ) REMOVE=true ;;
     [Nn]* ) echo "User chose not to delete, exiting..."; exit ;;
