@@ -3,8 +3,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# The J-job to run chgres_cube for preparing lateral boundary conditions
-# for the FV3 forecast
+# The J-Job that generates input NetCDF orography files for running the
+# regional configuration of FV3
 #
 # Run-time environment variables:
 #
