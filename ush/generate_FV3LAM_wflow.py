@@ -10,13 +10,16 @@ user-defined config.yaml file.
 import argparse
 import logging
 import os
+import stat
 import sys
+from string import Template
 from textwrap import dedent
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
 from uwtools.api.template import render
 
 from python_utils import (
+    list_to_str,
     log_info,
     import_vars,
     export_vars,
@@ -137,9 +140,23 @@ def generate_FV3LAM_wflow(
         verbose=debug,
     )
 
-    create_symlink_to_file(
-        wflow_launch_script_fp, os.path.join(exptdir, wflow_launch_script_fn), False
-    )
+    with open(wflow_launch_script_fp, "r") as launch_script_file:
+        launch_script_content = launch_script_file.read()
+
+    # Stage an experiment-specific launch file in the experiment directory
+    template = Template(launch_script_content)
+
+    # The script needs several variables from the workflow and user sections
+    template_variables = {**expt_config["user"], **expt_config["workflow"],
+            "valid_vals_BOOLEAN": list_to_str(expt_config["constants"]["valid_vals_BOOLEAN"])}
+    launch_content =  template.safe_substitute(template_variables)
+
+    launch_fp = os.path.join(exptdir, wflow_launch_script_fn)
+    with open(launch_fp, "w") as expt_launch_fn:
+        expt_launch_fn.write(launch_content)
+
+    os.chmod(launch_fp, os.stat(launch_fp).st_mode|stat.S_IXUSR)
+
     #
     # -----------------------------------------------------------------------
     #

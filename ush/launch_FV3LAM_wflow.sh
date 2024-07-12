@@ -94,7 +94,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-. $exptdir/var_defns.sh
+
+# These variables are assumed to exist in the global environment by the
+# bash_utils, which is a Very Bad (TM) thing.
+export USHdir=$USHdir
+export valid_vals_BOOLEAN=${valid_vals_BOOLEAN}
+
 . $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
@@ -369,7 +374,7 @@ by expt_name has completed with the following workflow status (wflow_status):
 # Thus, there is no need to try to relaunch it.  We also append a message 
 # to the completion message above to indicate this.
 #
-  if [ $(boolify "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
+  if [ $(boolify "${USE_CRON_TO_RELAUNCH}") = "TRUE" ]; then
 
     msg="${msg}\
 Thus, there is no need to relaunch the workflow via a cron job.  Removing 
