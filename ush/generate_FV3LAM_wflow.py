@@ -27,7 +27,6 @@ from python_utils import (
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
-    create_symlink_to_file,
     check_for_preexist_dir_file,
     cfg_to_yaml_str,
     find_pattern_in_str,
@@ -140,7 +139,7 @@ def generate_FV3LAM_wflow(
         verbose=debug,
     )
 
-    with open(wflow_launch_script_fp, "r") as launch_script_file:
+    with open(wflow_launch_script_fp, "r", encoding='utf-8') as launch_script_file:
         launch_script_content = launch_script_file.read()
 
     # Stage an experiment-specific launch file in the experiment directory
@@ -152,7 +151,7 @@ def generate_FV3LAM_wflow(
     launch_content =  template.safe_substitute(template_variables)
 
     launch_fp = os.path.join(exptdir, wflow_launch_script_fn)
-    with open(launch_fp, "w") as expt_launch_fn:
+    with open(launch_fp, "w", encoding='utf-8') as expt_launch_fn:
         expt_launch_fn.write(launch_content)
 
     os.chmod(launch_fp, os.stat(launch_fp).st_mode|stat.S_IXUSR)
