@@ -576,6 +576,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
 "
 
   nml_fn="fort.41"
+  # UW takes input from stdin when no -i/--input-config flag is provided
   (cat << EOF
 $settings
 EOF

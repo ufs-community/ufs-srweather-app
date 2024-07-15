@@ -372,6 +372,7 @@ generation executable (exec_fp):
   'pazi': ${PAZI}
 "
 
+  # UW takes input from stdin when no -i/--input-config flag is provided
   (cat << EOF
 $settings
 EOF
@@ -477,11 +478,9 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
   CRES="C${res_equiv}"
 fi
 
-  (cat << EOF
-workflow:
-  CRES: ${CRES}
-EOF
-) | uw config realize \
+  # UW takes the update values from stdin when no --update-file flag is
+  # provided. It needs --update-format to do it correctly, though.
+echo "workflow: {CRES: ${CRES}}" | uw config realize \
   --input-file $GLOBAL_VAR_DEFNS_FP \
   --update-format yaml \
   --output-file $GLOBAL_VAR_DEFNS_FP \

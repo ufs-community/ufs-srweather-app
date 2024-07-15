@@ -34,43 +34,10 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Get the experiment directory.  We assume that there is a symlink to 
-# this script in the experiment directory, and this script is called via
-# that symlink.  Thus, finding the directory in which the symlink is
-# located will give us the experiment directory.  We find this by first 
-# obtaining the directory portion (i.e. the portion without the name of
-# this script) of the command that was used to called this script (i.e.
-# "$0") and then use the "readlink -f" command to obtain the corresponding
-# absolute path.  This will work for all four of the following ways in 
-# which the symlink in the experiment directory pointing to this script 
-# may be called:
-#
-# 1) Call this script from the experiment directory:
-#    > cd /path/to/experiment/directory
-#    > launch_FV3LAM_wflow.sh
-#
-# 2) Call this script from the experiment directory but using "./" before
-#    the script name:
-#    > cd /path/to/experiment/directory
-#    > ./launch_FV3LAM_wflow.sh
-#
-# 3) Call this script from any directory using the absolute path to the
-#    symlink in the experiment directory:
-#    > /path/to/experiment/directory/launch_FV3LAM_wflow.sh
-#
-# 4) Call this script from a directory that is several levels up from the
-#    experiment directory (but not necessarily at the root directory):
-#    > cd /path/to
-#    > experiment/directory/launch_FV3LAM_wflow.sh
-#
-# Note that given just a file name, e.g. the name of this script without
-# any path before it, the "dirname" command will return a ".", e.g. in 
-# bash, 
-#
-#   > exptdir=$( dirname "launch_FV3LAM_wflow.sh" )
-#   > echo $exptdir
-#
-# will print out ".".
+# This script will be configured for a specific experiment when
+# generate_FV3LAM_wflow.py. That process fills in what is necessary so
+# this configured script in the experiment directory will need no
+# additional information at run time.
 #
 #-----------------------------------------------------------------------
 #

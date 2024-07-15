@@ -139,7 +139,6 @@ if [ -n "${SRW_ENV:-}" ] ; then
   set -u
 fi
 
-set -x +u
 # Source the necessary blocks of the experiment config YAML
 for sect in platform workflow ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
