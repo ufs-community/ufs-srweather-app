@@ -20,10 +20,11 @@ Steps to build and use the Sphinx documentation tool:
 
 To build html:
 
-$ cd ufs-srweather-app/docs/UsersGuide
-$ make clean && sphinx-build -b html source build
+$ cd ufs-srweather-app/doc
+$ make clean && sphinx-build -b html . build
 
 The "make html" command can often be used in place of the previous command.
+"make doc" will both build the html and run the linkchecker. 
 
 Sphinx uses Latex to export the documentation as a PDF file.  To build pdf:
 
