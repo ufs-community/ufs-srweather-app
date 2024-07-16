@@ -10,8 +10,8 @@ user-defined config.yaml file.
 import argparse
 import logging
 import os
-import stat
 import sys
+from stat import S_IXUSR
 from string import Template
 from textwrap import dedent
 
@@ -154,7 +154,7 @@ def generate_FV3LAM_wflow(
     with open(launch_fp, "w", encoding='utf-8') as expt_launch_fn:
         expt_launch_fn.write(launch_content)
 
-    os.chmod(launch_fp, os.stat(launch_fp).st_mode|stat.S_IXUSR)
+    os.chmod(launch_fp, os.stat(launch_fp).st_mode|S_IXUSR)
 
     #
     # -----------------------------------------------------------------------
