@@ -123,6 +123,11 @@ imm=$(echo ${PDY} | cut -c5-6)
 idd=$(echo ${PDY} | cut -c7-8)
 ihh=${cyc}
 
+echo
+echo "HELLO GGGGGGGG"
+iyyyymmddhh=${PDY}${cyc}
+echo "iyyyymmddhh = ${iyyyymmddhh}"
+
 # Unix date utility needs dates in yyyy-mm-dd hh:mm:ss format
 unix_init_DATE="${iyyyy}-${imm}-${idd} ${ihh}:00:00"
 
@@ -144,126 +149,184 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   vdate_p1=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 day" +%Y%m%d%H)
   vyyyymmdd_p1=$(echo ${vdate_p1} | cut -c1-8)
 
+echo
+echo "HELLO HHHHHHHH"
+echo "vyyyymmdd = ${vyyyymmdd}"
+echo "vyyyymmdd_p1 = ${vyyyymmdd_p1}"
+echo "ihh = ${ihh}"
+#exit
+
   #remove leading zero again, this time keep original
   vhh_noZero=$((10#${vhh}))
-
-  # Retrieve CCPA observations
+#
+#-----------------------------------------------------------------------
+#
+# Retrieve CCPA observations.
+#
+#-----------------------------------------------------------------------
+#
   if [[ ${OBTYPE} == "CCPA" ]]; then
 
-    #CCPA is accumulation observations, so none to retrieve for hour zero
+    # CCPA is accumulation observations, so for hour 0 there are no files
+    # to retrieve.
     if [[ ${current_fcst} -eq 0 ]]; then
       current_fcst=$((${current_fcst} + 1))
       continue
     fi
 
-    # Staging location for raw CCPA data from HPSS
-    ccpa_raw=${OBS_DIR}/raw
-
-    # Reorganized CCPA location
-    ccpa_proc=${OBS_DIR}
-
-    # Accumulation is for accumulation of CCPA data to pull (hardcoded to 01h, see note above.)
+    # Accumulation is for accumulation of CCPA data to pull (hardcoded to
+    # 01h, see note above).
     accum=01
 
+    # Directory in which the daily subdirectories containing the CCPA grib2
+    # files will appear after this script is done.  Make sure this exists.
+    ccpa_proc=${OBS_DIR}
+    if [[ ! -d "${ccpa_proc}/${vyyyymmdd}" ]]; then
+      mkdir -p ${ccpa_proc}/${vyyyymmdd}
+    fi
+
+    # File name within the HPSS archive file.  Note that this only includes
+    # the valid hour in its name; the year, month, and day are specified in
+    # the name of the directory in which it is located within the archive.
+    ccpa_fn="ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
+
+    # Full path to final location of the CCPA grib2 file for the current valid
+    # time.  Note that this path includes the valid date (year, month, and day)
+    # information in the name of a subdirectory and the valid hour-of-day in
+    # the name of the file.
+    ccpa_fp_proc="${ccpa_proc}/${vyyyymmdd}/${ccpa_fn}"
+
+    # Temporary staging directory for raw CCPA files from HPSS.  These "raw"
+    # directories are temporary directories in which archive files from HPSS
+    # are placed and files within those archives extracted.  Note that the
+    # name of this subdirectory is cycle-specific to avoid other get_obs_ccpa
+    # workflow tasks (i.e. those corresponding to cycles other than the current
+    # one) writing into the same directory.
+    ccpa_raw="${ccpa_proc}/raw_${iyyyymmddhh}"
+
     # Check if file exists on disk; if not, pull it.
-    ccpa_file="$ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
-    if [[ -f "${ccpa_file}" ]]; then 
+    if [[ -f "${ccpa_fp_proc}" ]]; then
+
       echo "${OBTYPE} file exists on disk:"
-      echo "${ccpa_file}"
+      echo "  ccpa_fp_proc = \"${ccpa_fp_proc}\""
+      echo "Will NOT attempt to retrieve from remote locations."
+
     else
+
       echo "${OBTYPE} file does not exist on disk:"
-      echo "${ccpa_file}"
-      echo "Will attempt to retrieve from remote locations"
+      echo "  ccpa_fp_proc = \"${ccpa_fp_proc}\""
+      echo "Will attempt to retrieve from remote locations."
 
-      # Create necessary raw and prop directories
-      if [[ ! -d "$ccpa_raw/${vyyyymmdd}" ]]; then
-        mkdir -p $ccpa_raw/${vyyyymmdd}
+      # Create the necessary raw (sub)directories on disk.  Note that we need
+      # to create a subdirectory for 1 day + the current valid date because 
+      # that is needed to get around a metadata error in the CCPA files on HPSS
+      # (in particular, one hour CCPA files have incorrect metadata in the files
+      # under the "00" directory from 20180718 to 20210504).
+      if [[ ! -d "${ccpa_raw}/${vyyyymmdd}" ]]; then
+        mkdir -p ${ccpa_raw}/${vyyyymmdd}
       fi
-      if [[ ! -d "$ccpa_raw/${vyyyymmdd_p1}" ]]; then
-        mkdir -p $ccpa_raw/${vyyyymmdd_p1}
+      if [[ ! -d "${ccpa_raw}/${vyyyymmdd_p1}" ]]; then
+        mkdir -p ${ccpa_raw}/${vyyyymmdd_p1}
       fi
-      if [[ ! -d "$ccpa_proc/${vyyyymmdd}" ]]; then
-        mkdir -p $ccpa_proc/${vyyyymmdd}
-      fi
-      # Check if valid hour is 00
+
+      valid_time=${vyyyymmdd}${vhh}
+      output_path="${ccpa_raw}/${vyyyymmdd}"
       if [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
-        # Pull CCPA data from HPSS
-        cmd="
-        python3 -u ${USHdir}/retrieve_data.py \
-          --debug \
-          --file_set obs \
-          --config ${PARMdir}/data_locations.yml \
-          --cycle_date ${vyyyymmdd_p1}${vhh} \
-          --data_stores hpss \
-          --data_type CCPA_obs \
-          --output_path $ccpa_raw/${vyyyymmdd_p1} \
-          --summary_file ${logfile}"
-
-        echo "CALLING: ${cmd}"
-        $cmd || print_err_msg_exit "\
-        Could not retrieve CCPA data from HPSS
-
-        The following command exited with a non-zero exit status:
-        ${cmd}
-"
-
-      else 
-        # Pull CCPA data from HPSS
-        cmd="
-        python3 -u ${USHdir}/retrieve_data.py \
-          --debug \
-          --file_set obs \
-          --config ${PARMdir}/data_locations.yml \
-          --cycle_date ${vyyyymmdd}${vhh} \
-          --data_stores hpss \
-          --data_type CCPA_obs \
-          --output_path $ccpa_raw/${vyyyymmdd} \
-          --summary_file ${logfile}"
-
-        echo "CALLING: ${cmd}"
-        $cmd || print_err_msg_exit "\
-        Could not retrieve CCPA data from HPSS
-
-        The following command exited with a non-zero exit status:
-        ${cmd}
-"
+        valid_time=${vyyyymmdd_p1}${vhh}
+        output_path="${ccpa_raw}/${vyyyymmdd_p1}"
       fi
 
-      # One hour CCPA files have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
-      # After data is pulled, reorganize into correct valid yyyymmdd structure.
-      if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 6 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -ge 7 && ${vhh_noZero} -le 12 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -ge 13 && ${vhh_noZero} -le 18 ]]; then
-        cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
-        if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
-          wgrib2 $ccpa_raw/${vyyyymmdd_p1}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
-        else
-          cp $ccpa_raw/${vyyyymmdd_p1}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+      # The retrieve_data.py script below uses the current working directory as
+      # the location into which to extract the contents of the HPSS archive (tar)
+      # file.  Thus, if there are multiple get_obs_ccpa tasks running (i.e. ones
+      # for different cycles), they will be extracting files into the same (current)
+      # directory.  That causes errors in the workflow.  To avoid this, change
+      # location to the raw directory.  This will avoid such errors because the
+      # raw directory has a cycle-specific name.
+      cd ${ccpa_raw}
+
+      # Pull CCPA data from HPSS.  This will get a single grib2 (.gb2) file
+      # corresponding to the current valid time (valid_time).
+      cmd="
+      python3 -u ${USHdir}/retrieve_data.py \
+        --debug \
+        --file_set obs \
+        --config ${PARMdir}/data_locations.yml \
+        --cycle_date ${valid_time} \
+        --data_stores hpss \
+        --data_type CCPA_obs \
+        --output_path ${output_path} \
+        --summary_file ${logfile}"
+
+      echo "CALLING: ${cmd}"
+      $cmd || print_err_msg_exit "\
+      Could not retrieve CCPA data from HPSS.
+
+      The following command exited with a non-zero exit status:
+      ${cmd}
+"
+
+      # Move CCPA file to its final location.
+      #
+      # Since this script is part of a workflow, other tasks (for other cycles)
+      # that call this script may have extracted and placed the current file
+      # in its final location between the time we checked for its existence
+      # above above (and didn't find it) and now.  This can happen because
+      # there can be overlap between the verification times for the current
+      # cycle and those of other cycles.  For this reason, check again for the
+      # existence of the file in its final location.  If it's already been
+      # created by another task, don't bother to move it from its raw location
+      # to its final location.
+      if [[ -f "${ccpa_fp_proc}" ]]; then 
+
+        echo "${OBTYPE} file exists on disk:"
+        echo "  ccpa_fp_proc = \"{ccpa_fp_proc}\""
+        echo "It was likely created by a get_obs_ccpa workflow task for another cycle."
+        echo "NOT moving file from its temporary (raw) location to its final location."
+
+      else
+
+        # Full path to the CCPA file that was pulled and extracted above and
+        # placed in the raw directory.
+        ccpa_fp_raw="${output_path}/${ccpa_fn}"
+
+        # One hour CCPA files have incorrect metadata in the files under the "00"
+        # directory from 20180718 to 20210504.  After data is pulled, reorganize
+        # into correct valid yyyymmdd structure.
+        if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 18 ]]; then
+          mv ${ccpa_fp_raw} ${ccpa_fp_proc}
+        elif [[ (${vhh_noZero} -eq 0) || (${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23) ]]; then
+          if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
+            wgrib2 ${ccpa_fp_raw} -set_date -24hr -grib ${ccpa_fp_proc} -s
+          else
+            mv ${ccpa_fp_raw} ${ccpa_fp_proc}
+          fi
         fi
-      elif [[ ${vhh_noZero} -eq 0 ]]; then
-        # One hour CCPA files on HPSS have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
-        if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
-          wgrib2 $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
-        else
-          cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-        fi
+
       fi
 
     fi
-  # Retrieve MRMS observations
+#
+#-----------------------------------------------------------------------
+#
+# Retrieve MRMS observations.
+#
+#-----------------------------------------------------------------------
+#
   elif [[ ${OBTYPE} == "MRMS" ]]; then
+
     # Top-level MRMS directory
-    # raw MRMS data from HPSS
-    mrms_raw=${OBS_DIR}/raw
 
     # Reorganized MRMS location
     mrms_proc=${OBS_DIR}
 
+    # raw MRMS data from HPSS
+    #mrms_raw=${OBS_DIR}/raw
+    mrms_raw="${mrms_proc}/raw_${iyyyymmddhh}"
+
     # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
     for field in ${VAR[@]}; do
+
       if [ "${field}" = "REFC" ]; then
         field_base_name="MergedReflectivityQCComposite"
         level="_00.50_"
@@ -279,32 +342,53 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 "
       fi
 
-      mrms_file="$mrms_proc/${vyyyymmdd}/${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
+      mrms_fn="${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
+      mrms_day_dir="${mrms_proc}/${vyyyymmdd}"
+      mrms_fp="${mrms_proc}/${vyyyymmdd}/${mrms_fn}"
 
-      if [[ -f "${mrms_file}" ]]; then
-        echo "${OBTYPE} file exists on disk for field ${field}:\n${mrms_file}"
+#      if [[ -f "${mrms_fp}" ]]; then
+#
+#        echo "${OBTYPE} file for field \"${field}\" exists on disk:"
+#        echo "  mrms_fp = \"${mrms_fp}\""
+#        echo "Will NOT attempt to retrieve from remote locations."
+
+      if [[ -d "${mrms_day_dir}" ]]; then
+
+        echo "${OBTYPE} directory for field \"${field}\" and day ${vyyyymmdd} exists on disk:"
+        echo "  mrms_day_dir = \"${mrms_day_dir}\""
+        echo "This means observation files for this field and all hours of this day have been or are being retrieved."
+        echo "Will NOT attempt to retrieve the current file"
+        echo "  mrms_fp = \"${mrms_fp}\""
+        echo "from remote locations."
+
       else
-        echo "${OBTYPE} file does not exist on disk for field ${field}:\n${mrms_file}"
-        echo "Will attempt to retrieve from remote locations"
+
+        echo "${OBTYPE} file for field \"${field}\" does not exist on disk:"
+        echo "  mrms_fp = \"${mrms_fp}\""
+        echo "Will attempt to retrieve from remote locations."
+
         # Create directories if necessary
-        if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then
-          mkdir -p $mrms_raw/${vyyyymmdd}
+        if [[ ! -d "${mrms_raw}/${vyyyymmdd}" ]]; then
+          mkdir -p ${mrms_raw}/${vyyyymmdd}
         fi
         if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
           mkdir -p $mrms_proc/${vyyyymmdd}
         fi
 
+        valid_time=${vyyyymmdd}${vhh}
+        output_path="${mrms_raw}/${vyyyymmdd}"
 
+        cd ${mrms_raw}
         # Pull MRMS data from HPSS
         cmd="
         python3 -u ${USHdir}/retrieve_data.py \
           --debug \
           --file_set obs \
           --config ${PARMdir}/data_locations.yml \
-          --cycle_date ${vyyyymmdd}${vhh} \
+          --cycle_date ${valid_time} \
           --data_stores hpss \
           --data_type MRMS_obs \
-          --output_path $mrms_raw/${vyyyymmdd} \
+          --output_path ${output_path} \
           --summary_file ${logfile}"
 
         echo "CALLING: ${cmd}"
@@ -326,8 +410,13 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
       fi
     done
-
-  # Retrieve NDAS observations
+#
+#-----------------------------------------------------------------------
+#
+# Retrieve NDAS observations.
+#
+#-----------------------------------------------------------------------
+#
   elif [[ ${OBTYPE} == "NDAS" ]]; then
     # raw NDAS data from HPSS
     ndas_raw=${OBS_DIR}/raw
@@ -363,9 +452,17 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
         continue
       fi
 
+echo ""
+echo "HELLO AAAAA"
+echo "vhh_noZero = ${vhh_noZero}"
+
       if [[ ${vhh_noZero} -eq 0 || ${vhh_noZero} -eq 6 || ${vhh_noZero} -eq 12 || ${vhh_noZero} -eq 18 ]]; then
+echo ""
+echo "HELLO BBBBB"
 
         if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
+echo ""
+echo "HELLO CCCCC"
           mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
         fi
 
@@ -459,8 +556,13 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       fi
 
     fi
-
-  # Retrieve NOHRSC observations
+#
+#-----------------------------------------------------------------------
+#
+# Retrieve NOHRSC observations.
+#
+#-----------------------------------------------------------------------
+#
   elif [[ ${OBTYPE} == "NOHRSC" ]]; then
 
     #NOHRSC is accumulation observations, so none to retrieve for hour zero
@@ -534,7 +636,8 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     Invalid OBTYPE specified for script; valid options are CCPA, MRMS, NDAS, and NOHRSC
   "
   fi  # Increment to next forecast hour      
-  # Increment to next forecast hour      
+
+  # Increment to next forecast hour
   echo "Finished fcst hr=${current_fcst}"
   current_fcst=$((${current_fcst} + 1))
 
@@ -542,7 +645,7 @@ done
 
 
 # Clean up raw, unprocessed observation files
-rm -rf ${OBS_DIR}/raw
+#rm -rf ${OBS_DIR}/raw
 
 #
 #-----------------------------------------------------------------------
