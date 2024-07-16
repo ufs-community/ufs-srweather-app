@@ -105,7 +105,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     elif [[ -f Indy-Severe-Weather.tgz ]]; then
         tar xvfz Indy-Severe-Weather.tgz 
     else
-        wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
+        wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.1.0/METplus-vx-sample/Indy-Severe-Weather.tgz
         tar xvfz Indy-Severe-Weather.tgz
     fi
     [[ -f ${platform,,}-${srw_compiler}-skill-score.txt ]] && rm ${platform,,}-${srw_compiler}-skill-score.txt
