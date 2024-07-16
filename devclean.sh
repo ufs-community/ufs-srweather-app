@@ -4,8 +4,7 @@
 usage () {
 cat << EOF_USAGE
 
-Clean the UFS-SRW Application build. If no arguments are provided, will only delete standard build
-artifacts; to delete submodules and/or conda, see optional arguments below.
+Clean the UFS-SRW Application build.
 
 NOTE: If user included custom directories at build time, those directories must be deleted manually
 
@@ -20,11 +19,14 @@ OPTIONS
       provide more verbose output
 
   -a, --all
-      removes all build artifacts, including conda and submodules
-  --conda
+      removes all build artifacts, conda and submodules (equivalent to \`-b -c -s\`)
+  -b, --build
+      removes build directories and artifacts:  build/ exec/ share/ include/ lib/ lib64/
+  -c, --conda
       removes "conda" directory and conda_loc file in SRW
-  --sub-modules
-      remove sub-module directories. They will need to be checked out again by running "\${SRW_DIR}/manage_externals/checkout_externals" before attempting subsequent builds
+  -s, --sub-modules
+      remove sub-module directories. They will need to be checked out again by running
+      "./manage_externals/checkout_externals" before attempting subsequent builds
 
 EOF_USAGE
 }
@@ -55,6 +57,7 @@ VERBOSE=false
 
 # default clean options
 REMOVE=false
+REMOVE_BUILD=false
 REMOVE_CONDA=false
 REMOVE_SUB_MODULES=false
 
@@ -62,11 +65,12 @@ REMOVE_SUB_MODULES=false
 while :; do
   case $1 in
     --help|-h) usage; exit 0 ;;
-    --all|-a) REMOVE_CONDA=true; REMOVE_SUB_MODULES=true ;;
-    --conda) REMOVE_CONDA=true ;;
+    --all|-a) REMOVE_BUILD=true; REMOVE_CONDA=true; REMOVE_SUB_MODULES=true ;;
+    --build|-b) REMOVE_BUILD=true ;;
+    --conda|-c) REMOVE_CONDA=true ;;
     --force) REMOVE=true ;;
     --force=?*|--force=) usage_error "$1 argument ignored." ;;
-    --sub-modules) REMOVE_SUB_MODULES=true ;;
+    --sub-modules|-s) REMOVE_SUB_MODULES=true ;;
     --sub-modules=?*|--sub-modules=) usage_error "$1 argument ignored." ;;
     --verbose|-v) VERBOSE=true ;;
     # unknown
@@ -82,9 +86,10 @@ if [ "${VERBOSE}" = true ] ; then
   settings
 fi
 
-# Populate "removal_list" as an array of files/directories to remove
+# Populate "removal_list" as an array of files/directories to remove, based on user selections
 
-# Standard build artifacts
+# Clean standard build artifacts
+if [ ${REMOVE_BUILD} == true ]; then
   removal_list=( \
     "${SRW_DIR}/build" \
     "${SRW_DIR}/exec" \
@@ -93,6 +98,7 @@ fi
     "${SRW_DIR}/lib" \
     "${SRW_DIR}/lib64" \
   )
+fi
 
 # Clean all the submodules if requested.
 if [ ${REMOVE_SUB_MODULES} == true ]; then
@@ -119,6 +125,11 @@ if [ "${REMOVE_CONDA}" = true ] ; then
     echo "WARNING: location of conda build in ${SRW_DIR}/conda_loc is not the default location!"
     echo "Will not attempt to remove conda!"
   fi
+fi
+
+# If array is empty, that means user has not selected any removal options
+if [ ${#removal_list[@]} -eq 0 ]; then
+  usage_error "No removal options specified"
 fi
 
 while [ ${REMOVE} == false ]; do
