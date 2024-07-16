@@ -117,7 +117,9 @@ if [ "${REMOVE_CONDA}" = true ] ; then
   # Do not read "conda_loc" file to determine location of conda install; if the user has changed it to a different location
   # they likely do not want to remove it!
   conda_location=$(<${SRW_DIR}/conda_loc)
-  echo "conda_location=$conda_location"
+  if [ "${VERBOSE}" = true ] ; then
+    echo "conda_location=$conda_location"
+  fi
   if [ "${conda_location}" == "${SRW_DIR}/conda" ]; then
     removal_list+=("${SRW_DIR}/conda_loc")
     removal_list+=("${SRW_DIR}/conda")
