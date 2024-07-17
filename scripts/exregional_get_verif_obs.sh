@@ -89,7 +89,7 @@ set -x
 # hh (00 through 05). If using custom staged data, you will have to
 # rename the files accordingly.
 # 
-# If data is retrieved from HPSS, it will automatically staged by this
+# If data is retrieved from HPSS, it will be automatically staged by this
 # this script.
 #
 #
@@ -293,13 +293,15 @@ echo "ihh = ${ihh}"
         # One hour CCPA files have incorrect metadata in the files under the "00"
         # directory from 20180718 to 20210504.  After data is pulled, reorganize
         # into correct valid yyyymmdd structure.
+        #mv_or_cp="mv"
+        mv_or_cp="cp"
         if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 18 ]]; then
-          mv ${ccpa_fp_raw} ${ccpa_fp_proc}
+          ${mv_or_cp} ${ccpa_fp_raw} ${ccpa_fp_proc}
         elif [[ (${vhh_noZero} -eq 0) || (${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23) ]]; then
           if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
             wgrib2 ${ccpa_fp_raw} -set_date -24hr -grib ${ccpa_fp_proc} -s
           else
-            mv ${ccpa_fp_raw} ${ccpa_fp_proc}
+            ${mv_or_cp} ${ccpa_fp_raw} ${ccpa_fp_proc}
           fi
         fi
 
@@ -320,59 +322,53 @@ echo "ihh = ${ihh}"
     # Reorganized MRMS location
     mrms_proc=${OBS_DIR}
 
-    # raw MRMS data from HPSS
-    #mrms_raw=${OBS_DIR}/raw
-    mrms_raw="${mrms_proc}/raw_${iyyyymmddhh}"
+    mrms_day_dir="${mrms_proc}/${vyyyymmdd}"
 
-    # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
-    for field in ${VAR[@]}; do
+    if [[ -d "${mrms_day_dir}" ]]; then
 
-      if [ "${field}" = "REFC" ]; then
-        field_base_name="MergedReflectivityQCComposite"
-        level="_00.50_"
-      elif [ "${field}" = "RETOP" ]; then
-        field_base_name="EchoTop"
-        level="_18_00.50_"
-      else
-        echo "Invalid field: ${field}"
-        print_err_msg_exit "\
-        Invalid field specified: ${field}
+      echo "${OBTYPE} directory for day ${vyyyymmdd} exists on disk:"
+      echo "  mrms_day_dir = \"${mrms_day_dir}\""
+      echo "This means observation files for this field and all hours of this day have been or are being retrieved."
+      echo "Thus, we will NOT attempt to retrieve the current data from remote locations"
 
-        Valid options are 'REFC', 'RETOP'.
+    else
+
+      # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
+      for field in ${VAR[@]}; do
+  
+        # raw MRMS data from HPSS
+        #mrms_raw=${OBS_DIR}/raw
+        #mrms_raw="${mrms_proc}/raw_${field}_${iyyyymmddhh}"
+        mrms_raw="${mrms_proc}/raw_${iyyyymmddhh}"
+  
+        if [ "${field}" = "REFC" ]; then
+          field_base_name="MergedReflectivityQCComposite"
+          level="_00.50_"
+        elif [ "${field}" = "RETOP" ]; then
+          field_base_name="EchoTop"
+          level="_18_00.50_"
+        else
+          echo "Invalid field: ${field}"
+          print_err_msg_exit "\
+          Invalid field specified: ${field}
+  
+          Valid options are 'REFC', 'RETOP'.
 "
-      fi
+        fi
 
-      mrms_fn="${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
-      mrms_day_dir="${mrms_proc}/${vyyyymmdd}"
-      mrms_fp="${mrms_proc}/${vyyyymmdd}/${mrms_fn}"
-
-#      if [[ -f "${mrms_fp}" ]]; then
-#
-#        echo "${OBTYPE} file for field \"${field}\" exists on disk:"
-#        echo "  mrms_fp = \"${mrms_fp}\""
-#        echo "Will NOT attempt to retrieve from remote locations."
-
-      if [[ -d "${mrms_day_dir}" ]]; then
-
-        echo "${OBTYPE} directory for field \"${field}\" and day ${vyyyymmdd} exists on disk:"
-        echo "  mrms_day_dir = \"${mrms_day_dir}\""
-        echo "This means observation files for this field and all hours of this day have been or are being retrieved."
-        echo "Will NOT attempt to retrieve the current file"
-        echo "  mrms_fp = \"${mrms_fp}\""
-        echo "from remote locations."
-
-      else
+        mrms_fn="${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
+        mrms_fp="${mrms_proc}/${vyyyymmdd}/${mrms_fn}"
 
         echo "${OBTYPE} file for field \"${field}\" does not exist on disk:"
         echo "  mrms_fp = \"${mrms_fp}\""
         echo "Will attempt to retrieve from remote locations."
 
-        # Create directories if necessary
+        # Create directories if necessary.
         if [[ ! -d "${mrms_raw}/${vyyyymmdd}" ]]; then
           mkdir -p ${mrms_raw}/${vyyyymmdd}
         fi
-        if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
-          mkdir -p $mrms_proc/${vyyyymmdd}
+        if [[ ! -d "${mrms_proc}/${vyyyymmdd}" ]]; then
+          mkdir -p ${mrms_proc}/${vyyyymmdd}
         fi
 
         valid_time=${vyyyymmdd}${vhh}
@@ -408,8 +404,9 @@ echo "ihh = ${ihh}"
           hour=$((${hour} + 1)) # hourly increment
         done
 
-      fi
-    done
+      done
+
+    fi
 #
 #-----------------------------------------------------------------------
 #
