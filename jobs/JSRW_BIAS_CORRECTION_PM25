@@ -126,7 +126,7 @@ setpdy.sh
 if [ ${subcyc} -ne 0 ]; then
   export cycle="t${cyc}${subcyc}z"
 fi
-if [ $(boolify "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
   export dot_ensmem=".mem${ENSMEM_INDX}"
 else
   export dot_ensmem=
