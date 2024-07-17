@@ -15,6 +15,7 @@ from uwtools.api.config import get_yaml_config
 from python_utils import (
     log_info,
     cd_vrfy,
+    date_to_str,
     mkdir_vrfy,
     rm_vrfy,
     check_var_valid_value,
@@ -1502,6 +1503,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     var_defns_cfg = get_yaml_config(config=expt_config)
     del var_defns_cfg["rocoto"]
+
+    # Fixup a couple of data types:
+    for dates in ("DATE_FIRST_CYCL", "DATE_LAST_CYCL"):
+        var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
     var_defns_cfg.dump(global_var_defns_fp)
 
 
