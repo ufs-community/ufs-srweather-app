@@ -12,22 +12,25 @@ Usage: $0 [OPTIONS] ...
 
 OPTIONS
   -h, --help
-      show this help guide
+      Show this help guide
   --force
-      removes files and directories without confirmation. Use with caution!
+      Removes files and directories without confirmation. Use with caution!
   -v, --verbose
-      provide more verbose output
+      Provide more verbose output
 
   -a, --all
-      removes all build artifacts, conda and submodules (equivalent to \`-b -c -s\`)
+      Removes all build artifacts, conda and submodules (equivalent to \`-b -c -s\`)
   -b, --build
-      removes build directories and artifacts:  build/ exec/ share/ include/ lib/ lib64/
+      Removes build directories and artifacts:  build/ exec/ share/ include/ lib/ lib64/
   -c, --conda
-      removes "conda" directory and conda_loc file in SRW
+      Removes "conda" directory and conda_loc file in SRW
   -s, --sub-modules
-      remove sub-module directories. They will need to be checked out again by running
+      Remove sub-module directories. They will need to be checked out again by running
       "./manage_externals/checkout_externals" before attempting subsequent builds
 
+  --container
+      For cleaning builds within the SRW Singularity container, will remove the "container-bin"
+      directory rather than "exec". Has no effect if \`-b\` is not specified.
 EOF_USAGE
 }
 
@@ -60,6 +63,7 @@ REMOVE=false
 REMOVE_BUILD=false
 REMOVE_CONDA=false
 REMOVE_SUB_MODULES=false
+CONTAINER=false
 
 # process arguments
 while :; do
@@ -68,6 +72,7 @@ while :; do
     --all|-a) REMOVE_BUILD=true; REMOVE_CONDA=true; REMOVE_SUB_MODULES=true ;;
     --build|-b) REMOVE_BUILD=true ;;
     --conda|-c) REMOVE_CONDA=true ;;
+    --container) CONTAINER=true ;;
     --force) REMOVE=true ;;
     --force=?*|--force=) usage_error "$1 argument ignored." ;;
     --sub-modules|-s) REMOVE_SUB_MODULES=true ;;
@@ -92,12 +97,16 @@ fi
 if [ ${REMOVE_BUILD} == true ]; then
   removal_list=( \
     "${SRW_DIR}/build" \
-    "${SRW_DIR}/exec" \
     "${SRW_DIR}/share" \
     "${SRW_DIR}/include" \
     "${SRW_DIR}/lib" \
     "${SRW_DIR}/lib64" \
   )
+  if [ ${CONTAINER} == true ]; then
+    removal_list+=("${SRW_DIR}/container-bin")
+  else
+    removal_list+=("${SRW_DIR}/exec")
+  fi
 fi
 
 # Clean all the submodules if requested.
