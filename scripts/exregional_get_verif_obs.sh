@@ -444,17 +444,17 @@ echo "ihh = ${ihh}"
 
     # Base directory in which the daily subdirectories containing the MRMS
     # grib2 files for REFC (composite reflectivity) and REFC (echo top) will
-    # appear after this script is done, and the daily such subdirectory for
-    # the current valid time (year, month, and day).  We refer to these as
-    # the "processed" base and daily subdirectories because they contain the
-    # final files after all processing by this script is complete.
+    # be located after this script is done, and the daily such subdirectory
+    # for the current valid time (year, month, and day).  We refer to these
+    # as the "processed" base and daily subdirectories because they contain 
+    # the final files after all processing by this script is complete.
     mrms_basedir_proc=${OBS_DIR}
     mrms_day_dir_proc="${mrms_basedir_proc}/${vyyyymmdd}"
 
-    # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
+    # Loop over the fields (REFC and RETOP).
     for field in ${VAR[@]}; do
   
-      # Set parameters needed in setting the MRMS grib2 file name to create in the day directory.
+      # Set field-dependent parameters needed in forming grib2 file names.
       if [ "${field}" = "REFC" ]; then
         file_base_name="MergedReflectivityQCComposite"
         level="_00.50_"
@@ -470,17 +470,20 @@ echo "ihh = ${ihh}"
 "
       fi
 
-# Name of the MRMS grib2 file for the current field and valid time that
-# will appear in the processed daily subdirectory after this script finishes.
+      # Name of the MRMS grib2 file for the current field and valid time that
+      # will appear in the processed daily subdirectory after this script finishes.
+      # This is the name of the processed file.  Note that this is generally
+      # not the name of the gzipped grib2 files that may be retrieved below
+      # from archive files using the retrieve_data.py script.
       mrms_fn="${file_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
   
-# Full path to the processed MRMS grib2 file for the current field and
-# valid time.
+      # Full path to the processed MRMS grib2 file for the current field and
+      # valid time.
       mrms_fp_proc="${mrms_day_dir_proc}/${mrms_fn}"
 
-# Check if the processed MRMS grib2 file for the current field and valid
-# time already exists on disk.  If so, skip and go to the next valid time.
-# If not, pull it.
+      # Check if the processed MRMS grib2 file for the current field and valid
+      # time already exists on disk.  If so, skip this valid time and go to the
+      # next one.  If not, pull it.
       if [[ -f "${mrms_fp_proc}" ]]; then
 
         echo "${OBTYPE} file exists on disk:"
@@ -493,50 +496,57 @@ echo "ihh = ${ihh}"
         echo "  mrms_fp_proc = \"${mrms_fp_proc}\""
         echo "Will attempt to retrieve from remote locations."
 
-        # Raw base directory that will contain the raw daily subdirectory in which
-        # the gzipped MRMS grib2 retrieved from archive file will be placed.  Note
-        # that the name of this directory depends on (contains) the valid year,
-        # month, and day (but not on the cycle, i.e. not on iyyyymmddhh) in order
-        # to avoid having get_obs_mrms tasks from other cycles clobbering the
-        # output from this one.  It is also possible to make this directory name
-        # depend instead on the cycle, but that turns out to cause an inefficiency
-        # in that get_obs_mrms tasks for different cycles will not be able to
-        # detect that another cycle has already retrieved the data for the current
-        # valid day from an archive and will unnecessarily repeat the retrieval.
-        #mrms_basedir_raw="${mrms_basedir_proc}/raw_${iyyyymmddhh}"
+        # Base directory that will contain the daily subdirectories in which the
+        # gzipped MRMS grib2 files retrieved from archive files will be placed,
+        # and the daily subdirectory for the current valid year, month, and day.
+        # We refer to these as the "raw" MRMS base and daily directories because
+        # they contain files as they are found in the archives before any processing
+        # by this script.
+        #
+        # Note that the name of the raw base directory depends on (contains) the
+        # valid year, month, and day (but not on the cycle, i.e. not on iyyyymmddhh)
+        # in order to avoid having get_obs_mrms tasks from other cycles clobbering
+        # the output from this one.  It is also possible to make the name of this
+        # directory name depend instead on the cycle, but that turns out to cause
+        # an inefficiency in that get_obs_mrms tasks for different cycles will
+        # not be able to detect that another cycle has already retrieved the data
+        # for the current valid day will unnecessarily repeat the retrieval.
         mrms_basedir_raw="${mrms_basedir_proc}/raw_${vyyyymmdd}"
-  
-        # Raw daily subdirectory under the raw base directory.
         mrms_day_dir_raw="${mrms_basedir_raw}/${vyyyymmdd}"
 
    
-# Check if the raw daily directory already exists on disk.  If so, it 
-# means all the gzipped MRMS grib2 files -- i.e. for both REFC and RETOP
-# and for all times (hours, minutes, and seconds) in the current valid
-# day -- have already been or are in the process of being retrieved from
-# the archive (tar) files.  If so, skip the retrieval process.  If not,
-# proceed to retrieve all the files and place them in the raw daily 
-# directory.
+        # Check if the raw daily directory already exists on disk.  If so, it 
+        # means all the gzipped MRMS grib2 files -- i.e. for both REFC and RETOP
+        # and for all times (hours, minutes, and seconds) in the current valid
+        # day -- have already been or are in the process of being retrieved from
+        # the archive (tar) files.  If so, skip the retrieval process.  If not,
+        # proceed to retrieve all the files and place them in the raw daily 
+        # directory.
         if [[ -d "${mrms_day_dir_raw}" ]]; then
 
-# Change the following comments.
           echo "${OBTYPE} directory for day ${vyyyymmdd} exists on disk:"
           echo "  mrms_day_dir_proc = \"${mrms_day_dir_proc}\""
-          echo "This means observation files for this field and all hours of this day have been or are being retrieved."
-          echo "Thus, we will NOT attempt to retrieve the current data from remote locations"
+          echo "This means MRMS files for all hours of the current valid day (${vyyyymmdd}) have been or are being retrieved."
+          echo "Thus, we will NOT attempt to retrieve MRMS data for the current valid time from remote locations."
 
         else
 
           mkdir -p ${mrms_day_dir_raw}
           valid_time=${vyyyymmdd}${vhh}
 
+          # Before calling retrieve_data.py, change location to the raw base
+          # directory to avoid get_obs_mrms tasks for other cycles from clobbering
+          # the output from this call to retrieve_data.py.  Note that retrieve_data.py
+          # extracts the MRMS tar files into the directory it was called from, 
+          # which is the working directory of this script right before retrieve_data.py
+          # is called.
           cd ${mrms_basedir_raw}
 
-# Use the retrieve_data.py script to retrieve all the gzipped MRMS grib2
-# files -- i.e. for both REFC and RETOP and for all times (hours, minutes,
-# and seconds) in the current valid day -- and place them in the raw daily
-# directory.  Note that this will pull both the REFC and RETOP files in
-# one call.
+          # Use the retrieve_data.py script to retrieve all the gzipped MRMS grib2
+          # files -- i.e. for both REFC and RETOP and for all times (hours, minutes,
+          # and seconds) in the current valid day -- and place them in the raw daily
+          # directory.  Note that this will pull both the REFC and RETOP files in
+          # one call.
           cmd="
           python3 -u ${USHdir}/retrieve_data.py \
             --debug \
@@ -557,29 +567,29 @@ echo "ihh = ${ihh}"
           ${cmd}
 "
 
-# Create a flag file that can be used to confirm the completion of the
-# retrieval of all files for the current valid day.
+          # Create a flag file that can be used to confirm the completion of the
+          # retrieval of all files for the current valid day.
           touch ${mrms_day_dir_raw}/pull_completed.txt
 
         fi
 
-# Make sure the retrieval process for the current day (which may have
-# been executed above for this cycle or by another cycle) has completed
-# by checking for the existence of the flag file that marks complettion.
-# If not, keep checking until the flag file shows up.
+        # Make sure the retrieval process for the current day (which may have
+        # been executed above for this cycle or by another cycle) has completed
+        # by checking for the existence of the flag file that marks completion.
+        # If not, keep checking until the flag file shows up.
         while [[ ! -f "${mrms_day_dir_raw}/pull_completed.txt" ]]; do
           echo "Waiting for the retrieval process for valid day ${vyyyymmdd} to complete..."
           sleep 5s
         done
 
-# Since this script is part of a workflow, another get_obs_mrms task (i.e.
-# for another cycle) may have extracted and placed the current file in its
-# processed location between the time we checked for its existence above
-# (and didn't find it) and now.  This can happen because there can be
-# overlap between the verification times for the current cycle and those
-# of other cycles.  For this reason, check again for the existence of the
-# processed file.  If it has already been created by another get_obs_mrms
-# task, don't bother to recreate it.
+        # Since this script is part of a workflow, another get_obs_mrms task (i.e.
+        # for another cycle) may have extracted and placed the current file in its
+        # processed location between the time we checked for its existence above
+        # (and didn't find it) and now.  This can happen because there can be
+        # overlap between the verification times for the current cycle and those
+        # of other cycles.  For this reason, check again for the existence of the
+        # processed file.  If it has already been created by another get_obs_mrms
+        # task, don't bother to recreate it.
         if [[ -f "${mrms_fp_proc}" ]]; then
 
           echo "${OBTYPE} file exists on disk:"
@@ -588,11 +598,11 @@ echo "ihh = ${ihh}"
 
         else
 
-# Search the raw daily directory for the current valid day to find the
-# gizipped MRMS grib2 file whose time stamp (in the file name) is closest
-# to the current valid day and hour.  Then unzip that file and copy it
-# to the processed daily directory, in the process renaming it to replace
-# the minutes and hours in the file name with "0000".
+          # Search the raw daily directory for the current valid day to find the
+          # gizipped MRMS grib2 file whose time stamp (in the file name) is closest
+          # to the current valid day and hour.  Then unzip that file and copy it
+          # to the processed daily directory, in the process renaming it to replace
+          # the minutes and hours in the file name with "0000".
           valid_time=${vyyyymmdd}${vhh}
           python ${USHdir}/mrms_pull_topofhour.py \
             --valid_time ${valid_time} \
