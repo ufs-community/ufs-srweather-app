@@ -442,96 +442,169 @@ echo "ihh = ${ihh}"
 #
   elif [[ ${OBTYPE} == "MRMS" ]]; then
 
-    # Top-level MRMS directory
+    # Base directory in which the daily subdirectories containing the MRMS
+    # grib2 files for REFC (composite reflectivity) and REFC (echo top) will
+    # appear after this script is done, and the daily such subdirectory for
+    # the current valid time (year, month, and day).  We refer to these as
+    # the "processed" base and daily subdirectories because they contain the
+    # final files after all processing by this script is complete.
+    mrms_basedir_proc=${OBS_DIR}
+    mrms_day_dir_proc="${mrms_basedir_proc}/${vyyyymmdd}"
 
-    # Reorganized MRMS location
-    mrms_proc=${OBS_DIR}
-
-    mrms_day_dir="${mrms_proc}/${vyyyymmdd}"
-
-    if [[ -d "${mrms_day_dir}" ]]; then
-
-      echo "${OBTYPE} directory for day ${vyyyymmdd} exists on disk:"
-      echo "  mrms_day_dir = \"${mrms_day_dir}\""
-      echo "This means observation files for this field and all hours of this day have been or are being retrieved."
-      echo "Thus, we will NOT attempt to retrieve the current data from remote locations"
-
-    else
-
-      # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
-      for field in ${VAR[@]}; do
+    # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
+    for field in ${VAR[@]}; do
   
-        # raw MRMS data from HPSS
-        #mrms_raw=${OBS_DIR}/raw
-        #mrms_raw="${mrms_proc}/raw_${field}_${iyyyymmddhh}"
-        mrms_raw="${mrms_proc}/raw_${iyyyymmddhh}"
+      # Set parameters needed in setting the MRMS grib2 file name to create in the day directory.
+      if [ "${field}" = "REFC" ]; then
+        file_base_name="MergedReflectivityQCComposite"
+        level="_00.50_"
+      elif [ "${field}" = "RETOP" ]; then
+        file_base_name="EchoTop"
+        level="_18_00.50_"
+      else
+        echo "Invalid field: ${field}"
+        print_err_msg_exit "\
+        Invalid field specified: ${field}
   
-        if [ "${field}" = "REFC" ]; then
-          field_base_name="MergedReflectivityQCComposite"
-          level="_00.50_"
-        elif [ "${field}" = "RETOP" ]; then
-          field_base_name="EchoTop"
-          level="_18_00.50_"
-        else
-          echo "Invalid field: ${field}"
-          print_err_msg_exit "\
-          Invalid field specified: ${field}
-  
-          Valid options are 'REFC', 'RETOP'.
+        Valid options are 'REFC', 'RETOP'.
 "
-        fi
+      fi
 
-        mrms_fn="${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
-        mrms_fp="${mrms_proc}/${vyyyymmdd}/${mrms_fn}"
+# Name of the MRMS grib2 file for the current field and valid time that
+# will appear in the processed daily subdirectory after this script finishes.
+      mrms_fn="${file_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
+  
+# Full path to the processed MRMS grib2 file for the current field and
+# valid time.
+      mrms_fp_proc="${mrms_day_dir_proc}/${mrms_fn}"
 
-        echo "${OBTYPE} file for field \"${field}\" does not exist on disk:"
-        echo "  mrms_fp = \"${mrms_fp}\""
+# Check if the processed MRMS grib2 file for the current field and valid
+# time already exists on disk.  If so, skip and go to the next valid time.
+# If not, pull it.
+      if [[ -f "${mrms_fp_proc}" ]]; then
+
+        echo "${OBTYPE} file exists on disk:"
+        echo "  mrms_fp_proc = \"${mrms_fp_proc}\""
+        echo "Will NOT attempt to retrieve from remote locations."
+
+      else
+
+        echo "${OBTYPE} file does not exist on disk:"
+        echo "  mrms_fp_proc = \"${mrms_fp_proc}\""
         echo "Will attempt to retrieve from remote locations."
 
-        # Create directories if necessary.
-        if [[ ! -d "${mrms_raw}/${vyyyymmdd}" ]]; then
-          mkdir -p ${mrms_raw}/${vyyyymmdd}
-        fi
-        if [[ ! -d "${mrms_proc}/${vyyyymmdd}" ]]; then
-          mkdir -p ${mrms_proc}/${vyyyymmdd}
-        fi
+        # Raw base directory that will contain the raw daily subdirectory in which
+        # the gzipped MRMS grib2 retrieved from archive file will be placed.  Note
+        # that the name of this directory depends on (contains) the valid year,
+        # month, and day (but not on the cycle, i.e. not on iyyyymmddhh) in order
+        # to avoid having get_obs_mrms tasks from other cycles clobbering the
+        # output from this one.  It is also possible to make this directory name
+        # depend instead on the cycle, but that turns out to cause an inefficiency
+        # in that get_obs_mrms tasks for different cycles will not be able to
+        # detect that another cycle has already retrieved the data for the current
+        # valid day from an archive and will unnecessarily repeat the retrieval.
+        #mrms_basedir_raw="${mrms_basedir_proc}/raw_${iyyyymmddhh}"
+        mrms_basedir_raw="${mrms_basedir_proc}/raw_${vyyyymmdd}"
+  
+        # Raw daily subdirectory under the raw base directory.
+        mrms_day_dir_raw="${mrms_basedir_raw}/${vyyyymmdd}"
 
-        valid_time=${vyyyymmdd}${vhh}
-        output_path="${mrms_raw}/${vyyyymmdd}"
+   
+# Check if the raw daily directory already exists on disk.  If so, it 
+# means all the gzipped MRMS grib2 files -- i.e. for both REFC and RETOP
+# and for all times (hours, minutes, and seconds) in the current valid
+# day -- have already been or are in the process of being retrieved from
+# the archive (tar) files.  If so, skip the retrieval process.  If not,
+# proceed to retrieve all the files and place them in the raw daily 
+# directory.
+        if [[ -d "${mrms_day_dir_raw}" ]]; then
 
-        cd ${mrms_raw}
-        # Pull MRMS data from HPSS
-        cmd="
-        python3 -u ${USHdir}/retrieve_data.py \
-          --debug \
-          --file_set obs \
-          --config ${PARMdir}/data_locations.yml \
-          --cycle_date ${valid_time} \
-          --data_stores hpss \
-          --data_type MRMS_obs \
-          --output_path ${output_path} \
-          --summary_file ${logfile}"
+# Change the following comments.
+          echo "${OBTYPE} directory for day ${vyyyymmdd} exists on disk:"
+          echo "  mrms_day_dir_proc = \"${mrms_day_dir_proc}\""
+          echo "This means observation files for this field and all hours of this day have been or are being retrieved."
+          echo "Thus, we will NOT attempt to retrieve the current data from remote locations"
 
-        echo "CALLING: ${cmd}"
+        else
 
-        $cmd || print_err_msg_exit "\
-        Could not retrieve MRMS data from HPSS
+          mkdir -p ${mrms_day_dir_raw}
+          valid_time=${vyyyymmdd}${vhh}
 
-        The following command exited with a non-zero exit status:
-        ${cmd}
+          cd ${mrms_basedir_raw}
+
+# Use the retrieve_data.py script to retrieve all the gzipped MRMS grib2
+# files -- i.e. for both REFC and RETOP and for all times (hours, minutes,
+# and seconds) in the current valid day -- and place them in the raw daily
+# directory.  Note that this will pull both the REFC and RETOP files in
+# one call.
+          cmd="
+          python3 -u ${USHdir}/retrieve_data.py \
+            --debug \
+            --file_set obs \
+            --config ${PARMdir}/data_locations.yml \
+            --cycle_date ${valid_time} \
+            --data_stores hpss \
+            --data_type MRMS_obs \
+            --output_path ${mrms_day_dir_raw} \
+            --summary_file ${logfile}"
+
+          echo "CALLING: ${cmd}"
+
+          $cmd || print_err_msg_exit "\
+          Could not retrieve MRMS data from HPSS
+
+          The following command exited with a non-zero exit status:
+          ${cmd}
 "
 
-        hour=0
-        while [[ ${hour} -le 23 ]]; do
-          HH=$(printf "%02d" $hour)
-          echo "hour=${hour}"
-          python ${USHdir}/mrms_pull_topofhour.py --valid_time ${vyyyymmdd}${HH} --outdir ${mrms_proc} --source ${mrms_raw} --product ${field_base_name} 
-          hour=$((${hour} + 1)) # hourly increment
+# Create a flag file that can be used to confirm the completion of the
+# retrieval of all files for the current valid day.
+          touch ${mrms_day_dir_raw}/pull_completed.txt
+
+        fi
+
+# Make sure the retrieval process for the current day (which may have
+# been executed above for this cycle or by another cycle) has completed
+# by checking for the existence of the flag file that marks complettion.
+# If not, keep checking until the flag file shows up.
+        while [[ ! -f "${mrms_day_dir_raw}/pull_completed.txt" ]]; do
+          echo "Waiting for the retrieval process for valid day ${vyyyymmdd} to complete..."
+          sleep 5s
         done
 
-      done
+# Since this script is part of a workflow, another get_obs_mrms task (i.e.
+# for another cycle) may have extracted and placed the current file in its
+# processed location between the time we checked for its existence above
+# (and didn't find it) and now.  This can happen because there can be
+# overlap between the verification times for the current cycle and those
+# of other cycles.  For this reason, check again for the existence of the
+# processed file.  If it has already been created by another get_obs_mrms
+# task, don't bother to recreate it.
+        if [[ -f "${mrms_fp_proc}" ]]; then
 
-    fi
+          echo "${OBTYPE} file exists on disk:"
+          echo "  mrms_fp_proc = \"${mrms_fp_proc}\""
+          echo "Will NOT attempt to retrieve from remote locations."
+
+        else
+
+# Search the raw daily directory for the current valid day to find the
+# gizipped MRMS grib2 file whose time stamp (in the file name) is closest
+# to the current valid day and hour.  Then unzip that file and copy it
+# to the processed daily directory, in the process renaming it to replace
+# the minutes and hours in the file name with "0000".
+          valid_time=${vyyyymmdd}${vhh}
+          python ${USHdir}/mrms_pull_topofhour.py \
+            --valid_time ${valid_time} \
+            --outdir ${mrms_basedir_proc} \
+            --source ${mrms_basedir_raw} \
+            --product ${file_base_name} 
+
+        fi
+
+      fi
+
+    done
 #
 #-----------------------------------------------------------------------
 #
