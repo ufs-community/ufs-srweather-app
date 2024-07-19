@@ -42,8 +42,8 @@ set -x
 #
 # {CCPA_OBS_DIR}/{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2
 #
-# If data is retrieved from HPSS, it will automatically staged by this
-# this script.
+# If data is retrieved from HPSS, it will be automatically staged by this
+# script.
 #
 # Notes about the data and how it's used for verification:
 # 
@@ -53,7 +53,7 @@ set -x
 # 2. There is a problem with the valid time in the metadata for files
 # valid from 19 - 00 UTC (or files under the '00' directory). This is
 # accounted for in this script for data retrieved from HPSS, but if you
-# have manually staged data on disk you should be sure this is accouned
+# have manually staged data on disk you should be sure this is accounted
 # for. See in-line comments below for details.
 #
 #
@@ -167,44 +167,45 @@ echo "ihh = ${ihh}"
 #
   if [[ ${OBTYPE} == "CCPA" ]]; then
 
-    # CCPA is accumulation observations, so for hour 0 there are no files
-    # to retrieve.
+    # CCPA is accumulation observations.  We do not need to retrieve any
+    # observed accumulations at forecast hour 0 because there aren't yet
+    # any accumulations in the forecast(s) to compare it to.
     if [[ ${current_fcst} -eq 0 ]]; then
       current_fcst=$((${current_fcst} + 1))
       continue
     fi
 
-    # Accumulation is for accumulation of CCPA data to pull (hardcoded to
-    # 01h, see note above).
+    # CCPA accumulation period to consider.  Here, we only retrieve data for
+    # 01h accumulations (see note above).  Other accumulations (03h, 06h, 24h)
+    # are obtained elsewhere in the workflow by adding up these 01h accumulations.
     accum=01
 
-    # Directory in which the daily subdirectories containing the CCPA grib2
-    # files will appear after this script is done.  Make sure this exists.
-    ccpa_proc=${OBS_DIR}
-    if [[ ! -d "${ccpa_proc}/${vyyyymmdd}" ]]; then
-      mkdir -p ${ccpa_proc}/${vyyyymmdd}
-    fi
+    # Base directory in which the daily subdirectories containing the CCPA
+    # grib2 files will appear after this script is done, and the daily such
+    # subdirectory for the current valid time (year, month, and day).  We
+    # refer to these as the "processed" base and daily subdirectories because
+    # they contain the final files after all processing by this script is
+    # complete.
+    ccpa_basedir_proc=${OBS_DIR}
+    ccpa_day_dir_proc="${ccpa_basedir_proc}/${vyyyymmdd}"
+    # Make sure these directories exist.
+    mkdir -p ${ccpa_day_dir_proc}
 
-    # File name within the HPSS archive file.  Note that this only includes
-    # the valid hour in its name; the year, month, and day are specified in
-    # the name of the directory in which it is located within the archive.
+    # Name of the grib2 file to extract from the archive (tar) file.  Note
+    # that this only contains the valid hour; the valid year, month, and day
+    # are specified in the name of the directory within the archive in which
+    # the file is located.
     ccpa_fn="ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
 
-    # Full path to final location of the CCPA grib2 file for the current valid
-    # time.  Note that this path includes the valid date (year, month, and day)
-    # information in the name of a subdirectory and the valid hour-of-day in
-    # the name of the file.
-    ccpa_fp_proc="${ccpa_proc}/${vyyyymmdd}/${ccpa_fn}"
+    # Full path to the location of the processed CCPA grib2 file for the
+    # current valid time.  Note that this path includes the valid date (year,
+    # month, and day) information in the name of a subdirectory and the valid
+    # hour-of-day in the name of the file.
+    ccpa_fp_proc="${ccpa_day_dir_proc}/${ccpa_fn}"
 
-    # Temporary staging directory for raw CCPA files from HPSS.  These "raw"
-    # directories are temporary directories in which archive files from HPSS
-    # are placed and files within those archives extracted.  Note that the
-    # name of this subdirectory is cycle-specific to avoid other get_obs_ccpa
-    # workflow tasks (i.e. those corresponding to cycles other than the current
-    # one) writing into the same directory.
-    ccpa_raw="${ccpa_proc}/raw_${iyyyymmddhh}"
-
-    # Check if file exists on disk; if not, pull it.
+    # Check if the CCPA grib2 file for the current valid time already exists
+    # at its procedded location on disk.  If so, skip and go to the next valid
+    # time.  If not, pull it.
     if [[ -f "${ccpa_fp_proc}" ]]; then
 
       echo "${OBTYPE} file exists on disk:"
@@ -216,34 +217,152 @@ echo "ihh = ${ihh}"
       echo "${OBTYPE} file does not exist on disk:"
       echo "  ccpa_fp_proc = \"${ccpa_fp_proc}\""
       echo "Will attempt to retrieve from remote locations."
+      #
+      #-----------------------------------------------------------------------
+      #
+      # Below, we will use the retrieve_data.py script to retrieve the CCPA
+      # grib2 file from a data store (e.g. HPSS).  Before doing so, note the
+      # following:
+      #
+      # * The daily archive (tar) file containing CCPA obs has a name of the
+      #   form
+      #
+      #     [PREFIX].YYYYMMDD.tar
+      #
+      #   where YYYYMMDD is a given year, month, and day combination, and
+      #   [PREFIX] is a string that is not relevant to the discussion here
+      #   (the value it can take on depends on which of several time periods
+      #   YYYYMMDD falls in, and the retrieve_data.py tries various values 
+      #   until it finds one for which a tar file exists).  Unintuitively, this
+      #   archive file contains accumulation data for valid times starting at
+      #   hour 19 of the PREVIOUS day (YYYYMM[DD-1]) to hour 18 of the current
+      #   day (YYYYMMDD).  In other words, the valid times of the contents of
+      #   this archive file are shifted back by 6 hours relative to the time
+      #   string appearing in the name of the file.  See section "DETAILS..."
+      #   for a detailed description of the directory structure in the CCPA
+      #   archive files.
+      #
+      # * We call retrieve_data.py in a temporary cycle-specific subdirectory
+      #   in order to prevent get_obs_ccpa tasks for different cycles from
+      #   clobbering each other's output.  We refer to this as the "raw" CCPA 
+      #   base directory because it contains files as they are found in the
+      #   archives before any processing by this script.
+      #
+      # * In each (cycle-specific) raw base directory, the data is arranged in
+      #   daily subdirectories with the same timing as in the archive (tar)
+      #   files (which are described in the section "DETAILS..." below).  In
+      #   particular, each daily subdirectory has the form YYYYMDD, and it may
+      #   contain CCPA grib2 files for accumulations valid at hour 19 of the
+      #   previous day (YYYYMM[DD-1]) to hour 18 of the current day (YYYYMMDD).
+      #   (Data valid at hours 19-23 of the current day (YYYYMMDD) go into the
+      #   daily subdirectory for the next day, i.e. YYYYMM[DD+1].)  We refer
+      #   to these as raw daily (sub)directories to distinguish them from the
+      #   processed daily subdirectories under the processed (final) CCPA base 
+      #   directory (ccpa_basedir_proc).
+      # 
+      # * For a given cycle, some of the valid times at which there is forecast
+      #   output may not have a corresponding file under the raw base directory
+      #   for that cycle.  This is because another cycle that overlaps this cycle
+      #   has already obtained the grib2 CCPA file for that valid time and placed
+      #   it in its processed location; as a result, the retrieveal of that grib2
+      #   file for this cycle is skipped.
+      #
+      # * To obtain a more intuitive temporal arrangement of the data in the
+      #   processed CCPA directory structure than the temporal arrangement used
+      #   in the archives and raw directories, we process the raw files such
+      #   that the data in the processed directory structure is shifted forward
+      #   in time 6 hours relative to the data in the archives and raw directories.  
+      #   This results in a processed base directory that, like the raw base
+      #   directory, also contains daily subdirectories of the form YYYYMMDD,
+      #   but each such subdirectory may only contain CCPA data at valid hours
+      #   within that day, i.e. at valid times YYYYMMDD[00, 01, ..., 23] (but
+      #   may not contain data that is valid on the previous, next, or any other
+      #   day).
+      #
+      # * For data between 20180718 and 20210504, the 01h accumulation data
+      #   (which is the only accumulation we are retrieving) have incorrect
+      #   metadata under the "00" directory in the archive files (meaning for
+      #   hour 00 and hours 19-23, which are the ones in the "00" directory).
+      #   Below, we use wgrib2 to make a correction for this when transferring
+      #   (moving or copying) grib2 files from the raw daily directories to
+      #   the processed daily directories.
+      #
+      #
+      # DETAILS OF DIRECTORY STRUCTURE IN CCPA ARCHIVE (TAR) FILES
+      # ----------------------------------------------------------
+      # 
+      # The daily archive file containing CCPA obs is named
+      #
+      #   [PREFIX].YYYYMMDD.tar
+      #
+      # This file contains accumulation data for valid times starting at hour
+      # 19 of the PREVIOUS day (YYYYMM[DD-1]) to hour 18 of the current day
+      # (YYYYMMDD).  In particular, when untarred, the daily archive file
+      # expands into four subdirectories:  00, 06, 12, and 18.  The 06, 12, and
+      # 18 subdirectories contain grib2 files for accumulations valid at or
+      # below the hour-of-day given by the subdirectory name (and on YYYYMMDD).
+      # For example, the 06 directory contains data valid at:
+      #
+      #   * YYYYMMDD[01, 02, 03, 04, 05, 06] for 01h accumulations;
+      #   * YYYYMMDD[03, 06] for 03h accumulations;
+      #   * YYYYMMDD[06] for 06h accumulations.
+      #
+      # The valid times for the data in the 12 and 18 subdirectories are
+      # analogous.  However, the 00 subdirectory is different in that it
+      # contains accumulations at hour 00 on YYYYMMDD as well as ones BEFORE
+      # this time, i.e. the data for valid times other than YYYYMMDD00 are on
+      # the PREVIOUS day.  Thus, the 00 subdirectory contains data valid at
+      # (note the DD-1, meaning one day prior):
+      #
+      #   * YYYYMM[DD-1][19, 20, 21, 22, 23] and YYYYMMDD00 for 01h accumulations;
+      #   * YYYYMM[DD-1][19] and YYYYMMDD00 for 03h accumulations;
+      #   * YYYYMMDD00 for 06h accumulations.
+      #
+      #-----------------------------------------------------------------------
+      #
 
-      # Create the necessary raw (sub)directories on disk.  Note that we need
-      # to create a subdirectory for 1 day + the current valid date because 
-      # that is needed to get around a metadata error in the CCPA files on HPSS
-      # (in particular, one hour CCPA files have incorrect metadata in the files
-      # under the "00" directory from 20180718 to 20210504).
-      if [[ ! -d "${ccpa_raw}/${vyyyymmdd}" ]]; then
-        mkdir -p ${ccpa_raw}/${vyyyymmdd}
-      fi
-      if [[ ! -d "${ccpa_raw}/${vyyyymmdd_p1}" ]]; then
-        mkdir -p ${ccpa_raw}/${vyyyymmdd_p1}
-      fi
-
-      valid_time=${vyyyymmdd}${vhh}
-      output_path="${ccpa_raw}/${vyyyymmdd}"
-      if [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
+      # Set parameters for retrieving CCPA data using retrieve_data.py.
+      # Definitions:
+      #
+      # valid_time:
+      # The valid time in the name of the archive (tar) file from which data
+      # will be pulled.  Due to the way the data is arranged in the CCPA archive
+      # files (as described above), for valid hours 19 to 23 of the current day,
+      # this must be set to the corresponding valid time on the NEXT day.
+      #
+      # ccpa_basedir_raw:
+      # Raw base directory that will contain the raw daily subdirectory in which
+      # the retrieved CCPA grib2 file will be placed.  Note that this must be
+      # cycle-dependent (where the cycle is given by the variable iyyyymmddhh)
+      # to avoid get_obs_ccpa workflow tasks for other cycles writing to the
+      # same directories/files.  Note also that this doesn't have to depend on
+      # the current valid hour (0-18 vs. 19-23), but for clarity and ease of
+      # debugging, here we do make it valid-hour-dependent.
+      #
+      # ccpa_day_dir_raw:
+      # Raw daily subdirectory under the raw base directory.  This is dependent
+      # on the valid hour (i.e. different for hours 19-23 than for hours 0-18)
+      # in order to maintain the same data timing arrangement in the raw daily 
+      # directories as in the archive files.
+      #
+      if [[ ${vhh_noZero} -ge 0 && ${vhh_noZero} -le 18 ]]; then
+        valid_time=${vyyyymmdd}${vhh}
+        ccpa_basedir_raw="${ccpa_basedir_proc}/raw_${iyyyymmddhh}"
+        ccpa_day_dir_raw="${ccpa_basedir_raw}/${vyyyymmdd}"
+      elif [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
         valid_time=${vyyyymmdd_p1}${vhh}
-        output_path="${ccpa_raw}/${vyyyymmdd_p1}"
+        ccpa_basedir_raw="${ccpa_basedir_proc}/raw_${iyyyymmddhh}_vhh19-23"
+        ccpa_day_dir_raw="${ccpa_basedir_raw}/${vyyyymmdd_p1}"
       fi
+      mkdir -p ${ccpa_day_dir_raw}
 
-      # The retrieve_data.py script below uses the current working directory as
-      # the location into which to extract the contents of the HPSS archive (tar)
-      # file.  Thus, if there are multiple get_obs_ccpa tasks running (i.e. ones
-      # for different cycles), they will be extracting files into the same (current)
-      # directory.  That causes errors in the workflow.  To avoid this, change
-      # location to the raw directory.  This will avoid such errors because the
-      # raw directory has a cycle-specific name.
-      cd ${ccpa_raw}
+      # Before calling retrieve_data.py, change location to the raw base
+      # directory to avoid get_obs_ccpa tasks for other cycles from clobbering
+      # the output from this call to retrieve_data.py.  Note that retrieve_data.py
+      # extracts the CCPA tar files into the directory it was called from, 
+      # which is the working directory of this script right before retrieve_data.py
+      # is called.
+      cd ${ccpa_basedir_raw}
 
       # Pull CCPA data from HPSS.  This will get a single grib2 (.gb2) file
       # corresponding to the current valid time (valid_time).
@@ -255,7 +374,7 @@ echo "ihh = ${ihh}"
         --cycle_date ${valid_time} \
         --data_stores hpss \
         --data_type CCPA_obs \
-        --output_path ${output_path} \
+        --output_path ${ccpa_day_dir_raw} \
         --summary_file ${logfile}"
 
       echo "CALLING: ${cmd}"
@@ -266,38 +385,41 @@ echo "ihh = ${ihh}"
       ${cmd}
 "
 
-      # Move CCPA file to its final location.
+      # Create the processed CCPA grib2 files.  This usually consists of just
+      # moving or copying the raw file to its processed location, but for valid
+      # times between 20180718 and 20210504, it involves using wgrib2 to correct
+      # an error in the metadata of the raw file and writing the corrected data
+      # to a new grib2 file in the processed location.
       #
       # Since this script is part of a workflow, other tasks (for other cycles)
       # that call this script may have extracted and placed the current file
-      # in its final location between the time we checked for its existence
-      # above above (and didn't find it) and now.  This can happen because
-      # there can be overlap between the verification times for the current
-      # cycle and those of other cycles.  For this reason, check again for the
-      # existence of the file in its final location.  If it's already been
-      # created by another task, don't bother to move it from its raw location
-      # to its final location.
+      # in its processed location between the time we checked for its existence
+      # above (and didn't find it) and now.  This can happen because there can
+      # be overlap between the verification times for the current cycle and
+      # those of other cycles.  For this reason, check again for the existence
+      # of the file in its processed location.  If it has already been created
+      # by another task, don't bother to create it.
       if [[ -f "${ccpa_fp_proc}" ]]; then 
 
         echo "${OBTYPE} file exists on disk:"
         echo "  ccpa_fp_proc = \"{ccpa_fp_proc}\""
-        echo "It was likely created by a get_obs_ccpa workflow task for another cycle."
-        echo "NOT moving file from its temporary (raw) location to its final location."
+        echo "It was likely created by a get_obs_ccpa workflow task for another cycle that overlaps the current one."
+        echo "NOT moving or copying file from its raw location to its processed location."
 
       else
 
         # Full path to the CCPA file that was pulled and extracted above and
         # placed in the raw directory.
-        ccpa_fp_raw="${output_path}/${ccpa_fn}"
+        ccpa_fp_raw="${ccpa_day_dir_raw}/${ccpa_fn}"
 
-        # One hour CCPA files have incorrect metadata in the files under the "00"
-        # directory from 20180718 to 20210504.  After data is pulled, reorganize
-        # into correct valid yyyymmdd structure.
         #mv_or_cp="mv"
         mv_or_cp="cp"
         if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 18 ]]; then
           ${mv_or_cp} ${ccpa_fp_raw} ${ccpa_fp_proc}
         elif [[ (${vhh_noZero} -eq 0) || (${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23) ]]; then
+          # One hour CCPA files have incorrect metadata in the files under the "00"
+          # directory from 20180718 to 20210504.  After data is pulled, reorganize
+          # into correct valid yyyymmdd structure.
           if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
             wgrib2 ${ccpa_fp_raw} -set_date -24hr -grib ${ccpa_fp_proc} -s
           else
