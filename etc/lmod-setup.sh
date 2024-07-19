@@ -39,7 +39,7 @@ elif [ "$L_MACHINE" = linux ]; then
    module purge
 
 elif [ "$L_MACHINE" = singularity ]; then
-   export BASH_ENV="/usr/share/lmod/lmod/init/bash"
+   export BASH_ENV="/opt/apps/lmod/lmod/init/bash"
    source $BASH_ENV
 
    module purge

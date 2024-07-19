@@ -233,6 +233,9 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
     mamba env create -n srw_app --file environment.yml
+    if [ "${PLATFORM}" = "singularity" ]; then
+       mamba install -y --name srw_app netcdf4=1.6.*
+    fi
   fi
   if ! conda env list | grep -q "^srw_graphics\s" ; then
     mamba env create -n srw_graphics --file graphics_environment.yml
