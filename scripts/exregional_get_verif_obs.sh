@@ -138,6 +138,11 @@ fcst_length=$((10#${fcst_length}))
 
 current_fcst=0
 while [[ ${current_fcst} -le ${fcst_length} ]]; do
+
+echo
+echo "HELLO GGGGGGGG"
+echo "current_fcst = ${current_fcst}"
+
   # Calculate valid date info using date utility  
   vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" +%Y%m%d%H)
   unix_vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00")
@@ -191,10 +196,8 @@ echo "ihh = ${ihh}"
     # Make sure these directories exist.
     mkdir -p ${ccpa_day_dir_proc}
 
-    # Name of the grib2 file to extract from the archive (tar) file.  Note
-    # that this only contains the valid hour; the valid year, month, and day
-    # are specified in the name of the directory within the archive in which
-    # the file is located.
+    # Name of the grib2 file to extract from the archive (tar) file as well
+    # as the name of the processed grib2 file.
     ccpa_fn="ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
 
     # Full path to the location of the processed CCPA grib2 file for the
@@ -391,14 +394,14 @@ echo "ihh = ${ihh}"
       # an error in the metadata of the raw file and writing the corrected data
       # to a new grib2 file in the processed location.
       #
-      # Since this script is part of a workflow, other tasks (for other cycles)
-      # that call this script may have extracted and placed the current file
-      # in its processed location between the time we checked for its existence
-      # above (and didn't find it) and now.  This can happen because there can
-      # be overlap between the verification times for the current cycle and
-      # those of other cycles.  For this reason, check again for the existence
-      # of the file in its processed location.  If it has already been created
-      # by another task, don't bother to create it.
+      # Since this script is part of a workflow, another get_obs_ccpa task (i.e.
+      # for another cycle) may have extracted and placed the current file in its
+      # processed location between the time we checked for its existence above
+      # (and didn't find it) and now.  This can happen because there can be
+      # overlap between the verification times for the current cycle and those
+      # of other cycles.  For this reason, check again for the existence of the
+      # processed file.  If it has already been created by another get_obs_ccpa
+      # task, don't bother to recreate it.
       if [[ -f "${ccpa_fp_proc}" ]]; then 
 
         echo "${OBTYPE} file exists on disk:"
