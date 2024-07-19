@@ -1,6 +1,6 @@
 platform:
   WORKFLOW_MANAGER: rocoto
-  NCORES_PER_NODE: 40
+  NCORES_PER_NODE: 36
   SCHED: slurm
   DOMAIN_PREGEN_BASEDIR: /needs/to/be/specified
   PARTITION_DEFAULT: null
@@ -9,17 +9,11 @@ platform:
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
-  RUN_CMD_FCST: mpirun -n ${PE_MEMBER01} --oversubscribe
-  RUN_CMD_POST: mpirun -np $nprocs --oversubscribe
-  RUN_CMD_PRDGEN: mpirun -np $nprocs --oversubscribe
+  REMOVE_MEMORY: True
+  RUN_CMD_FCST: srun --mpi=pmi2 -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun --mpi=pmi2 -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: mpirun -np $nprocs --oversubscribe
+  RUN_CMD_UTILS: srun --mpi=pmi2 -n $nprocs
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  FIXaer: /contrib/global/glopara/fix/fix_aer
-  FIXgsm: /contrib/global/glopara/fix/fix_am
-  FIXlut: /contrib/global/glopara/fix/fix_lut
-  FIXorg: /contrib/global/glopara/fix/fix_orog
-  FIXsfc: /contrib/global/glopara/fix/fix_sfc_climo
-  FIXshp: /contrib/global/glopara/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads

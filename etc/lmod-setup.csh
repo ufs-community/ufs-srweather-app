@@ -32,7 +32,7 @@ else if ( "$L_MACHINE" == linux ) then
    module purge
 
 else if ( "$L_MACHINE" == singularity ) then
-   set ENV="/usr/share/lmod/lmod/init/csh"
+   set ENV="/opt/apps/lmod/lmod/init/bash"
    source $ENV
 
    module purge

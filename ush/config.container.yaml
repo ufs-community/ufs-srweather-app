@@ -1,0 +1,58 @@
+metadata:
+  description: >-
+    Sample community config
+user:
+  RUN_ENVIR: community
+  MACHINE: singularity
+  ACCOUNT: an_account
+platform:
+  BUILD_MOD_FN: wflow_singularity
+  FIXaer: /home/ubuntu/data/fix/fix_aer
+  FIXgsm: /home/ubuntu/data/fix/fix_am
+  FIXlut: /home/ubuntu/data/fix/fix_lut
+  FIXorg: /home/ubuntu/data/fix/fix_orog
+  FIXsfc: /home/ubuntu/data/fix/fix_sfc_climo
+  FIXshp: /home/ubuntu/data/NaturalEarth
+workflow:
+  USE_CRON_TO_RELAUNCH: false
+  EXPT_SUBDIR: test_community
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2019061518'
+  DATE_LAST_CYCL: '2019061518'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+task_get_extrn_ics:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /home/ubuntu/data/input_model_data/FV3GFS/grib2/2019061518
+task_get_extrn_lbcs:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 6
+  FV3GFS_FILE_FMT_LBCS: grib2
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /home/ubuntu/data/input_model_data/FV3GFS/grib2/2019061518
+task_run_fcst:
+  QUILTING: true
+  LAYOUT_X: 7
+  LAYOUT_Y: 10
+  WRTCMP_write_tasks_per_group: 2
+  OMP_NUM_THREADS_RUN_FCST: 1
+task_plot_allvars:
+  COMOUT_REF: ""
+  PLOT_FCST_INC: 6
+  PLOT_DOMAINS: ["regional"]
+global:
+  DO_ENSEMBLE: false
+  NUM_ENS_MEMBERS: 2
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00
