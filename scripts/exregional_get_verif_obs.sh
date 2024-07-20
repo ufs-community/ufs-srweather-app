@@ -36,7 +36,7 @@ set -x
 #
 # CCPA (Climatology-Calibrated Precipitation Analysis) precipitation accumulation obs
 # ----------
-# If data is available on disk, it must be in the following 
+# If data is available on disk, it must be in the following
 # directory structure and file name conventions expected by verification
 # tasks:
 #
@@ -46,8 +46,8 @@ set -x
 # script.
 #
 # Notes about the data and how it's used for verification:
-# 
-# 1. Accumulation is currently hardcoded to 01h. The verification will 
+#
+# 1. Accumulation is currently hardcoded to 01h. The verification will
 # use MET/pcp-combine to sum 01h files into desired accumulations.
 #
 # 2. There is a problem with the valid time in the metadata for files
@@ -59,17 +59,17 @@ set -x
 #
 # MRMS (Multi-Radar Multi-Sensor) radar observations
 # ----------
-# If data is available on disk, it must be in the following 
+# If data is available on disk, it must be in the following
 # directory structure and file name conventions expected by verification
 # tasks:
 #
 # {MRMS_OBS_DIR}/{YYYYMMDD}/[PREFIX]{YYYYMMDD}-{HH}0000.grib2,
-# 
+#
 # Where [PREFIX] is MergedReflectivityQCComposite_00.50_ for reflectivity
 # data and EchoTop_18_00.50_ for echo top data. If data is not available
 # at the top of the hour, you should rename the file closest in time to
 # your hour(s) of interest to the above naming format. A script
-# "ush/mrms_pull_topofhour.py" is provided for this purpose. 
+# "ush/mrms_pull_topofhour.py" is provided for this purpose.
 #
 # If data is retrieved from HPSS, it will automatically staged by this
 # this script.
@@ -77,30 +77,30 @@ set -x
 #
 # NDAS (NAM Data Assimilation System) conventional observations
 # ----------
-# If data is available on disk, it must be in the following 
+# If data is available on disk, it must be in the following
 # directory structure and file name conventions expected by verification
 # tasks:
 #
 # {NDAS_OBS_DIR}/{YYYYMMDD}/prepbufr.ndas.{YYYYMMDDHH}
-# 
+#
 # Note that data retrieved from HPSS and other sources may be in a
-# different format: nam.t{hh}z.prepbufr.tm{prevhour}.nr, where hh is 
+# different format: nam.t{hh}z.prepbufr.tm{prevhour}.nr, where hh is
 # either 00, 06, 12, or 18, and prevhour is the number of hours prior to
 # hh (00 through 05). If using custom staged data, you will have to
 # rename the files accordingly.
-# 
+#
 # If data is retrieved from HPSS, it will be automatically staged by this
 # this script.
 #
 #
 # NOHRSC  snow accumulation observations
 # ----------
-# If data is available on disk, it must be in the following 
+# If data is available on disk, it must be in the following
 # directory structure and file name conventions expected by verification
 # tasks:
 #
 # {NOHRSC_OBS_DIR}/{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2
-# 
+#
 # where AA is the 2-digit accumulation duration in hours: 06 or 24
 #
 # METplus is configured to verify snowfall using 06- and 24-h accumulated
@@ -143,7 +143,7 @@ echo
 echo "HELLO GGGGGGGG"
 echo "current_fcst = ${current_fcst}"
 
-  # Calculate valid date info using date utility  
+  # Calculate valid date info using date utility
   vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" +%Y%m%d%H)
   unix_vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00")
   vyyyymmdd=$(echo ${vdate} | cut -c1-8)
@@ -176,7 +176,7 @@ echo "ihh = ${ihh}"
     # observed accumulations at forecast hour 0 because there aren't yet
     # any accumulations in the forecast(s) to compare it to.
     if [[ ${current_fcst} -eq 0 ]]; then
-      current_fcst=$((${current_fcst} + 1))
+      current_fcst=$((current_fcst + 1))
       continue
     fi
 
@@ -235,7 +235,7 @@ echo "ihh = ${ihh}"
       #   where YYYYMMDD is a given year, month, and day combination, and
       #   [PREFIX] is a string that is not relevant to the discussion here
       #   (the value it can take on depends on which of several time periods
-      #   YYYYMMDD falls in, and the retrieve_data.py tries various values 
+      #   YYYYMMDD falls in, and the retrieve_data.py tries various values
       #   until it finds one for which a tar file exists).  Unintuitively, this
       #   archive file contains accumulation data for valid times starting at
       #   hour 19 of the PREVIOUS day (YYYYMM[DD-1]) to hour 18 of the current
@@ -247,7 +247,7 @@ echo "ihh = ${ihh}"
       #
       # * We call retrieve_data.py in a temporary cycle-specific subdirectory
       #   in order to prevent get_obs_ccpa tasks for different cycles from
-      #   clobbering each other's output.  We refer to this as the "raw" CCPA 
+      #   clobbering each other's output.  We refer to this as the "raw" CCPA
       #   base directory because it contains files as they are found in the
       #   archives before any processing by this script.
       #
@@ -260,9 +260,9 @@ echo "ihh = ${ihh}"
       #   (Data valid at hours 19-23 of the current day (YYYYMMDD) go into the
       #   daily subdirectory for the next day, i.e. YYYYMM[DD+1].)  We refer
       #   to these as raw daily (sub)directories to distinguish them from the
-      #   processed daily subdirectories under the processed (final) CCPA base 
+      #   processed daily subdirectories under the processed (final) CCPA base
       #   directory (ccpa_basedir_proc).
-      # 
+      #
       # * For a given cycle, some of the valid times at which there is forecast
       #   output may not have a corresponding file under the raw base directory
       #   for that cycle.  This is because another cycle that overlaps this cycle
@@ -274,7 +274,7 @@ echo "ihh = ${ihh}"
       #   processed CCPA directory structure than the temporal arrangement used
       #   in the archives and raw directories, we process the raw files such
       #   that the data in the processed directory structure is shifted forward
-      #   in time 6 hours relative to the data in the archives and raw directories.  
+      #   in time 6 hours relative to the data in the archives and raw directories.
       #   This results in a processed base directory that, like the raw base
       #   directory, also contains daily subdirectories of the form YYYYMMDD,
       #   but each such subdirectory may only contain CCPA data at valid hours
@@ -293,7 +293,7 @@ echo "ihh = ${ihh}"
       #
       # DETAILS OF DIRECTORY STRUCTURE IN CCPA ARCHIVE (TAR) FILES
       # ----------------------------------------------------------
-      # 
+      #
       # The daily archive file containing CCPA obs is named
       #
       #   [PREFIX].YYYYMMDD.tar
@@ -345,16 +345,16 @@ echo "ihh = ${ihh}"
       # ccpa_day_dir_raw:
       # Raw daily subdirectory under the raw base directory.  This is dependent
       # on the valid hour (i.e. different for hours 19-23 than for hours 0-18)
-      # in order to maintain the same data timing arrangement in the raw daily 
+      # in order to maintain the same data timing arrangement in the raw daily
       # directories as in the archive files.
       #
       if [[ ${vhh_noZero} -ge 0 && ${vhh_noZero} -le 18 ]]; then
         valid_time=${vyyyymmdd}${vhh}
-        ccpa_basedir_raw="${ccpa_basedir_proc}/raw_${iyyyymmddhh}"
+        ccpa_basedir_raw="${ccpa_basedir_proc}/raw_cyc${iyyyymmddhh}"
         ccpa_day_dir_raw="${ccpa_basedir_raw}/${vyyyymmdd}"
       elif [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
         valid_time=${vyyyymmdd_p1}${vhh}
-        ccpa_basedir_raw="${ccpa_basedir_proc}/raw_${iyyyymmddhh}_vhh19-23"
+        ccpa_basedir_raw="${ccpa_basedir_proc}/raw_cyc${iyyyymmddhh}_vhh19-23"
         ccpa_day_dir_raw="${ccpa_basedir_raw}/${vyyyymmdd_p1}"
       fi
       mkdir -p ${ccpa_day_dir_raw}
@@ -362,7 +362,7 @@ echo "ihh = ${ihh}"
       # Before calling retrieve_data.py, change location to the raw base
       # directory to avoid get_obs_ccpa tasks for other cycles from clobbering
       # the output from this call to retrieve_data.py.  Note that retrieve_data.py
-      # extracts the CCPA tar files into the directory it was called from, 
+      # extracts the CCPA tar files into the directory it was called from,
       # which is the working directory of this script right before retrieve_data.py
       # is called.
       cd ${ccpa_basedir_raw}
@@ -402,7 +402,7 @@ echo "ihh = ${ihh}"
       # of other cycles.  For this reason, check again for the existence of the
       # processed file.  If it has already been created by another get_obs_ccpa
       # task, don't bother to recreate it.
-      if [[ -f "${ccpa_fp_proc}" ]]; then 
+      if [[ -f "${ccpa_fp_proc}" ]]; then
 
         echo "${OBTYPE} file exists on disk:"
         echo "  ccpa_fp_proc = \"{ccpa_fp_proc}\""
@@ -446,14 +446,14 @@ echo "ihh = ${ihh}"
     # grib2 files for REFC (composite reflectivity) and REFC (echo top) will
     # be located after this script is done, and the daily such subdirectory
     # for the current valid time (year, month, and day).  We refer to these
-    # as the "processed" base and daily subdirectories because they contain 
+    # as the "processed" base and daily subdirectories because they contain
     # the final files after all processing by this script is complete.
     mrms_basedir_proc=${OBS_DIR}
     mrms_day_dir_proc="${mrms_basedir_proc}/${vyyyymmdd}"
 
     # Loop over the fields (REFC and RETOP).
     for field in ${VAR[@]}; do
-  
+
       # Set field-dependent parameters needed in forming grib2 file names.
       if [ "${field}" = "REFC" ]; then
         file_base_name="MergedReflectivityQCComposite"
@@ -465,7 +465,7 @@ echo "ihh = ${ihh}"
         echo "Invalid field: ${field}"
         print_err_msg_exit "\
         Invalid field specified: ${field}
-  
+
         Valid options are 'REFC', 'RETOP'.
 "
       fi
@@ -476,7 +476,7 @@ echo "ihh = ${ihh}"
       # not the name of the gzipped grib2 files that may be retrieved below
       # from archive files using the retrieve_data.py script.
       mrms_fn="${file_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
-  
+
       # Full path to the processed MRMS grib2 file for the current field and
       # valid time.
       mrms_fp_proc="${mrms_day_dir_proc}/${mrms_fn}"
@@ -511,16 +511,15 @@ echo "ihh = ${ihh}"
         # an inefficiency in that get_obs_mrms tasks for different cycles will
         # not be able to detect that another cycle has already retrieved the data
         # for the current valid day will unnecessarily repeat the retrieval.
-        mrms_basedir_raw="${mrms_basedir_proc}/raw_${vyyyymmdd}"
+        mrms_basedir_raw="${mrms_basedir_proc}/raw_day${vyyyymmdd}"
         mrms_day_dir_raw="${mrms_basedir_raw}/${vyyyymmdd}"
 
-   
-        # Check if the raw daily directory already exists on disk.  If so, it 
+        # Check if the raw daily directory already exists on disk.  If so, it
         # means all the gzipped MRMS grib2 files -- i.e. for both REFC and RETOP
         # and for all times (hours, minutes, and seconds) in the current valid
         # day -- have already been or are in the process of being retrieved from
         # the archive (tar) files.  If so, skip the retrieval process.  If not,
-        # proceed to retrieve all the files and place them in the raw daily 
+        # proceed to retrieve all the files and place them in the raw daily
         # directory.
         if [[ -d "${mrms_day_dir_raw}" ]]; then
 
@@ -537,7 +536,7 @@ echo "ihh = ${ihh}"
           # Before calling retrieve_data.py, change location to the raw base
           # directory to avoid get_obs_mrms tasks for other cycles from clobbering
           # the output from this call to retrieve_data.py.  Note that retrieve_data.py
-          # extracts the MRMS tar files into the directory it was called from, 
+          # extracts the MRMS tar files into the directory it was called from,
           # which is the working directory of this script right before retrieve_data.py
           # is called.
           cd ${mrms_basedir_raw}
@@ -608,7 +607,7 @@ echo "ihh = ${ihh}"
             --valid_time ${valid_time} \
             --outdir ${mrms_basedir_proc} \
             --source ${mrms_basedir_raw} \
-            --product ${file_base_name} 
+            --product ${file_base_name}
 
         fi
 
@@ -641,7 +640,7 @@ echo "ihh = ${ihh}"
       # NDAS data is available in 6-hourly combined tar files, each with 7 1-hour prepbufr files:
       # nam.tHHz.prepbufr.tm00.nr, nam.tHHz.prepbufr.tm01.nr, ... , nam.tHHz.prepbufr.tm06.nr
       #
-      # The "tm" here means "time minus", so nam.t12z.prepbufr.tm00.nr is valid for 12z, 
+      # The "tm" here means "time minus", so nam.t12z.prepbufr.tm00.nr is valid for 12z,
       # nam.t00z.prepbufr.tm03.nr is valid for 21z the previous day, etc.
       # This means that every six hours we have two obs files valid for the same time:
       # nam.tHHz.prepbufr.tm00.nr and nam.t[HH+6]z.prepbufr.tm06.nr
@@ -652,7 +651,7 @@ echo "ihh = ${ihh}"
       # pull more HPSS tarballs than necessary
 
       if [[ ${current_fcst} -eq 0 && ${current_fcst} -ne ${fcst_length} ]]; then
-        # If at forecast hour zero, skip to next hour. 
+        # If at forecast hour zero, skip to next hour.
         current_fcst=$((${current_fcst} + 1))
         continue
       fi
@@ -793,7 +792,7 @@ echo "HELLO CCCCC"
     # If 24-hour files should be available (at 00z and 12z) then look for both files
     # Otherwise just look for 6hr file
     if (( ${current_fcst} % 12 == 0 )) && (( ${current_fcst} >= 24 )) ; then
-      if [[ ! -f "${nohrsc06h_file}" || ! -f "${nohrsc24h_file}" ]] ; then 
+      if [[ ! -f "${nohrsc06h_file}" || ! -f "${nohrsc24h_file}" ]] ; then
         retrieve=1
         echo "${OBTYPE} files do not exist on disk:"
         echo "${nohrsc06h_file}"
@@ -848,7 +847,7 @@ echo "HELLO CCCCC"
     print_err_msg_exit "\
     Invalid OBTYPE specified for script; valid options are CCPA, MRMS, NDAS, and NOHRSC
   "
-  fi  # Increment to next forecast hour      
+  fi  # Increment to next forecast hour
 
   # Increment to next forecast hour
   echo "Finished fcst hr=${current_fcst}"
