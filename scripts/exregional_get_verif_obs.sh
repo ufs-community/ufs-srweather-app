@@ -630,7 +630,7 @@ echo "ihh = ${ihh}"
     ndas_proc=${OBS_DIR}
 
     # Check if file exists on disk
-    ndas_file="$ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}"
+    ndas_file="${ndas_proc}/prepbufr.ndas.${vyyyymmdd}${vhh}"
     if [[ -f "${ndas_file}" ]]; then
       echo "${OBTYPE} file exists on disk:"
       echo "${ndas_file}"
@@ -643,7 +643,7 @@ echo "ihh = ${ihh}"
       #
       # The "tm" here means "time minus", so nam.t12z.prepbufr.tm00.nr is valid for 12z, 
       # nam.t00z.prepbufr.tm03.nr is valid for 21z the previous day, etc.
-      # This means that every six hours we have to obs files valid for the same time:
+      # This means that every six hours we have two obs files valid for the same time:
       # nam.tHHz.prepbufr.tm00.nr and nam.t[HH+6]z.prepbufr.tm06.nr
       # We want to use the tm06 file because it contains more/better obs (confirmed with EMC: even
       # though the earlier files are larger, this is because the time window is larger)
@@ -657,18 +657,24 @@ echo "ihh = ${ihh}"
         continue
       fi
 
+      # Whether to move or copy extracted files from the raw directories to their
+      # final locations.
+      #mv_or_cp="mv"
+      mv_or_cp="cp"
+
 echo ""
 echo "HELLO AAAAA"
 echo "vhh_noZero = ${vhh_noZero}"
 
-      if [[ ${vhh_noZero} -eq 0 || ${vhh_noZero} -eq 6 || ${vhh_noZero} -eq 12 || ${vhh_noZero} -eq 18 ]]; then
+      if [[ ${vhh_noZero} -eq 0 || ${vhh_noZero} -eq 6 || \
+            ${vhh_noZero} -eq 12 || ${vhh_noZero} -eq 18 ]]; then
 echo ""
 echo "HELLO BBBBB"
 
         if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
 echo ""
 echo "HELLO CCCCC"
-          mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
+          mkdir -p ${ndas_raw}/${vyyyymmdd}${vhh}
         fi
 
         # Pull NDAS data from HPSS
@@ -680,7 +686,7 @@ echo "HELLO CCCCC"
           --cycle_date ${vyyyymmdd}${vhh} \
           --data_stores hpss \
           --data_type NDAS_obs \
-          --output_path $ndas_raw/${vyyyymmdd}${vhh} \
+          --output_path ${ndas_raw}/${vyyyymmdd}${vhh} \
           --summary_file ${logfile}"
 
         echo "CALLING: ${cmd}"
@@ -692,8 +698,8 @@ echo "HELLO CCCCC"
         ${cmd}
 "
 
-        if [[ ! -d "$ndas_proc" ]]; then
-          mkdir -p $ndas_proc
+        if [[ ! -d "${ndas_proc}" ]]; then
+          mkdir -p ${ndas_proc}
         fi
 
         # copy files from the previous 6 hours ("tm" means "time minus")
@@ -702,7 +708,8 @@ echo "HELLO CCCCC"
           vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_vdate} ${tm} hours ago" +%Y%m%d%H)
           tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
 
-          cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}
+          ${mv_or_cp} ${ndas_raw}/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr \
+                      ${ndas_proc}/prepbufr.ndas.${vyyyymmddhh_tm}
         done
 
       fi
@@ -720,8 +727,8 @@ echo "HELLO CCCCC"
           vhh=${vhh_noZero}
         fi
 
-        if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
-          mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
+        if [[ ! -d "${ndas_raw}/${vyyyymmdd}${vhh}" ]]; then
+          mkdir -p ${ndas_raw}/${vyyyymmdd}${vhh}
         fi
 
         # Pull NDAS data from HPSS
@@ -733,7 +740,7 @@ echo "HELLO CCCCC"
           --cycle_date ${vyyyymmdd}${vhh} \
           --data_stores hpss \
           --data_type NDAS_obs \
-          --output_path $ndas_raw/${vyyyymmdd}${vhh} \
+          --output_path ${ndas_raw}/${vyyyymmdd}${vhh} \
           --summary_file ${logfile}"
 
         echo "CALLING: ${cmd}"
@@ -745,8 +752,8 @@ echo "HELLO CCCCC"
         ${cmd}
 "
 
-        if [[ ! -d "$ndas_proc" ]]; then
-          mkdir -p $ndas_proc
+        if [[ ! -d "${ndas_proc}" ]]; then
+          mkdir -p ${ndas_proc}
         fi
 
         for tm in $(seq 1 6); do
@@ -755,7 +762,8 @@ echo "HELLO CCCCC"
           vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_fdate} ${tm} hours ago" +%Y%m%d%H)
           tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
 
-          cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}
+          ${mv_or_cp} ${ndas_raw}/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr \
+                      ${ndas_proc}/prepbufr.ndas.${vyyyymmddhh_tm}
         done
 
       fi
