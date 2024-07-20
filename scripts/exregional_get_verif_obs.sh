@@ -622,14 +622,34 @@ echo "ihh = ${ihh}"
 #-----------------------------------------------------------------------
 #
   elif [[ ${OBTYPE} == "NDAS" ]]; then
+# Fix these comments.
+    # Calculate valid date - 1 day; this is needed because some obs files
+    # are stored in the *previous* day's 00h directory
+    vdate_m1h=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 hour ago" +%Y%m%d%H)
+    #vyyyymmdd_m1h=$(echo ${vdate_m1h} | cut -c1-8)
+
+echo ""
+echo "HELLO PPPPPPP"
+echo "vyyyymmdd = ${vyyyymmdd}"
+echo "vhh = ${vhh}"
+echo "vhh_noZero = ${vhh_noZero}"
+#echo "vyyyymmdd_m1h = ${vyyyymmdd_m1h}"
+echo "vdate_m1h = ${vdate_m1h}"
+
     # raw NDAS data from HPSS
     ndas_raw=${OBS_DIR}/raw
 
     # Reorganized NDAS location
     ndas_proc=${OBS_DIR}
 
+    # raw NDAS data from HPSS
+    #ndas_raw=${OBS_DIR}/raw
+    ndas_raw="${ndas_proc}/raw_cyc${iyyyymmddhh}"
+
     # Check if file exists on disk
-    ndas_file="${ndas_proc}/prepbufr.ndas.${vyyyymmdd}${vhh}"
+    #ndas_file="${ndas_proc}/prepbufr.ndas.${vyyyymmdd}${vhh}"
+    #ndas_file_m1h="${ndas_proc}/prepbufr.ndas.${vyyyymmdd_m1h}${vhh}"
+    ndas_file="${ndas_proc}/prepbufr.ndas.${vdate_m1h}"
     if [[ -f "${ndas_file}" ]]; then
       echo "${OBTYPE} file exists on disk:"
       echo "${ndas_file}"
@@ -650,9 +670,14 @@ echo "ihh = ${ihh}"
       # The current logic of this script will likely stage more files than you need, but will never
       # pull more HPSS tarballs than necessary
 
-      if [[ ${current_fcst} -eq 0 && ${current_fcst} -ne ${fcst_length} ]]; then
-        # If at forecast hour zero, skip to next hour.
-        current_fcst=$((${current_fcst} + 1))
+#
+
+# This seems like a strange statement since the only way it can be true
+# is if the forecast length is zero.
+      # If at forecast hour zero, skip to next hour.
+      #if [[ ${current_fcst} -eq 0 && ${current_fcst} -ne ${fcst_length} ]]; then
+      if [[ ${current_fcst} -eq 0 ]]; then
+        current_fcst=$((current_fcst + 1))
         continue
       fi
 
@@ -670,12 +695,16 @@ echo "vhh_noZero = ${vhh_noZero}"
 echo ""
 echo "HELLO BBBBB"
 
-        if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
+        #valid_time=${vyyyymmdd}${vhh}
+        #output_path="${ndas_raw}/${vyyyymmdd}"
+
+        if [[ ! -d "${ndas_raw}/${vyyyymmdd}${vhh}" ]]; then
 echo ""
 echo "HELLO CCCCC"
           mkdir -p ${ndas_raw}/${vyyyymmdd}${vhh}
         fi
 
+        cd ${ndas_raw}
         # Pull NDAS data from HPSS
         cmd="
         python3 -u ${USHdir}/retrieve_data.py \
@@ -704,6 +733,7 @@ echo "HELLO CCCCC"
         # copy files from the previous 6 hours ("tm" means "time minus")
         # The tm06 files contain more/better observations than tm00 for the equivalent time
         for tm in $(seq 1 6); do
+#        for tm in $(seq --format="%02g" 6 -1 1); do
           vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_vdate} ${tm} hours ago" +%Y%m%d%H)
           tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
 
@@ -715,6 +745,7 @@ echo "HELLO CCCCC"
 
       # If at last forecast hour, make sure we're getting the last observations
       if [[ ${current_fcst} -eq ${fcst_length} ]]; then
+
         echo "Retrieving NDAS obs for final forecast hour"
         vhh_noZero=$((vhh_noZero + 6 - (vhh_noZero % 6)))
         if [[ ${vhh_noZero} -eq 24 ]]; then
@@ -730,6 +761,7 @@ echo "HELLO CCCCC"
           mkdir -p ${ndas_raw}/${vyyyymmdd}${vhh}
         fi
 
+        cd ${ndas_raw}
         # Pull NDAS data from HPSS
         cmd="
         python3 -u ${USHdir}/retrieve_data.py \
