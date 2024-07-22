@@ -583,7 +583,7 @@ echo "ihh = ${ihh}"
         fi
 
         # Make sure the retrieval process for the current day (which may have
-        # been executed above for this cycle or by another cycle) has completed
+        # been executed above for this cycle or for another cycle) has completed
         # by checking for the existence of the flag file that marks completion.
         # If not, keep checking until the flag file shows up.
         while [[ ! -f "${mrms_day_dir_raw}/pull_completed.txt" ]]; do
@@ -633,48 +633,53 @@ echo "ihh = ${ihh}"
 #
   elif [[ ${OBTYPE} == "NDAS" ]]; then
 
-# Fix these comments.
-    # Calculate valid date - 1 day; this is needed because some obs files
-    # are stored in the *previous* day's 00h directory
-    vdate_m1h=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 hour ago" +%Y%m%d%H)
-    #vyyyymmdd_m1h=$(echo ${vdate_m1h} | cut -c1-8)
-
-    vdate_p1h=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 hour" +%Y%m%d%H)
+    # Calculate valid date plus 1 hour.  This is needed because we need to 
+    # check whether this date corresponds to one of the valid hours-of-day
+    # 00, 06, 12, and 18 on which the NDAS archives are provided.
+    unix_vdate_p1h=$($DATE_UTIL -d "${unix_init_DATE} $((current_fcst+1)) hours" "+%Y-%m-%d %H:00:00")
+    vdate_p1h=$($DATE_UTIL -d "${unix_vdate_p1h}" +%Y%m%d%H)
+    vyyyymmdd_p1h=$(echo ${vdate_p1h} | cut -c1-8)
     vhh_p1h=$(echo ${vdate_p1h} | cut -c9-10)
     vhh_p1h_noZero=$((10#${vhh_p1h}))
-    vyyyymmdd_p1h=$(echo ${vdate_p1h} | cut -c1-8)
 
 echo ""
 echo "HELLO PPPPPPP"
 echo "vyyyymmdd = ${vyyyymmdd}"
 echo "vhh = ${vhh}"
 echo "vhh_noZero = ${vhh_noZero}"
-#echo "vyyyymmdd_m1h = ${vyyyymmdd_m1h}"
 echo "vdate = ${vdate}"
-echo "vdate_m1h = ${vdate_m1h}"
-echo "vdate_p1h = ${vdate_m1h}"
+echo "vdate_p1h = ${vdate_p1h}"
 
-    # Reorganized NDAS location
+    # Base directory in which the hourly NDAS prepbufr files will be located.
+    # We refer to this as the "processed" base directory because it contains
+    # the final files after all processing by this script is complete.
     ndas_basedir_proc=${OBS_DIR}
-    ndas_day_dir_proc="${ndas_basedir_proc}"
 
-    # raw NDAS data from HPSS
-    #ndas_raw=${OBS_DIR}/raw
-    #ndas_raw="${ndas_basedir_proc}/raw_cyc${iyyyymmddhh}"
-
-    # Check if file exists on disk
-    #ndas_file="${ndas_basedir_proc}/prepbufr.ndas.${vyyyymmdd}${vhh}"
-    #ndas_file_m1h="${ndas_basedir_proc}/prepbufr.ndas.${vyyyymmdd_m1h}${vhh}"
-    #ndas_fn_check="prepbufr.ndas.${vdate_p1h}"
+    # Name of the NDAS prepbufr file for the current valid time that will
+    # appear in the processed daily subdirectory after this script finishes.
+    # This is the name of the processed file.  Note that this is not the 
+    # same as the name of the raw file, i.e. the file extracted from the
+    # archive (tar) file retrieved below by the retrieve_data.py script.
     ndas_fn="prepbufr.ndas.${vyyyymmdd}${vhh}"
+
+    # Full path to the processed NDAS prepbufr file for the current field and
+    # valid time.
     ndas_fp_proc="${ndas_basedir_proc}/${ndas_fn}"
+
+    # Check if the processed NDAS prepbufr file for the current valid time
+    # already exists on disk.  If so, skip this valid time and go to the next
+    # one. 
     if [[ -f "${ndas_fp_proc}" ]]; then
+
       echo "${OBTYPE} file exists on disk:"
-      echo "${ndas_fp_proc}"
+      echo "  ndas_fp_proc = \"${ndas_fp_proc}\""
+      echo "Will NOT attempt to retrieve from remote locations."
+
     else
+
       echo "${OBTYPE} file does not exist on disk:"
-      echo "${ndas_fp_proc}"
-      echo "Will attempt to retrieve from remote locations"
+      echo "  ndas_fp_proc = \"${ndas_fp_proc}\""
+      echo "Will attempt to retrieve from remote locations."
       # NDAS data is available in 6-hourly combined tar files, each with 7 1-hour prepbufr files:
       # nam.tHHz.prepbufr.tm00.nr, nam.tHHz.prepbufr.tm01.nr, ... , nam.tHHz.prepbufr.tm06.nr
       #
@@ -684,18 +689,6 @@ echo "vdate_p1h = ${vdate_m1h}"
       # nam.tHHz.prepbufr.tm00.nr and nam.t[HH+6]z.prepbufr.tm06.nr
       # We want to use the tm06 file because it contains more/better obs (confirmed with EMC: even
       # though the earlier files are larger, this is because the time window is larger)
-
-      # The current logic of this script will likely stage more files than you need, but will never
-      # pull more HPSS tarballs than necessary
-
-# This seems like a strange statement since the only way it can be true
-# is if the forecast length is zero.
-      # If at forecast hour zero, skip to next hour.
-      #if [[ ${current_fcst} -eq 0 && ${current_fcst} -ne ${fcst_length} ]]; then
-    #  if [[ ${current_fcst} -eq 0 ]]; then
-    #    current_fcst=$((current_fcst + 1))
-    #    continue
-    #  fi
 
       # Whether to move or copy extracted files from the raw directories to their
       # final locations.
@@ -707,60 +700,59 @@ echo "HELLO AAAAA"
 echo "vhh_noZero = ${vhh_noZero}"
 echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
 
+      # Due to the way NDAS archives are organized, we can only retrieve the
+      # archive (tar) file containing data for the current valid hour (and the
+      # 5 hours preceeding it) if the hour-of-day corresponding to the current
+      # valid time plus 1 hour corresponds to one of 0, 6, 12, and 18.
       if [[ ${vhh_p1h_noZero} -eq 0 || ${vhh_p1h_noZero} -eq 6 || \
             ${vhh_p1h_noZero} -eq 12 || ${vhh_p1h_noZero} -eq 18 ]]; then
-echo ""
-echo "HELLO BBBBB"
 
-        #ndas_basedir_raw="${ndas_basedir_proc}/raw_cyc${iyyyymmddhh}"
-        #ndas_basedir_raw="${ndas_basedir_proc}/raw_qrtrday${vyyyymmdd_p1h}${vhh_p1h}"
+        # Base directory that will contain the 6-hourly subdirectories in which
+        # the NDAS prepbufr files retrieved from archive files will be placed,
+        # and the 6-hourly subdirectory for the current valid time plus 1 hour.
+        # We refer to these as the "raw" NDAS base and 6-hourly directories
+        # because they contain files as they are found in the archives before
+        # any processing by this script.
         ndas_basedir_raw="${ndas_basedir_proc}/raw_day${vyyyymmdd_p1h}"
-        ndas_day_dir_raw="${ndas_basedir_raw}/${vyyyymmdd_p1h}${vhh_p1h}"
-        #mkdir -p ${ndas_day_dir_raw}
+        ndas_day_dir_raw="${ndas_basedir_raw}/${vdate_p1h}"
 
-
-
-        # Check if the raw daily directory already exists on disk.  If so, it
-        # means
-#all the gzipped NDAS grib2 files -- i.e. for both REFC and RETOP
-# and for all times (hours, minutes, and seconds) in the current valid
-# day -- have already been or are in the process of being retrieved from
-# the archive (tar) files.
-# If so, skip the retrieval process.  If not,
-        # proceed to retrieve all the files and place them in the raw daily
-        # directory.
+        # Check if the raw 6-hourly directory already exists on disk.  If so, it
+        # means the NDAS prepbufr files for the current valid hour and the 5 hours
+        # preceeding it have already been or are in the process of being retrieved
+        # from the archive (tar) files.  If so, skip the retrieval process.  If
+        # not, proceed to retrieve the archive file, extract the prepbufr files
+        # from it, and place them in the raw daily directory.
         if [[ -d "${ndas_day_dir_raw}" ]]; then
 
-# Fix up these messages.
-          echo "${OBTYPE} directory for day ${vyyyymmdd} exists on disk:"
-          echo "  ndas_day_dir_proc = \"${ndas_day_dir_proc}\""
-          echo "This means NDAS files for all hours of the current valid day (${vyyyymmdd}) have been or are being retrieved."
-          echo "Thus, we will NOT attempt to retrieve NDAS data for the current valid time from remote locations."
+          print_info_msg "
+${OBTYPE} raw directory for day ${vdate_p1h} exists on disk:
+  ndas_day_dir_raw = \"${ndas_day_dir_raw}\"
+This means NDAS files for the current valid time (${vyyyymmdd}) and the
+5 hours preceeding it have been or are being retrieved by a get_obs_ndas
+workflow task for another cycle.  Thus, we will NOT attempt to retrieve
+NDAS data for the current valid time from remote locations."
 
         else
 
           mkdir -p ${ndas_day_dir_raw}
-          valid_time=${vyyyymmdd_p1h}${vhh_p1h}
 
-# Before calling retrieve_data.py, change location to the raw base
-# directory to avoid get_obs_ndas tasks for other cycles from clobbering
-# the output from this call to retrieve_data.py.  Note that retrieve_data.py
-# extracts the NDAS tar files into the directory it was called from,
-# which is the working directory of this script right before retrieve_data.py
-# is called.
+          # Before calling retrieve_data.py, change location to the raw base
+          # directory to avoid get_obs_ndas tasks for other cycles from clobbering
+          # the output from this call to retrieve_data.py.  Note that retrieve_data.py
+          # extracts the NDAS prepbufr files the archive into the directory it was
+          # called from, which is the working directory of this script right before
+          # retrieve_data.py is called.
           cd ${ndas_basedir_raw}
 
-# Use the retrieve_data.py script to retrieve all the gzipped NDAS grib2
-# files -- i.e. for both REFC and RETOP and for all times (hours, minutes,
-# and seconds) in the current valid day -- and place them in the raw daily
-# directory.  Note that this will pull both the REFC and RETOP files in
-# one call.
+          # Use the retrieve_data.py script to retrieve all the NDAS prepbufr files
+          # for the current valid hour and the 5 hours preceeding it and place them
+          # in the raw 6-hourly directory.
           cmd="
           python3 -u ${USHdir}/retrieve_data.py \
             --debug \
             --file_set obs \
             --config ${PARMdir}/data_locations.yml \
-            --cycle_date ${vyyyymmdd_p1h}${vhh_p1h} \
+            --cycle_date ${vdate_p1h} \
             --data_stores hpss \
             --data_type NDAS_obs \
             --output_path ${ndas_day_dir_raw} \
@@ -774,21 +766,32 @@ echo "HELLO BBBBB"
           The following command exited with a non-zero exit status:
           ${cmd}
 "
-# Create a flag file that can be used to confirm the completion of the
-# retrieval of all files for the current valid day.
+
+          # Create a flag file that can be used to confirm the completion of the
+          # retrieval of all files for the 6-hour interval ending in vdate_p1h.
           touch ${ndas_day_dir_raw}/pull_completed.txt
 
         fi
 
-# Make sure the retrieval process for the current day (which may have
-# been executed above for this cycle or by another cycle) has completed
-# by checking for the existence of the flag file that marks completion.
-# If not, keep checking until the flag file shows up.
+        # Make sure the retrieval process for the 6-hour interval ending in
+        # vdate_p1h (which may have been executed above for this cycle or for
+        # another cycle) has completed by checking for the existence of the flag
+        # file that marks completion.  If not, keep checking until the flag file
+        # shows up.
         while [[ ! -f "${ndas_day_dir_raw}/pull_completed.txt" ]]; do
-          echo "Waiting for the retrieval process for valid quarter-day ending on ${vyyyymmdd_p1h}${vhh_p1h} to complete..."
+          echo "Waiting for completion of the NDAS obs retrieval process for the"
+          echo "6-hour interval ending on ${vdate_p1h} ..."
           sleep 5s
         done
 
+        # Since this script is part of a workflow, another get_obs_ndas task (i.e.
+        # for another cycle) may have extracted and placed the current file in its
+        # processed location between the time we checked for its existence above
+        # (and didn't find it) and now.  This can happen because there can be
+        # overlap between the verification times for the current cycle and those
+        # of other cycles.  For this reason, check again for the existence of the
+        # processed file.  If it has already been created by another get_obs_ndas
+        # task, don't bother to recreate it.
         if [[ -f "${ndas_fp_proc}" ]]; then
 
           echo "${OBTYPE} file exists on disk:"
@@ -797,80 +800,25 @@ echo "HELLO BBBBB"
 
         else
 
-        #mkdir -p ${ndas_basedir_proc}
-
-          unix_vdate_p1h=$($DATE_UTIL -d "${unix_init_DATE} $((current_fcst+1)) hours" "+%Y-%m-%d %H:00:00")
-          # copy files from the previous 6 hours ("tm" means "time minus")
-          # The tm06 files contain more/better observations than tm00 for the equivalent time
-          for tm in $(seq 1 6); do
+          # Create the processed NDAS prepbufr files for the current valid hour as
+          # well as the preceeding 5 hours (or fewer if they're outside the time
+          # interval of the forecast) by copying or moving (and in the process
+          # renaming) them from the raw 6-hourly directory.  In the following loop,
+          # "tm" means "time minus".  Note that the tm06 files contain more/better
+          # observations than tm00 for the equivalent time.
+          for tm in $(seq 6 -1 1); do
 #          for tm in $(seq --format="%02g" 6 -1 1); do
-            vyyyymmddhh_p1h_tm=$($DATE_UTIL -d "${unix_vdate_p1h} ${tm} hours ago" +%Y%m%d%H)
-            if [ ${vyyyymmddhh_p1h_tm} -le ${vdate_last} ]; then
+            vdate_p1h_tm=$($DATE_UTIL -d "${unix_vdate_p1h} ${tm} hours ago" +%Y%m%d%H)
+            if [ ${vdate_p1h_tm} -le ${vdate_last} ]; then
               tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
               ${mv_or_cp} ${ndas_day_dir_raw}/nam.t${vhh_p1h}z.prepbufr.tm${tm2}.nr \
-                          ${ndas_basedir_proc}/prepbufr.ndas.${vyyyymmddhh_p1h_tm}
+                          ${ndas_basedir_proc}/prepbufr.ndas.${vdate_p1h_tm}
             fi
           done
 
         fi
 
       fi
-
-      # If at last forecast hour, make sure we're getting the last observations
-#      if [[ ${current_fcst} -eq ${fcst_length} ]]; then
-#
-#        echo "Retrieving NDAS obs for final forecast hour"
-#        vhh_noZero=$((vhh_noZero + 6 - (vhh_noZero % 6)))
-#        if [[ ${vhh_noZero} -eq 24 ]]; then
-#          vyyyymmdd=${vyyyymmdd_p1d}
-#          vhh=00
-#        elif [[ ${vhh_noZero} -eq 6 ]]; then
-#          vhh=06
-#        else
-#          vhh=${vhh_noZero}
-#        fi
-#
-#        if [[ ! -d "${ndas_raw}/${vyyyymmdd}${vhh}" ]]; then
-#          mkdir -p ${ndas_raw}/${vyyyymmdd}${vhh}
-#        fi
-#
-#        cd ${ndas_raw}
-#        # Pull NDAS data from HPSS
-#        cmd="
-#        python3 -u ${USHdir}/retrieve_data.py \
-#          --debug \
-#          --file_set obs \
-#          --config ${PARMdir}/data_locations.yml \
-#          --cycle_date ${vyyyymmdd}${vhh} \
-#          --data_stores hpss \
-#          --data_type NDAS_obs \
-#          --output_path ${ndas_raw}/${vyyyymmdd}${vhh} \
-#          --summary_file ${logfile}"
-#
-#        echo "CALLING: ${cmd}"
-#
-#        $cmd || print_err_msg_exit "\
-#        Could not retrieve NDAS data from HPSS
-#
-#        The following command exited with a non-zero exit status:
-#        ${cmd}
-#"
-#
-#        if [[ ! -d "${ndas_basedir_proc}" ]]; then
-#          mkdir -p ${ndas_basedir_proc}
-#        fi
-#
-#        for tm in $(seq 1 6); do
-#          last_fhr=$((fcst_length + 6 - (vhh_noZero % 6)))
-#          unix_fdate=$($DATE_UTIL -d "${unix_init_DATE} ${last_fhr} hours" "+%Y-%m-%d %H:00:00")
-#          vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_fdate} ${tm} hours ago" +%Y%m%d%H)
-#          tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
-#
-#          ${mv_or_cp} ${ndas_raw}/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr \
-#                      ${ndas_basedir_proc}/prepbufr.ndas.${vyyyymmddhh_tm}
-#        done
-#
-#      fi
 
     fi
 #
