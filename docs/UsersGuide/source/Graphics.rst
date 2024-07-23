@@ -44,7 +44,7 @@ Cartopy Shapefiles
 
 The Python plotting scripts also require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. Cartopy provides the 'background_img()' method to add background images in a convenient way. The default scale (resolution) of background attributes in the Python scripts is 1:50m Natural Earth I with Shaded Relief and Water, which should be sufficient for most regional applications. 
 
-The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
+The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
 
 
 .. _CartopyData:
