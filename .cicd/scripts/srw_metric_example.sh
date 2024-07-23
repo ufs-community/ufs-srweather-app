@@ -61,7 +61,7 @@ cd ${workspace}/tests/WE2E
 cd ${workspace}
 
 # run skill-score check
-[[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
+[[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.1.0/METplus-vx-sample/Indy-Severe-Weather.tgz
 [[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
 [[ -f skill-score.out ]] && rm skill-score.out
 # Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
