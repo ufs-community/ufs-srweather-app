@@ -1,18 +1,17 @@
 help([[
-This module loads libraries for building the SRW workflow on
-the NOAA RDHPC machine Hera using Intel-2022.1.2
+This module loads libraries for building the SRW workflow on Hercules
 ]])
 
-whatis([===[Loads libraries needed for building the SRW workflow on Hera ]===])
+whatis([===[Loads libraries needed for building the SRW workflow on Hercules ]===])
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.0/envs/unified-env-rocky8/install/modulefiles/Core")
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.5.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 
-load(pathJoin("stack-intel", "2021.5.0"))
-load(pathJoin("stack-intel-oneapi-mpi", "2021.5.1"))
+load(pathJoin("stack-intel", "2021.9.0"))
+load(pathJoin("stack-intel-oneapi-mpi", "2021.9.0"))
 load(pathJoin("stack-python", "3.10.8"))
 
-load(pathJoin("cmake", "3.28.1"))
+load(pathJoin("cmake", "3.23.1"))
 
 load(pathJoin("hdf5", "1.14.0"))
 load(pathJoin("netcdf-c", "4.9.2"))
@@ -39,6 +38,7 @@ load(pathJoin("g2tmpl", "1.10.2"))
 load(pathJoin("ip", "4.3.0"))
 load(pathJoin("sp", "2.3.3"))
 load(pathJoin("gftl-shared", "1.5.0"))
+
 load(pathJoin("bufr", "12.0.0"))
 load(pathJoin("gfsio", "1.4.1"))
 load(pathJoin("landsfcutil", "2.4.1"))
@@ -46,13 +46,13 @@ load(pathJoin("sigio", "2.3.2"))
 load(pathJoin("sfcio", "1.4.1"))
 load(pathJoin("w3emc", "2.10.0"))
 load(pathJoin("w3nco", "2.4.1"))
-load(pathJoin("prod_util", "1.2.2"))
-load(pathJoin("wgrib2", "2.0.8"))
+--load(pathJoin("prod_util", "1.2.2"))
+load(pathJoin("wgrib2", "3.1.1"))
 
-prepend_path("MODULEPATH", "/scratch2/BMC/ifi/modulefiles")
-try_load("ifi/20230511-intel-2022.1.2")
+prepend_path("MODULEPATH", "/work/noaa/rtrr/gge/prod_util/lua")
+load("prod_util/2.0.15")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")
-setenv("CMAKE_Platform","hera.intel")
+setenv("CMAKE_Platform","hercules.intel")
