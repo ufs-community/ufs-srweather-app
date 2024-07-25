@@ -180,9 +180,13 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       dependency:
-        taskdep:
-          attrs:
-            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+        and:
+          taskdep_pcpcombine_obs:
+            attrs:
+              task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+          taskdep_genensprod:
+            attrs:
+              task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
 metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
   var:
@@ -204,9 +208,13 @@ metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       dependency:
-        taskdep:
-          attrs:
-            task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
+        and:
+          taskdep:
+            attrs:
+              task: get_obs_nohrsc
+          taskdep_genensprod:
+            attrs:
+              task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
 
 metatask_GridStat_MRMS_ensprob:
   var:
@@ -224,9 +232,13 @@ metatask_GridStat_MRMS_ensprob:
       FCST_LEVEL: 'L0'
       FCST_THRESH: 'all'
     dependency:
-      taskdep:
-        attrs:
-          task: run_MET_GenEnsProd_vx_#VAR#
+      and:
+        taskdep_get_obs_mrms:
+          attrs:
+            task: get_obs_mrms
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_PointStat_NDAS_ensmeanprob:
   var:
