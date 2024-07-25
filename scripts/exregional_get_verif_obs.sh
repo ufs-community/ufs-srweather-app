@@ -146,6 +146,7 @@ fi
 # Make sure fcst_length isn't octal (leading zero)
 fcst_length=$((10#${fcst_length}))
 
+processed_fp_list=()
 current_fcst=0
 while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
@@ -215,6 +216,9 @@ echo "ihh = ${ihh}"
     # month, and day) information in the name of a subdirectory and the valid
     # hour-of-day in the name of the file.
     ccpa_fp_proc="${ccpa_day_dir_proc}/${ccpa_fn}"
+
+    # Store the full path to the processed file in a list for later use.
+    processed_fp_list+=(${ccpa_fp_proc})
 
     # Check if the CCPA grib2 file for the current valid time already exists
     # at its procedded location on disk.  If so, skip and go to the next valid
@@ -491,6 +495,9 @@ echo "ihh = ${ihh}"
       # valid time.
       mrms_fp_proc="${mrms_day_dir_proc}/${mrms_fn}"
 
+      # Store the full path to the processed file in a list for later use.
+      processed_fp_list+=(${mrms_fp_proc})
+
       # Check if the processed MRMS grib2 file for the current field and valid
       # time already exists on disk.  If so, skip this valid time and go to the
       # next one.  If not, pull it.
@@ -665,6 +672,9 @@ echo "vdate_p1h = ${vdate_p1h}"
     # Full path to the processed NDAS prepbufr file for the current field and
     # valid time.
     ndas_fp_proc="${ndas_basedir_proc}/${ndas_fn}"
+
+    # Store the full path to the processed file in a list for later use.
+    processed_fp_list+=(${ndas_fp_proc})
 
     # Check if the processed NDAS prepbufr file for the current valid time
     # already exists on disk.  If so, skip this valid time and go to the next
@@ -907,11 +917,41 @@ NDAS data for the current valid time from remote locations."
   current_fcst=$((${current_fcst} + 1))
 
 done
-
-
-# Clean up raw, unprocessed observation files
-#rm -rf ${OBS_DIR}/raw
-
+#
+#-----------------------------------------------------------------------
+#
+# At this point, the processed data files for all output forecast hours
+# for this cycle are either being created (by a get_obs_... task for
+# another cycle) or have already been created (either by this get_obs_...
+# task or one for another cycle).  In case they are still being created,
+# make sure they have in fact been created before exiting this script.  
+# If we don't do this, it is possible for this get_obs_... task to complete
+# successfully but still have processed obs files for some forecast hours
+# not yet created, which is undesirable.
+#
+#-----------------------------------------------------------------------
+#
+num_proc_files=${#processed_fp_list[@]}
+for (( i=0; i<${num_proc_files}; i++ )); do
+  obs_fp="${processed_fp_list[$i]}"
+  while [[ ! -f "${obs_fp}" ]]; do
+    echo "Waiting for ${OBTYPE} file to be created on disk (by a get_obs_... workflow task for another cycle):"
+    echo "  obs_fp = \"${obs_fp}\""
+    sleep 5s
+  done
+done
+#
+#-----------------------------------------------------------------------
+#
+# Clean up raw directories.
+#
+#-----------------------------------------------------------------------
+#
+remove_raw="TRUE"
+#remove_raw="FALSE"
+if [ "${remove_raw}" = "TRUE" ]; then
+  rm -rf ${OBS_DIR}/raw_*
+fi
 #
 #-----------------------------------------------------------------------
 #
