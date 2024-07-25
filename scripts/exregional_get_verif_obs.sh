@@ -134,10 +134,11 @@ unix_init_DATE="${iyyyy}-${imm}-${idd} ${ihh}:00:00"
 # This awk expression gets the last item of the list $FHR
 fcst_length=$(echo ${FHR}  | awk '{ print $NF }')
 
+vdate_last=$($DATE_UTIL -d "${unix_init_DATE} ${fcst_length} hours" +%Y%m%d%H)
 if [[ ${OBTYPE} == "NDAS" ]]; then
-  vdate_last=$($DATE_UTIL -d "${unix_init_DATE} ${fcst_length} hours" +%Y%m%d%H)
   vhh_last=$(echo ${vdate_last} | cut -c9-10)
-  hours_to_add=$(( vhh_last + 6 - (vhh_last % 6) ))
+  #hours_to_add=$(( vhh_last + 6 - (vhh_last % 6) ))
+  hours_to_add=$(( 6 - (vhh_last % 6) ))
   fcst_length_rounded_up=$(( fcst_length + hours_to_add ))
 #  vdate_last_rounded_up=$($DATE_UTIL -d "${unix_init_DATE} ${fcst_length_rounded_up} hours" +%Y%m%d%H)
   fcst_length=${fcst_length_rounded_up}
@@ -218,7 +219,9 @@ echo "ihh = ${ihh}"
     ccpa_fp_proc="${ccpa_day_dir_proc}/${ccpa_fn}"
 
     # Store the full path to the processed file in a list for later use.
-    processed_fp_list+=(${ccpa_fp_proc})
+    if [ ${vyyyymmdd}${vhh} -le ${vdate_last} ]; then
+      processed_fp_list+=(${ccpa_fp_proc})
+    fi
 
     # Check if the CCPA grib2 file for the current valid time already exists
     # at its procedded location on disk.  If so, skip and go to the next valid
@@ -496,7 +499,9 @@ echo "ihh = ${ihh}"
       mrms_fp_proc="${mrms_day_dir_proc}/${mrms_fn}"
 
       # Store the full path to the processed file in a list for later use.
-      processed_fp_list+=(${mrms_fp_proc})
+      if [ ${vyyyymmdd}${vhh} -le ${vdate_last} ]; then
+        processed_fp_list+=(${mrms_fp_proc})
+      fi
 
       # Check if the processed MRMS grib2 file for the current field and valid
       # time already exists on disk.  If so, skip this valid time and go to the
@@ -674,7 +679,13 @@ echo "vdate_p1h = ${vdate_p1h}"
     ndas_fp_proc="${ndas_basedir_proc}/${ndas_fn}"
 
     # Store the full path to the processed file in a list for later use.
-    processed_fp_list+=(${ndas_fp_proc})
+echo
+echo "LLLLLLLLLLLLL"
+    if [ ${vyyyymmdd}${vhh} -le ${vdate_last} ]; then
+echo "MMMMMMMMMMMMM"
+echo "processed_fp_list = |${processed_fp_list[@]}"
+      processed_fp_list+=(${ndas_fp_proc})
+    fi
 
     # Check if the processed NDAS prepbufr file for the current valid time
     # already exists on disk.  If so, skip this valid time and go to the next
@@ -931,7 +942,11 @@ done
 #
 #-----------------------------------------------------------------------
 #
+echo
+echo "KKKKKKKKKKKK"
+echo "processed_fp_list = |${processed_fp_list[@]}"
 num_proc_files=${#processed_fp_list[@]}
+echo "num_proc_files = ${num_proc_files}"
 for (( i=0; i<${num_proc_files}; i++ )); do
   obs_fp="${processed_fp_list[$i]}"
   while [[ ! -f "${obs_fp}" ]]; do
@@ -947,8 +962,8 @@ done
 #
 #-----------------------------------------------------------------------
 #
-remove_raw="TRUE"
-#remove_raw="FALSE"
+#remove_raw="TRUE"
+remove_raw="FALSE"
 if [ "${remove_raw}" = "TRUE" ]; then
   rm -rf ${OBS_DIR}/raw_*
 fi

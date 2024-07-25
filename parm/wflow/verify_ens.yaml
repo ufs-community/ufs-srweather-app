@@ -248,6 +248,10 @@ metatask_PointStat_NDAS_ensmeanprob:
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
       dependency:
-        taskdep:
-          attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+        and:
+          taskdep_pb2nc:
+            attrs:
+              task: run_MET_Pb2nc_obs
+          taskdep_genensprod:
+            attrs:
+              task: run_MET_GenEnsProd_vx_#VAR#
