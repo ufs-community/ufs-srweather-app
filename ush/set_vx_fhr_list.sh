@@ -1,10 +1,183 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines a function that generates a list of forecast hours
-# such that for each hour there exist a corresponding obs file.  It does
-# this by first generating a generic sequence of forecast hours and then
-# removing from that sequence any hour for which there is no obs file.
+# This file defines functions used to generate sets of forecast hours for
+# which verification will be performed.
+#
+#-----------------------------------------------------------------------
+#
+
+function set_vx_fhr_list_no_missing() {
+#
+#-----------------------------------------------------------------------
+#
+# This function sets the forecast hours for which verification will be
+# performed under the assumption that that the data file (which may be
+# a forecast output file or an observation file) for each hour is available
+# (i.e. that there are no missing files).
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+  { save_shell_opts; set -u +x; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+  local scrfunc_fn=$( basename "${scrfunc_fp}" )
+  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Get the name of this function.
+#
+#-----------------------------------------------------------------------
+#
+  local func_name="${FUNCNAME[0]}"
+#
+#-----------------------------------------------------------------------
+#
+# Specify the set of valid argument names for this script/function.  Then
+# process the arguments provided to this script/function (which should
+# consist of a set of name-value pairs of the form arg1="value1", etc).
+#
+#-----------------------------------------------------------------------
+#
+  local valid_args=( \
+        "fcst_len_hrs" \
+        "field" \
+        "accum_hh" \
+        "outvarname_fhr_list_no_missing" \
+        )
+  process_args valid_args "$@"
+#
+#-----------------------------------------------------------------------
+#
+# For debugging purposes, print out values of arguments passed to this
+# script.  Note that these will be printed out only if VERBOSE is set to
+# TRUE.
+#
+#-----------------------------------------------------------------------
+#
+  print_input_args valid_args
+#
+#-----------------------------------------------------------------------
+#
+# Declare local variables.
+#
+#-----------------------------------------------------------------------
+#
+  local fhr_array \
+        fhr_list \
+        fhr_int \
+        fhr_min \
+        fhr_max
+#
+#-----------------------------------------------------------------------
+#
+# Create the array of forecast hours.
+#
+#-----------------------------------------------------------------------
+#
+  case "${field}" in
+    "APCP")
+      fhr_min="${accum_hh}"
+      fhr_int="${accum_hh}"
+      ;;
+    "ASNOW")
+      if [ "${accum_hh}" = "24" ]; then
+        fhr_min="24"
+        fhr_int="12"
+      else
+        fhr_min="${accum_hh}"
+        fhr_int="${accum_hh}"
+      fi
+      ;;
+    "REFC")
+      fhr_min="00"
+      fhr_int="01"
+      ;;
+    "RETOP")
+      fhr_min="00"
+      fhr_int="01"
+      ;;
+    "ADPSFC")
+      fhr_min="00"
+      fhr_int="01"
+      ;;
+    "ADPUPA")
+      fhr_min="00"
+      fhr_int="06"
+      ;;
+    *)
+      print_err_msg_exit "\
+A method for setting verification parameters has not been specified for
+this field (field):
+  field = \"${field}\""
+      ;;
+  esac
+  fhr_max="${fcst_len_hrs}"
+
+  fhr_array=($( seq ${fhr_min} ${fhr_int} ${fhr_max} ))
+
+  # Express the forecast hour array as a (scalar) string containing a comma
+  # (and space) separated list of the elements of fhr_array.
+  fhr_list=$( printf "%s, " "${fhr_array[@]}" )
+  fhr_list=$( echo "${fhr_list}" | $SED "s/, $//g" )
+
+  print_info_msg "$VERBOSE" "\
+Initial (i.e. before filtering for missing files) set of forecast hours
+(saved in a scalar string variable) is:
+  fhr_list = \"${fhr_list}\"
+"
+#
+#-----------------------------------------------------------------------
+#
+# Set output variables.
+#
+#-----------------------------------------------------------------------
+#
+  if [ ! -z "${outvarname_fhr_list_no_missing}" ]; then
+    printf -v ${outvarname_fhr_list_no_missing} "%s" "${fhr_list}"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/function.
+#
+#-----------------------------------------------------------------------
+#
+  { restore_shell_opts; } > /dev/null 2>&1
+
+}
+
+
+
+#
+#-----------------------------------------------------------------------
+#
+# This function generates a list of forecast hours such that for each
+# such hour, there exists a corresponding data file with a name of the
+# form specified by the template fn_template.  Depending on fn_template,
+# this file may contain forecast or observation data.  This function
+# generates this forecast hour list by first generating a set of hours
+# under the assumption that there is a corresponding data file for each
+# hour and then removing from that list any hour for which there is no
+# data file.
 #
 #-----------------------------------------------------------------------
 #
@@ -80,10 +253,7 @@ function set_vx_fhr_list() {
         crnt_tmpl_esc \
         fhr \
         fhr_array \
-        fhr_int \
         fhr_list \
-        fhr_min \
-        fhr_max \
         fn \
         fp \
         i \
@@ -95,51 +265,25 @@ function set_vx_fhr_list() {
 #
 #-----------------------------------------------------------------------
 #
-# Create array containing set of forecast hours for which we will check
-# for the existence of corresponding observation or forecast file.
+# For the specified field, generate the set of forecast hours at which
+# verification will be performed under the assumption that for each such
+# hour, the corresponding forecast and/or observation files exists.  Thus,
+# this set of forecast hours is an initial guess for the hours at which
+# vx will be performed.
 #
 #-----------------------------------------------------------------------
 #
-  case "${field}" in
-    "APCP")
-      fhr_min="${accum_hh}"
-      fhr_int="${accum_hh}"
-      ;;
-    "ASNOW")
-      if [ "${accum_hh}" = "24" ]; then
-        fhr_min="24"
-        fhr_int="12"
-      else
-        fhr_min="${accum_hh}"
-        fhr_int="${accum_hh}"
-      fi
-      ;;
-    "REFC")
-      fhr_min="00"
-      fhr_int="01"
-      ;;
-    "RETOP")
-      fhr_min="00"
-      fhr_int="01"
-      ;;
-    "ADPSFC")
-      fhr_min="00"
-      fhr_int="01"
-      ;;
-    "ADPUPA")
-      fhr_min="00"
-      fhr_int="06"
-      ;;
-    *)
-      print_err_msg_exit "\
-A method for setting verification parameters has not been specified for
-this field (field):
-  field = \"${field}\""
-      ;;
-  esac
-  fhr_max="${fcst_len_hrs}"
+  set_vx_fhr_list_no_missing \
+    fcst_len_hrs="${fcst_len_hrs}" \
+    field="${field}" \
+    accum_hh="${accum_hh}" \
+    outvarname_fhr_list_no_missing="fhr_list_no_missing"
 
-  fhr_array=($( seq ${fhr_min} ${fhr_int} ${fhr_max} ))
+  # For convenience, save the scalar variable fhr_list_no_missing to a bash
+  # array.
+  fhr_array=$( printf "%s" "${fhr_list_no_missing}" | $SED "s/,//g" )
+  fhr_array=( ${fhr_array} )
+
   print_info_msg "$VERBOSE" "\
 Initial (i.e. before filtering for missing files) set of forecast hours
 is:
@@ -174,7 +318,7 @@ is:
     skip_this_fhr="FALSE"
     for (( j=0; j<${num_back_hrs}; j++ )); do
 #
-# Use the provided template to set the name of/relative path to the file 
+# Use the provided template to set the name of/relative path to the file
 # Note that the while-loop below is over all METplus time string templates
 # of the form {...} in the template fn_template; it continues until all
 # such templates have been evaluated to actual time strings.
@@ -195,7 +339,7 @@ is:
 #
 # Replace METplus time templates in fn with actual times.  Note that
 # when using sed, we need to escape various characters (question mark,
-# closing and opening curly braces, etc) in the METplus template in 
+# closing and opening curly braces, etc) in the METplus template in
 # order for the sed command below to work properly.
 #
         crnt_tmpl_esc=$( echo "${crnt_tmpl}" | \
@@ -253,8 +397,8 @@ METplus configuration file.
 #
   fhr_list=$( echo "${fhr_list}" | $SED "s/^,//g" )
   print_info_msg "$VERBOSE" "\
-Final (i.e. after filtering for missing files) set of forecast hours is
-(written as a single string):
+Final (i.e. after filtering for missing files) set of forecast hours
+(saved in a scalar string variable) is:
   fhr_list = \"${fhr_list}\"
 "
 #

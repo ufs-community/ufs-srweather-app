@@ -37,16 +37,9 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       FCST_LEVEL: 'A#ACCUM_HH#'
       FCST_THRESH: 'all'
     dependency:
-      and:
-        # The PcpCombine task for obs must be complete because this GenEnsProd
-        # task checks to see the forecast hours for which obs are available before
-        # processing the forecast for those hours.
-        taskdep_pcpcombine_obs:
-          attrs:
-            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
-        metataskdep_pcpcombine_fcst:
-          attrs:
-            metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
+      metataskdep_pcpcombine_fcst:
+        attrs:
+          metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
     <<: *task_GenEnsProd_CCPA
     envars:
@@ -54,9 +47,13 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       METPLUSTOOLNAME: 'ENSEMBLESTAT'
       FCST_THRESH: 'none'
     dependency:
-      taskdep_genensprod:
-        attrs:
-          task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+      and:
+        taskdep_pcpcombine_obs:
+          attrs:
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
 metatask_GenEnsProd_EnsembleStat_NOHRSC:
   var:
@@ -75,9 +72,6 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       FCST_THRESH: 'all'
     dependency:
       and:
-        # The PcpCombine task for obs must be complete because this GenEnsProd
-        # task checks to see the forecast hours for which obs are available before
-        # processing the forecast for those hours.
         metataskdep_pcpcombine_fcst:
           attrs:
             metatask: PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems
@@ -149,15 +143,8 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
       FCST_THRESH: 'all'
     walltime: 02:30:00
     dependency:
-      and:
-        # The Pb2nc task (which is run only for obs) must be complete because
-        # this GenEnsProd task checks to see the forecast hours for which obs
-        # are available before processing the forecast for those hours.
-        taskdep_pb2nc:
-          attrs:
-            task: run_MET_Pb2nc_obs
-        metataskdep_check_post_output:
-          <<: *check_post_output
+      metataskdep_check_post_output:
+         <<: *check_post_output
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
@@ -165,9 +152,13 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
       METPLUSTOOLNAME: 'ENSEMBLESTAT'
     walltime: 01:00:00
     dependency:
-      taskdep_genensprod:
-        attrs:
-          task: run_MET_GenEnsProd_vx_#VAR#
+      and:
+        taskdep_pb2nc:
+          attrs:
+            task: run_MET_Pb2nc_obs
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_GridStat_CCPA_ensmeanprob_all_accums:
   var:

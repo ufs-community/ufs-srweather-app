@@ -200,30 +200,40 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the array of forecast hours for which to run the MET/METplus tool.
-# This is done by starting with the full list of forecast hours for which
-# there is forecast output and then removing from that list any forecast
-# hours for which there is no corresponding observation data.
+# Generate the list of forecast hours for which to run the specified
+# METplus tool.
 #
-# Note that strictly speaking, this does not need to be done if the MET/
-# METplus tool being called is GenEnsProd (because this tool only operates
-# on forecasts), but we run the check anyway in this case in order to
-# keep the code here simpler and because the output of GenEnsProd for
-# forecast hours with missing observations will not be used anyway in
-# downstream verification tasks.
+# If running the GenEnsProd tool, we set this to the list of forecast 
+# output times without filtering for the existence of observation files
+# corresponding to those times.  This is because GenEnsProd operates
+# only on forecasts; it does not need observations.
+#
+# On the other hand, if running the EnsembleStat tool, we set the list of
+# forecast hours to a set of times that takes into consideration whether
+# or not observations exist.  We do this by starting with the full list
+# of forecast times for which there is forecast output and then removing
+# from that list any times for which there is no corresponding observations.
 #
 #-----------------------------------------------------------------------
 #
-set_vx_fhr_list \
-  cdate="${CDATE}" \
-  fcst_len_hrs="${FCST_LEN_HRS}" \
-  field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
-  base_dir="${OBS_INPUT_DIR}" \
-  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_accum_contrib_files="FALSE" \
-  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
-  outvarname_fhr_list="FHR_LIST"
+if [ "${MetplusToolName}" = "GenEnsProd" ]; then
+  set_vx_fhr_list_no_missing \
+    fcst_len_hrs="${FCST_LEN_HRS}" \
+    field="$VAR" \
+    accum_hh="${ACCUM_HH}" \
+    outvarname_fhr_list_no_missing="FHR_LIST"
+elif [ "${MetplusToolName}" = "EnsembleStat" ]; then
+  set_vx_fhr_list \
+    cdate="${CDATE}" \
+    fcst_len_hrs="${FCST_LEN_HRS}" \
+    field="$VAR" \
+    accum_hh="${ACCUM_HH}" \
+    base_dir="${OBS_INPUT_DIR}" \
+    fn_template="${OBS_INPUT_FN_TEMPLATE}" \
+    check_accum_contrib_files="FALSE" \
+    num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
+    outvarname_fhr_list="FHR_LIST"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -290,7 +300,7 @@ metplus_log_fn="metplus.log.${metplus_log_bn}"
 #
 #-----------------------------------------------------------------------
 #
-# Load the yaml-like file containing the configuration for ensemble 
+# Load the yaml-like file containing the configuration for ensemble
 # verification.
 #
 #-----------------------------------------------------------------------
@@ -368,7 +378,7 @@ settings="\
 #
 # Verification configuration dictionary.
 #
-'vx_config_dict': 
+'vx_config_dict':
 ${vx_config_dict:-}
 "
 
@@ -380,7 +390,7 @@ uw template render \
   -o ${metplus_config_fp} \
   --verbose \
   --values-file "${tmpfile}" \
-  --search-path "/" 
+  --search-path "/"
 
 err=$?
 rm $tmpfile
