@@ -8,7 +8,11 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+  constants fixed_files grid_params \
+  task_point_source task_run_fcst ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #

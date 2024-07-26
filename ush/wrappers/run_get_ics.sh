@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.sh"
+export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.yaml"
+. $USHdir/source_util_funcs.sh
+for sect in workflow task_get_extrn_ics ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 set -xa
-source ${GLOBAL_VAR_DEFNS_FP}
 export CDATE=${DATE_FIRST_CYCL}
 export CYCLE_DIR=${EXPTDIR}/${CDATE}
 export cyc=${DATE_FIRST_CYCL:8:2}

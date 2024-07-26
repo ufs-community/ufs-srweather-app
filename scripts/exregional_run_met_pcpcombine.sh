@@ -8,7 +8,11 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+  constants fixed_files grid_params \
+  task_run_met_pcpcombine task_run_post ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -122,7 +126,7 @@ set_vx_params \
 time_lag="0"
 if [ "${FCST_OR_OBS}" = "FCST" ]; then
   i="0"
-  if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+  if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]; then
     i=$( bc -l <<< "${ENSMEM_INDX}-1" )
   fi
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
@@ -157,7 +161,7 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   # or, better, just remove this variale and code "/${ensmem_name}" where
   # slash_ensmem_subdir_or_null currently appears below.
   #
-    if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+    if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]; then
       slash_ensmem_subdir_or_null="/${ensmem_name}"
     else
       slash_ensmem_subdir_or_null=""

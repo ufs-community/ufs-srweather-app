@@ -30,7 +30,10 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global cpl_aqm_parm cpl_aqm_parm task_point_source \
+  task_run_fcst ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -123,7 +126,7 @@ setpdy.sh
 if [ ${subcyc} -ne 0 ]; then
   export cycle="t${cyc}${subcyc}z"
 fi
-if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
   export dot_ensmem=".mem${ENSMEM_INDX}"
 else
   export dot_ensmem=

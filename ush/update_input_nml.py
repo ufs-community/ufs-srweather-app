@@ -9,7 +9,7 @@ import os
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import realize
+from uwtools.api.config import get_nml_config, realize
 
 from python_utils import (
     print_input_args,
@@ -77,7 +77,7 @@ def update_input_nml(namelist, restart, aqm_na_13km):
         input_format="nml",
         output_file=namelist,
         output_format="nml",
-        supplemental_configs=[settings],
+        update_config=get_nml_config(settings),
         )
 
 def parse_args(argv):

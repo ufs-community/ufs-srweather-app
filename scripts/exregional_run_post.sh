@@ -3,12 +3,72 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-script that runs UPP.
+#
+# Run-time environment variables:
+#
+#    CDATE
+#    COMOUT
+#    DATA_FHR
+#    DBNROOT
+#    ENSMEM_INDX
+#    GLOBAL_VAR_DEFNS_FP
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    SENDDBN
+#
+# Experiment variables
+#
+#   user:
+#     EXECdir
+#     MACHINE
+#     PARMdir
+#     RUN_ENVIR
+#     USHdir
+#
+#   platform:
+#     PRE_TASK_CMDS
+#     RUN_CMD_POST
+#
+#   workflow:
+#     VERBOSE
+#
+#   task_run_fcst:
+#     DT_ATMOS
+#
+#   task_run_post:
+#     CUSTOM_POST_CONFIG_FP
+#     KMP_AFFINITY_RUN_POST
+#     OMP_NUM_THREADS_RUN_POST
+#     OMP_STACKSIZE_RUN_POST
+#     NUMX
+#     POST_OUTPUT_DOMAIN_NAME
+#     SUB_HOURLY_POST
+#     USE_CUSTOM_POST_CONFIG_FILE
+#
+#   global:
+#     CRTM_DIR
+#     USE_CRTM
+#
+#   cpl_aqm_parm:
+#     CPL_AQM
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow global cpl_aqm_parm \
+  task_run_fcst task_run_post ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -82,7 +142,7 @@ fi
 #
 rm -f fort.*
 cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
-if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
 ====================================================================
@@ -92,7 +152,7 @@ to the temporary work directory (DATA_FHR):
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
-  if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
@@ -107,7 +167,7 @@ temporary work directory (DATA_FHR):
 fi
 cp ${post_config_fp} ./postxconfig-NT.txt
 cp ${PARMdir}/upp/params_grib2_tbl_new .
-if [ ${USE_CRTM} = "TRUE" ]; then
+if [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
   cp ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
   cp ${CRTM_DIR}/FAST*.bin ./
   cp ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
@@ -155,7 +215,7 @@ hh=${cyc}
 # must be set to a null string.
 #
 mnts_secs_str=""
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
   if [ ${fhr}${fmn} = "00000" ]; then
     mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
   else
@@ -185,7 +245,7 @@ post_mn=${post_time:10:2}
 #
 # Create the input namelist file to the post-processor executable.
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   post_itag_add="aqf_on=.true.,"
 else
   post_itag_add=""
@@ -273,7 +333,7 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 cd "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   fids=( "cmaq" )
 else
   fids=( "prslev" "natlev" )
@@ -287,7 +347,7 @@ for fid in "${fids[@]}"; do
     create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
   fi
   # DBN alert
-  if [ $SENDDBN = "TRUE" ]; then
+  if [ "$SENDDBN" = "TRUE" ]; then
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
   fi
 done

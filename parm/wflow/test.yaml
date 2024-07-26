@@ -29,7 +29,7 @@ metatask_integration_test:
     mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   task_integration_test_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK_FP; "integration_test" "&JOBSdir;/JREGIONAL_INTEGRATION_TEST"'
+    command: '&LOAD_MODULES_RUN_TASK; "integration_test" "&JOBSdir;/JREGIONAL_INTEGRATION_TEST"'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     dependency:
       and_run_fcst: 

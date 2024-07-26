@@ -1,2 +1,2 @@
 load("conda")
-setenv("SRW_ENV", "srw_graphics")
+setenv("SRW_GRAPHICS_ENV", "srw_graphics")

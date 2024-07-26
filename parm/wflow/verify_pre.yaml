@@ -23,7 +23,7 @@ default_task_verify_pre: &default_task_verify_pre
 
 task_get_obs_ccpa:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     ACCUM_HH: '01'
@@ -37,7 +37,7 @@ task_get_obs_ccpa:
 
 task_get_obs_nohrsc:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&NOHRSC_OBS_DIR;'
@@ -50,7 +50,7 @@ task_get_obs_nohrsc:
 
 task_get_obs_mrms:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&MRMS_OBS_DIR;'
@@ -69,7 +69,7 @@ task_get_obs_ndas:
     OBS_DIR: '&NDAS_OBS_DIR;'
     OBTYPE: 'NDAS'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   queue: "&QUEUE_HPSS;"
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -80,7 +80,7 @@ task_run_MET_Pb2nc_obs:
   attrs:
     cycledefs: forecast
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
     <<: *default_vars
     VAR: ADPSFC
@@ -110,7 +110,7 @@ metatask_PcpCombine_obs:
     attrs:
       cycledefs: forecast
       maxtries: '2'
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+    command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
     envars:
       <<: *default_vars
       VAR: APCP
@@ -140,7 +140,7 @@ metatask_check_post_output_all_mems:
     attrs:
       cycledefs: forecast
       maxtries: '1'
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_CHECK_POST_OUTPUT"'
+    command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_CHECK_POST_OUTPUT"'
     envars:
       <<: *default_vars
       VAR: APCP
@@ -221,7 +221,7 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
       attrs:
         cycledefs: forecast
         maxtries: '2'
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
         <<: *default_vars
         VAR: APCP
@@ -249,7 +249,7 @@ metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
       attrs:
         cycledefs: forecast
         maxtries: '2'
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
         <<: *default_vars
         VAR: ASNOW
