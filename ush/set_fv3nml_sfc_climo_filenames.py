@@ -10,14 +10,14 @@ import re
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import get_yaml_config, realize
+from uwtools.api.config import get_nml_config, get_yaml_config, realize
 
 from python_utils import (
     cfg_to_yaml_str,
     check_var_valid_value,
     flatten_dict,
     import_vars,
-    load_shell_config,
+    load_yaml_config,
     print_info_msg,
 )
 
@@ -105,7 +105,7 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
         input_format="nml",
         output_file=FV3_NML_FP,
         output_format="nml",
-        supplemental_configs=[settings],
+        update_config=get_nml_config(settings),
         )
 
 def parse_args(argv):
@@ -127,6 +127,6 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
+    cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     set_fv3nml_sfc_climo_filenames(cfg, args.debug)

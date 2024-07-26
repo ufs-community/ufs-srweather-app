@@ -3,7 +3,19 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-Job that runs METplus's GridStat or PointStat tool to perform
+# verification on the ensemble frequencies/ probabilities of a specified
+# field (or group of fields).
 #
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #
@@ -16,7 +28,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid_prob" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
