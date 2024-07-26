@@ -3,12 +3,39 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-job to run chgres_cube for preparing lateral boundary conditions
+# for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    PREEXISTING_DIR_METHOD
+#
+#  task_make_sfc_climo:
+#    SFC_CLIMO_DIR
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_sfc_climo" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow task_make_sfc_climo ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

@@ -31,7 +31,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
       <<: *default_task_verify_det
       attrs:
         maxtries: '2'
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         OBS_DIR: '&CCPA_OBS_DIR;'
@@ -63,7 +63,7 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
       <<: *default_task_verify_det
       attrs:
         maxtries: '2'
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         OBS_DIR: '&NOHRSC_OBS_DIR;'
@@ -93,7 +93,7 @@ metatask_GridStat_MRMS_all_mems:
       VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_GridStat_vx_#VAR#_mem#mem#:
       <<: *default_task_verify_det
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         OBS_DIR: '&MRMS_OBS_DIR;'
@@ -124,7 +124,7 @@ metatask_PointStat_NDAS_all_mems:
       VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["ADPSFC", "ADPUPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_PointStat_vx_#VAR#_mem#mem#:
       <<: *default_task_verify_det
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         OBS_DIR: '&NDAS_OBS_DIR;'

@@ -8,7 +8,10 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_fire_emission" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+  constants fixed_files grid_params ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #

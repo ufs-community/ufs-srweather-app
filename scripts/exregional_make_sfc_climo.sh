@@ -3,12 +3,61 @@
 #
 #-----------------------------------------------------------------------
 #
+# This ex-script generates surface climatology files needed to run FV3
+# forecasts.
+#
+# The script runs the sfc_climo_gen UFS Utils program, and links the
+# output to the SFC_CLIMO_GEN directory
+#
+# Run-time environment variables:
+#
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    REDIRECT_OUT_ERR
+#
+# Experiment variables
+#
+#   user:
+#     EXECdir
+#     USHdir
+#
+#   platform:
+#     FIXsfc
+#     PRE_TASK_CMDS
+#     RUN_CMD_UTILS
+#
+#   workflow:
+#     CRES
+#     DOT_OR_USCORE
+#     FIXlam
+#     VERBOSE
+#
+#   task_make_sfc_climo:
+#     KMP_AFFINITY_MAKE_SFC_CLIMO
+#     OMP_NUM_THREADS_MAKE_SFC_CLIMO
+#     OMP_STACKSIZE_MAKE_SFC_CLIMO
+#     SFC_CLIMO_DIR
+#
+#   constants:
+#     GTYPE
+#     NH0
+#     NH4
+#     TILE_RGNL
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_sfc_climo" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow constants task_make_sfc_climo ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #

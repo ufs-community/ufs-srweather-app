@@ -11,7 +11,7 @@ rocoto:
     HOMEdir: '{{ user.HOMEdir }}'
     JOBSdir: '{{ user.JOBSdir }}'
     KEEPDATA: '{{ nco.KEEPDATA_default }}'
-    LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
+    LOAD_MODULES_RUN_TASK: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }} {{ user.MACHINE }}'
     LOGEXT: ".log"
     NET: '{{ nco.NET_default }}'
     MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'

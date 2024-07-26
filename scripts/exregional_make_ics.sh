@@ -3,12 +3,92 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-scrtipt that sets up and runs chgres_cube for preparing initial
+# conditions for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    COMOUT
+#    COMROOT
+#    DATA
+#    DATAROOT
+#    DATA_SHARE
+#    EXTRN_MDL_CDATE
+#    GLOBAL_VAR_DEFNS_FP
+#    INPUT_DATA
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    EXECdir
+#    MACHINE
+#    PARMdir
+#    RUN_ENVIR
+#    USHdir
+#
+#  platform:
+#    FIXgsm
+#    PRE_TASK_CMDS
+#    RUN_CMD_UTILS
+#
+#  workflow:
+#    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXTRN_MDL_VAR_DEFNS_FN
+#    FIXlam
+#    SDF_USES_RUC_LSM
+#    SDF_USES_THOMPSON_MP
+#    THOMPSON_MP_CLIMO_FP
+#    VERBOSE
+#
+#  task_make_ics:
+#    FVCOM_DIR
+#    FVCOM_FILE
+#    FVCOM_WCSTART
+#    KMP_AFFINITY_MAKE_ICS
+#    OMP_NUM_THREADS_MAKE_ICS
+#    OMP_STACKSIZE_MAKE_ICS
+#    USE_FVCOM
+#    VCOORD_FILE
+#
+#  task_get_extrn_ics:
+#    EXTRN_MDL_NAME_ICS
+#    FV3GFS_FILE_FMT_ICS
+#
+#  global:
+#    HALO_BLEND
+#
+#  cpl_aqm_parm:
+#    CPL_AQM
+#
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
+#
+#-----------------------------------------------------------------------
+#
+
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow global cpl_aqm_parm constants task_get_extrn_ics task_make_ics ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -306,7 +386,7 @@ convert_nst=""
 nsoill_out="4"
 if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \
      "${EXTRN_MDL_NAME_ICS}" = "RAP" ] && \
-   [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_RUC_LSM}") = "TRUE" ]; then
   nsoill_out="9"
 fi
 #
@@ -326,7 +406,7 @@ fi
 thomp_mp_climo_file=""
 if [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a \
      "${EXTRN_MDL_NAME_ICS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_THOMPSON_MP}") = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -643,9 +723,9 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+  if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     data_trans_path="${COMOUT}"
   else
     data_trans_path="${DATA_SHARE}"
@@ -667,7 +747,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_FVCOM}" = "TRUE" ]; then
+if [ $(boolify "${USE_FVCOM}") = "TRUE" ]; then
 
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_exec_fn="fvcom_to_FV3"
