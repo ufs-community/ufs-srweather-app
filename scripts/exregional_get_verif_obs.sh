@@ -124,7 +124,7 @@ idd=$(echo ${PDY} | cut -c7-8)
 ihh=${cyc}
 
 echo
-echo "HELLO GGGGGGGG"
+echo "HELLO AAAAAAAAAAA"
 iyyyymmddhh=${PDY}${cyc}
 echo "iyyyymmddhh = ${iyyyymmddhh}"
 
@@ -134,14 +134,17 @@ unix_init_DATE="${iyyyy}-${imm}-${idd} ${ihh}:00:00"
 # This awk expression gets the last item of the list $FHR
 fcst_length=$(echo ${FHR}  | awk '{ print $NF }')
 
+echo
+echo "BYE 00000000"
 vdate_last=$($DATE_UTIL -d "${unix_init_DATE} ${fcst_length} hours" +%Y%m%d%H)
 if [[ ${OBTYPE} == "NDAS" ]]; then
+echo "BYE 111111111"
   vhh_last=$(echo ${vdate_last} | cut -c9-10)
   #hours_to_add=$(( vhh_last + 6 - (vhh_last % 6) ))
   hours_to_add=$(( 6 - (vhh_last % 6) ))
   fcst_length_rounded_up=$(( fcst_length + hours_to_add ))
 #  vdate_last_rounded_up=$($DATE_UTIL -d "${unix_init_DATE} ${fcst_length_rounded_up} hours" +%Y%m%d%H)
-  fcst_length=${fcst_length_rounded_up}
+#  fcst_length=${fcst_length_rounded_up}
 fi
 
 # Make sure fcst_length isn't octal (leading zero)
@@ -152,14 +155,17 @@ current_fcst=0
 while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
 echo
-echo "HELLO GGGGGGGG"
+echo "HELLO BBBBBBBBBBB"
 echo "current_fcst = ${current_fcst}"
 
   # Calculate valid date info using date utility
   vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" +%Y%m%d%H)
-  #unix_vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00")
+  unix_vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00")
   vyyyymmdd=$(echo ${vdate} | cut -c1-8)
   vhh=$(echo ${vdate} | cut -c9-10)
+echo
+echo "BYE 222222222"
+echo "vhh = ${vhh}"
 
   # Calculate valid date + 1 day; this is needed because some obs files
   # are stored in the *next* day's 00h directory
@@ -167,11 +173,10 @@ echo "current_fcst = ${current_fcst}"
   vyyyymmdd_p1d=$(echo ${vdate_p1d} | cut -c1-8)
 
 echo
-echo "HELLO HHHHHHHH"
+echo "HELLO CCCCCCCCCC"
 echo "vyyyymmdd = ${vyyyymmdd}"
 echo "vyyyymmdd_p1d = ${vyyyymmdd_p1d}"
 echo "ihh = ${ihh}"
-#exit
 
   #remove leading zero again, this time keep original
   vhh_noZero=$((10#${vhh}))
@@ -655,7 +660,8 @@ echo "ihh = ${ihh}"
     vhh_p1h_noZero=$((10#${vhh_p1h}))
 
 echo ""
-echo "HELLO PPPPPPP"
+echo "HELLO DDDDDDDDDDD"
+echo "vdate = ${vdate}"
 echo "vyyyymmdd = ${vyyyymmdd}"
 echo "vhh = ${vhh}"
 echo "vhh_noZero = ${vhh_noZero}"
@@ -672,7 +678,7 @@ echo "vdate_p1h = ${vdate_p1h}"
     # This is the name of the processed file.  Note that this is not the 
     # same as the name of the raw file, i.e. the file extracted from the
     # archive (tar) file retrieved below by the retrieve_data.py script.
-    ndas_fn="prepbufr.ndas.${vyyyymmdd}${vhh}"
+    ndas_fn="prepbufr.ndas.${vdate}"
 
     # Full path to the processed NDAS prepbufr file for the current field and
     # valid time.
@@ -680,9 +686,9 @@ echo "vdate_p1h = ${vdate_p1h}"
 
     # Store the full path to the processed file in a list for later use.
 echo
-echo "LLLLLLLLLLLLL"
-    if [ ${vyyyymmdd}${vhh} -le ${vdate_last} ]; then
-echo "MMMMMMMMMMMMM"
+echo "EEEEEEEEEEEEEE"
+    if [ ${vdate} -le ${vdate_last} ]; then
+echo "FFFFFFFFFFFFFF"
 echo "processed_fp_list = |${processed_fp_list[@]}"
       processed_fp_list+=(${ndas_fp_proc})
     fi
@@ -717,7 +723,7 @@ echo "processed_fp_list = |${processed_fp_list[@]}"
       mv_or_cp="cp"
 
 echo ""
-echo "HELLO AAAAA"
+echo "HELLO GGGGGGGGGGGGG"
 echo "vhh_noZero = ${vhh_noZero}"
 echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
 
@@ -726,7 +732,22 @@ echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
       # 5 hours preceeding it) if the hour-of-day corresponding to the current
       # valid time plus 1 hour corresponds to one of 0, 6, 12, and 18.
       if [[ ${vhh_p1h_noZero} -eq 0 || ${vhh_p1h_noZero} -eq 6 || \
-            ${vhh_p1h_noZero} -eq 12 || ${vhh_p1h_noZero} -eq 18 ]]; then
+            ${vhh_p1h_noZero} -eq 12 || ${vhh_p1h_noZero} -eq 18 || \
+            ${current_fcst} -eq ${fcst_length} ]]; then
+
+        if [[ ${vhh_p1h_noZero} -eq 0 || ${vhh_p1h_noZero} -eq 6 || \
+              ${vhh_p1h_noZero} -eq 12 || ${vhh_p1h_noZero} -eq 18 ]]; then
+          unix_vdate_archive="${unix_vdate_p1h}"
+          vdate_archive="${vdate_p1h}"
+          vyyyymmdd_archive="${vyyyymmdd_p1h}"
+          vhh_archive=${vhh_p1h}
+        elif [[ ${current_fcst} -eq ${fcst_length} ]]; then
+          hours_to_archive=$(( 6 - (vhh % 6) ))
+          unix_vdate_archive=$($DATE_UTIL -d "${unix_vdate} ${hours_to_archive} hours" "+%Y-%m-%d %H:00:00")
+          vdate_archive=$($DATE_UTIL -d "${unix_vdate} ${hours_to_archive} hours" +%Y%m%d%H)
+          vyyyymmdd_archive=$(echo ${vdate_archive} | cut -c1-8)
+          vhh_archive=$(echo ${vdate_archive} | cut -c9-10)
+        fi
 
         # Base directory that will contain the 6-hourly subdirectories in which
         # the NDAS prepbufr files retrieved from archive files will be placed,
@@ -734,8 +755,8 @@ echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
         # We refer to these as the "raw" NDAS base and 6-hourly directories
         # because they contain files as they are found in the archives before
         # any processing by this script.
-        ndas_basedir_raw="${ndas_basedir_proc}/raw_day${vyyyymmdd_p1h}"
-        ndas_day_dir_raw="${ndas_basedir_raw}/${vdate_p1h}"
+        ndas_basedir_raw="${ndas_basedir_proc}/raw_day${vyyyymmdd_archive}"
+        ndas_day_dir_raw="${ndas_basedir_raw}/${vdate_archive}"
 
         # Check if the raw 6-hourly directory already exists on disk.  If so, it
         # means the NDAS prepbufr files for the current valid hour and the 5 hours
@@ -746,9 +767,9 @@ echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
         if [[ -d "${ndas_day_dir_raw}" ]]; then
 
           print_info_msg "
-${OBTYPE} raw directory for day ${vdate_p1h} exists on disk:
+${OBTYPE} raw 6-hourly directory ${vdate_archive} exists on disk:
   ndas_day_dir_raw = \"${ndas_day_dir_raw}\"
-This means NDAS files for the current valid time (${vyyyymmdd}) and the
+This means NDAS files for the current valid time (${vdate}) and the
 5 hours preceeding it have been or are being retrieved by a get_obs_ndas
 workflow task for another cycle.  Thus, we will NOT attempt to retrieve
 NDAS data for the current valid time from remote locations."
@@ -773,7 +794,7 @@ NDAS data for the current valid time from remote locations."
             --debug \
             --file_set obs \
             --config ${PARMdir}/data_locations.yml \
-            --cycle_date ${vdate_p1h} \
+            --cycle_date ${vdate_archive} \
             --data_stores hpss \
             --data_type NDAS_obs \
             --output_path ${ndas_day_dir_raw} \
@@ -789,19 +810,19 @@ NDAS data for the current valid time from remote locations."
 "
 
           # Create a flag file that can be used to confirm the completion of the
-          # retrieval of all files for the 6-hour interval ending in vdate_p1h.
+          # retrieval of all files for the 6-hour interval ending in vdate_archive.
           touch ${ndas_day_dir_raw}/pull_completed.txt
 
         fi
 
         # Make sure the retrieval process for the 6-hour interval ending in
-        # vdate_p1h (which may have been executed above for this cycle or for
+        # vdate_archive (which may have been executed above for this cycle or for
         # another cycle) has completed by checking for the existence of the flag
         # file that marks completion.  If not, keep checking until the flag file
         # shows up.
         while [[ ! -f "${ndas_day_dir_raw}/pull_completed.txt" ]]; do
           echo "Waiting for completion of the NDAS obs retrieval process for the"
-          echo "6-hour interval ending on ${vdate_p1h} ..."
+          echo "6-hour interval ending on ${vdate_archive} ..."
           sleep 5s
         done
 
@@ -829,11 +850,11 @@ NDAS data for the current valid time from remote locations."
           # observations than tm00 for the equivalent time.
           for tm in $(seq 6 -1 1); do
 #          for tm in $(seq --format="%02g" 6 -1 1); do
-            vdate_p1h_tm=$($DATE_UTIL -d "${unix_vdate_p1h} ${tm} hours ago" +%Y%m%d%H)
-            if [ ${vdate_p1h_tm} -le ${vdate_last} ]; then
+            vdate_archive_tm=$($DATE_UTIL -d "${unix_vdate_archive} ${tm} hours ago" +%Y%m%d%H)
+            if [[ ${vdate_archive_tm} -le ${vdate_last} ]]; then
               tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
-              ${mv_or_cp} ${ndas_day_dir_raw}/nam.t${vhh_p1h}z.prepbufr.tm${tm2}.nr \
-                          ${ndas_basedir_proc}/prepbufr.ndas.${vdate_p1h_tm}
+              ${mv_or_cp} ${ndas_day_dir_raw}/nam.t${vhh_archive}z.prepbufr.tm${tm2}.nr \
+                          ${ndas_basedir_proc}/prepbufr.ndas.${vdate_archive_tm}
             fi
           done
 
@@ -943,7 +964,7 @@ done
 #-----------------------------------------------------------------------
 #
 echo
-echo "KKKKKKKKKKKK"
+echo "HHHHHHHHHHHHHHHH"
 echo "processed_fp_list = |${processed_fp_list[@]}"
 num_proc_files=${#processed_fp_list[@]}
 echo "num_proc_files = ${num_proc_files}"
