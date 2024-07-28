@@ -48,9 +48,38 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       FCST_THRESH: 'none'
     dependency:
       and:
-        taskdep_pcpcombine_obs:
+        # The following will include dependencies on the PcpCombine_obs task for
+        # the current cycle as well as those from other cycles that process CCPA
+        # obs at valid times that are part of the current cycle's forecast.  This
+        # dependence is necessary because each PcpCombine_obs task except the
+        # last one processes obs at valid times starting with the initial time
+        # of the current cycle's forecast and ending with the last output time
+        # of this forecast that is before the initial time of the next cycle's
+        # forecast.
+        taskdep_pcpcombine_obs: &taskdep_pcpcombine_obs
           attrs:
-            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+            task: '{%- set num_cycl_dep = (workflow.FCST_LEN_HRS/workflow.INCR_CYCL_FREQ)|round(0,"ceil")|int %}
+                   {%- set num_cycl_dep = num_cycl_dep %}
+                   {%- for n in range(0, num_cycl_dep) %}
+                     {%- set cycl_offset = n*workflow.INCR_CYCL_FREQ %}
+                     {%- if n == 0 %}
+                       {{- "run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
+                     {%- elif ((n > 0) and (n < num_cycl_dep-1)) %}
+                       {{- "      <or>\n"}}
+                       {{- "        <not>\n"}}
+                       {{- "          <cycleexistdep cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset}}
+                       {{- "        </not>\n"}}
+                       {{- "        <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset}}
+                       {{- "      </or>\n"}}
+                     {%- elif (n == num_cycl_dep-1) %}
+                       {{- "      <or>\n"}}
+                       {{- "        <not>\n"}}
+                       {{- "          <cycleexistdep cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
+                       {{- "        </not>\n"}}
+                       {{- "        <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
+                       {{- "      </or>\n" }}
+                     {%- endif %}
+                   {%- endfor %}'
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
@@ -182,8 +211,7 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
       dependency:
         and:
           taskdep_pcpcombine_obs:
-            attrs:
-              task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+            <<: &taskdep_pcpcombine_obs
           taskdep_genensprod:
             attrs:
               task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
