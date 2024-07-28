@@ -211,7 +211,7 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
       dependency:
         and:
           taskdep_pcpcombine_obs:
-            <<: &taskdep_pcpcombine_obs
+            <<: *taskdep_pcpcombine_obs
           taskdep_genensprod:
             attrs:
               task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
