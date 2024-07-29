@@ -548,10 +548,21 @@ echo "ihh = ${ihh}"
         # the archive (tar) files.  If so, skip the retrieval process.  If not,
         # proceed to retrieve all the files and place them in the raw daily
         # directory.
+        #
+        # Note that despite the check on the existence of the raw daily directory
+        # below, it is possible for two get_obs_mrms tasks to try to retrieve
+        # obs for the same day.  To minimize this possibility, sleep for a random
+        # number of seconds (with a maximum wait of maxwait seconds set below)
+        # before performing the directory existence check
+        maxwait=30
+        sleep_duration_secs=$((RANDOM % maxwait))
+        echo "Sleeping for $duration seconds..."
+        sleep "${sleep_duration_secs}s"
+
         if [[ -d "${mrms_day_dir_raw}" ]]; then
 
-          echo "${OBTYPE} directory for day ${vyyyymmdd} exists on disk:"
-          echo "  mrms_day_dir_proc = \"${mrms_day_dir_proc}\""
+          echo "${OBTYPE} raw daily directory for day ${vyyyymmdd} exists on disk:"
+          echo "  mrms_day_dir_raw = \"${mrms_day_dir_raw}\""
           echo "This means MRMS files for all hours of the current valid day (${vyyyymmdd}) have been or are being retrieved."
           echo "Thus, we will NOT attempt to retrieve MRMS data for the current valid time from remote locations."
 
@@ -650,7 +661,7 @@ echo "ihh = ${ihh}"
 #
   elif [[ ${OBTYPE} == "NDAS" ]]; then
 
-    # Calculate valid date plus 1 hour.  This is needed because we need to 
+    # Calculate valid date plus 1 hour.  This is needed because we need to
     # check whether this date corresponds to one of the valid hours-of-day
     # 00, 06, 12, and 18 on which the NDAS archives are provided.
     unix_vdate_p1h=$($DATE_UTIL -d "${unix_init_DATE} $((current_fcst+1)) hours" "+%Y-%m-%d %H:00:00")
@@ -675,7 +686,7 @@ echo "vdate_p1h = ${vdate_p1h}"
 
     # Name of the NDAS prepbufr file for the current valid time that will
     # appear in the processed daily subdirectory after this script finishes.
-    # This is the name of the processed file.  Note that this is not the 
+    # This is the name of the processed file.  Note that this is not the
     # same as the name of the raw file, i.e. the file extracted from the
     # archive (tar) file retrieved below by the retrieve_data.py script.
     ndas_fn="prepbufr.ndas.${vdate}"
@@ -695,7 +706,7 @@ echo "processed_fp_list = |${processed_fp_list[@]}"
 
     # Check if the processed NDAS prepbufr file for the current valid time
     # already exists on disk.  If so, skip this valid time and go to the next
-    # one. 
+    # one.
     if [[ -f "${ndas_fp_proc}" ]]; then
 
       echo "${OBTYPE} file exists on disk:"
@@ -764,6 +775,17 @@ echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
         # from the archive (tar) files.  If so, skip the retrieval process.  If
         # not, proceed to retrieve the archive file, extract the prepbufr files
         # from it, and place them in the raw daily directory.
+        #
+        # Note that despite the check on the existence of the raw daily directory
+        # below, it is possible for two get_obs_mrms tasks to try to retrieve
+        # obs for the same day.  To minimize this possibility, sleep for a random
+        # number of seconds (with a maximum wait of maxwait seconds set below)
+        # before performing the directory existence check
+        maxwait=30
+        sleep_duration_secs=$((RANDOM % maxwait))
+        echo "Sleeping for $duration seconds..."
+        sleep "${sleep_duration_secs}s"
+
         if [[ -d "${ndas_day_dir_raw}" ]]; then
 
           print_info_msg "
@@ -949,6 +971,7 @@ NDAS data for the current valid time from remote locations."
   current_fcst=$((${current_fcst} + 1))
 
 done
+echo "SSSSSSSSSSSSSSSS"
 #
 #-----------------------------------------------------------------------
 #
@@ -956,14 +979,13 @@ done
 # for this cycle are either being created (by a get_obs_... task for
 # another cycle) or have already been created (either by this get_obs_...
 # task or one for another cycle).  In case they are still being created,
-# make sure they have in fact been created before exiting this script.  
+# make sure they have in fact been created before exiting this script.
 # If we don't do this, it is possible for this get_obs_... task to complete
 # successfully but still have processed obs files for some forecast hours
 # not yet created, which is undesirable.
 #
 #-----------------------------------------------------------------------
 #
-echo
 echo "HHHHHHHHHHHHHHHH"
 echo "processed_fp_list = |${processed_fp_list[@]}"
 num_proc_files=${#processed_fp_list[@]}
