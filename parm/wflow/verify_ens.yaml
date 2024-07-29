@@ -64,22 +64,15 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
                      {%- set cycl_offset = n*workflow.INCR_CYCL_FREQ %}
                      {%- if n == 0 %}
                        {{- "run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
-                     {%- elif ((n > 0) and (n < num_cycl_dep-1)) %}
-                       {{- "      <or>\n"}}
-                       {{- "        <not>\n"}}
-                       {{- "          <cycleexistdep cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset}}
-                       {{- "        </not>\n"}}
-                       {{- "        <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset}}
-                       {{- "      </or>\n"}}
-                     {%- elif (n == num_cycl_dep-1) %}
-                       {{- "      <or>\n"}}
-                       {{- "        <not>\n"}}
-                       {{- "          <cycleexistdep cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
-                       {{- "        </not>\n"}}
+                     {%- else %}
+                       {{- "      <or>\n" }}
+                       {{- "        <not><cycleexistdep cycle_offset=\"%02d:00:00\"/></not>\n" % cycl_offset }}
                        {{- "        <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
                        {{- "      </or>\n" }}
                      {%- endif %}
-                   {%- endfor %}'
+                   {%- endfor %}
+                   {{- "      <!-- The following task dependency is repeated because of current limitations of the XML generation system to include cross-cycle dependencies. -->\n" }}
+                   {{- "      <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"00:00:00\"" }}'
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
