@@ -67,7 +67,7 @@ do
         # Return exit code and check for results file first
         results_file="${WORKSPACE}/${SRW_PLATFORM}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt"
         if [ ! -f "$results_file" ]; then
-            echo "Missing results file! \nexit 1"
+            echo -e "Missing results file! \nexit 1"
             exit 1
         fi
 

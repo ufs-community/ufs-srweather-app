@@ -530,7 +530,7 @@ def compare_rocotostat(expt_dict,name):
             continue
         line_array = line.split()
         # Skip header lines
-        if line_array[0] == 'CYCLE':
+        if line_array[0] == 'CYCLE' or line_array[0] == '/apps/rocoto/1.3.3/lib/workflowmgr/launchserver.rb:40:':
             continue
         # We should now just have lines describing jobs, in the form:
         # line_array = ['cycle','task','jobid','status','exit status','num tries','walltime']
