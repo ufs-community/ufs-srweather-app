@@ -556,7 +556,7 @@ echo "ihh = ${ihh}"
         # before performing the directory existence check
         maxwait=30
         sleep_duration_secs=$((RANDOM % maxwait))
-        echo "Sleeping for $duration seconds..."
+        echo "Sleeping for ${sleep_duration_secs} seconds..."
         sleep "${sleep_duration_secs}s"
 
         if [[ -d "${mrms_day_dir_raw}" ]]; then
@@ -783,7 +783,7 @@ echo "vhh_p1h_noZero = ${vhh_p1h_noZero}"
         # before performing the directory existence check
         maxwait=30
         sleep_duration_secs=$((RANDOM % maxwait))
-        echo "Sleeping for $duration seconds..."
+        echo "Sleeping for ${sleep_duration_secs} seconds..."
         sleep "${sleep_duration_secs}s"
 
         if [[ -d "${ndas_day_dir_raw}" ]]; then
