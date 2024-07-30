@@ -91,6 +91,11 @@ pipeline {
                             expression { params.SRW_COMPILER_FILTER == 'all' }
                             expression { params.SRW_COMPILER_FILTER == env.SRW_COMPILER }
                         }
+
+                        anyOf {
+                            expression { params.SRW_WRAPPER_TASK_DEPTH == '9' }
+                            expression { params.SRW_WRAPPER_TASK_DEPTH == env.TASK_DEPTH }
+                        }
                     }
                 }
 
@@ -103,6 +108,11 @@ pipeline {
                     axis {
                         name 'SRW_COMPILER'
                         values 'gnu', 'intel'
+                    }
+
+                    axis {
+                        name 'TASK_DEPTH'
+                        values '9', '1', '0'
                     }
                 }
 
@@ -192,10 +202,6 @@ pipeline {
                     
                     // Try a few Workflow Task scripts to make sure E2E tests can be launched in a follow-on 'Test' stage
                     stage('Functional WorkflowTaskTests') {
-                        environment {
-                            TASK_DEPTH = "${env.SRW_WRAPPER_TASK_DEPTH}"
-                        }
-                        
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "Running ${TASK_DEPTH} simple workflow script task tests on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
