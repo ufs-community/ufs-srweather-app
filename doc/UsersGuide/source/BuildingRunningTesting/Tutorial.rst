@@ -581,6 +581,237 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
    *Halloween Storm 2019*
 
+Data
+-------
+
+On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Halloween Storm in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Halloween Storm Case Study <https://ufs-case-studies.readthedocs.io/en/develop/2019HaloweenStorm.html>`__.
+
+Load the workflow
+---------------------
+
+To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
+
+.. code-block:: console
+   
+   source etc/lmod-setup.sh <platform>       # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
+   module use modulefiles
+   module load wflow_<platform>
+
+where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
+
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
+
+.. code-block:: console
+   
+   source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
+   module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
+   module load wflow_hera
+   conda activate srw_app
+
+Configuration
+-------------------------
+
+Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
+
+.. code-block:: console
+
+   cd /path/to/ufs-srweather-app/ush
+   cp config.community.yaml config.yaml
+
+Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export USH=/path/to/ufs-srweather-app/ush
+
+Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. The variable will need to be reset for each login session. 
+
+Experiment 1: Control
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
+
+.. Hint:: 
+   
+   To open the configuration file in the command line, users may run the command:
+
+   .. code-block:: console
+
+      vi config.yaml
+
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit/quit the file. Users may opt to use their preferred code editor instead.
+
+Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
+
+.. code-block:: console
+
+   user:
+      RUN_ENVIR: community
+      MACHINE: macos
+      ACCOUNT: none
+
+For a detailed description of these variables, see :numref:`Section %s <user>`.
+
+Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in the ``platform:`` section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Section %s <VXCases>`.
+
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
+
+.. code-block:: console
+
+   workflow:
+     USE_CRON_TO_RELAUNCH: false
+     EXPT_SUBDIR: control
+     CCPP_PHYS_SUITE: FV3_GFS_v16
+     PREDEF_GRID_NAME: RRFS_CONUS_13km
+     DATE_FIRST_CYCL: '2019102812'
+     DATE_LAST_CYCL: '2019102812'
+     FCST_LEN_HRS: 6
+     PREEXISTING_DIR_METHOD: rename
+     VERBOSE: true
+     COMPILER: intel
+
+.. _CronNote:
+
+.. note::
+
+   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
+
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different forecasts --- one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite --- "gfsv16_physics_fcst" could be a good alternative directory name.
+
+``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid allows for fewer computational restraints compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
+
+For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
+
+To turn on the plotting for the experiment, the YAML configuration file
+should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
+
+.. code-block:: console
+
+ rocoto:
+    tasks:
+      task_get_extrn_ics:
+        walltime: 06:00:00
+      task_get_extrn_lbcs:
+        walltime: 06:00:00
+      metatask_run_ensemble:
+      task_make_lbcs_mem#mem#:
+        walltime: 06:00:00
+      task_run_fcst_mem#mem#:
+        walltime: 06:00:00
+      taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+
+
+For more information on how to turn on/off tasks in the workflow, please
+see :numref:`Section %s <ConfigTasks>`.
+
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems). 
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
+     FV3GFS_FILE_FMT_ICS: nemsio
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/UFS-CASE-STUDY/nemsio/${yyyymmddhh}
+
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
+
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
+
+.. code-block:: console
+
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: FV3GFS
+     LBC_SPEC_INTVL_HRS: 6
+     FV3GFS_FILE_FMT_LBCS: grib2
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+
+For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
+
+Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
+
+
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6`` and  ``PLOT_DOMAINS: ["regional"]``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
+
+.. code-block:: console
+
+   task_plot_allvars:
+     COMOUT_REF: ""
+     PLOT_FCST_INC: 6
+     PLOT_DOMAINS: ["regional"]
+
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z).
+
+``PLOT_DOMAINS:`` The plotting scripts are designed to generate plots over the entire CONUS by default, but by setting this variable to ["regional"], the experiment will generate plots for the smaller SUBCONUS_Ind_3km regional domain instead. 
+
+After configuring the forecast, users can generate the forecast by running:
+
+.. code-block:: console
+
+   ./generate_FV3LAM_wflow.py
+
+To see experiment progress, users should navigate to their experiment directory. Then, use the ``rocotorun`` command to launch new workflow tasks and ``rocotostat`` to check on experiment progress. 
+
+.. code-block:: console
+
+   cd /path/to/expt_dirs/control
+   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+Users will need to rerun the ``rocotorun`` and ``rocotostat`` commands above regularly and repeatedly to continue submitting workflow tasks and receiving progress updates. 
+
+.. note::
+
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
+
+Users can save the location of the ``control`` directory in an environment variable (``$CONTROL``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export CONTROL=/path/to/expt_dirs/control
+
+Users should substitute ``/path/to/expt_dirs/control`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $CONTROL``, and it will take them to the ``control`` experiment directory. The variable will need to be reset for each login session. 
+
+Experiment 2: Test
+^^^^^^^^^^^^^^^^^^^^^^
+
+Once the control case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow:`` section as follows:
+
+.. code-block:: console
+
+   workflow:
+     EXPT_SUBDIR: test_expt
+     CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+
+``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be renamed, and the new experiment will take its place (see :numref:`Section %s <preexisting-dirs>` for details). To avoid this issue, this tutorial uses ``test_expt`` as the second experiment's name, but the user may select a different name if desired.
+
+``CCPP_PHYS_SUITE:`` The FV3_RRFS_v1beta physics suite was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the Rapid Refresh Forecast System (:term:`RRFS`). 
+
+.. hint:: 
+   
+   Later, users may want to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. 
+
+.. COMMENT: Maybe also FV3_RAP?
+
+Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data. Users will need to change the following lines in each section:
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: HRRR
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: RAP
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
+     EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
+
+HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
+
+``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (:term:`LBCs`) from a previous forecast run that was started earlier than the start time of the forecast being configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
+
+Under ``rocoto:tasks:``, add a section to increase the maximum wall time for the postprocessing tasks. The walltime is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
+
 Tutorial Content
 -------------------
 
