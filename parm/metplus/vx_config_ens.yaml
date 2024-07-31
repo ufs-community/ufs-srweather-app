@@ -1,0 +1,54 @@
+#
+# This configuration file specifies the field groups, fields, levels,
+# and thresholds to use for ENSEMBLE verification.  The format is the
+# same as the one used in the configuration file for deterministic
+# verification (vx_config_det.yaml); please see the documentation in
+# that file for details.
+#
+APCP:
+    APCP:
+        A1: ['gt0.0', 'ge0.254', 'ge0.508', 'ge2.54']
+        A3: ['gt0.0', 'ge0.508', 'ge2.54', 'ge6.350']
+        A6: ['gt0.0', 'ge2.54', 'ge6.350', 'ge12.700']
+        A24: ['gt0.0', 'ge6.350', 'ge12.700', 'ge25.400']
+ASNOW:
+    ASNOW:
+        A6: ['gt0.0', 'ge2.54', 'ge5.08', 'ge10.16', 'ge20.32']
+REFC:
+    REFC%%MergedReflectivityQCComposite:
+        L0%%Z500: ['ge20', 'ge30', 'ge40', 'ge50']
+RETOP:
+    RETOP%%EchoTop18:
+        L0%%Z500: ['ge20', 'ge30', 'ge40', 'ge50']
+ADPSFC:
+    TMP:
+        Z2: ['ge268', 'ge273', 'ge278', 'ge293', 'ge298', 'ge303']
+    DPT:
+        Z2: ['ge263', 'ge268', 'ge273', 'ge288', 'ge293', 'ge298']
+    WIND:
+        Z10: ['ge5', 'ge10', 'ge15']
+    TCDC:
+        L0: ['lt25', 'gt75']
+    VIS:
+        L0: ['lt1609', 'lt8045', 'ge8045']
+    HGT%%CEILING:
+        L0: ['lt152', 'lt305', 'lt914']
+ADPUPA:
+    TMP:
+        P850: ['ge288', 'ge293', 'ge298']
+        P700: ['ge273', 'ge278', 'ge283']
+        P500: ['ge258', 'ge263', 'ge268']
+    DPT:
+        P850: ['ge273', 'ge278', 'ge283']
+        P700: ['ge263', 'ge268', 'ge273']
+    WIND:
+        P850: ['ge5', 'ge10', 'ge15']
+        P700: ['ge10', 'ge15', 'ge20']
+        P500: ['ge15', 'ge21', 'ge26']
+        P250: ['ge26', 'ge31', 'ge36', 'ge46', 'ge62']
+    HGT:
+        P500: ['ge5400', 'ge5600', 'ge5880']
+    CAPE:
+        L0%%L0-100000: ['le1000', 'gt1000&&lt2500', 'ge2500&&lt4000', 'ge2500']
+    HPBL%%PBL:
+        Z0%%L0: ['lt500', 'lt1500', 'gt1500']

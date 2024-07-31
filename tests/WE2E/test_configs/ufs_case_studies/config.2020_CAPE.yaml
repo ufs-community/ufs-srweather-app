@@ -1,0 +1,36 @@
+metadata:
+  description: |-
+    This test is to ensure that the workflow running in community mode
+    completes successfully on the RRFS_CONUS_13km grid using the FV3_GFS_v16
+    physics suite with ICs and LBCs derived from the UFS-CASE-STUDIES platforms 
+    for 2020 July Convective Available Potential Energy.
+    # NOTE: FCST_LEN_HRS is set to 6 because it can take a very long time to
+    #       download these files, which can delay the WE2E testing process.
+    #       To capture the event, extend the FCST_LEN_HRS from 6 to 24.
+user:
+  RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: aws
+workflow:
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  PREDEF_GRID_NAME: RRFS_CONUS_13km
+  DATE_FIRST_CYCL: '2020072300'
+  DATE_LAST_CYCL: '2020072300'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
+  FV3GFS_FILE_FMT_ICS: nemsio
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: UFS-CASE-STUDY
+  LBC_SPEC_INTVL_HRS: 3
+  FV3GFS_FILE_FMT_LBCS: nemsio
+rocoto:
+  tasks:
+    task_get_extrn_ics:
+      walltime: 06:00:00
+    task_get_extrn_lbcs:
+      walltime: 06:00:00
+    metatask_run_ensemble:
+      task_make_lbcs_mem#mem#:
+        walltime: 06:00:00

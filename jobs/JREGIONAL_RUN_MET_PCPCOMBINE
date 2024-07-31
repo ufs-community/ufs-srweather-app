@@ -3,7 +3,20 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-job that runs the MET/METplus PcpCombine tool on hourly
+# accumulated precipitation (APCP) data to obtain APCP for multi-hour
+# accumulation periods.  The data can be from CCPA observations or a
+# focrecast.
 #
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #
@@ -16,7 +29,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

@@ -96,12 +96,6 @@ def run_we2e_tests(homedir, args) -> None:
                             logging.debug(f'{testfilename} exists for this platform and run_envir'\
                                            'has not been specified\n'\
                                            'Setting run_envir = {run_envir} for all tests')
-                else:
-                    if not run_envir:
-                        run_envir = 'nco'
-                        logging.debug(f'{testfilename} exists for this platform and run_envir has'\
-                                       'not been specified\n'\
-                                       'Setting run_envir = {run_envir} for all tests')
                 logging.debug(f"Reading test file: {testfilename}")
                 with open(testfilename, encoding="utf-8") as f:
                     tests_to_check = [x.rstrip() for x in f]
@@ -175,14 +169,6 @@ def run_we2e_tests(homedir, args) -> None:
         test_cfg['user'].update({"ACCOUNT": args.account})
         if run_envir:
             test_cfg['user'].update({"RUN_ENVIR": run_envir})
-            if run_envir == "nco":
-                if 'nco' not in test_cfg:
-                    test_cfg['nco'] = dict()
-                test_cfg['nco'].update({"model_ver_default": "we2e"})
-        if args.opsroot:
-            if 'nco' not in test_cfg:
-                test_cfg['nco'] = dict()
-            test_cfg['nco'].update({"OPSROOT_default": args.opsroot})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
@@ -223,10 +209,6 @@ def run_we2e_tests(homedir, args) -> None:
                 if not test_cfg['platform'].get(obvar) and mach_path:
                     logging.debug(f'Setting {obvar} = {mach_path} from machine file')
                     test_cfg['platform'][obvar] = mach_path
-
-        if 'cpl_aqm_parm' in test_cfg:
-            test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
-            test_cfg['cpl_aqm_parm']['DCOMINfire_default'] = f"{test_aqm_input_basedir}/RAVE_fire"
 
         if args.compiler == "gnu":
             # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
@@ -533,9 +515,6 @@ if __name__ == "__main__":
                     help='DEPRECATED; DO NOT USE. See "launch" option.')
     ap.add_argument('--cron_relaunch_intvl_mnts', type=int,
                     help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
-    ap.add_argument('--opsroot', type=str,
-                    help='If test is for NCO mode, sets OPSROOT_default (see config_defaults.yaml'\
-                         'for more details on this variable)')
     ap.add_argument('--print_test_info', action='store_true',
                     help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
                          'starting experiment')

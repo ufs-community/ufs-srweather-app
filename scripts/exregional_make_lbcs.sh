@@ -3,12 +3,93 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-scrtipt that sets up and runs chgres_cube for preparing lateral
+# boundary conditions for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    COMOUT
+#    COMROOT
+#    DATA
+#    DATAROOT
+#    DATA_SHARE
+#    EXTRN_MDL_CDATE
+#    INPUT_DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    EXECdir
+#    MACHINE
+#    PARMdir
+#    RUN_ENVIR
+#    USHdir
+#
+#  platform:
+#    FIXgsm
+#    PRE_TASK_CMDS
+#    RUN_CMD_UTILS
+#
+#  workflow:
+#    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXTRN_MDL_VAR_DEFNS_FN
+#    FIXlam
+#    SDF_USES_RUC_LSM
+#    SDF_USES_THOMPSON_MP
+#    THOMPSON_MP_CLIMO_FP
+#    VERBOSE
+#
+#  task_get_extrn_lbcs:
+#    EXTRN_MDL_NAME_LBCS
+#    FV3GFS_FILE_FMT_LBCS
+#
+#  task_make_lbcs:
+#    FVCOM_DIR
+#    FVCOM_FILE
+#    FVCOM_WCSTART
+#    KMP_AFFINITY_MAKE_LBCS
+#    OMP_NUM_THREADS_MAKE_LBCS
+#    OMP_STACKSIZE_MAKE_LBCS
+#    USE_FVCOM
+#    VCOORD_FILE
+#
+#  global:
+#    HALO_BLEND
+#
+#  cpl_aqm_parm:
+#    CPL_AQM
+#
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
+#
+#-----------------------------------------------------------------------
+#
+
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+set -x
+for sect in user nco platform  workflow global cpl_aqm_parm constants task_get_extrn_lbcs task_make_lbcs ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -250,7 +331,7 @@ tracers="\"\""
 thomp_mp_climo_file=""
 if [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
      "${EXTRN_MDL_NAME_LBCS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_THOMPSON_MP}") = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -410,7 +491,7 @@ for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
     fi
     ;;
   "GDAS")
-    fn_atm="${EXTRN_MDL_FNS[0][$i]}"
+    fn_atm="${EXTRN_MDL_FNS[$i]}"
     ;;
   "GEFS")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
@@ -467,53 +548,48 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
 # IMPORTANT:
 # If we want a namelist variable to be removed from the namelist file,
 # in the "settings" variable below, we need to set its value to the
-# string "null".  This is equivalent to setting its value to
-#    !!python/none
-# in the base namelist file specified by FV3_NML_BASE_SUITE_FP or the
-# suite-specific yaml settings file specified by FV3_NML_YAML_CONFIG_FP.
+# string "null".
 #
-# It turns out that setting the variable to an empty string also works
-# to remove it from the namelist!  Which is better to use??
-#
-settings="
-'config': {
- 'fix_dir_target_grid': ${FIXlam},
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXlam},
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${VCOORD_FILE},
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
- 'data_dir_input_grid': ${extrn_mdl_staging_dir},
- 'atm_files_input_grid': ${fn_atm},
- 'grib2_file_input_grid': \"${fn_grib2}\",
- 'cycle_mon': $((10#${mm})),
- 'cycle_day': $((10#${dd})),
- 'cycle_hour': $((10#${hh})),
- 'convert_atm': True,
- 'regional': 2,
- 'halo_bndy': $((10#${NH4})),
- 'halo_blend': $((10#${HALO_BLEND})),
- 'input_type': ${input_type},
- 'external_model': ${external_model},
- 'tracers_input': ${tracers_input},
- 'tracers': ${tracers},
- 'thomp_mp_climo_file': ${thomp_mp_climo_file},
-}
+  settings="
+'config':
+ 'fix_dir_target_grid': ${FIXlam}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'vcoord_file_target_grid': ${VCOORD_FILE}
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
+ 'atm_files_input_grid': ${fn_atm}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'cycle_mon': $((10#${mm}))
+ 'cycle_day': $((10#${dd}))
+ 'cycle_hour': $((10#${hh}))
+ 'convert_atm': True
+ 'regional': 2
+ 'halo_bndy': $((10#${NH4}))
+ 'halo_blend': $((10#${HALO_BLEND}))
+ 'input_type': ${input_type}
+ 'external_model': ${external_model}
+ 'tracers_input': ${tracers_input}
+ 'tracers': ${tracers}
+ 'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
-#
-# Call the python script to create the namelist file.
-#
+
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+  # UW takes input from stdin when no -i/--input-config flag is provided
+  (cat << EOF
+$settings
+EOF
+) | uw config realize \
+    --input-format yaml \
+    -o ${nml_fn} \
+     --output-format nml \
+    -v \
+
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script set_namelist.py to set the variables 
-in the namelist file read in by the ${exec_fn} executable failed. Parameters 
-passed to this script are:
-  Name of output namelist file:
-    nml_fn = \"${nml_fn}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
+    message_txt="Error creating namelist read by ${exec_fn} failed.
+       Settings for input are:
 $settings"
     if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
       err_exit "${message_txt}"
@@ -565,7 +641,11 @@ located in the following directory:
   lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
   fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
   fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
-  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+    cp -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  else
+    mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  fi
 
   fi
 done

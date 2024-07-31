@@ -15,8 +15,8 @@ platform:
   RUN_CMD_PRDGEN: mpiexec -n $nprocs 
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -n $nprocs 
-  RUN_CMD_NEXUS: mpiexec -n $nprocs 
-  RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}  
+  RUN_CMD_NEXUS: /opt/cray/pe/pals/1.2.11/bin/mpiexec -n $nprocs 
+  RUN_CMD_AQMLBC: /opt/cray/pe/pals/1.2.11/bin/mpiexec -n ${numts}
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data
   TEST_AQM_INPUT_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/aqm_data
@@ -31,6 +31,8 @@ platform:
   FIXorg: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /glade/work/chanhooj/SRW-AQM_DATA/fix_aqm
+  FIXemis: /glade/work/chanhooj/SRW-AQM_DATA/fix_emis
   EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
@@ -42,3 +44,7 @@ data:
     HRRR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     GSMGFS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
+cpl_aqm_parm:
+  COMINfire_default: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/RAVE_fire
+  COMINgefs_default: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/GEFS_DATA
+  NEXUS_GFS_SFC_DIR: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA

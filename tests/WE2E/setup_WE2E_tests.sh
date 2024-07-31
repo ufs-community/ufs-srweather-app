@@ -45,7 +45,7 @@ function usage {
 
 }
 
-machines=( hera jet cheyenne derecho orion wcoss2 gaea-c5 odin singularity macos noaacloud )
+machines=( hera jet cheyenne derecho orion wcoss2 gaea odin singularity macos noaacloud )
 
 if [ "$1" = "-h" ] ; then usage ; fi
 [[ $# -le 2 ]] && usage
@@ -80,6 +80,7 @@ export HOME=$homedir
 source ../../ush/load_modules_wflow.sh ${machine}
 
 # Run the E2E Workflow tests
+[[ ${tests} = none ]] && echo "none" || \
 ./run_WE2E_tests.py \
   --machine=${machine} \
   --account=${account} \

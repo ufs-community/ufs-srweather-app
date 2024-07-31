@@ -6,15 +6,14 @@ Function that creates the config file for running AQM.
 import argparse
 import os
 import sys
-import tempfile
-from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
+from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     import_vars,
-    load_shell_config,
+    load_yaml_config,
     print_info_msg,
     print_input_args,
     str_to_type,
@@ -61,25 +60,23 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     # Set parameters in the aqm.rc file.
     #
-    aqm_rc_bio_file_fp=os.path.join(DCOMINbio, AQM_BIO_FILE)
+    aqm_rc_bio_file_fp=os.path.join(FIXaqm,"bio", AQM_BIO_FILE)
 
     # Fire config
     aqm_rc_fire_file_fp=os.path.join(
         COMIN,
-        "FIRE_EMISSION",
         f"{AQM_FIRE_FILE_PREFIX}_{yyyymmdd}_t{hh}z{AQM_FIRE_FILE_SUFFIX}"
         )
 
     # Dust config
     aqm_rc_dust_file_fp=os.path.join(
-            DCOMINdust,
+            FIXaqm,"dust",
             f"{AQM_DUST_FILE_PREFIX}_{PREDEF_GRID_NAME}{AQM_DUST_FILE_SUFFIX}",
             )
 
     # Canopy config
     aqm_rc_canopy_file_fp=os.path.join(
-        DCOMINcanopy,
-        PREDEF_GRID_NAME,
+        FIXaqm,"canopy",PREDEF_GRID_NAME,
         f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}",
         )
     #
@@ -96,10 +93,9 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         "do_aqm_canopy": DO_AQM_CANOPY,
         "do_aqm_product": DO_AQM_PRODUCT,
         "ccpp_phys_suite": CCPP_PHYS_SUITE,
-        "aqm_config_dir": AQM_CONFIG_DIR,
         "init_concentrations": init_concentrations,
         "aqm_rc_bio_file_fp": aqm_rc_bio_file_fp,
-        "dcominbio": DCOMINbio,
+        "fixaqm": FIXaqm,
         "aqm_rc_fire_file_fp": aqm_rc_fire_file_fp,
         "aqm_rc_fire_frequency": AQM_RC_FIRE_FREQUENCY,
         "aqm_rc_dust_file_fp": aqm_rc_dust_file_fp,
@@ -127,36 +123,11 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     #-----------------------------------------------------------------------
     #
-    with tempfile.NamedTemporaryFile(
-            dir="./",
-            mode="w+t",
-            prefix="aqm_rc_settings",
-            suffix=".yaml") as tmpfile:
-        tmpfile.write(settings_str)
-        tmpfile.seek(0)
-        cmd = " ".join(["uw template render",
-                "-i",
-                AQM_RC_TMPL_FP,
-                "-o",
-                aqm_rc_fp,
-                "-v",
-                "--values-file",
-                tmpfile.name,
-            ]
-        )
-        indent = "  "
-        output = ""
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            output = e.output
-            print(f"Failed with status: {e.returncode}")
-            sys.exit(1)
-        finally:
-            print("Output:")
-            for line in output.split("\n"):
-                print(f"{indent * 2}{line}")
+    render(
+        input_file = AQM_RC_TMPL_FP,
+        output_file = aqm_rc_fp,
+        values_src = settings,
+    )
     return True
 
 def parse_args(argv):
@@ -187,7 +158,7 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
+    cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_aqm_rc_file(

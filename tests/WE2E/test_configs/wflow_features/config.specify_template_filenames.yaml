@@ -9,7 +9,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table.FV3_GFS_v15p2
   FIELD_TABLE_TMPL_FN: field_table.FV3_GFS_v15p2
   MODEL_CONFIG_FN: model_configure
-  NEMS_CONFIG_FN: nems.configure
+  UFS_CONFIG_FN: ufs.configure
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019070100'

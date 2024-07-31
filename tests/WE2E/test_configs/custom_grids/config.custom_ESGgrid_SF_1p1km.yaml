@@ -57,7 +57,7 @@ rocoto:
   tasks:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        walltime: 01:00:00
+        walltime: 02:30:00
       task_make_ics_mem#mem#:
         nnodes: 16
         ppn: 12
