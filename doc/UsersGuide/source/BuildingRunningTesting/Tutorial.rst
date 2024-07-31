@@ -782,11 +782,9 @@ Once the control case is running, users can return to the ``config.yaml`` file (
 
    workflow:
      EXPT_SUBDIR: test_expt
-     CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+     CCPP_PHYS_SUITE: FV3_GFS_v16
 
 ``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be renamed, and the new experiment will take its place (see :numref:`Section %s <preexisting-dirs>` for details). To avoid this issue, this tutorial uses ``test_expt`` as the second experiment's name, but the user may select a different name if desired.
-
-``CCPP_PHYS_SUITE:`` The FV3_RRFS_v1beta physics suite was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the Rapid Refresh Forecast System (:term:`RRFS`). 
 
 .. hint:: 
    
