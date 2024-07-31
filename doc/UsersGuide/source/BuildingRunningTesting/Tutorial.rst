@@ -608,7 +608,7 @@ After loading the workflow, users should follow the instructions printed to the 
    module load wflow_hera
    conda activate srw_app
 
-Configuration
+Configurationcd 
 -------------------------
 
 Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
@@ -616,7 +616,7 @@ Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") 
 .. code-block:: console
 
    cd /path/to/ufs-srweather-app/ush
-   cp config.community.yaml config.yaml
+   
 
 Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
 
@@ -694,11 +694,11 @@ should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
       task_get_extrn_lbcs:
         walltime: 06:00:00
       metatask_run_ensemble:
-      task_make_lbcs_mem#mem#:
-        walltime: 06:00:00
-      task_run_fcst_mem#mem#:
-        walltime: 06:00:00
-      taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+        task_make_lbcs_mem#mem#:
+          walltime: 06:00:00
+        task_run_fcst_mem#mem#:
+          walltime: 06:00:00
+        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
 
 For more information on how to turn on/off tasks in the workflow, please
@@ -712,7 +712,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
      FV3GFS_FILE_FMT_ICS: nemsio
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/UFS-CASE-STUDY/nemsio/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
