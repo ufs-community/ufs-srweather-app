@@ -574,7 +574,7 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
 **Weather Phenomena:** Flooding and high winds
 
-   * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20191031 
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HalloweenStorm.jpg
    :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
@@ -809,6 +809,7 @@ HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta p
 ``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (:term:`LBCs`) from a previous forecast run that was started earlier than the start time of the forecast being configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
 
 Under ``rocoto:tasks:``, add a section to increase the maximum wall time for the postprocessing tasks. The walltime is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
+
 
 Tutorial Content
 -------------------
