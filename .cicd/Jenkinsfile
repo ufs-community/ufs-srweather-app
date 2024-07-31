@@ -193,7 +193,7 @@ pipeline {
                     // Try a few Workflow Task scripts to make sure E2E tests can be launched in a follow-on 'Test' stage
                     stage('Functional WorkflowTaskTests') {
                         environment {
-                            TASK_DEPTH = "${env.SRW_WRAPPER_TASK_DEPTH}"
+                            TASK_DEPTH = "${params.SRW_WRAPPER_TASK_DEPTH}"
                         }
                         
                         steps {
