@@ -45,21 +45,21 @@ On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can fi
 
 On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
-   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.2.0/.
+   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v2.2.0/METplus-vx-sample/.
 
    #. Download from a terminal using the AWS command line interface (CLI), if installed:
 
       .. code-block:: console
 
-         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.2.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
+         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v2.2.0/METplus-vx-sample/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
    
    #. Download from a terminal using ``wget``: 
 
       .. code-block:: console
 
-         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.2.0/Indy-Severe-Weather.tgz
+         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/METplus-vx-sample/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :numref:`Section %s <PlotOutput>` for more information on plotting. 
+This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth/NaturalEarth.tgz. See the :numref:`Section %s <PlotOutput>` for more information on plotting. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
