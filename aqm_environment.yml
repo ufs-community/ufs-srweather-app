@@ -9,5 +9,5 @@ dependencies:
   - pylint=2.17*
   - pytest=7.2*
   - scipy=1.10.*
-  - uwtools=2.1*
+  - uwtools=2.3*
   - xarray=2022.11.*

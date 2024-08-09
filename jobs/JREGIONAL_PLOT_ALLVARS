@@ -3,12 +3,54 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-job to plot the forecast output
+#
+# Run-time environment variables:
+#
+#    CDATE
+#    COMOUT
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    RUN_ENVIR
+#    SCRIPTSdir
+#    USHdir
+#
+#  platform:
+#    FIXshp
+#
+#  workflow:
+#    EXPT_SUBDIR
+#    PREEXISTING_DIR_METHOD
+#    PREDEF_GRID_NAME
+#
+#  task_plot_allvars:
+#    COMOUT_REF
+#    PLOT_DOMAINS
+#    PLOT_FCST_END
+#    PLOT_FCST_INC
+#    PLOT_FCST_START
+#
+#  task_run_fcst:
+#    FCST_LEN_HRS
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_plot_allvars|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow task_plot_allvars task_run_fcst ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -67,6 +109,11 @@ COMOUT_REF=$(eval echo ${COMOUT_REF})
 #-----------------------------------------------------------------------
 #
 
+if [ -n "${SRW_GRAPHICS_ENV:-}" ] ; then
+  set +u
+  conda activate ${SRW_GRAPHICS_ENV}
+  set -u
+fi
 # plot all variables
 $SCRIPTSdir/exregional_plot_allvars.py \
            --cycle ${CDATE} \

@@ -1,5 +1,31 @@
 #!/bin/bash
 
+
+#
+#-----------------------------------------------------------------------
+#
+# This J-Job script runs a set of tests at the end of WE2E tests.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    CDATE
+#    FCST_DIR
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    RUN_ENV
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    FCST_LEN_HRS
+#
+#-----------------------------------------------------------------------
+#
+
 #
 #-----------------------------------------------------------------------
 #
@@ -8,8 +34,11 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_integration_test|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
+
 #
 #-----------------------------------------------------------------------
 #

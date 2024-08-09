@@ -30,6 +30,7 @@ fi
 target=$1
 symlink=$2
 relative=${3:-TRUE}
+relative=$(boolify $relative)
 #
 #-----------------------------------------------------------------------
 #
