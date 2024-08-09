@@ -3,8 +3,38 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the post-processor (UPP) on the NetCDF output files
-# of the write component of the FV3-LAM model.
+# The J-Job that runs the Unified Post-processor (UPP) on the NetCDF
+# output from FV3.
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    COMOUT
+#    cyc
+#    DATA
+#    DATAROOT
+#    GLOBAL_VAR_DEFNS_FP
+#    PDY
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  workflow:
+#    DATE_FIRST_CYCL
+#    FCST_LEN_CYCL
+#    FCST_LEN_HRS
+#    INCR_CYCL_FREQ
+#    RUN_ENVIR
+#
+#  task_run_post:
+#    SUB_HOURLY_POST
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +47,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_post|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow task_run_post ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -60,7 +92,7 @@ on the output files corresponding to a specified forecast hour.
 # minutes (fmn) are set to "00".  This is necessary in order to pass
 # "fmn" into the post ex-script for the calculation of post_time.
 #
-if [ "${SUB_HOURLY_POST}" != "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") != "TRUE" ]; then
   export fmn="00"
 fi
 #
@@ -88,7 +120,7 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   mkdir -p "${COMOUT}"
 fi
 
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
   export DATA_FHR="${DATA:-$COMOUT}/$fhr"

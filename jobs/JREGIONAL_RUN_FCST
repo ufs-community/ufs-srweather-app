@@ -3,9 +3,24 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script copies files from various directories into the experiment
-# directory, creates links to some of them, and modifies others (e.g. 
-# templates) to customize them for the current experiment setup.
+# The J-Job that runs the forecast
+#
+# Run-time environment variables:
+#
+#    CDATE
+#    COMIN
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    RUN_ENVIR
 #
 #-----------------------------------------------------------------------
 #
@@ -18,7 +33,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------

@@ -4,16 +4,16 @@
 ####  Python Script Documentation Block
 #
 # Script name:       	exregional_integration_test.py
-# Script description:  	Ensures the correct number of netcdf files are generated  
+# Script description:  	Ensures the correct number of netcdf files are generated
 # 			for each experiment
 #
 # Author:  Eddie Snyder 	Org: NOAA EPIC		Date: 2024-02-05
-#           
+#
 # Instructions:		1. Pass the appropriate info for the required arguments:
 #                              --fcst_dir=/path/to/forecast/files
 #                              --fcst_len=<forecast length as Int>
 #                       2. Run script with arguments
-#                       
+#
 # Notes/future work:    - Currently SRW App only accepts netcdf as the UFS WM 
 #                         output file format. If that changes, then additional
 #                         logic is needed to address the other file formats.

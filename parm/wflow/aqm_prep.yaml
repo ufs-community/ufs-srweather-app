@@ -29,7 +29,7 @@ default_aqm_task: &default_aqm
 
 task_nexus_gfs_sfc:
   <<: *default_aqm
-  command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_gfs_sfc" "&HOMEdir;/jobs/JSRW_NEXUS_GFS_SFC"'
+  command: '&LOAD_MODULES_RUN_TASK; "nexus_gfs_sfc" "&HOMEdir;/jobs/JSRW_NEXUS_GFS_SFC"'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -53,7 +53,7 @@ metatask_nexus_emission:
     nspt: '{% for h in range(0, cpl_aqm_parm.NUM_SPLIT_NEXUS) %}{{ " %02d" % h }}{% endfor %}'
   task_nexus_emission_#nspt#:
     <<: *default_aqm
-    command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&HOMEdir;/jobs/JSRW_NEXUS_EMISSION"'
+    command: '&LOAD_MODULES_RUN_TASK; "nexus_emission" "&HOMEdir;/jobs/JSRW_NEXUS_EMISSION"'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: '{{ task_nexus_emission.NNODES_NEXUS_EMISSION }}'
     ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
@@ -68,7 +68,7 @@ metatask_nexus_emission:
 
 task_nexus_post_split:
   <<: *default_aqm
-  command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_post_split" "&HOMEdir;/jobs/JSRW_NEXUS_POST_SPLIT"'
+  command: '&LOAD_MODULES_RUN_TASK; "nexus_post_split" "&HOMEdir;/jobs/JSRW_NEXUS_POST_SPLIT"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     metataskdep:
@@ -77,13 +77,13 @@ task_nexus_post_split:
 
 task_fire_emission:
   <<: *default_aqm
-  command: '&LOAD_MODULES_RUN_TASK_FP; "fire_emission" "&HOMEdir;/jobs/JSRW_FIRE_EMISSION"'
+  command: '&LOAD_MODULES_RUN_TASK; "fire_emission" "&HOMEdir;/jobs/JSRW_FIRE_EMISSION"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
 
 task_point_source:
   <<: *default_aqm
-  command: '&LOAD_MODULES_RUN_TASK_FP; "point_source" "&HOMEdir;/jobs/JSRW_POINT_SOURCE"'
+  command: '&LOAD_MODULES_RUN_TASK; "point_source" "&HOMEdir;/jobs/JSRW_POINT_SOURCE"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   walltime: 01:00:00
   dependency:
@@ -101,7 +101,7 @@ task_aqm_ics_ext:
   attrs:
     cycledefs: at_start
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
+  command: '&LOAD_MODULES_RUN_TASK; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
   envars:
     <<: *default_vars
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
@@ -127,7 +127,7 @@ task_aqm_ics:
   attrs:
     cycledefs: cycled_from_second
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
+  command: '&LOAD_MODULES_RUN_TASK; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
   envars:
     <<: *default_vars
     PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMIN_DIR;</cyclestr>'
@@ -150,7 +150,7 @@ task_aqm_ics:
 
 task_aqm_lbcs:
   <<: *default_aqm
-  command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_lbcs" "&HOMEdir;/jobs/JSRW_AQM_LBCS"'
+  command: '&LOAD_MODULES_RUN_TASK; "aqm_lbcs" "&HOMEdir;/jobs/JSRW_AQM_LBCS"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   ppn: 24
   dependency:

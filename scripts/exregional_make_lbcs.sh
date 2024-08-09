@@ -3,12 +3,93 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-scrtipt that sets up and runs chgres_cube for preparing lateral
+# boundary conditions for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    COMOUT
+#    COMROOT
+#    DATA
+#    DATAROOT
+#    DATA_SHARE
+#    EXTRN_MDL_CDATE
+#    INPUT_DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    EXECdir
+#    MACHINE
+#    PARMdir
+#    RUN_ENVIR
+#    USHdir
+#
+#  platform:
+#    FIXgsm
+#    PRE_TASK_CMDS
+#    RUN_CMD_UTILS
+#
+#  workflow:
+#    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXTRN_MDL_VAR_DEFNS_FN
+#    FIXlam
+#    SDF_USES_RUC_LSM
+#    SDF_USES_THOMPSON_MP
+#    THOMPSON_MP_CLIMO_FP
+#    VERBOSE
+#
+#  task_get_extrn_lbcs:
+#    EXTRN_MDL_NAME_LBCS
+#    FV3GFS_FILE_FMT_LBCS
+#
+#  task_make_lbcs:
+#    FVCOM_DIR
+#    FVCOM_FILE
+#    FVCOM_WCSTART
+#    KMP_AFFINITY_MAKE_LBCS
+#    OMP_NUM_THREADS_MAKE_LBCS
+#    OMP_STACKSIZE_MAKE_LBCS
+#    USE_FVCOM
+#    VCOORD_FILE
+#
+#  global:
+#    HALO_BLEND
+#
+#  cpl_aqm_parm:
+#    CPL_AQM
+#
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
+#
+#-----------------------------------------------------------------------
+#
+
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+set -x
+for sect in user nco platform  workflow global cpl_aqm_parm constants task_get_extrn_lbcs task_make_lbcs ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -250,7 +331,7 @@ tracers="\"\""
 thomp_mp_climo_file=""
 if [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
      "${EXTRN_MDL_NAME_LBCS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_THOMPSON_MP}") = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -495,6 +576,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
 "
 
   nml_fn="fort.41"
+  # UW takes input from stdin when no -i/--input-config flag is provided
   (cat << EOF
 $settings
 EOF
@@ -559,7 +641,7 @@ located in the following directory:
   lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
   fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
   fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
-  if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     cp -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
   else
     mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc

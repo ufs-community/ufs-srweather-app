@@ -24,7 +24,8 @@ fi
 if [[ "${SRW_PLATFORM}" == gaea ]]; then
     sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
     sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
-    sed -i 's|${JOBSdir}/JREGIONAL_RUN_POST|$USHdir/load_modules_run_task.sh "run_post" ${JOBSdir}/JREGIONAL_RUN_POST|g' ${WORKSPACE}/${SRW_PLATFORM}/ush/wrappers/run_post.sh
+    sed -i 's|00:30:00|00:45:00|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i 's|${JOBSdir}/JREGIONAL_RUN_POST|$USHdir/load_modules_run_task.sh "gaea" "run_post" ${JOBSdir}/JREGIONAL_RUN_POST|g' ${WORKSPACE}/${SRW_PLATFORM}/ush/wrappers/run_post.sh
 fi
 
 if [[ "${SRW_PLATFORM}" == hera ]]; then
@@ -66,7 +67,7 @@ do
         # Return exit code and check for results file first
         results_file="${WORKSPACE}/${SRW_PLATFORM}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt"
         if [ ! -f "$results_file" ]; then
-            echo "Missing results file! \nexit 1"
+            echo -e "Missing results file! \nexit 1"
             exit 1
         fi
 

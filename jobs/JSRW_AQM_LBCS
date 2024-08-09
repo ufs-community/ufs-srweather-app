@@ -31,7 +31,10 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm|task_aqm_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global cpl_aqm_parm cpl_aqm_parm task_get_extrn_lbcs \
+  task_make_orog task_make_lbcs ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -131,7 +134,7 @@ setpdy.sh
 if [ ${subcyc} -ne 0 ]; then
   export cycle="t${cyc}${subcyc}z"
 fi
-if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
   export dot_ensmem=".mem${ENSMEM_INDX}"
 else
   export dot_ensmem=

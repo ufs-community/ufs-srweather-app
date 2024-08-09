@@ -10,12 +10,12 @@ import os
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import realize
+from uwtools.api.config import get_nml_config, realize
 
 from python_utils import (
     cfg_to_yaml_str,
     import_vars,
-    load_shell_config,
+    load_yaml_config,
     print_input_args,
     print_info_msg,
 )
@@ -112,7 +112,7 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
         input_format="nml",
         output_file=fv3_nml_ensmem_fp,
         output_format="nml",
-        supplemental_configs=[settings],
+        update_config=get_nml_config(settings),
         )
 
 def parse_args(argv):
@@ -142,5 +142,5 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
+    cfg = load_yaml_config(args.path_to_defns)
     set_fv3nml_ens_stoch_seeds(args.cdate, cfg)
