@@ -31,8 +31,8 @@ pipeline {
                 script {
                     build job: '/ufs-srweather-app/ufs-srw-sonarqube', parameters: [
                         string(name: 'BRANCH_NAME', value: env.CHANGE_BRANCH ?: 'develop'),
-                        string(name: 'FORK_NAME', value: env.CHANGE_FORK ?: '')
-                        string(name: 'CHANGE_URL', value: env.CHANGE_URL ?: '')
+                        string(name: 'FORK_NAME', value: env.CHANGE_FORK ?: ''),
+                        string(name: 'CHANGE_URL', value: env.CHANGE_URL ?: ''),
                         string(name: 'CHANGE_ID', value: env.CHANGE_URL ?: '')
                     ], wait: false
                 }
