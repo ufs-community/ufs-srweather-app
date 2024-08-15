@@ -324,6 +324,24 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
+  # REMOVE_RAW_OBS_DIRS_[CCPA|MRMS|NDAS|NOHRSC]:
+  # Boolean flag specifying whether to remove the "raw" observation
+  # directories after pulling the specified type of obs (CCPA, MRMS,
+  # NDAS, or NOHRSC).  The raw directories are the ones in which the
+  # observation files are placed immediately after pulling them from
+  # a data store (e.g. NOAA's HPSS) but before performing any processing
+  # on them (e.g. renaming the files or reorganizing their directory
+  # structure).
+  #
+  #-----------------------------------------------------------------------
+  #
+  REMOVE_RAW_OBS_DIRS_CCPA: true
+  REMOVE_RAW_OBS_DIRS_MRMS: true
+  REMOVE_RAW_OBS_DIRS_NDAS: true
+  REMOVE_RAW_OBS_DIRS_NOHRSC: true
+  #
+  #-----------------------------------------------------------------------
+  #
   # DOMAIN_PREGEN_BASEDIR:
   # The base directory containing pregenerated grid, orography, and surface 
   # climatology files. This is an alternative for setting GRID_DIR,

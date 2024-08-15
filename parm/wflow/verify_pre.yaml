@@ -29,6 +29,7 @@ task_get_obs_ccpa:
     ACCUM_HH: '01'
     OBS_DIR: '&CCPA_OBS_DIR;'
     OBTYPE: 'CCPA'
+    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_CCPA }}'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -42,6 +43,7 @@ task_get_obs_nohrsc:
     <<: *default_vars
     OBS_DIR: '&NOHRSC_OBS_DIR;'
     OBTYPE: 'NOHRSC'
+    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_NOHRSC }}'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -56,6 +58,7 @@ task_get_obs_mrms:
     OBS_DIR: '&MRMS_OBS_DIR;'
     OBTYPE: 'MRMS'
     VAR: 'REFC RETOP'
+    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_MRMS }}'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -69,6 +72,7 @@ task_get_obs_ndas:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'
     OBTYPE: 'NDAS'
+    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_NDAS }}'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   queue: "&QUEUE_HPSS;"
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
