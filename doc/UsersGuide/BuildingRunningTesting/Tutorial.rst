@@ -608,7 +608,7 @@ After loading the workflow, users should follow the instructions printed to the 
    module load wflow_hera
    conda activate srw_app
 
-Configurationcd 
+Configurations
 -------------------------
 
 Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
@@ -711,8 +711,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
      FV3GFS_FILE_FMT_ICS: nemsio
-     USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data
+     USE_USER_STAGED_EXTRN_FILES: false
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
@@ -721,11 +720,10 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
 .. code-block:: console
 
    task_get_extrn_lbcs:
-     EXTRN_MDL_NAME_LBCS: FV3GFS
-     LBC_SPEC_INTVL_HRS: 6
-     FV3GFS_FILE_FMT_LBCS: grib2
-     USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+     EXTRN_MDL_NAME_LBCS: UFS-CASE-STUDY
+     LBC_SPEC_INTVL_HRS: 3
+     FV3GFS_FILE_FMT_LBCS: nemsio
+     USE_USER_STAGED_EXTRN_FILES: false
 
 For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
