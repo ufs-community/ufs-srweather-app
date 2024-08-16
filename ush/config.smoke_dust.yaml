@@ -34,25 +34,23 @@ rocoto:
       task_run_fcst_mem#mem#:
         walltime: 03:00:00
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: FV3GFS
-  FV3GFS_FILE_FMT_ICS: netcdf
+  EXTRN_MDL_NAME_ICS: RAP
   EXTRN_MDL_ICS_OFFSET_HRS: 0
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: FV3GFS
+  EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 6
-  FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
 task_run_fcst:
-  DT_ATMOS: 180
-  LAYOUT_X: 50
-  LAYOUT_Y: 34
-  BLOCKSIZE: 16
-  RESTART_INTERVAL: 12 24
+  DT_ATMOS: 36
+  LAYOUT_X: 15
+  LAYOUT_Y: 20
+  BLOCKSIZE: 32
+  RESTART_INTERVAL: 6 12 18 24
   QUILTING: true
   PRINT_ESMF: false
   DO_FCST_RESTART: false
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: 793
+  POST_OUTPUT_DOMAIN_NAME: conus3km
   USE_CUSTOM_POST_CONFIG_FILE: false
 global:
   DO_ENSEMBLE: false
