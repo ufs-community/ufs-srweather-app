@@ -389,6 +389,30 @@ else
     create_symlink_to_file $target $symlink ${relative_link_flag}
   done
 fi
+# Smoke and Dust
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  ln -snf  ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dust12m_data.nc  ${run_dir}/INPUT/dust12m_data.nc
+  ln -snf  ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/emi_data.nc      ${run_dir}/INPUT/emi_data.nc
+  yyyymmddhh=${cdate:0:10}
+  echo ${yyyymmddhh}
+  if [ ${cycle_type} = "spinup" ]; then
+    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00_spinup.nc
+  else
+    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00.nc
+  fi
+  echo "try to use smoke file=",${smokefile}
+  if [ -f ${smokefile} ]; then
+    ln -snf ${smokefile} ${run_dir}/INPUT/SMOKE_RRFS_data.nc
+  else
+    if [ ${EBB_DCYCLE} = "1" ]; then
+       ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc ${run_dir}/INPUT/SMOKE_RRFS_data.nc
+       echo "WARNING: Smoke file is not available, use dummy_24hr_smoke_ebbdc1.nc instead"
+    else
+       ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${run_dir}/INPUT/SMOKE_RRFS_data.nc
+       echo "WARNING: Smoke file is not available, use dummy_24hr_smoke.nc instead"
+    fi
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
