@@ -2677,6 +2677,20 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
+#------------------------------
+# Smoke/Dust config parameters
+#------------------------------
+smoke_dust_parm:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_SMOKE_DUST:
+  # Flag turning on/off Smoke and Dust
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_SMOKE_DUST: false
+
 rocoto:
   attrs: ""
   cycledefs: ""
