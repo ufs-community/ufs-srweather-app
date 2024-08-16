@@ -45,6 +45,7 @@ task_run_fcst:
   LAYOUT_X: 15
   LAYOUT_Y: 20
   BLOCKSIZE: 32
+  WRTCMP_write_tasks_per_group: 40
   RESTART_INTERVAL: 6 12 18 24
   QUILTING: true
   PRINT_ESMF: false
