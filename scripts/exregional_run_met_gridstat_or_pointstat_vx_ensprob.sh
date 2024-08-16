@@ -249,9 +249,7 @@ metplus_log_fn="metplus.log.${metplus_log_bn}"
 #
 #-----------------------------------------------------------------------
 #
-det_or_ens="ens"
-vx_config_fn="vx_config_${det_or_ens}.yaml"
-vx_config_fp="${METPLUS_CONF}/${vx_config_fn}"
+vx_config_fp="${METPLUS_CONF}/${VX_CONFIG_ENS_FN}"
 vx_config_dict=$(<"${vx_config_fp}")
 # Indent each line of vx_config_dict so that it is aligned properly when
 # included in the yaml-formatted variable "settings" below.

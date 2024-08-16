@@ -2555,6 +2555,13 @@ verification:
   # be run.
   #
   NUM_MISSING_FCST_FILES_MAX: 0
+  #
+  # Names of configuration files for deterministic and ensemble vx that
+  # specify the field groups, field names, levels, and (if applicable)
+  # thresholds for which to run verification.
+  #
+  VX_CONFIG_DET_FN: 'vx_config_det.yaml'
+  VX_CONFIG_ENS_FN: 'vx_config_ens.yaml'
 
 #----------------------------
 # CPL_AQM config parameters
