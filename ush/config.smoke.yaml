@@ -18,8 +18,8 @@ workflow:
   VERBOSE: true
   DEBUG: false
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_smoke.FV3_HRRR_gf
-  FIELD_TABLE_TMPL_FN: field_table_smoke.FV3_HRRR_gf
+  DIAG_TABLE_TMPL_FN: diag_table_smoke_dust.FV3_HRRR_gf
+  FIELD_TABLE_TMPL_FN: field_table_smoke_dust.FV3_HRRR_gf
   DO_REAL_TIME: false
   COLDSTART: true      # set to true for cold start
   WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera

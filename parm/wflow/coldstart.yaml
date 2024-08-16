@@ -209,3 +209,12 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: aqm_lbcs
+        or_smoke_dust:
+          not:
+            taskvalid:
+              attrs:
+                task: smoke_dust
+          taskdep:
+            attrs:
+              task: smoke_dust
+

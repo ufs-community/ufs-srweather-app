@@ -1,0 +1,39 @@
+default_smoke_dust_task: &default_smoke_dust
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    HOMEdir: '&HOMEdir;'
+    envir: '&envir;'
+    model_ver: '&model_ver;'
+    KEEPDATA: '&KEEPDATA;'
+    SENDCOM: '&SENDCOM;'
+    COMROOT: '&COMROOT;'
+    DATAROOT: '&DATAROOT;'
+    DCOMROOT: '&DCOMROOT;'
+    LOGDIR: !cycstr "&LOGDIR;"
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
+    subcyc: !cycstr "@M"
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_smoke_dust:
+  <<: *default_smoke_dust
+  command: '&LOAD_MODULES_RUN_TASK; "smoke_dust" "&HOMEdir;/jobs/JSRW_SMOKE_DUST"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 2G
+  ppn: 24
+  dependency:
+    taskdep:
+      attrs:
+        task: make_lbcs_mem000
