@@ -20,47 +20,47 @@ Building the SRW App
 How can I clean up the SRW App code if something went wrong during the build?
 ===============================================================================
 
-The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals or building the application. To view usage instructions and to get help, run with the ``-h`` flag:
+The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals or building the application. To view usage instructions and to get help, run with the ``-h`` or ``--help`` flag:
 
 .. code-block:: console
    
    ./devclean.sh -h
 
-To remove the ``build`` directory, run:
+To remove all the build artifacts and directories except conda installation, use the ``-b`` or ``--build`` flag:
 
 .. code-block:: console
    
-   ./devclean.sh --remove
+   ./devclean.sh --build
 
-
-To remove all build artifacts (including ``build``, ``exec``, ``lib``, and ``share``), run: 
+When using a containerized approach of running the SRW, use the ``--container`` option that will make sure to remove ``container-bin`` directory in lieu of the ``exec``, i.e.:
 
 .. code-block:: console
    
-   ./devclean.sh --clean
+   ./devclean.sh -b --container
+
+To remove only conda directory and conda_loc file in the main SRW directory, run with the ``-c`` or ``--conda`` flag:
+
+.. code-block:: console
+   
+   ./devclean.sh --conda
    OR
-   ./devclean.sh -a
+   ./devclean.sh -c
 
-To remove the ``conda`` directory, run:
-
-.. code-block:: console
-   
-   ./devclean.sh --remove-conda
-
-To remove external submodules, run: 
+To remove external submodules, run with the ``-s`` or ``--sub-modules`` flag: 
 
 .. code-block:: console
    
    ./devclean.sh --sub-modules
 
-
-Users will need to check out the external submodules again before building the application. 
-
-If using non-standard directory names build, binaries, or conda install directories under the SRW tree with the ``devbuild.sh`` script, these optional directory names could be cleaned as needed by providing the variables ``BUILD_DIR``, ``BIN_DIR``, or ``CONDA_DIR`` as optional arguments to the ``devclean.sh`` script. They would accompany the options shown above (``--remove``, ``--clean``, or ``--remove-conda``) and given in the following form:
+To remove all build artifacts, conda and submodules (equivalent to \`-b -c -s\`), run with the ``-a`` or ``--all`` flag:
 
 .. code-block:: console
    
-   ./devclean.sh [--build-dir=BUILD_DIR] [--bin-dir=BIN_DIR] [--conda-dir=CONDA_DIR]
+   ./devclean.sh --all
+
+
+Users will need to check out the external submodules again before building the application. 
+
 
 In addition to the options above, many standard terminal commands can be run to remove unwanted files and directories (e.g., ``rm -rf expt_dirs``). A complete explanation of these options is beyond the scope of this User's Guide. 
 

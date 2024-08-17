@@ -22,6 +22,8 @@ OPTIONS
   --container
       For cleaning builds within the SRW containers, will remove the "container-bin"
       directory rather than "exec". Has no effect if \`-b\` is not specified.
+  -f, --force
+      Remove directories as requested, without asking for user confirmation of their deletion.
   -s, -sub-modules
       Remove sub-module directories. They need to be checked out again by sourcing "\${SRW_DIR}/manage_externals/checkout_externals" before attempting subsequent builds
   -v, --verbose
@@ -88,6 +90,7 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # Populate "removal_list" as an array of files/directories to remove, based on user selections
+declare -a removal_list='()'
 
 # Clean standard build artifacts
 if [ ${REMOVE_BUILD} == true ]; then
