@@ -13,24 +13,20 @@ Usage: $0 [OPTIONS] ...
 OPTIONS
   -h, --help
       Show this help guide
-  --force
-      Removes files and directories without confirmation. Use with caution!
+  -a, --all
+      Remove all build artifacts, conda and submodules (equivalent to \`-b -c -s\`)
+  -b, --build
+      Remove build directories and artifacts:  build/ exec/ share/ include/ lib/ lib64/
+  -c, --conda
+      Remove "conda" directory and conda_loc file in SRW main directory
+  --container
+      For cleaning builds within the SRW containers, will remove the "container-bin"
+      directory rather than "exec". Has no effect if \`-b\` is not specified.
+  -s, -sub-modules
+      Remove sub-module directories. They need to be checked out again by sourcing "\${SRW_DIR}/manage_externals/checkout_externals" before attempting subsequent builds
   -v, --verbose
       Provide more verbose output
-
-  -a, --all
-      Removes all build artifacts, conda and submodules (equivalent to \`-b -c -s\`)
-  -b, --build
-      Removes build directories and artifacts:  build/ exec/ share/ include/ lib/ lib64/
-  -c, --conda
-      Removes "conda" directory and conda_loc file in SRW
-  -s, --sub-modules
-      Remove sub-module directories. They will need to be checked out again by running
-      "./manage_externals/checkout_externals" before attempting subsequent builds
-
-  --container
-      For cleaning builds within the SRW Singularity container, will remove the "container-bin"
-      directory rather than "exec". Has no effect if \`-b\` is not specified.
+      
 EOF_USAGE
 }
 
