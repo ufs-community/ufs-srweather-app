@@ -32,7 +32,4 @@ task_smoke_dust:
   command: '&LOAD_MODULES_RUN_TASK; "smoke_dust" "&HOMEdir;/jobs/JSRW_SMOKE_DUST"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
-  dependency:
-    taskdep:
-      attrs:
-        task: make_lbcs_mem000
+

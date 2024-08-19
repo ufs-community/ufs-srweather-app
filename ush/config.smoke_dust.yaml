@@ -4,6 +4,8 @@ user:
   RUN_ENVIR: community
   MACHINE: hera
   ACCOUNT: [account name]
+platform:
+  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_intel_prod'
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
@@ -22,14 +24,14 @@ workflow:
   FIELD_TABLE_TMPL_FN: field_table_smoke_dust.FV3_HRRR_gf
   DO_REAL_TIME: false
   COLDSTART: true      # set to true for cold start
-  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
+#  WARMSTART_CYCLE_DIR: '/path/to/warm/start/files' # for hera
 nco:
   envir_default: test_smoke_dust
   NET_default: smoke_dust
   RUN_default: smoke_dust
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 03:00:00
