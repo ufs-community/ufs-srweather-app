@@ -426,6 +426,9 @@ platform:
   # FIXemis:
   # System directory where AQM emission data files are located.
   #
+  # FIXsmoke:
+  # System directory where Smoke and Dust data files are located.
+  #
   # FIXcrtm:
   # System directory where CRTM fixed files are located
   #
@@ -442,6 +445,7 @@ platform:
   FIXshp: ""
   FIXaqm: ""
   FIXemis: ""
+  FIXsmoke: ""
   FIXcrtm: ""
   FIXcrtmupp: ""
   #
@@ -2687,9 +2691,17 @@ smoke_dust_parm:
   # DO_SMOKE_DUST:
   # Flag turning on/off Smoke and Dust
   #
+  # COMINsmoke_default:
+  # Path to the directory containing smoke and dust files
+  #
+  # COMINfire_default:
+  # Path to the directory containing RAVE fire files
+  #
   #-----------------------------------------------------------------------
   #
   DO_SMOKE_DUST: false
+  COMINsmoke_default: ""
+  COMINfire_default: ""
 
 rocoto:
   attrs: ""

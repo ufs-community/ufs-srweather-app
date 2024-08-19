@@ -8,9 +8,8 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_point_source task_run_fcst ; do
+for sect in user nco platform workflow nco global smoke_dust_parm \
+  constants fixed_files grid_params task_run_fcst ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -51,20 +50,16 @@ This is the ex-script for the task that runs Smoke and Dust.
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be saved for long time (if that directory doesn't already exist).
+# Path to Smoke and Dust input files
 #
 #-----------------------------------------------------------------------
 #
-export rave_nwges_dir=${NWGES_DIR}/RAVE_INTP
-mkdir -p "${rave_nwges_dir}"
-export hourly_hwpdir=${NWGES_BASEDIR}/HOURLY_HWP
-mkdir -p "${hourly_hwpdir}"
+rave_intp_dir=${COMINsmoke}/RAVE_INTP
+hourly_hwpdir=${COMINsmoke}/HOURLY_HWP
 #
 #-----------------------------------------------------------------------
 #
-# Link the the hourly, interpolated RAVE data from $rave_nwges_dir so it
-# is reused
+# Link the the hourly, interpolated RAVE data
 #
 #-----------------------------------------------------------------------
 #
@@ -88,27 +83,27 @@ do
     intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
   fi
 
-  if [ -f ${rave_nwges_dir}/${intp_fname} ]; then
-    ln -nsf ${rave_nwges_dir}/${intp_fname} ${workdir}/${intp_fname}
-    echo "${rave_nwges_dir}/${intp_fname} interoplated file available to reuse"
+  if [ -f ${rave_intp_dir}/${intp_fname} ]; then
+    ln -nsf ${rave_intp_dir}/${intp_fname} ${DATA}/${intp_fname}
+    echo "${rave_intp_dir}/${intp_fname} interoplated file available to reuse"
   else
-    echo "${rave_nwges_dir}/${intp_fname} interoplated file non available to reuse"  
+    echo "${rave_intp_dir}/${intp_fname} interoplated file non available to reuse"  
   fi
 done
 #
 #-----------------------------------------------------------------------
 #
-#  link RAVE data to work directory  $workdir
+# link RAVE data to work directory $DATA
 #
 #-----------------------------------------------------------------------
 #
-if [ -d ${FIRE_RAVE_DIR}/${PDYm1}/rave ]; then
-  fire_rave_dir_work=${workdir}
-  ln -snf ${FIRE_RAVE_DIR}/${PDY}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
-  ln -snf ${FIRE_RAVE_DIR}/${PDYm1}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
-  ln -snf ${FIRE_RAVE_DIR}/${PDYm2}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
+if [ -d ${COMINfire}/${PDYm1}/rave ]; then
+  fire_rave_dir_work=${DATA}
+  ln -snf ${COMINfire}/${PDY}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
+  ln -snf ${COMINfire}/${PDYm1}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
+  ln -snf ${COMINfire}/${PDYm2}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
 else
-  fire_rave_dir_work=${FIRE_RAVE_DIR}
+  fire_rave_dir_work=${COMINfire}
 fi
 
 # Check whether the RAVE files need to be split into hourly files
@@ -155,10 +150,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python -u ${USHdir}/generate_fire_emissions.py \
-  "${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}" \
+${USHdir}/generate_fire_emissions.py \
+  "${FIXlam}" \
   "${fire_rave_dir_work}" \
-  "${workdir}" \
+  "${DATA}" \
   "${PREDEF_GRID_NAME}" \
   "${EBB_DCYCLE}" \
   "${RESTART_INTERVAL}" \
@@ -187,9 +182,9 @@ are_all_files_older_than_15_days() {
 if are_all_files_older_than_15_days "${rave_nwges_dir}"; then
   echo "All files are older than 5 days. Replacing all files."
   # Loop through all files in the work directory and replace them in rave_nwges_dir
-  for file in ${workdir}/*; do
+  for file in ${DATA}/*; do
     filename=$(basename "$file")
-    target_file="${rave_nwges_dir}/${filename}"
+    target_file="${COMINsmoke}/${filename}"
         
     cp "${file}" "${target_file}"
     echo "Copied file: $filename"
@@ -197,9 +192,9 @@ if are_all_files_older_than_15_days "${rave_nwges_dir}"; then
 else
   echo "Not all files are older than 5 days. Checking individual files."
   # Loop through all files in the work directory
-  for file in ${workdir}/*; do
+  for file in ${DATA}/*; do
     filename=$(basename "$file")
-    target_file="${rave_nwges_dir}/${filename}"
+    target_file="${COMINsmoke}/${filename}"
 
     # Check if the file matches the pattern or is missing in the target directory
     if [[ "$filename" =~ SMOKE_RRFS_data_.*\.nc ]]; then

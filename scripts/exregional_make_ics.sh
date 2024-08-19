@@ -195,6 +195,7 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
   "FV3_HRRR" | \
+  "FV3_HRRR_gf" | \
   "FV3_RAP" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then

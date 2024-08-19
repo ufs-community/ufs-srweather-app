@@ -32,4 +32,30 @@ task_smoke_dust:
   command: '&LOAD_MODULES_RUN_TASK; "smoke_dust" "&HOMEdir;/jobs/JSRW_SMOKE_DUST"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
+  dependency:
+    and:
+      or_grid:
+        datadep_grid:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+        streq:
+          left: staged_grid
+          right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+      or_orog:
+        datadep_orog:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+        streq:
+          left: staged_orog
+          right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
+      or_sfc_climo:
+        datadep_sfc_climo:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_sfc_climo.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
+        streq:
+          left: staged_sfc_climo
+          right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
 
