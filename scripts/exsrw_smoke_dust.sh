@@ -151,7 +151,7 @@ fi
 #-----------------------------------------------------------------------
 #
 ${USHdir}/generate_fire_emissions.py \
-  "${FIXlam}" \
+  "${FIXsmoke}/${PREDEF_GRID_NAME}" \
   "${fire_rave_dir_work}" \
   "${DATA}" \
   "${PREDEF_GRID_NAME}" \
@@ -159,14 +159,11 @@ ${USHdir}/generate_fire_emissions.py \
   "${RESTART_INTERVAL}" \
 
 # Capture the return code from the previous command
-err=$?
-echo "Return code from generate_fire_emissions.py: $err"
-export err
-
-# Check the return code before calling err_chk
+export err=$?
 if [ $err -ne 0 ]; then
-  echo "Error: generate_fire_emissions.py failed with return code $err"
-  err_chk
+  message_txt="Generate_fire_emissions.py failed with return code $err"
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 
 #Copy the the hourly, interpolated RAVE data to $rave_nwges_dir so it
@@ -179,7 +176,7 @@ are_all_files_older_than_15_days() {
 }
 
 # Check if all files in the rave_nwges_dir are older than 5 days
-if are_all_files_older_than_15_days "${rave_nwges_dir}"; then
+if are_all_files_older_than_15_days "${rave_intp_dir}"; then
   echo "All files are older than 5 days. Replacing all files."
   # Loop through all files in the work directory and replace them in rave_nwges_dir
   for file in ${DATA}/*; do
