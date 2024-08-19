@@ -151,7 +151,7 @@ while [ ${REMOVE} == false ]; do
   echo ""
   read -p "Confirm that you want to delete these files/directories! (Yes/No): " choice
   case ${choice} in
-    Yes ) REMOVE=true ;;
+    [Yy]* ) REMOVE=true ;;
     [Nn]* ) echo "User chose not to delete, exiting..."; exit ;;
     * ) printf "Invalid option selected.\n" ;;
   esac
