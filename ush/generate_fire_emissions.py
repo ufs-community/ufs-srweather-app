@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #########################################################################
 #                                                                       #
 # Python script for fire emissions preprocessing from RAVE FRP and FRE  #

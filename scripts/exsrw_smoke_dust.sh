@@ -48,65 +48,11 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs Smoke and Dust.
 ========================================================================"
 #
-#-----------------------------------------------------------------------
-#
-# Path to Smoke and Dust input files
-#
-#-----------------------------------------------------------------------
-#
-rave_intp_dir=${COMINsmoke}/RAVE_INTP
-hourly_hwpdir=${COMINsmoke}/HOURLY_HWP
-#
-#-----------------------------------------------------------------------
-#
-# Link the the hourly, interpolated RAVE data
-#
-#-----------------------------------------------------------------------
-#
-# Current and previous day calculation
-export CDATE=${PDY}${cyc}
-export CDATEm1="${PDYm1}${cyc}"
-
 # Check if the fire file exists in the designated directory
-smokeFile="${SMOKE_DUST_FILE_PREFIX}_${CDATE}00.nc"
+smokeFile="${SMOKE_DUST_FILE_PREFIX}_${PDY}${cyc}00.nc"
 if [ -e "${COMINsmoke}/${smokeFile}" ]; then
   cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
 else
-  # Number of files to process
-  nfiles=24
-
-  for i in $(seq 0 $(($nfiles - 1)) )
-  do 
-    if [ "${EBB_DCYCLE}" -eq 2 ]; then	
-      # For ebb_dc == 2	   
-      timestr=$($NDATE +$i ${CDATEm1})
-      intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
-    else
-      # For ebb_dc == 1	   
-      timestr=$($NDATE +$i ${CDATE})
-      intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
-    fi
-
-    if [ -f ${rave_intp_dir}/${intp_fname} ]; then
-      ln -nsf ${rave_intp_dir}/${intp_fname} ${DATA}/${intp_fname}
-      echo "${rave_intp_dir}/${intp_fname} interoplated file available."
-    else
-      echo "WARNING: ${rave_intp_dir}/${intp_fname} interoplated file non available."
-    fi
-  done
-  #
-  #-----------------------------------------------------------------------
-  #
-  # link RAVE fire data to working directory $DATA
-  #
-  #-----------------------------------------------------------------------
-  #
-  if [ -d ${COMINfire}/${PDYm1}/rave ]; then
-    ln -snf ${COMINfire}/${PDY}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${DATA}/.
-    ln -snf ${COMINfire}/${PDYm1}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${DATA}/.
-    ln -snf ${COMINfire}/${PDYm2}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${DATA}/.
-  fi
-
   # Check whether the RAVE files need to be split into hourly files
   # Format the current day and hour properly for UTC
   if [ "${EBB_DCYCLE}" -eq 1 ]; then
@@ -116,26 +62,26 @@ else
     ddhh_to_use="${PDYm1}${cyc}"
     dd_to_use="${PDYm1}"
   fi
-  # Check various version of RAVE raw data files (new and old)
-  rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${ddhh_to_use}00000_e${dd_to_use}23*"
-  rave_raw_fn2="Hourly_Emissions_3km_${ddhh_to_use}00_${dd_to_use}23*"
-  # Find files matching the specified patterns
-  files_found=$(find "$DATA" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
-  # Splitting 24-hour RAVE raw data into houly data
-  for file_to_use in $files_found; do
-    echo "Using file: $file_to_use"
-    for hour in {00..23}; do
-      output_file="Hourly_Emissions_3km_${dd_to_use}${hour}00_${dd_to_use}${hour}00.nc"
-      if [ -f "$output_file" ]; then
-        echo "Output file for hour $hour already exists: $output_file. Skipping..."
+  for hour in {00..23}; do
+    fire_hr_fn="Hourly_Emissions_3km_${dd_to_use}${hour}00_${dd_to_use}${hour}00.nc"
+    if [ -f "${COMINfire}/${fire_hr_fn}" ]; then
+      echo "Hourly emission file for $hr found."
+      ln -nsf ${COMINfire}/${output_file} .
+    else
+      # Check various version of RAVE raw data files (new and old)
+      rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${ddhh_to_use}00000_e${dd_to_use}23*"
+      rave_raw_fn2="Hourly_Emissions_3km_${ddhh_to_use}00_${dd_to_use}23*"
+      # Find files matching the specified patterns
+      files_found=$(find "${COMINfire}" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
+      # Splitting 24-hour RAVE raw data into houly data
+      for file_to_use in $files_found; do
+        echo "Using file: $file_to_use"
+        echo "Splitting data for hour $hour..."
+        ncks -d time,$hour,$hour "${COMINfire}/$file_to_use" "$output_file"
         continue
-      fi
-      echo "Splitting data for hour $hour..."
-      ncks -d time,$hour,$hour "$file_to_use" "$output_file"
-    done
-    echo "Hourly files processing completed for: $file_to_use"
+      done
+    fi
   done
-
   #
   #-----------------------------------------------------------------------
   #
