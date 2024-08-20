@@ -48,6 +48,33 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs prepstart.
 ========================================================================"
 
+#
+#-----------------------------------------------------------------------
+#
+# Extract from CDATE the starting year, month, day, and hour of the
+# forecast.  These are needed below for various operations.
+#
+#-----------------------------------------------------------------------
+#
+START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
+
+YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
+JJJ=$(date +%j -d "${START_DATE}")
+
+YYYY=${YYYYMMDDHH:0:4}
+MM=${YYYYMMDDHH:4:2}
+DD=${YYYYMMDDHH:6:2}
+HH=${YYYYMMDDHH:8:2}
+YYYYMMDD=${YYYYMMDDHH:0:8}
+YYYYJJJHH=${YYYY}${JJJ}${HH}
+
+current_time=$(date "+%T")
+cdate_crnt_fhr=$( date --utc --date "${YYYYMMDD} ${HH} UTC" "+%Y%m%d%H" )
+
+YYYYMMDDm1=$(date +%Y%m%d -d "${START_DATE} 1 days ago")
+YYYYMMDDm2=$(date +%Y%m%d -d "${START_DATE} 2 days ago")
+YYYYMMDDm3=$(date +%Y%m%d -d "${START_DATE} 3 days ago")
+
 #-----------------------------------------------------------------------
 #
 #  smoke/dust cycling

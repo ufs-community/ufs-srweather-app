@@ -59,3 +59,13 @@ task_smoke_dust:
           left: staged_sfc_climo
           right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
 
+task_prepstart:
+  <<: *default_smoke_dust
+  command: '&LOAD_MODULES_RUN_TASK; "prepstart" "&HOMEdir;/jobs/JSRW_PREPSTART"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 2G
+  dependency:
+    taskdep:
+      attrs:
+        task: smoke_dust
+
