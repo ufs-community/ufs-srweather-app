@@ -64,12 +64,12 @@ hourly_hwpdir=${COMINsmoke}/HOURLY_HWP
 #-----------------------------------------------------------------------
 #
 # Current and previous day calculation
-CDATE=${PDY}${cyc}
-CDATEm1="${PDYm1}${cyc}"
+export CDATE=${PDY}${cyc}
+export CDATEm1="${PDYm1}${cyc}"
 
 # Number of files to process
 nfiles=24
-smokeFile="SMOKE_RRFS_data_${CDATE}00.nc"
+smokeFile="${SMOKE_DUST_FILE_PREFIX}_${CDATE}00.nc"
 
 for i in $(seq 0 $(($nfiles - 1)) )
 do 
@@ -85,23 +85,23 @@ do
 
   if [ -f ${rave_intp_dir}/${intp_fname} ]; then
     ln -nsf ${rave_intp_dir}/${intp_fname} ${DATA}/${intp_fname}
-    echo "${rave_intp_dir}/${intp_fname} interoplated file available to reuse"
+    echo "${rave_intp_dir}/${intp_fname} interoplated file available."
   else
-    echo "${rave_intp_dir}/${intp_fname} interoplated file non available to reuse"  
+    echo "WARNING: ${rave_intp_dir}/${intp_fname} interoplated file non available."
   fi
 done
 #
 #-----------------------------------------------------------------------
 #
-# link RAVE data to work directory $DATA
+# link RAVE fire data to working directory $DATA
 #
 #-----------------------------------------------------------------------
 #
 if [ -d ${COMINfire}/${PDYm1}/rave ]; then
   fire_rave_dir_work=${DATA}
-  ln -snf ${COMINfire}/${PDY}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
-  ln -snf ${COMINfire}/${PDYm1}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
-  ln -snf ${COMINfire}/${PDYm2}/rave/RAVE-HrlyEmiss-3km_* ${fire_rave_dir_work}/.
+  ln -snf ${COMINfire}/${PDY}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${fire_rave_dir_work}/.
+  ln -snf ${COMINfire}/${PDYm1}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${fire_rave_dir_work}/.
+  ln -snf ${COMINfire}/${PDYm2}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${fire_rave_dir_work}/.
 else
   fire_rave_dir_work=${COMINfire}
 fi
@@ -126,7 +126,7 @@ echo "Checking for files in directory: $fire_rave_dir_work"
 files_found=$(find "$fire_rave_dir_work" -type f \( -name "${intp_fname##*/}" -o -name "${intp_fname_beta##*/}" \))
 
 if [ -z "$files_found" ]; then
-  echo "No files found matching patterns."
+  echo "WARNING: No files found matching patterns."
 else
   echo "Files found, proceeding with processing..."
   for file_to_use in $files_found; do
@@ -146,18 +146,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job.
+# Call python script to generate fire emission files.
 #
 #-----------------------------------------------------------------------
 #
-${USHdir}/generate_fire_emissions.py \
+${USHsrw}/generate_fire_emissions.py \
   "${FIXsmoke}/${PREDEF_GRID_NAME}" \
   "${fire_rave_dir_work}" \
   "${DATA}" \
   "${PREDEF_GRID_NAME}" \
   "${EBB_DCYCLE}" \
-  "${RESTART_INTERVAL}" \
-
+  "${RESTART_INTERVAL}"
 # Capture the return code from the previous command
 export err=$?
 if [ $err -ne 0 ]; then

@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script processes smoke and dust
+# This script runs prepstart
 #
 #-----------------------------------------------------------------------
 #
@@ -112,9 +112,6 @@ fi
 
 mkdir -p ${COMOUT}
 
-export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
-export COMINfire="${COMINfire:-${COMINfire_default}}"
-
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
 setpdy.sh
@@ -144,7 +141,7 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_smoke_dust.sh
+${SCRIPTSsrw}/exsrw_prepstart.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then

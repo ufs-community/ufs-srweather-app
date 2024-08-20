@@ -46,8 +46,8 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
 
 smoke_dust_parm:
-  COMINsmoke_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/smoke_dust/RAVE_smoke_dust
-  COMINfire_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/smoke_dust/RAVE_fire
+  COMINsmoke_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAVE_smoke_dust
+  COMINfire_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAVE_fire
 
 rocoto:
   tasks:

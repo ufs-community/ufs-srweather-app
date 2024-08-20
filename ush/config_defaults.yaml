@@ -2697,11 +2697,21 @@ smoke_dust_parm:
   # COMINfire_default:
   # Path to the directory containing RAVE fire files
   #
+  # SMOKE_DUST_FILE_PREFIX:
+  # Prefix of Smoke and Dust file name
+  #
+  # RAVE_FIRE_FILE_PREFIX:
+  # Prefix of RAVE fire file name
+  #
   #-----------------------------------------------------------------------
   #
   DO_SMOKE_DUST: false
   COMINsmoke_default: ""
   COMINfire_default: ""
+  SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
+  RAVE_FIRE_FILE_PREFIX: "RAVE-HrlyEmiss-3km"
+  RAVE_FIRE_INTP_FILE_PREFIX: "RAVE-HrlyEmiss-3km_v2r0_blend"
+  RAVE_FIRE_HOURLY_FILE_PREFIX: "Hourly_Emissions_3km"
 
 rocoto:
   attrs: ""
