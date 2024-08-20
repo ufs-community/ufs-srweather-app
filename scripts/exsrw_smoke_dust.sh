@@ -65,7 +65,7 @@ else
   for hour in {00..23}; do
     fire_hr_fn="Hourly_Emissions_3km_${dd_to_use}${hour}00_${dd_to_use}${hour}00.nc"
     if [ -f "${COMINfire}/${fire_hr_fn}" ]; then
-      echo "Hourly emission file for $hour found."
+      echo "Hourly emission file for $hour was found."
       ln -nsf ${COMINfire}/${fire_hr_fn} .
     else
       # Check various version of RAVE raw data files (new and old)
