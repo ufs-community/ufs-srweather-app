@@ -15,9 +15,7 @@ def get_crontab_contents(called_from_cron, machine, debug):
     """
     This function returns the contents of the user's cron table, as well as the command used to
     manipulate the cron table. Typically this latter value will be `crontab`, but on some 
-    platforms the version or location of this may change depending on other circumstances, e.g. on
-    Cheyenne, this depends on whether a script that wants to call `crontab` is itself being called
-    from a cron job.
+    platforms the version or location of this may change depending on other circumstances.
 
     Args:
         called_from_cron  (bool): Set this to True if script is called from within a crontab
@@ -28,29 +26,7 @@ def get_crontab_contents(called_from_cron, machine, debug):
         crontab_contents  (str) : String containing the contents of the user's cron table.
     """
 
-    #
-    # On Cheyenne, simply typing "crontab" will launch the crontab command
-    # at "/glade/u/apps/ch/opt/usr/bin/crontab".  This is a containerized
-    # version of crontab that will not work if called from scripts that are
-    # themselves being called as cron jobs.  In that case, we must instead
-    # call the system version of crontab at /usr/bin/crontab.
-    #
     crontab_cmd = "crontab"
-    if machine == "CHEYENNE":
-        if called_from_cron:
-            crontab_cmd = "/usr/bin/crontab"
-
-    print_info_msg(
-        f"""
-        Getting crontab content with command:
-        =========================================================
-          {crontab_cmd} -l
-        =========================================================""",
-        verbose=debug,
-    )
-
-    (_, crontab_contents, _) = run_command(f"{crontab_cmd} -l")
-
     if crontab_contents.startswith('no crontab for'):
         crontab_contents=''
 
@@ -70,7 +46,14 @@ def get_crontab_contents(called_from_cron, machine, debug):
 
 
 def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
-    """Add crontab line to cron table"""
+    """Add crontab line to cron table
+    Args:
+        called_from_cron  (bool): Set this to True if script is called from within a crontab
+        machine           (str) : The name of the current machine
+        crontab_line      (str) : Line to be added to cron table
+        exptdir           (str) : Path to the experiment directory
+        debug             (bool): True will give more verbose output
+    """
 
     #
     # Make a backup copy of the user's crontab file and save it in a file.
@@ -135,7 +118,7 @@ def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
         )
 
 
-def delete_crontab_line(called_from_cron, machine, crontab_line, debug):
+def _delete_crontab_line(called_from_cron, machine, crontab_line, debug):
     """Delete crontab line after job is complete i.e. either SUCCESS/FAILURE
     but not IN PROGRESS status"""
 
@@ -176,7 +159,7 @@ def delete_crontab_line(called_from_cron, machine, crontab_line, debug):
     )
 
 
-def parse_args(argv):
+def _parse_args(argv):
     """Parse command line arguments for deleting crontab line.
     This is needed because it is called from shell script.
     If 'delete' argument is not passed, print the crontab contents
@@ -218,7 +201,7 @@ def parse_args(argv):
     )
 
     # Check that inputs are correct and consistent
-    args = parser.parse_args(argv)
+    args = parser._parse_args(argv)
 
     if args.remove:
         if args.line is None:
@@ -228,9 +211,9 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     if args.remove:
-        delete_crontab_line(args.called_from_cron,args.machine,args.line,args.debug)
+        _delete_crontab_line(args.called_from_cron,args.machine,args.line,args.debug)
     else:
         _,out = get_crontab_contents(args.called_from_cron,args.machine,args.debug)
         print_info_msg(out)
