@@ -65,8 +65,8 @@ else
   for hour in {00..23}; do
     fire_hr_fn="Hourly_Emissions_3km_${dd_to_use}${hour}00_${dd_to_use}${hour}00.nc"
     if [ -f "${COMINfire}/${fire_hr_fn}" ]; then
-      echo "Hourly emission file for $hr found."
-      ln -nsf ${COMINfire}/${output_file} .
+      echo "Hourly emission file for $hour found."
+      ln -nsf ${COMINfire}/${fire_hr_fn} .
     else
       # Check various version of RAVE raw data files (new and old)
       rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${ddhh_to_use}00000_e${dd_to_use}23*"
@@ -77,8 +77,12 @@ else
       for file_to_use in $files_found; do
         echo "Using file: $file_to_use"
         echo "Splitting data for hour $hour..."
-        ncks -d time,$hour,$hour "${COMINfire}/$file_to_use" "$output_file"
-        continue
+        ncks -d time,$hour,$hour "${COMINfire}/${file_to_use}" "${DATA}/${fire_hr_fn}"
+        if [ -f "${DATA}/${fire_hr_fn}" ]; then
+          break
+        else
+          echo "WARNING: Hourly emission file for $hour was NOT created from ${file_to_use}."
+        fi
       done
     fi
   done
