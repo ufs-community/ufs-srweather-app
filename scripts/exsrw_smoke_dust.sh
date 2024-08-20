@@ -67,72 +67,65 @@ hourly_hwpdir=${COMINsmoke}/HOURLY_HWP
 export CDATE=${PDY}${cyc}
 export CDATEm1="${PDYm1}${cyc}"
 
-# Number of files to process
-nfiles=24
+# Check if the fire file exists in the designated directory
 smokeFile="${SMOKE_DUST_FILE_PREFIX}_${CDATE}00.nc"
+if [ -e "${COMINsmoke}/${smokeFile}" ]; then
+  cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
+else
+  # Number of files to process
+  nfiles=24
 
-for i in $(seq 0 $(($nfiles - 1)) )
-do 
-  if [ "${EBB_DCYCLE}" -eq 2 ]; then	
-    # For ebb_dc == 2	   
-    timestr=$($NDATE +$i ${CDATEm1})
-    intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
-  else
-    # For ebb_dc == 1	   
-    timestr=$($NDATE +$i ${CDATE})
-    intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
+  for i in $(seq 0 $(($nfiles - 1)) )
+  do 
+    if [ "${EBB_DCYCLE}" -eq 2 ]; then	
+      # For ebb_dc == 2	   
+      timestr=$($NDATE +$i ${CDATEm1})
+      intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
+    else
+      # For ebb_dc == 1	   
+      timestr=$($NDATE +$i ${CDATE})
+      intp_fname=${PREDEF_GRID_NAME}_intp_${timestr}00_${timestr}59.nc
+    fi
+
+    if [ -f ${rave_intp_dir}/${intp_fname} ]; then
+      ln -nsf ${rave_intp_dir}/${intp_fname} ${DATA}/${intp_fname}
+      echo "${rave_intp_dir}/${intp_fname} interoplated file available."
+    else
+      echo "WARNING: ${rave_intp_dir}/${intp_fname} interoplated file non available."
+    fi
+  done
+  #
+  #-----------------------------------------------------------------------
+  #
+  # link RAVE fire data to working directory $DATA
+  #
+  #-----------------------------------------------------------------------
+  #
+  if [ -d ${COMINfire}/${PDYm1}/rave ]; then
+    ln -snf ${COMINfire}/${PDY}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${DATA}/.
+    ln -snf ${COMINfire}/${PDYm1}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${DATA}/.
+    ln -snf ${COMINfire}/${PDYm2}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${DATA}/.
   fi
 
-  if [ -f ${rave_intp_dir}/${intp_fname} ]; then
-    ln -nsf ${rave_intp_dir}/${intp_fname} ${DATA}/${intp_fname}
-    echo "${rave_intp_dir}/${intp_fname} interoplated file available."
+  # Check whether the RAVE files need to be split into hourly files
+  # Format the current day and hour properly for UTC
+  if [ "${EBB_DCYCLE}" -eq 1 ]; then
+    ddhh_to_use="${PDY}${cyc}"
+    dd_to_use="${PDY}"
   else
-    echo "WARNING: ${rave_intp_dir}/${intp_fname} interoplated file non available."
+    ddhh_to_use="${PDYm1}${cyc}"
+    dd_to_use="${PDYm1}"
   fi
-done
-#
-#-----------------------------------------------------------------------
-#
-# link RAVE fire data to working directory $DATA
-#
-#-----------------------------------------------------------------------
-#
-if [ -d ${COMINfire}/${PDYm1}/rave ]; then
-  fire_rave_dir_work=${DATA}
-  ln -snf ${COMINfire}/${PDY}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${fire_rave_dir_work}/.
-  ln -snf ${COMINfire}/${PDYm1}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${fire_rave_dir_work}/.
-  ln -snf ${COMINfire}/${PDYm2}/rave/${RAVE_FIRE_FILE_PREFIX}_* ${fire_rave_dir_work}/.
-else
-  fire_rave_dir_work=${COMINfire}
-fi
-
-# Check whether the RAVE files need to be split into hourly files
-# Format the current day and hour properly for UTC
-if [ "${EBB_DCYCLE}" -eq 1 ]; then
-  ddhh_to_use="${PDY}${cyc}"
-  dd_to_use="${PDY}"
-else
-  ddhh_to_use="${PDYm1}${cyc}"
-  dd_to_use="${PDYm1}"
-fi
-
-# Construct file names and check their existence
-intp_fname="${fire_rave_dir_work}/RAVE-HrlyEmiss-3km_v2r0_blend_s${ddhh_to_use}00000_e${dd_to_use}23*"
-intp_fname_beta="${fire_rave_dir_work}/Hourly_Emissions_3km_${ddhh_to_use}00_${dd_to_use}23*"
-
-echo "Checking for files in directory: $fire_rave_dir_work"
-
-# Find files matching the specified patterns
-files_found=$(find "$fire_rave_dir_work" -type f \( -name "${intp_fname##*/}" -o -name "${intp_fname_beta##*/}" \))
-
-if [ -z "$files_found" ]; then
-  echo "WARNING: No files found matching patterns."
-else
-  echo "Files found, proceeding with processing..."
+  # Check various version of RAVE raw data files (new and old)
+  rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${ddhh_to_use}00000_e${dd_to_use}23*"
+  rave_raw_fn2="Hourly_Emissions_3km_${ddhh_to_use}00_${dd_to_use}23*"
+  # Find files matching the specified patterns
+  files_found=$(find "$DATA" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
+  # Splitting 24-hour RAVE raw data into houly data
   for file_to_use in $files_found; do
     echo "Using file: $file_to_use"
     for hour in {00..23}; do
-      output_file="${fire_rave_dir_work}/Hourly_Emissions_3km_${dd_to_use}${hour}00_${dd_to_use}${hour}00.nc"
+      output_file="Hourly_Emissions_3km_${dd_to_use}${hour}00_${dd_to_use}${hour}00.nc"
       if [ -f "$output_file" ]; then
         echo "Output file for hour $hour already exists: $output_file. Skipping..."
         continue
@@ -142,67 +135,65 @@ else
     done
     echo "Hourly files processing completed for: $file_to_use"
   done
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Call python script to generate fire emission files.
-#
-#-----------------------------------------------------------------------
-#
-${USHsrw}/generate_fire_emissions.py \
-  "${FIXsmoke}/${PREDEF_GRID_NAME}" \
-  "${fire_rave_dir_work}" \
-  "${DATA}" \
-  "${PREDEF_GRID_NAME}" \
-  "${EBB_DCYCLE}" \
-  "${RESTART_INTERVAL}"
-# Capture the return code from the previous command
-export err=$?
-if [ $err -ne 0 ]; then
-  message_txt="Generate_fire_emissions.py failed with return code $err"
-  err_exit "${message_txt}"
-  print_err_msg_exit "${message_txt}"
-fi
 
-#Copy the the hourly, interpolated RAVE data to $rave_nwges_dir so it
-# is maintained there for future cycles.
-# Function to check if all files in the directory are older than 15 days
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Call python script to generate fire emission files.
+  #
+  #-----------------------------------------------------------------------
+  #
+  ${USHsrw}/generate_fire_emissions.py \
+    "${FIXsmoke}/${PREDEF_GRID_NAME}" \
+    "${COMINfire}" \
+    "${DATA}" \
+    "${PREDEF_GRID_NAME}" \
+    "${EBB_DCYCLE}" \
+    "${RESTART_INTERVAL}"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Generate_fire_emissions.py failed with return code $err"
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
+  fi
 
-are_all_files_older_than_15_days() {
+  #Copy the the hourly, interpolated RAVE data to $rave_nwges_dir so it
+  # is maintained there for future cycles.
+  # Function to check if all files in the directory are older than 15 days
+
+  are_all_files_older_than_15_days() {
     find "$1" -type f -mtime -15 | read
     return $?
-}
+  }
 
-# Check if all files in the rave_nwges_dir are older than 5 days
-if are_all_files_older_than_15_days "${rave_intp_dir}"; then
-  echo "All files are older than 5 days. Replacing all files."
-  # Loop through all files in the work directory and replace them in rave_nwges_dir
-  for file in ${DATA}/*; do
-    filename=$(basename "$file")
-    target_file="${COMINsmoke}/${filename}"
+  # Check if all files in the rave_nwges_dir are older than 5 days
+  if are_all_files_older_than_15_days "${rave_intp_dir}"; then
+    echo "All files are older than 5 days. Replacing all files."
+    # Loop through all files in the work directory and replace them in rave_nwges_dir
+    for file in ${DATA}/*; do
+      filename=$(basename "$file")
+      target_file="${COMINsmoke}/${filename}"
         
-    cp "${file}" "${target_file}"
-    echo "Copied file: $filename"
-  done
-else
-  echo "Not all files are older than 5 days. Checking individual files."
-  # Loop through all files in the work directory
-  for file in ${DATA}/*; do
-    filename=$(basename "$file")
-    target_file="${COMINsmoke}/${filename}"
-
-    # Check if the file matches the pattern or is missing in the target directory
-    if [[ "$filename" =~ SMOKE_RRFS_data_.*\.nc ]]; then
       cp "${file}" "${target_file}"
       echo "Copied file: $filename"
-    elif [ ! -f "${target_file}" ]; then
-      cp "${file}" "${target_file}"
-      echo "Copied missing file: $filename"
-    fi
-  done
+    done
+  else
+    echo "Not all files are older than 5 days. Checking individual files."
+    # Loop through all files in the work directory
+    for file in ${DATA}/*; do
+      filename=$(basename "$file")
+      target_file="${COMINsmoke}/${filename}"
+      # Check if the file matches the pattern or is missing in the target directory
+      if [[ "$filename" =~ SMOKE_RRFS_data_.*\.nc ]]; then
+        cp "${file}" "${target_file}"
+        echo "Copied file: $filename"
+      elif [ ! -f "${target_file}" ]; then
+        cp "${file}" "${target_file}"
+        echo "Copied missing file: $filename"
+      fi
+    done
+  fi
 fi
-
 echo "Copy RAVE interpolated files completed"
 #
 #-----------------------------------------------------------------------
