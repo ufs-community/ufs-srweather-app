@@ -61,6 +61,7 @@ global:
   HALO_BLEND: 0
 smoke_dust_parm:
   DO_SMOKE_DUST: true
+  EBB_DCYCLE: 1
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
   RAVE_FIRE_FILE_PREFIX: "RAVE-HrlyEmiss-3km"
 

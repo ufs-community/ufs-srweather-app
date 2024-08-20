@@ -116,7 +116,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm constants fixed_files \
+for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm constants fixed_files \
   task_get_extrn_lbcs task_run_fcst task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -130,6 +130,7 @@ done
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -299,7 +300,7 @@ create_symlink_to_file $target $symlink ${relative_link_flag}
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-suites=( "FV3_RAP" "FV3_HRRR" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
+suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   file_ids=( "ss" "ls" )
   for file_id in "${file_ids[@]}"; do
@@ -391,25 +392,18 @@ else
 fi
 # Smoke and Dust
 if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  ln -snf  ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dust12m_data.nc  ${run_dir}/INPUT/dust12m_data.nc
-  ln -snf  ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/emi_data.nc      ${run_dir}/INPUT/emi_data.nc
-  yyyymmddhh=${cdate:0:10}
-  echo ${yyyymmddhh}
-  if [ ${cycle_type} = "spinup" ]; then
-    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00_spinup.nc
-  else
-    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00.nc
-  fi
-  echo "try to use smoke file=",${smokefile}
+  ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dust12m_data.nc .
+  ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/emi_data.nc .
+  smokefile="${COMIN}/SMOKE_RRFS_data_${PDY}${cyc}00.nc"
   if [ -f ${smokefile} ]; then
-    ln -snf ${smokefile} ${run_dir}/INPUT/SMOKE_RRFS_data.nc
+    ln -snf ${smokefile} SMOKE_RRFS_data.nc
   else
-    if [ ${EBB_DCYCLE} = "1" ]; then
-       ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc ${run_dir}/INPUT/SMOKE_RRFS_data.nc
-       echo "WARNING: Smoke file is not available, use dummy_24hr_smoke_ebbdc1.nc instead"
+    if [ "${EBB_DCYCLE}" = "1" ]; then
+      ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc SMOKE_RRFS_data.nc
+      echo "WARNING: Smoke file is not available, use dummy_24hr_smoke_ebbdc1.nc instead"
     else
-       ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${run_dir}/INPUT/SMOKE_RRFS_data.nc
-       echo "WARNING: Smoke file is not available, use dummy_24hr_smoke.nc instead"
+      ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc SMOKE_RRFS_data.nc
+      echo "WARNING: Smoke file is not available, use dummy_24hr_smoke.nc instead"
     fi
   fi
 fi

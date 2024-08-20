@@ -2691,6 +2691,9 @@ smoke_dust_parm:
   # DO_SMOKE_DUST:
   # Flag turning on/off Smoke and Dust
   #
+  # EBB_DCYCLE:
+  # 1: for retro, 2: for forecast
+  #
   # COMINsmoke_default:
   # Path to the directory containing smoke and dust files
   #
@@ -2706,6 +2709,7 @@ smoke_dust_parm:
   #-----------------------------------------------------------------------
   #
   DO_SMOKE_DUST: false
+  EBB_DCYCLE: 1
   COMINsmoke_default: ""
   COMINfire_default: ""
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
