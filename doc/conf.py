@@ -258,10 +258,17 @@ def warn_undocumented_members(app, what, name, obj, options, lines):
         message = what + " is undocumented: " + name + "(%d)"% len(lines)
         logger.warning(message)
 
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "private-members": True
+}
+
 # -- Options for napoleon extension ---------------------------------------
 
 napoleon_numpy_docstring = False
 napoleon_google_docstring = True
+napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of multiple values
 
 
 # -- Options for intersphinx extension ---------------------------------------
