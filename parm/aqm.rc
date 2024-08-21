@@ -20,6 +20,11 @@ init_concentrations: {{ init_concentrations | lower }}
 
 run_aerosol: true
 
+# - scale surface aerosol emissions over snow (fugitive dust correction)
+#   disabled if keyword is missing or value outside [0.,1.]
+#
+fugitive_dust_scale: 0.01
+
 {%- if ccpp_phys_suite in ["FV3_GFS_v15p2", "FV3_GFS_v16"] %}
 mp_tracer_map: gfdl
 dy_tracer_map_start: 9

@@ -88,12 +88,20 @@ else
   for ihr in {0..23}; do
     download_time=`$NDATE -$ihr ${yyyymmdd_mh1}${hh_mh1}`
     FILE_curr=Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
-    FILE_13km=RAVE-HrlyEmiss-13km_v*_blend_s${download_time}00000_e${download_time}59590_c*.nc
+    if [ "${yyyymmdd}" -gt "20250101" ]; then
+      FILE_13km=RAVE-HrlyEmiss-13km_v*_blend_s${download_time}00000_e${download_time}59590_c*.nc
+    else
+      FILE_13km=RAVE-HrlyEmiss-13km_v2r0_blend_s${download_time}00000_e${download_time}59590_c*.nc
+    fi
     yyyymmdd_dn=${download_time:0:8}
     hh_dn=${download_time:8:2}
     missing_download_time=`$NDATE -24 ${yyyymmdd_dn}${hh_dn}`
     yyyymmdd_dn_md1=${missing_download_time:0:8}
-    FILE_13km_md1=RAVE-HrlyEmiss-13km_v*_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
+    if [ "${yyyymmdd}" -gt "20250101" ]; then
+      FILE_13km_md1=RAVE-HrlyEmiss-13km_v*_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
+    else
+      FILE_13km_md1=RAVE-HrlyEmiss-13km_v2r0_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
+    fi
     if [ -s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}`) -gt 4000000 ]; then
       cpreq ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
     elif [ -s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}`) -gt 4000000 ]; then
@@ -170,17 +178,6 @@ else
 
 fi
 #
- cd ${FIRE_EMISSION_STAGING_DIR}
- mv ${aqm_fire_file_fn}  temp.nc
- ncrename -v PM2.5,PM25 temp.nc temp1.nc
- ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc
- ncap2 -s 'where(Latitude <=30 && land_cover == 1 ) PM25 = PM25 * 0.8'       temp2.nc temp3.nc
- ncap2 -s 'where(Latitude <=49 && land_cover == 3 ) PM25 = PM25 * 1.11111'   temp3.nc temp4.nc
- ncap2 -s 'where(Latitude <=49 && land_cover == 4 ) PM25 = PM25 * 1.11111'   temp4.nc temp5.nc
- ncrename -v PM25,PM2.5 temp5.nc temp6.nc
- mv temp6.nc ${aqm_fire_file_fn}
- rm -rf temp*nc
-     #
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/function.
