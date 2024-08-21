@@ -2703,9 +2703,6 @@ smoke_dust_parm:
   # SMOKE_DUST_FILE_PREFIX:
   # Prefix of Smoke and Dust file name
   #
-  # RAVE_FIRE_FILE_PREFIX:
-  # Prefix of RAVE fire file name
-  #
   #-----------------------------------------------------------------------
   #
   DO_SMOKE_DUST: false
@@ -2713,7 +2710,6 @@ smoke_dust_parm:
   COMINsmoke_default: ""
   COMINfire_default: ""
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
-  RAVE_FIRE_FILE_PREFIX: "Hourly_Emission_3km"
 
 rocoto:
   attrs: ""

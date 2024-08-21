@@ -19,11 +19,11 @@ import interp_tools as i_tools
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Workflow
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def generate_emiss_workflow(staticdir, ravedir, newges_dir, predef_grid, ebb_dcycle, restart_interval):
+def generate_emiss_workflow(staticdir, ravedir, intp_dir, predef_grid, ebb_dcycle, restart_interval):
    
    # staticdir: path to FIX files
    # ravedir: path to RAVE fire data files (hourly), typically workding directory (DATA)
-   # newges_dir: path to interpolated RAVE data file for previous cycles (COMIN)
+   # intp_dir: path to interpolated RAVE data file for previous cycles (DATA_SHARE)
    # nwges_dir: path to restart files, working directory (DATA)
    # ----------------------------------------------------------------------
    # Import envs from workflow and get the predifying grid
@@ -55,8 +55,7 @@ def generate_emiss_workflow(staticdir, ravedir, newges_dir, predef_grid, ebb_dcy
    #Setting the directories
    veg_map = staticdir+'/veg_map.nc' 
    RAVE= ravedir
-   rave_to_intp = predef_grid+"_intp_"  
-   intp_dir = newges_dir
+   rave_to_intp = predef_grid+"_intp_"
    grid_in = staticdir+'/grid_in.nc'
    weightfile = staticdir+'/weight_file.nc'
    grid_out = staticdir+'/ds_out_base.nc'
@@ -85,9 +84,9 @@ def generate_emiss_workflow(staticdir, ravedir, newges_dir, predef_grid, ebb_dcy
                                     intp_dir, src_latt, tgt_latt, tgt_lont, cols, rows)
 
            if ebb_dcycle == 1:
-               print('Processing emissions for  ebb_dcyc 1')
+               print('Processing emissions forebb_dcyc 1')
                frp_avg_reshaped, ebb_total_reshaped = femmi_tools.averaging_FRP(ebb_dcycle, fcst_dates, cols, rows, intp_dir, rave_to_intp, veg_map, tgt_area, beta, fg_to_ug, to_s)
-               femmi_tools.produce_emiss_24hr_file(ebb_dcycle, frp_avg_reshaped, intp_dir, current_day, tgt_latt, tgt_lont, ebb_total_reshaped, cols, rows)
+               femmi_tools.produce_emiss_24hr_file(ebb_dcycle, frp_avg_reshaped, nwges_dir, current_day, tgt_latt, tgt_lont, ebb_total_reshaped, cols, rows)
            elif ebb_dcycle == 2:              
                print('Restart dates to process',fcst_dates)
                hwp_avail_hours, hwp_non_avail_hours = HWP_tools.check_restart_files(hourly_hwpdir, fcst_dates)
@@ -98,7 +97,7 @@ def generate_emiss_workflow(staticdir, ravedir, newges_dir, predef_grid, ebb_dcy
                te = femmi_tools.estimate_fire_duration(intp_avail_hours, intp_dir, fcst_dates, current_day, cols, rows, rave_to_intp)
                fire_age = femmi_tools.save_fire_dur(cols, rows, te)
                #produce emiss file 
-               femmi_tools.produce_emiss_file(xarr_hwp, frp_avg_reshaped, totprcp_ave_arr, xarr_totprcp, intp_dir, current_day, tgt_latt, tgt_lont, ebb_total_reshaped, fire_age, cols, rows)
+               femmi_tools.produce_emiss_file(xarr_hwp, frp_avg_reshaped, totprcp_ave_arr, xarr_totprcp, nwges_dir, current_day, tgt_latt, tgt_lont, ebb_total_reshaped, fire_age, cols, rows)
    else:
        print('First day true, no RAVE files available. Use dummy emissions file')
        i_tools.create_dummy(intp_dir, current_day, tgt_latt, tgt_lont, cols, rows)

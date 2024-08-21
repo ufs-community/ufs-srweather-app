@@ -115,6 +115,10 @@ mkdir -p ${COMOUT}
 export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
 export COMINfire="${COMINfire:-${COMINfire_default}}"
 
+# Create a teomporary share directory for RAVE interpolated data files
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
+mkdir -p ${DATA_SHARE}
+
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
 setpdy.sh
