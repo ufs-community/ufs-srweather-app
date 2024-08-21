@@ -4,7 +4,8 @@ import datetime as dt
 import pandas as pd
 import os
 import fnmatch
-import ESMF
+#import ESMF
+import esmpy as ESMF
 import xarray as xr
 import numpy as np
 from netCDF4 import Dataset

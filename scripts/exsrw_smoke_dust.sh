@@ -48,8 +48,16 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs Smoke and Dust.
 ========================================================================"
 #
+export CDATE="${PDY}${cyc}"
+#
+# Create sub-directory for HOURLY_HWP and link restart files
+#
+mkdir -p ${DATA}/HOURLY_HWP
+
+#
 # Check if the fire file exists in the designated directory
-smokeFile="${SMOKE_DUST_FILE_PREFIX}_${PDY}${cyc}00.nc"
+#
+smokeFile="${SMOKE_DUST_FILE_PREFIX}_${CDATE}00.nc"
 if [ -e "${COMINsmoke}/${smokeFile}" ]; then
   cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
 else
@@ -95,8 +103,8 @@ else
   #
   ${USHsrw}/generate_fire_emissions.py \
     "${FIXsmoke}/${PREDEF_GRID_NAME}" \
-    "${COMINfire}" \
     "${DATA}" \
+    "${COMIN}" \
     "${PREDEF_GRID_NAME}" \
     "${EBB_DCYCLE}" \
     "${RESTART_INTERVAL}"

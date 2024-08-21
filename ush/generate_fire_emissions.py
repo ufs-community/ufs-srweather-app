@@ -21,6 +21,10 @@ import interp_tools as i_tools
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def generate_emiss_workflow(staticdir, ravedir, newges_dir, predef_grid, ebb_dcycle, restart_interval):
    
+   # staticdir: path to FIX files
+   # ravedir: path to RAVE fire data files (hourly), typically workding directory (DATA)
+   # newges_dir: path to interpolated RAVE data file for previous cycles (COMIN)
+   # nwges_dir: path to restart files, working directory (DATA)
    # ----------------------------------------------------------------------
    # Import envs from workflow and get the predifying grid
    # Set variable names, constants and unit conversions
@@ -31,13 +35,17 @@ def generate_emiss_workflow(staticdir, ravedir, newges_dir, predef_grid, ebb_dcy
    fg_to_ug = 1e6
    to_s = 3600
    current_day = os.environ.get("CDATE")
-   nwges_dir = os.environ.get("NWGES_DIR")    
+#   nwges_dir = os.environ.get("NWGES_DIR")    
+   nwges_dir = os.environ.get("DATA")
    vars_emis = ["FRP_MEAN","FRE"]
    cols, rows = (2700, 3950) if predef_grid == 'RRFS_NA_3km' else (1092, 1820) 
    print('PREDEF GRID',predef_grid,'cols,rows',cols,rows)
    print('WARNING, EBB_DCYCLE set to', ebb_dcycle, 'emissions are comes from same day satellite obs')   
    #used later when working with ebb_dcyle 1 or 2
    ebb_dcycle = float(ebb_dcycle)
+
+   print("CDATE:",current_day)
+   print("DATA:", nwges_dir)
 
    #This is used later when copying the rrfs restart file
    restart_interval = restart_interval.split()

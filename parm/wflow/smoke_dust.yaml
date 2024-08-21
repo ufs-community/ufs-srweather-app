@@ -31,7 +31,7 @@ task_smoke_dust:
   <<: *default_smoke_dust
   command: '&LOAD_MODULES_RUN_TASK; "smoke_dust" "&HOMEdir;/jobs/JSRW_SMOKE_DUST"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 2G
+  memory: 120G
   dependency:
     and:
       or_grid:
