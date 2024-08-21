@@ -29,6 +29,7 @@ source "$HOMEaqm/versions/run.ver" || { echo "Failed to source run.ver"; exit 1;
 OPSROOT=$(realpath ${COMROOT}/..)
 COMaqm=$(compath.py -o "aqm/${aqm_ver}") || { echo "Failed to assign COMaqm"; exit 1; }
 COMINgefs=$(compath.py "gefs/${gefs_ver}") || { echo "Failed to assign COMINgefs"; exit 1; }
+MODEL_VER_DFV=${COMaqm:(-4)}
 #
 # Replace special characters 
 OPSROOT=$(printf '%q' "$OPSROOT")
@@ -38,7 +39,7 @@ DCOMROOT=$(printf '%q' "$DCOMROOT")
 COMaqm=$(printf '%q' "$COMaqm")
 COMINgefs=$(printf '%q' "$COMINgefs")
 DATA=$(printf '%q' "$DATA")
-model_ver_dfv=$(printf '%q' "$model_ver_dfv")
+MODEL_VER_DFV=$(printf '%q' "$MODEL_VER_DFV")
 #
 # Dynamically generate target files
 cd "$DATA" || { echo "Failed to change directory to $DATA"; exit 1; }
@@ -48,14 +49,14 @@ for file_in in ${File_to_modify_source}; do
   file_src="${file_in}.template"
   file_tmp=$(mktemp -p .) || { echo "Failed to create temporary file"; exit 1; }
   cp "$file_src" "$file_tmp" || { echo "Failed to copy $file_src to $file_tmp"; exit 1; }
-  sed -i -e "s|@HOMEaqm@|${HOMEaqm}|g"              "$file_tmp"
-  sed -i -e "s|@COMaqm@|${COMaqm}|g"                "$file_tmp"
-  sed -i -e "s|@WARMSTART_PDY@|${WARMSTART_PDY}|g"  "$file_tmp"
-  sed -i -e "s|@OPSROOT@|${OPSROOT}|g"              "$file_tmp"
-  sed -i -e "s|@COMINgefs@|${COMINgefs}|g"          "$file_tmp"
-  sed -i -e "s|@DCOMROOT@|${DCOMROOT}|g"            "$file_tmp"
-  sed -i -e "s|@DATA@|${DATA}|g"                    "$file_tmp"
-  sed -i -e "s|@model_ver_dfv@|${model_ver_dfv}|g"  "$file_tmp"
+  sed -i -e "s|@HOMEaqm@|${HOMEaqm}|g"             "$file_tmp"
+  sed -i -e "s|@COMaqm@|${COMaqm}|g"               "$file_tmp"
+  sed -i -e "s|@WARMSTART_PDY@|${WARMSTART_PDY}|g" "$file_tmp"
+  sed -i -e "s|@OPSROOT@|${OPSROOT}|g"             "$file_tmp"
+  sed -i -e "s|@COMINgefs@|${COMINgefs}|g"         "$file_tmp"
+  sed -i -e "s|@DCOMROOT@|${DCOMROOT}|g"         "$file_tmp"
+  sed -i -e "s|@DATA@|${DATA}|g"                   "$file_tmp"
+  sed -i -e "s|@MODEL_VER_DFV@|${MODEL_VER_DFV}|g"                   "$file_tmp"
 #
   mv "$file_tmp" "$file_in" || { echo "Failed to move $file_tmp to $file_in"; exit 1; }
 done
