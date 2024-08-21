@@ -35,6 +35,8 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
+nitpick_ignore = [('py:class', 'obj'), ('py:class', 
+                   'yaml.dumper.Dumper'),]
 
 # -- General configuration ---------------------------------------------------
 
@@ -247,8 +249,9 @@ epub_exclude_files = ['search.html']
 
 # -- Options for autodoc extension ---------------------------------------
 
-autodoc_mock_imports = ["f90nml", "cartopy", "mpl_toolkits.basemap",
-   "fill_jinja_template", "utils", "monitor_jobs", "matplotlib", "numpy","uwtools"]
+autodoc_mock_imports = ["f90nml","cartopy","mpl_toolkits.basemap","fill_jinja_template",
+   "utils","monitor_jobs","matplotlib","numpy","uwtools","mpl_toolkits",
+   ]
 
 logger = logging.getLogger(__name__)
 
@@ -261,7 +264,8 @@ def warn_undocumented_members(app, what, name, obj, options, lines):
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
-    "private-members": True
+    "show-inheritance": True,
+    #"private-members": True
 }
 
 # -- Options for napoleon extension ---------------------------------------
