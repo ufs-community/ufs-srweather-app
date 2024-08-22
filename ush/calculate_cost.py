@@ -15,6 +15,14 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 
 
 def calculate_cost(config_fn):
+    """Calculate the cost of running an experiment based on its configuration file details
+    
+    Args:
+        config_fn (str): Name of a configuration file containing grid parameters
+
+    Returns:
+        cost (list): Cost array containing information related to experiment parameters (e.g., time step and grid)
+    """
     ushdir = os.path.dirname(os.path.abspath(__file__))
 
     cfg_u = load_config_file(config_fn)
