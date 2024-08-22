@@ -22,30 +22,30 @@ suite nco_aqm
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_make_ics
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_make_lbcs
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -53,9 +53,9 @@ suite nco_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
             task jaqm_fire_emission
-              trigger :TIME >= 0222 and :TIME < 0822
+              trigger :TIME >= 0142 and :TIME < 0742
           endfamily
           family forecast
             task jaqm_forecast
@@ -121,30 +121,30 @@ suite nco_aqm
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_make_ics
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_make_lbcs
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -152,9 +152,9 @@ suite nco_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
             task jaqm_fire_emission
-              trigger :TIME >= 0822 and :TIME < 1422
+              trigger :TIME >= 0742 and :TIME < 1342
           endfamily
           family forecast
             task jaqm_forecast
@@ -494,30 +494,30 @@ suite nco_aqm
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_make_ics
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_make_lbcs
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -525,9 +525,9 @@ suite nco_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
             task jaqm_fire_emission
-              trigger :TIME >= 1422 and :TIME < 2022
+              trigger :TIME >= 1342 and :TIME < 1942
           endfamily
           family forecast
             task jaqm_forecast
@@ -867,30 +867,30 @@ suite nco_aqm
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_make_ics
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_make_lbcs
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -898,9 +898,9 @@ suite nco_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
             task jaqm_fire_emission
-              trigger :TIME >= 2022 and :TIME < 0222
+              trigger :TIME >= 1942 and :TIME < 2342
           endfamily
           family forecast
             task jaqm_forecast
