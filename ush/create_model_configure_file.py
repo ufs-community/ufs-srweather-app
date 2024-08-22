@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Create a model_configure file for the FV3 forecast model from a
-template.
+Creates a ``model_configure`` file for the FV3 forecast model from a template.
 """
 import argparse
 import os
@@ -24,19 +23,19 @@ from python_utils import (
 def create_model_configure_file(
     cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
     ): #pylint: disable=too-many-arguments
-    """Creates a model configuration file in the specified
-    run directory
+    """Creates a model configuration file in the specified run directory
 
     Args:
-        cdate: cycle date
-        fcst_len_hrs: forecast length in hours
-        fhrot: forecast hour at restart
-        run_dir: run directory
-        sub_hourly_post
-        dt_subhourly_post_mnts
-        dt_atmos
+        cdate (int): Cycle date in ``YYYYMMDD`` format
+        fcst_len_hrs (int): Forecast length in hours
+        fhrot (int): Forecast hour at restart
+        run_dir (str): Run directory
+        sub_hourly_post (bool): Sets subhourly post to either ``True`` or ``False``
+        dt_subhourly_post_mnts (int): Subhourly post minutes
+        dt_atmos (int): Forecast model's main timestep
+
     Returns:
-        Boolean
+        True
     """
 
     print_input_args(locals())
@@ -227,7 +226,7 @@ def create_model_configure_file(
     return True
 
 
-def parse_args(argv):
+def _parse_args(argv):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Creates model configuration file.")
 
@@ -295,7 +294,7 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)

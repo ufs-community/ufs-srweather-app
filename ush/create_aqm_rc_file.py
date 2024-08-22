@@ -130,15 +130,8 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     )
     return True
 
-def parse_args(argv):
-    """ Parses command line arguments
-
-    Args:
-        argv (list): List of command line arguments passed to the script
-
-    Returns:
-        parser.parse_args(argv) (obj): argparse.Namespace object containing string representation of the parser object
-    """
+def _parse_args(argv):
+    """ Parses command line arguments"""
     parser = argparse.ArgumentParser(description="Creates aqm.rc file.")
 
     parser.add_argument("-r", "--run-dir",
@@ -164,7 +157,7 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
