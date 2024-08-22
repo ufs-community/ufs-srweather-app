@@ -14,11 +14,11 @@ suite nco_aqm
     family 00
       edit CYC '00'
       task cycle_end
-        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        edit ECF_FILES '%PACKAGEHOME%/ecf'
         cron 23:00
       family aqm
         family v1.0
-          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          edit ECF_FILES '%PACKAGEHOME%/ecf'
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
@@ -113,11 +113,11 @@ suite nco_aqm
     family 06
       edit CYC '06'
       task cycle_end
-        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        edit ECF_FILES '%PACKAGEHOME%/ecf'
         cron 05:00
       family aqm
         family v1.0
-          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          edit ECF_FILES '%PACKAGEHOME%/ecf'
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
@@ -486,11 +486,11 @@ suite nco_aqm
     family 12
       edit CYC '12'
       task cycle_end
-        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        edit ECF_FILES '%PACKAGEHOME%/ecf'
         cron 11:00
       family aqm
         family v1.0
-          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          edit ECF_FILES '%PACKAGEHOME%/ecf'
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
@@ -859,11 +859,11 @@ suite nco_aqm
     family 18
       edit CYC '18'
       task cycle_end
-        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        edit ECF_FILES '%PACKAGEHOME%/ecf'
         cron 17:00
       family aqm
         family v1.0
-          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          edit ECF_FILES '%PACKAGEHOME%/ecf'
           family nexus
             task jaqm_nexus_emission_00
               edit NSPT '00'
