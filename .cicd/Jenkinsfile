@@ -15,9 +15,7 @@ pipeline {
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable the PW AWS cluster
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
-        // Use the line below to re-enable Derecho once allocation is available
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'gaea', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Workflow Wrapper test depth {0..9}, 0=none, 1=simple, 9=all [default]
@@ -99,9 +97,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        // Use the line below to re-enable Derecho once allocation is available
-                        // values 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        values 'gaea', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -115,9 +111,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            // Use line below to re-enable Derecho once allocation is available
-                            // values 'derecho', 'gaea', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                            values 'gaea', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'derecho', 'gaea', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
