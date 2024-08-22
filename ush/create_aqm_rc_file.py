@@ -27,7 +27,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         run_dir              (str): run directory
         init_concentrations (bool): Flag to reset initial AQM concentrations (tracer values) to zero. 
     Returns:
-        Boolean (True)
+        True
     """
 
     print_input_args(locals())

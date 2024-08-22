@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Function to create a diag_table file for the FV3 model using a
-template.
+Creates a ``diag_table`` file for the FV3 model using a template
 """
 import argparse
 import os
@@ -21,12 +20,12 @@ from python_utils import (
 
 
 def create_diag_table_file(run_dir):
-    """Creates a diagnostic table file for each cycle to be run
+    """Creates an FV3 diagnostic table (``diag_table``) file for each cycle to be run
 
     Args:
-        run_dir: run directory
+        run_dir (str): run directory
     Returns:
-        Boolean
+        True
     """
 
     print_input_args(locals())
@@ -82,7 +81,14 @@ def create_diag_table_file(run_dir):
 
 
 def parse_args(argv):
-    """Parse command line arguments"""
+    """Parses command line arguments
+
+    Args:
+        argv (list): List of command line arguments passed to the script
+
+    Returns:
+        parser.parse_args(argv) (obj): argparse.Namespace object containing string representation of the parser object
+    """
     parser = argparse.ArgumentParser(description="Creates diagnostic table file.")
 
     parser.add_argument(
