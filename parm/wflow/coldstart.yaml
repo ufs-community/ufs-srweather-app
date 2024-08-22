@@ -217,4 +217,13 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: smoke_dust
+        or_prepstart:
+          not:
+            taskvalid:
+              attrs:
+                task: prepstart
+          taskdep:
+            attrs:
+              task: prepstart
+
 

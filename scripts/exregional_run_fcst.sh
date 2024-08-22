@@ -392,17 +392,17 @@ else
 fi
 # Smoke and Dust
 if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dust12m_data.nc .
-  ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/emi_data.nc .
+  ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dust12m_data.nc .
+  ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc .
   smokefile="${COMIN}/${SMOKE_DUST_FILE_PREFIX}_${PDY}${cyc}00.nc"
   if [ -f ${smokefile} ]; then
     ln -snf ${smokefile} ${SMOKE_DUST_FILE_PREFIX}.nc
   else
     if [ "${EBB_DCYCLE}" = "1" ]; then
-      ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc ${SMOKE_DUST_FILE_PREFIX}.nc
+      ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc ${SMOKE_DUST_FILE_PREFIX}.nc
       echo "WARNING: Smoke file is not available, use dummy_24hr_smoke_ebbdc1.nc instead"
     else
-      ln -snf ${FIX_SMOKE_DUST}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${SMOKE_DUST_FILE_PREFIX}.nc
+      ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${SMOKE_DUST_FILE_PREFIX}.nc
       echo "WARNING: Smoke file is not available, use dummy_24hr_smoke.nc instead"
     fi
   fi

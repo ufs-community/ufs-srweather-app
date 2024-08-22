@@ -61,11 +61,18 @@ task_smoke_dust:
 
 task_prepstart:
   <<: *default_smoke_dust
+  attrs:
+    cycledefs: forecast
   command: '&LOAD_MODULES_RUN_TASK; "prepstart" "&HOMEdir;/jobs/JSRW_PREPSTART"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
   dependency:
-    taskdep:
-      attrs:
-        task: smoke_dust
+    or_smoke_dust:
+      not:
+        taskvalid:
+          attrs:
+            task: smoke_dust
+      taskdep:
+        attrs:
+          task: smoke_dust
 
