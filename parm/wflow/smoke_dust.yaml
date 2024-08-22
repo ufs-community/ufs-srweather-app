@@ -1,7 +1,7 @@
 default_smoke_dust_task: &default_smoke_dust
   account: '&ACCOUNT;'
   attrs:
-    cycledefs: cycled_from_second
+    cycledefs: forecast
     maxtries: '2'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
@@ -61,11 +61,9 @@ task_smoke_dust:
 
 task_prepstart:
   <<: *default_smoke_dust
-  attrs:
-    cycledefs: forecast
   command: '&LOAD_MODULES_RUN_TASK; "prepstart" "&HOMEdir;/jobs/JSRW_PREPSTART"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 2G
+  memory: 120G
   dependency:
     or_smoke_dust:
       not:
