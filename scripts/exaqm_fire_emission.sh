@@ -88,25 +88,21 @@ else
   for ihr in {0..23}; do
     download_time=`$NDATE -$ihr ${yyyymmdd_mh1}${hh_mh1}`
     FILE_curr=Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
-    if [ "${yyyymmdd}" -gt "20250101" ]; then
-      FILE_13km=RAVE-HrlyEmiss-13km_v*_blend_s${download_time}00000_e${download_time}59590_c*.nc
-    else
-      FILE_13km=RAVE-HrlyEmiss-13km_v2r0_blend_s${download_time}00000_e${download_time}59590_c*.nc
-    fi
+    FILE_13km=RAVE-HrlyEmiss-13km_v2r0_blend_s${download_time}00000_e${download_time}59590_c*.nc
     yyyymmdd_dn=${download_time:0:8}
     hh_dn=${download_time:8:2}
     missing_download_time=`$NDATE -24 ${yyyymmdd_dn}${hh_dn}`
     yyyymmdd_dn_md1=${missing_download_time:0:8}
-    if [ "${yyyymmdd}" -gt "20250101" ]; then
-      FILE_13km_md1=RAVE-HrlyEmiss-13km_v*_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
-    else
-      FILE_13km_md1=RAVE-HrlyEmiss-13km_v2r0_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
-    fi
-    if [ -s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}`) -gt 4000000 ]; then
-      cpreq ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
-    elif [ -s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}`) -gt 4000000 ]; then
-      echo "WARNING: ${FILE_13km} does not exist or broken. Replacing with the file of previous date ..."
-      cpreq ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
+    FILE_13km_md1=RAVE-HrlyEmiss-13km_v2r0_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
+    if ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} 1> /dev/null 2>&1; then
+       if [ $(stat -c %s ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}) -gt 4000000 ]; then
+           cpreq ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
+       fi
+    elif ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} 1> /dev/null 2>&1; then
+       if [ $(stat -c %s ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}) -gt 4000000 ]; then
+           echo "WARNING: ${FILE_13km} does not exist or is broken. Replacing with the file from the previous date..."
+           cpreq ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
+       fi
     else
       message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
@@ -115,12 +111,8 @@ else
         cpreq ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
-#        if [ ! -z "${maillist_group2}" ]; then
-#          echo "${message_warning}" | mail.py $maillist_group2
-#        fi
         if [ "${EMAIL_SDM^^}" = "YES" ] ; then
 	  MAILFROM=${MAILFROM:-"nco.spa@noaa.gov"}
-          #MAILTO=${MAILTO:-"sdm@noaa.gov"}
           MAILTO=${MAILTO:-"${maillist}"}
           subject="${cyc}Z ${RUN^^} Output for ${basinname:-} WILDFIRE EMIS "
           mail.py -s "${subject}" -v "${MAILTO}" 

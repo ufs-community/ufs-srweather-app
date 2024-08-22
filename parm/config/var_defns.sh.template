@@ -130,7 +130,7 @@ SDF_USES_RUC_LSM='FALSE'
 SDF_USES_THOMPSON_MP='FALSE'
 
 # [nco]
-envir_dfv='prod'
+envir_dfv='para'
 NET_dfv='aqm'
 RUN_dfv='aqm'
 model_ver_dfv='@MODEL_VER_DFV@'
