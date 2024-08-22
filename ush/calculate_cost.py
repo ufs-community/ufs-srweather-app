@@ -18,7 +18,7 @@ def calculate_cost(config_fn):
     """Calculate the cost of running an experiment based on its configuration file details
     
     Args:
-        config_fn (str): Name of a configuration file containing grid parameters
+        config_fn (str): Name of a configuration file containing experiment parameters
 
     Returns:
         cost (list): Cost array containing information related to experiment parameters (e.g., time step and grid)
