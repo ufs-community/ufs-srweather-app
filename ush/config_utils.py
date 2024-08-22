@@ -2,7 +2,7 @@
 
 """
 Interface to configuration file management utilities.
-To see what it can do:
+To see what it can do, run:
 
 .. code-block:: console
     
