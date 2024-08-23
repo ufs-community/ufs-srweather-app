@@ -20,7 +20,7 @@ from python_utils import (
 )
 
 def create_aqm_rc_file(cdate, run_dir, init_concentrations):
-    """ Creates an ``aqm.rc`` file in the specified run directory
+    """Creates an ``aqm.rc`` file in the specified run directory
 
     Args:
         cdate                (str): cycle date
