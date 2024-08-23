@@ -53,7 +53,7 @@ This is the ex-script for the task that runs prepstart.
 #  smoke/dust cycling
 #
 #-----------------------------------------------------------------------
-if [ $(bookify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
   echo "This step is skipped for the first cycle of COLDSTART."
 else
   if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
@@ -77,7 +77,7 @@ else
           print_info_msg "$VERBOSE" "Found ${checkfile}; Use it for smoke/dust cycle "
           break
         fi
-        n=$((n + ${DA_CYCLE_INTERV}))
+        n=$((n + ${INCR_CYCL_FREQ}))
         CDATEprev=$($NDATE -$n ${PDY}${cyc})
         PDYprev=${CDATEprev:0:8}
         cycprev=${CDATEprev:8:2}
@@ -93,7 +93,7 @@ else
       if [ "${IO_LAYOUT_Y}" = "1" ]; then
         checkfile=${bkpath_find}/${restart_prefix}fv_tracer.res.tile1.nc
         if [ -r "${checkfile}" ]; then
-          ncks -A -v smoke,dust,coarsepm ${checkfile}  fv_tracer.res.tile1.nc
+          ncks -A -v smoke,dust,coarsepm ${checkfile} fv_tracer.res.tile1.nc
         fi
       else
         for ii in ${list_iolayout}
@@ -101,7 +101,7 @@ else
           iii=$(printf %4.4i $ii)
           checkfile=${bkpath_find}/${restart_prefix}fv_tracer.res.tile1.nc.${iii}
           if [ -r "${checkfile}" ]; then
-            ncks -A -v smoke,dust,coarsepm ${checkfile}  fv_tracer.res.tile1.nc.${iii}
+            ncks -A -v smoke,dust,coarsepm ${checkfile} fv_tracer.res.tile1.nc.${iii}
           fi
         done
       fi

@@ -58,6 +58,19 @@ task_smoke_dust:
         streq:
           left: staged_sfc_climo
           right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
+      or:
+        datadep_coldstart:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '{{ workflow.EXPTDIR }}/task_skip_coldstart_@Y@m@d@H00.txt'
+        datadep_date_tag_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+        datadep_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc'
 
 task_prepstart:
   <<: *default_smoke_dust

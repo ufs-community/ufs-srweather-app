@@ -104,6 +104,8 @@ FV3_HRRR_gf:
   atmos_model_nml:
     avg_max_length: 3600.
     ignore_rst_cksum: true
+  external_ic_nml:
+    levp: 66
   fv_core_nml:
     agrid_vel_rst: true
     d_con: 0.5
@@ -123,6 +125,7 @@ FV3_HRRR_gf:
     n_split: 5
     n_sponge: 65
     nord_tr: 0
+    npz: 65
     psm_bc: 1
     range_warn: False
     regional_bcs_from_gsi: false
@@ -210,7 +213,6 @@ FV3_HRRR_gf:
     isubc_lw: 2
     isubc_sw: 2
     ivegsrc: 1
-    kice: 9
     ldiag3d: false
     ldiag_ugwp: false
     lgfdlmprad: false
@@ -220,7 +222,6 @@ FV3_HRRR_gf:
     lradar: true
     lrefres: true
     lsm: 3
-    lsoil: 9
     lsoil_lsm: 9
     ltaerosol: true
     lwhtr: true
