@@ -34,7 +34,7 @@ rocoto:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        walltime: 03:00:00
+        walltime: 02:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: RAP
   EXTRN_MDL_ICS_OFFSET_HRS: 0
@@ -42,6 +42,10 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
+task_make_ics:
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
+task_make_lbcs:
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
 task_run_fcst:
   DT_ATMOS: 36
   LAYOUT_X: 15
