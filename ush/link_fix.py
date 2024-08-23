@@ -47,7 +47,7 @@ def link_fix(
         nhw             (int) : Wide halo width (grid parameter setting: N=number of cells, H=halo, W=wide halo)
         constants       (dict): Dictionary containing the constants used by SRW
         run_task        (bool): Whether the task is to be run in the experiment
-        climo_fields    (list): List of fields needed for surface climatology
+        climo_fields    (list): List of fields needed for surface climatology (see ``fixed_files_mapping.yaml`` for details)
 
     Returns:
         res (str): File/grid resolution
