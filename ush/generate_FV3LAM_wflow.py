@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 """
-User interface to create an experiment directory consistent with the
-user-defined config.yaml file.
+User interface to create an experiment directory consistent with the user-defined ``config.yaml`` file.
 """
 
 # pylint: disable=invalid-name
@@ -75,7 +74,7 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # Set the full path to the experiment's rocoto workflow xml file.  This
+    # Set the full path to the experiment's rocoto workflow xml file. This
     # file will be placed at the top level of the experiment directory and
     # then used by rocoto to run the workflow.
     #
@@ -729,7 +728,14 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
 
-    If debug = True, print all messages to both screen and log file.
+    If ``debug = True``, print all messages to both screen and log file.
+
+    Args:
+        logfile (str) : The name of the file where logging is written
+        debug   (bool): Enable extra output for debugging
+    Returns:
+        None
+
     """
     logging.getLogger().setLevel(logging.DEBUG)
 
