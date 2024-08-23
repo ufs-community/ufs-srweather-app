@@ -18,9 +18,9 @@ def get_crontab_contents(called_from_cron, machine, debug):
     platforms the version or location of this may change depending on other circumstances.
 
     Args:
-        called_from_cron  (bool): Set this to True if script is called from within a crontab
+        called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
         machine           (str) : The name of the current machine
-        debug             (bool): True will give more verbose output
+        debug             (bool): ``True`` will give more verbose output
     Returns:
         crontab_cmd       (str) : String containing the "crontab" command for this machine
         crontab_contents  (str) : String containing the contents of the user's cron table.
@@ -45,14 +45,15 @@ def get_crontab_contents(called_from_cron, machine, debug):
     return crontab_cmd, crontab_contents
 
 
-def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
+def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug) -> None:
     """Add crontab line to cron table
+
     Args:
-        called_from_cron  (bool): Set this to True if script is called from within a crontab
+        called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
         machine           (str) : The name of the current machine
         crontab_line      (str) : Line to be added to cron table
         exptdir           (str) : Path to the experiment directory
-        debug             (bool): True will give more verbose output
+        debug             (bool): ``True`` will give more verbose output
     """
 
     #
@@ -118,9 +119,16 @@ def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
         )
 
 
-def _delete_crontab_line(called_from_cron, machine, crontab_line, debug):
-    """Delete crontab line after job is complete i.e. either SUCCESS/FAILURE
-    but not IN PROGRESS status"""
+def delete_crontab_line(called_from_cron, machine, crontab_line, debug) -> None:
+    """Delete crontab line after job is complete i.e., either SUCCESS/FAILURE
+    but not IN PROGRESS status
+
+    Args:
+        called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
+        machine           (str) : The name of the current machine
+        crontab_line      (str) : Line to be deleted from cron table
+        debug             (bool): ``True`` will give more verbose output
+    """
 
     #
     # Get the full contents of the user's cron table.
@@ -213,7 +221,7 @@ def _parse_args(argv):
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
     if args.remove:
-        _delete_crontab_line(args.called_from_cron,args.machine,args.line,args.debug)
+        delete_crontab_line(args.called_from_cron,args.machine,args.line,args.debug)
     else:
         _,out = get_crontab_contents(args.called_from_cron,args.machine,args.debug)
         print_info_msg(out)
