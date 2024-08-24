@@ -394,6 +394,8 @@ fi
 if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
   ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dust12m_data.nc .
   ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc .
+
+  COMIN="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
   smokefile="${COMIN}/${SMOKE_DUST_FILE_PREFIX}_${PDY}${cyc}00.nc"
   if [ -f ${smokefile} ]; then
     ln -snf ${smokefile} ${SMOKE_DUST_FILE_PREFIX}.nc
@@ -949,6 +951,29 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
     fi
   done
 
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Copy RESTART directory and dyn/phy output files to COMOUT
+#
+#-----------------------------------------------------------------------
+#
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path
+  cp -Rp RESTART ${COMOUT}
+  fhr=0
+  while [ $fhr -le ${FCST_LEN_HRS} ]; do
+    fhr_3d=$(printf "%03d" $fhr)
+    source_dyn="dynf${fhr_3d}.nc"
+    source_phy="phyf${fhr_3d}.nc"
+    target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_3d}.nc"
+    target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_3d}.nc"
+    [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
+    [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
+    (( fhr=fhr+1 ))
+  done
 fi
 #
 #-----------------------------------------------------------------------

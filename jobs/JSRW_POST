@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs prepstart
+# This script processes Post
 #
 #-----------------------------------------------------------------------
 #
@@ -30,7 +30,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global smoke_dust_parm ; do
+for sect in user nco platform workflow global task_run_post smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -57,8 +57,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies or fetches RAVE fire
-emission data files from disk, or HPSS.
+This is the J-job script for Post-processing.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -103,14 +102,21 @@ export RUN="${RUN:-${RUN_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
-  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver})}"
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
   export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
 else
-  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
   export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
 fi
 
 mkdir -p ${COMOUT}
+
+export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
+export COMINfire="${COMINfire:-${COMINfire_default}}"
+
+# Create a teomporary share directory for RAVE interpolated data files
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
+mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
@@ -134,6 +140,23 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Make sure that fhr is a non-empty string consisting of only digits.
+#
+#-----------------------------------------------------------------------
+#
+export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only
+digits:
+  fhr = \"${fhr}\""
+fi
+if [ $(boolify "${SUB_HOURLY_POST}") != "TRUE" ]; then
+  export fmn="00"
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Call the ex-script for this J-job.
 #
 #-----------------------------------------------------------------------
@@ -141,11 +164,32 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_prepstart.sh
+${SCRIPTSsrw}/exsrw_post.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then
   cat $pgmout
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Create a flag file to make rocoto aware that the run_post task has
+# successfully completed. This flag is necessary for varying forecast
+# hours (FCST_LEN_HRS: -1)
+#
+#-----------------------------------------------------------------------
+#
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+
+  if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+    fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
+    if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+      touch "${DATAROOT}/DATA_SHARE/${PDY}${cyc}/post_${PDY}${cyc}_task_complete.txt"
+    fi
+  fi
 fi
 #
 #-----------------------------------------------------------------------

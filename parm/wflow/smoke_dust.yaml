@@ -19,6 +19,7 @@ default_smoke_dust_task: &default_smoke_dust
     nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
     subcyc: !cycstr "@M"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nnodes: 1
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
@@ -65,11 +66,11 @@ task_smoke_dust:
           text: !cycstr '{{ workflow.EXPTDIR }}/task_skip_coldstart_@Y@m@d@H00.txt'
         datadep_date_tag_tracer:
           attrs:
-            age: 00:00:00:05
-          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+            age: 00:00:05:00
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H0000.fv_tracer.res.tile1.nc</cyclestr>'
         datadep_tracer:
           attrs:
-            age: 00:00:00:05
+            age: 00:00:05:00
           text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc'
 
 task_prepstart:
@@ -86,4 +87,27 @@ task_prepstart:
       taskdep:
         attrs:
           task: smoke_dust
+
+metatask_post:
+  var:
+    mem: '{% if global.DO_ENSEMBLE %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  metatask_post_mem#mem#_all_fhrs:
+    var:
+      fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
+      cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_CYCL|min %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
+    task_post_mem#mem#_f#fhr#:
+      <<: *default_smoke_dust
+      attrs:
+        cycledefs: '#cycledef#'
+      envars:
+        fhr: '#fhr#'
+      command: '&LOAD_MODULES_RUN_TASK; "post" "&HOMEdir;/jobs/JSRW_POST"'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+      nnodes: 2
+      ppn: 24
+      memory: 120G
+      dependency:
+        taskdep:
+          attrs:
+            task: run_fcst_mem#mem#
 

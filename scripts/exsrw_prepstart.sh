@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global smoke_dust_parm \
+for sect in user nco platform workflow global smoke_dust_parm \
   constants fixed_files grid_params task_run_fcst ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
