@@ -162,8 +162,8 @@ fi
 # Set namelist of upp.
 #
 if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc"
-  phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc"
+  dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc"
+  phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc"
 else
   dyn_file="${COMIN}/dynf${fhr}${mnts_secs_str}.nc"
   phy_file="${COMIN}/phyf${fhr}${mnts_secs_str}.nc"

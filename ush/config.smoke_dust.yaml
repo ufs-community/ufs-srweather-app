@@ -31,7 +31,7 @@ nco:
   RUN_default: smoke_dust
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust.yaml", "parm/wflow/coldstart.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/smoke_dust.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 02:00:00

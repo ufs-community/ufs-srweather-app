@@ -105,7 +105,7 @@ metatask_post:
       join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
       nnodes: 2
       ppn: 24
-      memory: 120G
+      memory: 64G
       dependency:
         taskdep:
           attrs:

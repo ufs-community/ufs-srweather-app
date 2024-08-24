@@ -968,8 +968,8 @@ if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
     fhr_3d=$(printf "%03d" $fhr)
     source_dyn="dynf${fhr_3d}.nc"
     source_phy="phyf${fhr_3d}.nc"
-    target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_3d}.nc"
-    target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_3d}.nc"
+    target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_3d}.${POST_OUTPUT_DOMAIN_NAME}.nc"
+    target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_3d}.${POST_OUTPUT_DOMAIN_NAME}.nc"
     [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
     [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
     (( fhr=fhr+1 ))
