@@ -105,15 +105,15 @@ cp ${post_config_fp} ./postxconfig-NT.txt
 cp ${PARMsrw}/upp/params_grib2_tbl_new .
 
 if [ $(boolify ${DO_SMOKE_DUST}) = "TRUE" ] || [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
-  cp ${FIXcrtm}/Nalli.IRwater.EmisCoeff.bin .
-  cp ${FIXcrtm}/FAST*.bin .
-  cp ${FIXcrtm}/NPOESS.IRland.EmisCoeff.bin .
-  cp ${FIXcrtm}/NPOESS.IRsnow.EmisCoeff.bin .
-  cp ${FIXcrtm}/NPOESS.IRice.EmisCoeff.bin .
-  cp ${FIXcrtm}/AerosolCoeff.bin .
-  cp ${FIXcrtm}/CloudCoeff.bin .
-  cp ${FIXcrtm}/*.SpcCoeff.bin .
-  cp ${FIXcrtm}/*.TauCoeff.bin .
+  ln -nsf ${FIXcrtm}/Nalli.IRwater.EmisCoeff.bin .
+  ln -nsf ${FIXcrtm}/FAST*.bin .
+  ln -nsf ${FIXcrtm}/NPOESS.IRland.EmisCoeff.bin .
+  ln -nsf ${FIXcrtm}/NPOESS.IRsnow.EmisCoeff.bin .
+  ln -nsf ${FIXcrtm}/NPOESS.IRice.EmisCoeff.bin .
+  ln -nsf ${FIXcrtm}/AerosolCoeff.bin .
+  ln -nsf ${FIXcrtm}/CloudCoeff.bin .
+  ln -nsf ${FIXcrtm}/*.SpcCoeff.bin .
+  ln -nsf ${FIXcrtm}/*.TauCoeff.bin .
   print_info_msg "
 ====================================================================
 Copying the CRTM fix files from FIXcrtm:
