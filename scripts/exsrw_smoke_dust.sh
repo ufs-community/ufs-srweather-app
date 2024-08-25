@@ -52,15 +52,9 @@ if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CY
   echo "This step is skipped for the first cycle of COLDSTART."
 else
   #
+  # Set CDATE used in the fire emission generation python script
+  #
   export CDATE="${PDY}${cyc}"
-  #
-  # Link restart directory of the previous cycle in COMIN/COMOUT
-  #
-  CDATEprev=$($NDATE -${INCR_CYCL_FREQ} ${PDY}${cyc})
-  PDYprev=${CDATEprev:0:8}
-  cycprev=${CDATEprev:8:2}
-  path_restart=${COMIN}/${RUN}.${PDYprev}/${cycprev}${SLASH_ENSMEM_SUBDIR}/RESTART
-  ln -nsf ${path_restart} .
   #
   # Check if the fire file exists in the designated directory
   #
@@ -68,6 +62,15 @@ else
   if [ -e "${COMINsmoke}/${smokeFile}" ]; then
     cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
   else
+    #
+    # Link restart directory of the previous cycle in COMIN/COMOUT
+    #
+    CDATEprev=$($NDATE -${INCR_CYCL_FREQ} ${PDY}${cyc})
+    PDYprev=${CDATEprev:0:8}
+    cycprev=${CDATEprev:8:2}
+    path_restart=${COMIN}/${RUN}.${PDYprev}/${cycprev}${SLASH_ENSMEM_SUBDIR}/RESTART
+    ln -nsf ${path_restart} .
+
     # Check whether the RAVE files need to be split into hourly files
     if [ "${EBB_DCYCLE}" -eq 1 ]; then
       ddhh_to_use="${PDY}${cyc}"
