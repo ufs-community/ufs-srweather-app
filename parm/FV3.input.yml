@@ -171,7 +171,6 @@ FV3_HRRR_gf:
     dust_gamma: 1.3
     dust_moist_correction: 2.0
     dust_opt: 1
-    ebb_dcycle: 1
     effr_in: true
     enh_mix : false
     fhcyc: 0.0
