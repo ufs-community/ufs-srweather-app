@@ -54,10 +54,13 @@ else
   #
   export CDATE="${PDY}${cyc}"
   #
-  # Create sub-directory for HOURLY_HWP and link restart files
+  # Link restart directory of the previous cycle in COMIN/COMOUT
   #
-  mkdir -p ${DATA}/HOURLY_HWP
-
+  CDATEprev=$($NDATE -${INCR_CYCL_FREQ} ${PDY}${cyc})
+  PDYprev=${CDATEprev:0:8}
+  cycprev=${CDATEprev:8:2}
+  path_restart=${COMIN}/${RUN}.${PDYprev}/${cycprev}${SLASH_ENSMEM_SUBDIR}/RESTART
+  ln -nsf ${path_restart} .
   #
   # Check if the fire file exists in the designated directory
   #

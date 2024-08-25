@@ -59,7 +59,7 @@ def generate_emiss_workflow(staticdir, ravedir, intp_dir, predef_grid, ebb_dcycl
    grid_in = staticdir+'/grid_in.nc'
    weightfile = staticdir+'/weight_file.nc'
    grid_out = staticdir+'/ds_out_base.nc'
-   hourly_hwpdir = os.path.join(nwges_dir,'HOURLY_HWP')
+   hourly_hwpdir = os.path.join(nwges_dir,'RESTART')
 
    # ----------------------------------------------------------------------
    # Workflow
