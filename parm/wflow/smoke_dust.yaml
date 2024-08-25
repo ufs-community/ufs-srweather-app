@@ -99,7 +99,9 @@ metatask_post:
       <<: *default_smoke_dust
       attrs:
         cycledefs: '#cycledef#'
+        maxtries: '2'
       envars:
+        <<: *default_vars
         fhr: '#fhr#'
       command: '&LOAD_MODULES_RUN_TASK; "post" "&HOMEdir;/jobs/JSRW_POST"'
       join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
