@@ -315,7 +315,7 @@ fi
 export pgm="nexus"
 . prep_step
 
-eval ${RUN_CMD_NEXUS} ${EXECdir}/$pgm -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc >>$pgmout 2>${DATA}/errfile
+eval ${RUN_CMD_NEXUS} ${EXECsrw}/$pgm -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc >>$pgmout 2>${DATA}/errfile
 export err=$?; err_chk
 if [ $err -ne 0 ]; then
   print_err_msg_exit "Call to execute nexus failed."

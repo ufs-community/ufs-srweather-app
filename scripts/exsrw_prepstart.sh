@@ -57,6 +57,13 @@ if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CY
   echo "This step is skipped for the first cycle of COLDSTART."
 else
   if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+    # IC gfs data file: gfs_data.tile7.halo0.nc
+    gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+    gfs_ic_fp="${DATA_SHARE}/${gfs_ic_fn}"
+    gfs_ic_mod_fn="gfs_data.tile7.halo0.nc"
+    cp -p ${gfs_ic_fp} ${gfs_ic_mod_fn}
+
+    # restart tracer file: fv_tracer.res.tile1.nc
     bkpath_find="missing"
     if [ "${bkpath_find}" = "missing" ]; then
       restart_prefix="${PDY}.${cyc}0000."
@@ -115,6 +122,8 @@ else
       err_exit "${message_txt}"
       print_err_msg_exit "${message_txt}"
     fi
+    # copy output to COMOUT
+    cp -p ${gfs_ic_mod_fn} ${COMOUT}/${gfs_ic_fn}
   fi
 fi
 #

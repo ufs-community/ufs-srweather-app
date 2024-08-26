@@ -32,6 +32,8 @@ def main():
 
     # Open the source file and extract data
     data_to_extract = xr.open_dataset(source_file)
+    print("DATA FILE:",data_to_extract)
+
     smoke_2_add = data_to_extract['smoke'][0,:,:, :]
     dust_2_add = data_to_extract['dust'][0,:,:, :]
     coarsepm_2_add = data_to_extract['coarsepm'][0,:, :, :]
@@ -40,7 +42,7 @@ def main():
 
     # Open the target file and load it into memory
     file_input = xr.open_dataset(target_file).load()
-
+    print("TARGET FILE:",file_input)
     # Drop the 'smoke' variable if it exists in both the source and target files
     if 'smoke' in file_input.variables and 'smoke' in data_to_extract.variables:
         file_input = file_input.drop('smoke')

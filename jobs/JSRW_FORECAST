@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs prepstart
+# The J-Job that runs the forecast
 #
 #-----------------------------------------------------------------------
 #
@@ -30,7 +30,26 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global smoke_dust_parm ; do
+#
+#-----------------------------------------------------------------------
+#
+# Run-time environment variables:
+#
+#    CDATE
+#    COMIN
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#-----------------------------------------------------------------------
+#
+for sect in user nco platform workflow global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -57,8 +76,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies or fetches RAVE fire
-emission data files from disk, or HPSS.
+This is the J-job script for the task that runs a forecast with FV3 for
+the specified cycle.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -103,7 +122,7 @@ export RUN="${RUN:-${RUN_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
-  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver})}"
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
   export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
 else
   export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
@@ -112,8 +131,11 @@ fi
 
 mkdir -p ${COMOUT}
 
-# Create a teomporary share directory
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
+export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
+export COMINfire="${COMINfire:-${COMINfire_default}}"
+
+# Create a teomporary share directory for RAVE interpolated data files
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
 mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables
@@ -145,7 +167,7 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_prepstart.sh
+${SCRIPTSsrw}/exsrw_forecast.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then

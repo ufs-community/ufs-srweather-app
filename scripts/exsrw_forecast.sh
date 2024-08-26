@@ -115,12 +115,11 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm constants fixed_files \
   task_get_extrn_lbcs task_run_fcst task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
-
 #
 #-----------------------------------------------------------------------
 #
@@ -129,8 +128,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
-set -xue
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -197,108 +195,55 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-
+export CDATE="${PDY}${cyc}"
 #
 #-----------------------------------------------------------------------
 #
-# Create links in the INPUT subdirectory of the current run directory to
-# the grid and (filtered) orography files.
+# Create and set up INPUT subdirectory of the current working directory
+# to run the ufs weather model
 #
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Creating links in the INPUT subdirectory of the current run directory to
-the grid and (filtered) orography files ..."
+Creating links with names that FV3 looks for in the INPUT subdirectory
+of the current working directory (DATA), where
+  DATA = \"${DATA}\"
+..."
 
-# Create links to fix files in the FIXlam directory.
+# Create and set up INPUT directory for ufs-weather-model.
+mkdir -p ${DATA}/INPUT
 cd ${DATA}/INPUT
 
-#
-# For experiments in which the TN_MAKE_GRID task is run, we make the 
-# symlinks to the grid files relative because those files wlll be located 
-# within the experiment directory.  This keeps the experiment directory 
-# more portable and the symlinks more readable.  However, for experiments 
-# in which the TN_MAKE_GRID task is not run, pregenerated grid files will
-# be used, and those will be located in an arbitrary directory (specified 
-# by the user) that is somwehere outside the experiment directory.  Thus, 
-# in this case, there isn't really an advantage to using relative symlinks, 
-# so we use symlinks with absolute paths.
-#
-if [[ -d "${EXPTDIR}/grid" ]]; then
-  relative_link_flag="TRUE"
-else
-  relative_link_flag="FALSE"
-fi
-
 # Symlink to mosaic file with a completely different name.
-#target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
-target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
+target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"
 symlink="grid_spec.nc"
-create_symlink_to_file $target $symlink ${relative_link_flag}
+ln -nsf $target $symlink
 
 # Symlink to halo-3 grid file with "halo3" stripped from name.
 mosaic_fn="grid_spec.nc"
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
-
 target="${FIXlam}/${grid_fn}"
 symlink="${grid_fn}"
-create_symlink_to_file $target $symlink ${relative_link_flag}
+ln -nsf $target $symlink
 
 # Symlink to halo-4 grid file with "${CRES}_" stripped from name.
-#
-# If this link is not created, then the code hangs with an error message
-# like this:
-#
-#   check netcdf status=           2
-#  NetCDF error No such file or directory
-# Stopped
-#
-# Note that even though the message says "Stopped", the task still con-
-# sumes core-hours.
-#
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
-create_symlink_to_file $target $symlink ${relative_link_flag}
-
-
-#
-# As with the symlinks grid files above, when creating the symlinks to
-# the orography files, use relative paths if running the TN_MAKE_OROG
-# task and absolute paths otherwise.
-#
-if [ -d "${EXPTDIR}/orog" ]; then
-  relative_link_flag="TRUE"
-else
-  relative_link_flag="FALSE"
-fi
+ln -nsf $target $symlink
 
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="oro_data.nc"
-create_symlink_to_file $target $symlink ${relative_link_flag}
-#
+ln -nsf $target $symlink
+
 # Symlink to halo-4 orography file with "${CRES}_" stripped from name.
-#
-# If this link is not created, then the code hangs with an error message
-# like this:
-#
-#   check netcdf status=           2
-#  NetCDF error No such file or directory
-# Stopped
-#
-# Note that even though the message says "Stopped", the task still con-
-# sumes core-hours.
-#
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-create_symlink_to_file $target $symlink ${relative_link_flag}
+ln -nsf $target $symlink
 #
-# If using the FV3_HRRR physics suite, there are two files (that contain 
+# When using some specific physics suite, there are two files (that contain 
 # statistics of the orography) that are needed by the gravity wave drag 
-# parameterization in that suite.  Below, create symlinks to these files
-# in the run directory.  Note that the symlinks must have specific names 
-# that the FV3 model is hardcoded to recognize, and those are the names 
-# we use below.
+# parameterization in that suite.
 #
 suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
@@ -306,116 +251,64 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   for file_id in "${file_ids[@]}"; do
     target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${file_id}.tile${TILE_RGNL}.halo${NH0}.nc"
     symlink="oro_data_${file_id}.nc"
-    create_symlink_to_file $target $symlink ${relative_link_flag}
+    ln -nsf $target $symlink
   done
 fi
-#
-#-----------------------------------------------------------------------
-#
-# The FV3 model looks for the following files in the INPUT subdirectory
-# of the run directory:
-#
-#   gfs_data.nc
-#   sfc_data.nc
-#   gfs_bndy*.nc
-#   gfs_ctrl.nc
-#
-# Some of these files (gfs_ctrl.nc, gfs_bndy*.nc) already exist, but
-# others do not.  Thus, create links with these names to the appropriate
-# files (in this case the initial condition and surface files only).
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "
-Creating links with names that FV3 looks for in the INPUT subdirectory
-of the current run directory (DATA), where
-  DATA = \"${DATA}\"
-..."
 
-cd ${DATA}/INPUT
+target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+symlink="gfs_data.nc"
+ln -nsf $target $symlink
 
-#
-# The symlinks to be created point to files in the same directory (INPUT),
-# so it's most straightforward to use relative paths.
-#
-relative_link_flag="FALSE"
+target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+symlink="sfc_data.nc"
+ln -nsf $target $symlink
 
-if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  COMIN="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
+target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+symlink="gfs_ctrl.nc"
+ln -nsf $target $symlink
 
-  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  symlink="gfs_data.nc"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
+for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+  ln -nsf $target $symlink
+done
 
-  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  symlink="sfc_data.nc"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  symlink="NEXUS_Expt.nc"
+  ln -nsf $target $symlink
 
-  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-  symlink="gfs_ctrl.nc"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
+  # create symlink to PT for point source in SRW-AQM
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+  if [ -f ${target} ]; then
+    symlink="PT.nc"
+    ln -nsf $target $symlink
+  fi
+fi
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  ln -nsf ${FIXsmoke}/${PREDEF_GRID_NAME}/dust12m_data.nc .
+  ln -nsf ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc .
 
-  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-    target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-    create_symlink_to_file $target $symlink ${relative_link_flag}
-  done
-
-  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-    target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
-    symlink="NEXUS_Expt.nc"
-    create_symlink_to_file $target $symlink ${relative_link_flag}
-
-    # create symlink to PT for point source in SRW-AQM
-    target="${COMIN}/${NET}.${cycle}${dot_ensmem}.PT.nc"
-    if [ -f ${target} ]; then
-      symlink="PT.nc"
-      create_symlink_to_file $target $symlink ${relative_link_flag}
-    fi
+  smokefile="${COMIN}/${SMOKE_DUST_FILE_PREFIX}_${PDY}${cyc}00.nc"
+  if [ -f ${smokefile} ]; then
+    ln -nsf ${smokefile} ${SMOKE_DUST_FILE_PREFIX}.nc
   else
-    ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dust12m_data.nc .
-    ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc .
-
-    smokefile="${COMIN}/${SMOKE_DUST_FILE_PREFIX}_${PDY}${cyc}00.nc"
-    if [ -f ${smokefile} ]; then
-      ln -snf ${smokefile} ${SMOKE_DUST_FILE_PREFIX}.nc
+    if [ "${EBB_DCYCLE}" = "1" ]; then
+      ln -nsf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc ${SMOKE_DUST_FILE_PREFIX}.nc
+      echo "WARNING: Smoke file is not available, use dummy_24hr_smoke_ebbdc1.nc instead"
     else
-      if [ "${EBB_DCYCLE}" = "1" ]; then
-        ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke_ebbdc1.nc ${SMOKE_DUST_FILE_PREFIX}.nc
-        echo "WARNING: Smoke file is not available, use dummy_24hr_smoke_ebbdc1.nc instead"
-      else
-        ln -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${SMOKE_DUST_FILE_PREFIX}.nc
-        echo "WARNING: Smoke file is not available, use dummy_24hr_smoke.nc instead"
-      fi
+      ln -nsf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${SMOKE_DUST_FILE_PREFIX}.nc
+      echo "WARNING: Smoke file is not available, use dummy_24hr_smoke.nc instead"
     fi
   fi
-else
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  symlink="gfs_data.nc"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
-
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  symlink="sfc_data.nc"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
-
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-  symlink="gfs_ctrl.nc"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
-
-  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-    create_symlink_to_file $target $symlink ${relative_link_flag}
-  done
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Create links in the current run directory to fixed (i.e. static) files
+# Create links in the current working directory to fixed (i.e. static) files
 # in the FIXam directory.  These links have names that are set to the
 # names of files that the forecast model expects to exist in the current
-# working directory when the forecast model executable is called (and
-# that is just the run directory).
+# working directory when the forecast model executable is called.
 #
 #-----------------------------------------------------------------------
 #
@@ -426,23 +319,6 @@ Creating links in the current run directory (DATA) to fixed (i.e.
 static) files in the FIXam directory:
   FIXam = \"${FIXam}\"
   DATA = \"${DATA}\""
-#
-# For experiments that are run in "community" mode, the FIXam directory
-# is an actual directory (i.e. not a symlink) located under the experiment 
-# directory containing actual files (i.e. not symlinks).  In this case,
-# we use relative paths for the symlinks in order to keep the experiment
-# directory more portable and the symlinks more readable.  However, for
-# experiments that are run in "nco" mode, the FIXam directory is a symlink
-# under the experiment directory that points to an arbitrary (user specified)
-# location outside the experiment directory.  Thus, in this case, there 
-# isn't really an advantage to using relative symlinks, so we use symlinks 
-# with absolute paths.
-#
-if [ $(boolify "${SYMLINK_FIX_FILES}") = "FALSE" ]; then
-  relative_link_flag="TRUE"
-else
-  relative_link_flag="FALSE"
-fi
 
 regex_search="^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
 num_symlinks=${#CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}
@@ -456,13 +332,13 @@ for (( i=0; i<${num_symlinks}; i++ )); do
 
   symlink="${DATA}/$symlink"
   target="$FIXam/$target"
-  create_symlink_to_file $target $symlink ${relative_link_flag}
+  ln -nsf $target $symlink
 
 done
 #
 #-----------------------------------------------------------------------
 #
-# Create links in the current run directory to the MERRA2 aerosol 
+# Create links in the current working directory to the MERRA2 aerosol 
 # climatology data files and lookup table for optics properties.
 #
 #-----------------------------------------------------------------------
@@ -479,24 +355,13 @@ if [ $(boolify "${USE_MERRA_CLIMO}") = "TRUE" ]; then
       symlink="${DATA}/${pre_f}.dat"
     fi
     target="${f_nm_path}"
-    create_symlink_to_file $target $symlink ${relative_link_flag}
+    ln -nsf $target $symlink
   done
 fi
 #
 #-----------------------------------------------------------------------
 #
-# If running this cycle/ensemble member combination more than once (e.g.
-# using rocotoboot), remove any time stamp file that may exist from the
-# previous attempt.
-#
-#-----------------------------------------------------------------------
-#
-cd ${DATA}
-rm -f time_stamp.out
-#
-#-----------------------------------------------------------------------
-#
-# Create links in the current run directory to cycle-independent (and
+# Create links in the current working directory to cycle-independent (and
 # ensemble-member-independent) model input files in the main experiment
 # directory.
 #
@@ -505,31 +370,15 @@ rm -f time_stamp.out
 print_info_msg "$VERBOSE" "
 Creating links in the current run directory to cycle-independent model
 input files in the main experiment directory..."
-#
-# For experiments that are run in "community" mode, the model input files
-# to which the symlinks will point are under the experiment directory.
-# Thus, in this case, we use relative paths for the symlinks in order to 
-# keep the experiment directory more portable and the symlinks more readable.  
-# However, for experiments that are run in "nco" mode, the experiment
-# directory in which the model input files are located is in general 
-# completely different than the run directory in which the symlinks will
-# be created.  Thus, in this case, there isn't really an advantage to 
-# using relative symlinks, so we use symlinks with absolute paths.
-#
-if [ "${RUN_ENVIR}" != "nco" ]; then
-  relative_link_flag="TRUE"
-else
-  relative_link_flag="FALSE"
-fi
 
-create_symlink_to_file ${DATA_TABLE_FP} ${DATA}/${DATA_TABLE_FN} ${relative_link_flag}
+ln -nsf ${DATA_TABLE_FP} ${DATA}/${DATA_TABLE_FN}
 
-create_symlink_to_file ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN} ${relative_link_flag}
+ln -nsf ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN}
 
-create_symlink_to_file ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN} ${relative_link_flag}
+ln -nsf ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN}
 
 if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
-  cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cp -p ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
@@ -547,9 +396,9 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
   post_config_fp = \"${post_config_fp}\"
 ===================================================================="
   fi
-  cp ${post_config_fp} ./postxconfig-NT_FH00.txt
-  cp ${post_config_fp} ./postxconfig-NT.txt
-  cp ${PARMdir}/upp/params_grib2_tbl_new .
+  cp -p ${post_config_fp} ./postxconfig-NT_FH00.txt
+  cp -p ${post_config_fp} ./postxconfig-NT.txt
+  cp -p ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
@@ -565,7 +414,6 @@ cat > itag <<EOF
 /
 EOF
 fi
-
 #
 #----------------------------------------------------------------------
 #
@@ -575,9 +423,7 @@ fi
 #
 #----------------------------------------------------------------------
 #
-
-cp ${CCPP_PHYS_DIR}/noahmptable.tbl .
-
+cp -p ${CCPP_PHYS_DIR}/noahmptable.tbl .
 #
 #-----------------------------------------------------------------------
 #
@@ -594,11 +440,10 @@ if ([ $(boolify "${DO_SPP}") = "TRUE" ] || \
      STOCH="TRUE"
 fi
 if [ "${STOCH}" = "TRUE" ]; then
-  cp ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+  cp -p ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
  else
-  ln -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+  ln -nsf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -607,7 +452,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if ([ "$STOCH" == "TRUE" ] && [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]); then
-  python3 $USHdir/set_fv3nml_ens_stoch_seeds.py \
+  ${USHsrw}/set_fv3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
@@ -624,7 +469,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $(boolify "${CPL_AQM}") = "TRUE" ] && [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
-  python3 $USHdir/update_input_nml.py \
+  ${USHsrw}/update_input_nml.py \
     --namelist "${DATA}/${FV3_NML_FN}" \
     --aqm_na_13km || print_err_msg_exit "\
 Call to function to update the FV3 input.nml file for air quality modeling
@@ -642,16 +487,15 @@ fi
 #
 flag_fcst_restart="FALSE"
 if [ $(boolify "${DO_FCST_RESTART}") = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  cp input.nml input.nml_orig
-  cp model_configure model_configure_orig
+  cp -p input.nml input.nml_orig
+  cp -p model_configure model_configure_orig
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-    cp aqm.rc aqm.rc_orig
+    cp -p aqm.rc aqm.rc_orig
   fi
-  relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
 
   # Update FV3 input.nml for restart
-  python3 $USHdir/update_input_nml.py \
+  ${USHsrw}/update_input_nml.py \
     --namelist "${DATA}/${FV3_NML_FN}" \
     --restart
   export err=$?
@@ -660,11 +504,8 @@ if [ $(boolify "${DO_FCST_RESTART}") = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )"
 for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 
   # Check that restart files exist at restart_interval
@@ -697,7 +538,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
     rm "${file_id}"
     target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
-    create_symlink_to_file $target $symlink ${relative_link_flag}
+    ln -nsf $target $symlink
   done
   cd ${DATA}   
 fi
@@ -724,7 +565,7 @@ if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
 #
 #-----------------------------------------------------------------------
 #
-  python3 $USHdir/create_aqm_rc_file.py \
+  ${USHsrw}/create_aqm_rc_file.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --cdate "$CDATE" \
     --run-dir "${DATA}" \
@@ -735,14 +576,10 @@ if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -751,7 +588,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/create_model_configure_file.py \
+${USHsrw}/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --fcst_len_hrs "${FCST_LEN_HRS}" \
@@ -766,11 +603,8 @@ if [ $err -ne 0 ]; then
 for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -780,7 +614,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/create_diag_table_file.py \
+${USHsrw}/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -788,23 +622,19 @@ if [ $err -ne 0 ]; then
   message_txt="Call to function to create a diag table file for the current 
 cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
 #
 # Pre-generate symlink to forecast RESTART in DATA for early start of 
-# the next cycle
+# the next cycle in SRW-AQM
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ] && [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-  # create an intermediate symlink to RESTART
-  ln -sf "${DATA}/RESTART" "${COMIN}/RESTART"
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+  ln -nsf "${DATA}/RESTART" "${COMIN}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -814,7 +644,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/create_ufs_configure_file.py \
+${USHsrw}/create_ufs_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -822,34 +652,21 @@ if [ $err -ne 0 ]; then
   message_txt="Call to function to create a NEMS configuration file for 
 the current cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Run the FV3-LAM model.  Note that we have to launch the forecast from
-# the current cycle's directory because the FV3 executable will look for
-# input files in the current directory.  Since those files have been
-# staged in the cycle directory, the current directory must be the cycle
-# directory (which it already is).
+# Run the FV3-LAM model. 
 #
 #-----------------------------------------------------------------------
 #
-PREP_STEP
-eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR}
-export err=$?
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-  err_chk
-else
-  if [ $err -ne 0 ]; then
-    print_err_msg_exit "Call to executable to run FV3-LAM forecast returned with nonzero exit code."
-  fi
-fi
-POST_STEP
+export pgm="${FV3_EXEC_FN}"
+
+. prep_step
+eval ${RUN_CMD_FCST} ${EXECsrw}/$pgm >>$pgmout 2>errfile
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #
@@ -860,7 +677,6 @@ POST_STEP
 #-----------------------------------------------------------------------
 #
 if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ] ; then
-  COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path
   cp -Rp RESTART ${COMOUT}
 
   fhr=0
@@ -929,17 +745,17 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
       if [ $RUN_ENVIR != "nco" ]; then
         basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
         symlink_suffix="_${basetime}f${fhr}${post_mn}"
-        create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
+        ln -nsf ${post_renamed_fn} ${FID}${symlink_suffix}
       fi
       # DBN alert
-      if [ "$SENDDBN" = "TRUE" ]; then
+      if [ "$SENDDBN" = "YES" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done
 
     if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc
+      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc
     fi
   done
 

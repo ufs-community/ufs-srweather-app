@@ -86,7 +86,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm constants task_get_extrn_ics task_make_ics ; do
+for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm constants task_get_extrn_ics task_make_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -724,7 +724,7 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
   COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
   if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     data_trans_path="${COMOUT}"

@@ -87,7 +87,7 @@
 #
 . $USHdir/source_util_funcs.sh
 set -x
-for sect in user nco platform  workflow global cpl_aqm_parm constants task_get_extrn_lbcs task_make_lbcs ; do
+for sect in user nco platform  workflow global cpl_aqm_parm smoke_dust_parm constants task_get_extrn_lbcs task_make_lbcs ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -644,6 +644,9 @@ located in the following directory:
   fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     cp -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  elif [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+    COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
+    cp -p gfs.bndy.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
   else
     mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
   fi
