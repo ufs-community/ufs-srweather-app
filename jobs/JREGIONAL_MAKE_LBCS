@@ -100,6 +100,7 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   mkdir -p $DATA
   cd $DATA
 fi
+mkdir -p ${DATA_SHARE}
 #
 #-----------------------------------------------------------------------
 #
