@@ -42,6 +42,7 @@ def main():
 
     # Open the target file and load it into memory
     file_input = xr.open_dataset(target_file).load()
+    file_input.close() # to remove permission error below
     print("TARGET FILE:",file_input)
     # Drop the 'smoke' variable if it exists in both the source and target files
     if 'smoke' in file_input.variables and 'smoke' in data_to_extract.variables:
