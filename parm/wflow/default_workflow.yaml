@@ -37,9 +37,9 @@ rocoto:
     COMROOT: '{{ nco.PTMP }}/&envir;/com'
     DATAROOT: '{{ nco.PTMP }}/&envir;/tmp'
     DCOMROOT: '{{ nco.PTMP }}/&envir;/dcom'
-    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
+    COMIN_DIR: '{% if smoke_dust_parm.get("DO_SMOKE_DUST") or cpl_aqm_parm.get("CPL_AQM") %}&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
     FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
-    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/output/logs/@Y@m@d{% else %}{{ workflow.EXPTDIR }}/log{% endif %}'
+    LOGDIR: '{% if smoke_dust_parm.get("DO_SMOKE_DUST") or cpl_aqm_parm.get("CPL_AQM") %}&COMROOT;/output/logs/@Y@m@d{% else %}{{ workflow.EXPTDIR }}/log{% endif %}'
   attrs:
     cyclethrottle: "200"
     realtime: "F"

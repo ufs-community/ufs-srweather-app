@@ -103,7 +103,7 @@ if [ $RUN_ENVIR = "community" ]; then
   mkdir -p $DATA
   cd $DATA
 fi
-if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ] ; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
   mkdir -p ${DATA_SHARE}
 fi
 #
