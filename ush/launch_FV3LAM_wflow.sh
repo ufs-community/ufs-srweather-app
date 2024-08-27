@@ -222,7 +222,7 @@ Output of rocotostat_cmd is:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ${rocotostat_output}
-" >> "${WFLOW_LAUNCH_LOG_FN}" 2>&1
+" > "${WFLOW_LAUNCH_LOG_FN}" 2>&1
 #
 #-----------------------------------------------------------------------
 #
