@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
 """
-This utility updates a Fortran namelist file using the f90nml package. The
+This utility updates a Fortran namelist file using the ``f90nml`` package. The
 settings that are modified are supplied via command line YAML-formatted string
-and/or YAML configuration files.
-
-Additionally, the tool can be used to create a YAML file from an input namelist,
-or the difference between two namelists.
+and/or YAML configuration files. Additionally, the tool can be used to create a 
+YAML file from an input namelist and can determine the difference between two namelists.
 
 The user configuration file should contain a heirarchy that follows the
 heirarchy for the Fortran namelist. An example of modifying an FV3 namelist:
 
-    Configuration file contains:
+Configuration file contains:
+
+.. code-block:: console
 
     fv_core_nml:
       k_split: 4
@@ -25,29 +25,37 @@ settings. If one of these sections and/or variables did not previously exist, it
 will be automatically created. It is up to the user to ensure that configuration
 settings are provided under the correct sections and variable names.
 
-The optional base configuration file (provided via the -c command line argument)
+The optional base configuration file (provided via the ``-c`` command line argument)
 contains the known set of configurations used and supported by the community, if
-using the one provided in parm/FV3.input.yml. If maintaining this file
+using the one provided in ``parm/FV3.input.yml``. If maintaining this file
 for a different set of configurations, ensure that the heirarchy is such that it
 names the configuration at the top level (section), and the subsequent sections
 match those in the F90 namelist that will be updated.
 
 Examples
 
-  To show help options:
+To show help options:
+
+.. code-block:: console
 
     set_namelist.py -h
 
-  To produce a namelist (fv3_expt.nml) by specifying a physics package:
+To produce a namelist (``fv3_expt.nml``) by specifying a physics package:
+
+.. code-block:: console
 
     set_namelist.py -n ../parm/input.nml.FV3 -c ../parm/FV3.input.yml FV3_HRRR
         -o fv3_expt.nml
 
-  To produce a YAML file (fv3_namelist.yml) from a user namelist:
+To produce a YAML file (``fv3_namelist.yml``) from a user namelist:
+
+.. code-block:: console
 
     set_namelist.py -i my_namelist.nml -o fv3_namelist.nml -t yaml
 
-  To produce a YAML file (fv3_my_namelist.yml) with differences from base nml:
+To produce a YAML file (``fv3_my_namelist.yml``) with differences from the base namelist file:
+
+.. code-block:: console
 
     set_namelist.py -n ../parm/input.nml.FV3 -i my_namelist.nml -t yaml
         -o fv3_my_namelist.nml
@@ -57,8 +65,8 @@ Expected behavior:
     - A Fortran namelist that contains only user-defined settings will be
       generated if no input namelist is provided.
     - An unmodified copy of an input namelist will be generated in the
-      designated output location if no user-settings are provided.
-    - Command-line-entered settings over-ride settings in YAML configuration
+      designated output location if no user-defined settings are provided.
+    - Command-line-entered settings override settings in the YAML configuration
       file.
     - Given a user namelist, the script can dump a YAML file.
     - Given a user namelist and a base namelist, the script can dump the
@@ -78,8 +86,15 @@ import yaml
 def config_exists(arg):
 
     """
-    Checks whether the config file exists and if it contains the input
-    section. Returns the arg as provided if checks are passed.
+    Checks whether the configuration file exists and if it contains the input
+    section. Returns the ``arg`` as provided if checks pass.
+
+    Args:
+        arg (str): Configuration file
+    Returns:
+        A list that includes the configuration file and section name
+    Raises: 
+        KeyError: If the section name does not exist in the top level of the file
     """
 
     # Agument is expected to be a 2-item list of file name and internal section
@@ -105,7 +120,15 @@ def config_exists(arg):
 
 def file_exists(arg):
 
-    """Check for existence of file"""
+    """Checks for existence of file
+    
+    Args:
+        arg (str): File
+    Returns:
+        arg (str): File
+    Raises: 
+        argparse.ArgumentTypeError: If the file does not exist
+    """
 
     if not os.path.exists(arg):
         msg = f"{arg} does not exist!"
@@ -117,8 +140,13 @@ def file_exists(arg):
 def load_config(arg):
 
     """
-    Check to ensure that the provided config file exists. If it does, load it
-    with YAML's safe loader and return the resulting dict.
+    Check to ensure that the provided configuration file exists. If it does, load it
+    with YAML's safe loader and return the resulting dictionary.
+
+    Args:
+        arg (str): File name???
+    Returns:
+        Python object with contents of YAML configuration file
     """
 
     return yaml.safe_load(arg)
@@ -127,8 +155,14 @@ def load_config(arg):
 def path_ok(arg):
 
     """
-    Check whether the path to the file exists, and is writeable. Return the path
-    if it passes all checks, otherwise raise an error.
+    Checks whether the path to the file exists and is writeable. 
+    
+    Args:
+        arg (str): A file path
+    Returns:
+        arg --- the path (if it passes all checks)
+    Raises:
+        argparse.ArgumentTypeError: If the path does not exist and/or is not writable. 
     """
 
     # Get the absolute path provided by arg
@@ -142,7 +176,7 @@ def path_ok(arg):
     raise argparse.ArgumentTypeError(msg)
 
 
-def parse_args(argv):
+def _parse_args(argv):
 
     """
     Function maintains the arguments accepted by this script. Please see
@@ -217,7 +251,13 @@ def parse_args(argv):
 def dict_diff(dict1, dict2):
 
     """
-    Produces a dictionary of how dict2 differs from dict1
+    Determines how an input namelist (``dict2``) differs from the base configuration namelist (``dict1``). 
+    
+    Args:
+        dict1 (dict): Base configuration namelist file
+        dict2 (dict): Input namelist
+    Returns:
+        diffs (dict): A dictionary containing ``dict2`` values for keys where there is a difference between ``dict1`` and ``dict2``
     """
 
     diffs = {}
@@ -250,7 +290,13 @@ def dict_diff(dict1, dict2):
 
 def to_dict(odict):
 
-    """Recursively convert OrderedDict to Python dict."""
+    """Recursively convert ``OrderedDict`` to Python dictionary.
+    Args:
+        odict (dict): A dictionary potentially in ``collections.OrderedDict`` form
+
+    Returns:
+        A Python dictionary with the same content as odict (either ``odict`` itself, if no conversion was needed, or ``ret`` for the converted dictionary).
+    """
 
     if not isinstance(odict, collections.OrderedDict):
         return odict
@@ -265,22 +311,16 @@ def to_dict(odict):
 def update_dict(dest, newdict, quiet=False):
 
     """
-    Overwrites all values in dest dictionary with values from newdict. Turn off
-    print statements with quiet=True.
+    Overwrites all values in ``dest`` dictionary with values from ``newdict``. Turn off
+    print statements with ``quiet=True``.
 
-    Input:
+    Args:
+        dest    (dict): A dict that is to be updated.
+        newdict (dict): A dict containing sections and keys corresponding to those in dest and potentially additional ones, that will be used to update the dest dict.
+        quiet   (bool): Optional flag to turn off output.
 
-        dest:     A dict that is to be updated.
-        newdict:  A dict containing sections and keys corresponding to those in dest and potentially additional ones, that will be used to update the dest dict.
-        quiet:    An optional boolean flag to turn off output.
-
-    Output:
-
-        None
-
-    Result:
-
-        The dest dict is updated in place.
+    Returns:
+        None --- the destination dictionary is updated in place.
     """
 
     for sect, values in newdict:
@@ -307,10 +347,14 @@ def update_dict(dest, newdict, quiet=False):
 
 def set_namelist(argv):
 
-    """Using input command line arguments (cla), update a Fortran namelist file."""
+    """Updates a Fortran namelist file using input command line arguments (cla).
+
+    Args:
+        argv (list): Command line arguments (cla)
+    """
 
     # parse argumetns
-    cla = parse_args(argv)
+    cla = _parse_args(argv)
     if cla.config:
         cla.config, _ = config_exists(cla.config)
 

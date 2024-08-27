@@ -217,8 +217,7 @@ def import_vars(dictionary=None, target_dict=None, env_vars=None):
     Args:
         dictionary: source dictionary (default=os.environ)
         target_dict: target dictionary (default=caller module's globals())
-        env_vars: list of selected environement/dictionary variables to import, or None,
-        in which case all environment/dictionary variables are imported
+        env_vars: list of selected environement/dictionary variables to import, or None, in which case all environment/dictionary variables are imported
     Returns:
         None
     """
@@ -247,8 +246,7 @@ def export_vars(dictionary=None, source_dict=None, env_vars=None):
     Args:
         dictionary: target dictionary to set (default=os.environ)
         source_dict: source dictionary (default=caller modules globals())
-        env_vars: list of selected environement/dictionary variables to export, or None,
-        in which case all environment/dictionary variables are exported
+        env_vars: list of selected environement/dictionary variables to export, or None, in which case all environment/dictionary variables are exported
     Returns:
         None
     """

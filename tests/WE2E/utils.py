@@ -188,6 +188,12 @@ def calculate_core_hours(expts_dict: dict) -> dict:
 
 
 def write_monitor_file(monitor_file: str, expts_dict: dict):
+    """Write status of tests to file
+
+    Args:
+        monitor_file  (str): File name
+        expts_dict   (dict): Experiments being monitored
+    """
     try:
         with open(monitor_file,"w", encoding="utf-8") as f:
             f.write("### WARNING ###\n")

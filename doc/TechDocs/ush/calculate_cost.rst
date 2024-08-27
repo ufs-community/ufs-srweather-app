@@ -2,6 +2,3 @@
 ======================
 
 .. automodule:: calculate_cost
-   :members:
-   :undoc-members:
-   :show-inheritance:

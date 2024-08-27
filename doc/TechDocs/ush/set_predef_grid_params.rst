@@ -2,6 +2,3 @@
 ============================
 
 .. automodule:: set_predef_grid_params
-   :members:
-   :undoc-members:
-   :show-inheritance:

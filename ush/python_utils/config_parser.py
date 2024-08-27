@@ -57,15 +57,15 @@ try:
     class custom_dumper(yaml.Dumper):
         """Custom yaml dumper to correct list indentation"""
 
-        def increase_indent(self, flow=False, indentless=False):
-            return super(custom_dumper, self).increase_indent(flow, False)
+        def _increase_indent(self, flow=False, indentless=False):
+            return super(custom_dumper, self)._increase_indent(flow, False)
 
-    def str_presenter(dumper, data):
+    def _str_presenter(dumper, data):
         if len(data.splitlines()) > 1:
             return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
         return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
-    yaml.add_representer(str, str_presenter)
+    yaml.add_representer(str, _str_presenter)
 
 except NameError:
     pass
@@ -123,7 +123,7 @@ def startstopfreq(loader, node):
 
     return f'{start}00 {stop}00 {freq}:00:00'
 
-def nowtimestamp(loader, node):
+def _nowtimestamp(loader, node):
     return "id_" + str(int(datetime.datetime.now().timestamp()))
 
 try:
@@ -131,7 +131,7 @@ try:
     yaml.add_constructor("!include", include, Loader=yaml.SafeLoader)
     yaml.add_constructor("!join_str", join_str, Loader=yaml.SafeLoader)
     yaml.add_constructor("!startstopfreq", startstopfreq, Loader=yaml.SafeLoader)
-    yaml.add_constructor("!nowtimestamp", nowtimestamp ,Loader=yaml.SafeLoader)
+    yaml.add_constructor("!nowtimestamp", _nowtimestamp ,Loader=yaml.SafeLoader)
 except NameError:
     pass
 

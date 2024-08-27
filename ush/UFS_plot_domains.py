@@ -96,10 +96,18 @@ map3 = Basemap(
 
 # Draw gnomonic compute grid rectangle:
 
-lbx1, lby1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))
+"""lbx1, lby1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))
 ltx1, lty1 = map1(*map2(map2.xmin, map2.ymax, inverse=True))
 rtx1, rty1 = map1(*map2(map2.xmax, map2.ymax, inverse=True))
-rbx1, rby1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))
+rbx1, rby1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))"""
+lbx1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))[0]
+lby1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))[1]
+ltx1 = map1(*map2(map2.xmin, map2.ymax, inverse=True))[0]
+lty1 = map1(*map2(map2.xmin, map2.ymax, inverse=True))[1]
+rtx1 = map1(*map2(map2.xmax, map2.ymax, inverse=True))[0]
+rty1 = map1(*map2(map2.xmax, map2.ymax, inverse=True))[1]
+rbx1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))[0]
+rby1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))[1]
 
 verts1 = [
     (lbx1, lby1),  # left, bottom
@@ -128,16 +136,16 @@ ax1.add_patch(patch)
 
 
 def get_lambert_points(gnomonic_map, lambert_map, pps):
+    """This function takes the lambert domain we have defined, lambert_map, as well as
+    pps (the number of points to interpolate and draw for each side of the lambert "rectangle"),
+    and returns an array of two lists: one a list of tuples of the 4*ppf + 4 vertices mapping the approximate shape
+    of the lambert domain on the gnomonic map, the other a list of "draw" instructions to be used by
+    the PathPatch function
 
-    # This function takes the lambert domain we have defined, lambert_map, as well as
-    # pps (the number of points to interpolate and draw for each side of the lambert "rectangle"),
-    # and returns an array of two lists: one a list of tuples of the 4*ppf + 4 vertices mapping the approximate shape
-    # of the lambert domain on the gnomonic map, the other a list of "draw" instructions to be used by
-    # the PathPatch function
+    pps is recommended 10 or less due to time of calculation
 
-    # pps is recommended 10 or less due to time of calculation
-
-    # Start array with bottom left point, "MOVETO" instruction
+    Start array with bottom left point, "MOVETO" instruction"""
+    
     vertices = [
         gnomonic_map(*lambert_map(lambert_map.xmin, lambert_map.ymin, inverse=True))
     ]

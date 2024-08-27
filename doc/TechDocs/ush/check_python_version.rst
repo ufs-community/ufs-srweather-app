@@ -2,6 +2,4 @@
 ==========================
 
 .. automodule:: check_python_version
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
