@@ -96,18 +96,10 @@ map3 = Basemap(
 
 # Draw gnomonic compute grid rectangle:
 
-"""lbx1, lby1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))
+lbx1, lby1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))
 ltx1, lty1 = map1(*map2(map2.xmin, map2.ymax, inverse=True))
 rtx1, rty1 = map1(*map2(map2.xmax, map2.ymax, inverse=True))
-rbx1, rby1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))"""
-lbx1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))[0]
-lby1 = map1(*map2(map2.xmin, map2.ymin, inverse=True))[1]
-ltx1 = map1(*map2(map2.xmin, map2.ymax, inverse=True))[0]
-lty1 = map1(*map2(map2.xmin, map2.ymax, inverse=True))[1]
-rtx1 = map1(*map2(map2.xmax, map2.ymax, inverse=True))[0]
-rty1 = map1(*map2(map2.xmax, map2.ymax, inverse=True))[1]
-rbx1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))[0]
-rby1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))[1]
+rbx1, rby1 = map1(*map2(map2.xmax, map2.ymin, inverse=True))
 
 verts1 = [
     (lbx1, lby1),  # left, bottom
