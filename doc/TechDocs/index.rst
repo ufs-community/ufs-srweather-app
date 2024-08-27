@@ -5,4 +5,4 @@ Technical Documentation
    :maxdepth: 3
    
    tests/index
-   ush/index
+   ush/modules
