@@ -11,12 +11,15 @@ import argparse
 import logging
 import os
 import sys
-from subprocess import STDOUT, CalledProcessError, check_output
+from stat import S_IXUSR
+from string import Template
 from textwrap import dedent
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
+from uwtools.api.template import render
 
 from python_utils import (
+    list_to_str,
     log_info,
     import_vars,
     export_vars,
@@ -24,7 +27,6 @@ from python_utils import (
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
-    create_symlink_to_file,
     check_for_preexist_dir_file,
     cfg_to_yaml_str,
     find_pattern_in_str,
@@ -113,29 +115,11 @@ def generate_FV3LAM_wflow(
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        cmd = " ".join(["uw template render",
-            "-i", template_xml_fp,
-            "-o", wflow_xml_fp,
-            "-v",
-            "--values-file", rocoto_yaml_fp,
-            ]
-        )
-
-        indent = "  "
-        output = ""
-        logfunc = logging.info
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            logfunc = logging.error
-            output = e.output
-            logging.exception(("Failed with status: %s", e.returncode))
-            raise
-        finally:
-            logfunc("Output:")
-            for line in output.split("\n"):
-                logfunc("%s%s", indent * 2, line)
+        render(
+            input_file = template_xml_fp,
+            output_file = wflow_xml_fp,
+            values_src = rocoto_yaml_fp,
+            )
     #
     # -----------------------------------------------------------------------
     #
@@ -156,9 +140,23 @@ def generate_FV3LAM_wflow(
         verbose=debug,
     )
 
-    create_symlink_to_file(
-        wflow_launch_script_fp, os.path.join(exptdir, wflow_launch_script_fn), False
-    )
+    with open(wflow_launch_script_fp, "r", encoding='utf-8') as launch_script_file:
+        launch_script_content = launch_script_file.read()
+
+    # Stage an experiment-specific launch file in the experiment directory
+    template = Template(launch_script_content)
+
+    # The script needs several variables from the workflow and user sections
+    template_variables = {**expt_config["user"], **expt_config["workflow"],
+            "valid_vals_BOOLEAN": list_to_str(expt_config["constants"]["valid_vals_BOOLEAN"])}
+    launch_content =  template.safe_substitute(template_variables)
+
+    launch_fp = os.path.join(exptdir, wflow_launch_script_fn)
+    with open(launch_fp, "w", encoding='utf-8') as expt_launch_fn:
+        expt_launch_fn.write(launch_content)
+
+    os.chmod(launch_fp, os.stat(launch_fp).st_mode|S_IXUSR)
+
     #
     # -----------------------------------------------------------------------
     #
@@ -681,7 +679,7 @@ def generate_FV3LAM_wflow(
             input_format="nml",
             output_file=FV3_NML_STOCH_FP,
             output_format="nml",
-            supplemental_configs=[settings],
+            update_config=get_nml_config(settings),
             )
     #
     #-----------------------------------------------------------------------

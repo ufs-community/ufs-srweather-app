@@ -1,5 +1,113 @@
 #!/usr/bin/env bash
 
+
+#
+#-----------------------------------------------------------------------
+#
+# This ex-script is responsible for running the FV3 regional forecast.
+#
+# Run-time environment variables:
+#
+#    CDATE
+#    COMIN
+#    COMOUT
+#    COMROOT
+#    DATA
+#    DBNROOT
+#    GLOBAL_VAR_DEFNS_FP
+#    INPUT_DATA
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    RUN
+#    SENDDBN
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    MACHINE
+#    PARMdir
+#    RUN_ENVIR
+#    USHdir
+#
+#  platform:
+#    PRE_TASK_CMDS
+#    RUN_CMD_FCST
+#
+#  workflow:
+#    CCPP_PHYS_DIR
+#    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATA_TABLE_FN
+#    DATA_TABLE_FP
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXPTDIR
+#    FCST_LEN_CYCL
+#    FCST_LEN_HRS
+#    FIELD_DICT_FP
+#    FIELD_DICT_FN
+#    FIELD_TABLE_FN
+#    FIELD_TABLE_FP
+#    FIXam
+#    FIXclim
+#    FIXlam
+#    FV3_NML_FN
+#    FV3_NML_FP
+#    FV3_NML_STOCH_FP
+#    INCR_CYCL_FREQ
+#    PREDEF_GRID_NAME
+#    SYMLINK_FIX_FILES
+#    VERBOSE
+#
+#  task_get_extrn_lbcs:
+#    LBC_SPEC_INTVL_HRS
+#
+#  task_run_fcst:
+#    DO_FCST_RESTART
+#    DT_ATMOS
+#    FV3_EXEC_FP
+#    KMP_AFFINITY_RUN_FCST
+#    OMP_NUM_THREADS_RUN_FCST
+#    OMP_STACKSIZE_RUN_FCST
+#    PRINT_ESMF
+#    RESTART_INTERVAL
+#    USE_MERRA_CLIMO
+#    WRITE_DOPOST
+#
+#  task_run_post:
+#    CUSTOM_POST_CONFIG_FP
+#    DT_SUBHOURLY_POST_MNTS
+#    POST_OUTPUT_DOMAIN_NAME
+#    SUB_HOURLY_POST
+#    USE_CUSTOM_POST_CONFIG_FILE
+#
+#  global:
+#    DO_ENSEMBLE
+#    DO_LSM_SPP
+#    DO_SHUM
+#    DO_SKEB
+#    DO_SPP
+#    DO_SPPT
+#
+#  cpl_aqm_parm:
+#    AQM_RC_PRODUCT_FN
+#    CPL_AQM
+#
+#  constants:
+#    NH0
+#    NH3
+#    NH4
+#    TILE_RGNL
+#
+#  fixed_files:
+#    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
+#
+#-----------------------------------------------------------------------
+#
+
 #
 #-----------------------------------------------------------------------
 #
@@ -8,7 +116,11 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow global cpl_aqm_parm constants fixed_files \
+  task_get_extrn_lbcs task_run_fcst task_run_post ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
+
 #
 #-----------------------------------------------------------------------
 #
@@ -57,7 +169,7 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
 export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 export MPI_TYPE_DEPTH=20
 export ESMF_RUNTIME_COMPLIANCECHECK=OFF:depth=4
-if [ "${PRINT_ESMF}" = "TRUE" ]; then
+if [ $(boolify "${PRINT_ESMF}") = "TRUE" ]; then
   export ESMF_RUNTIME_PROFILE=ON
   export ESMF_RUNTIME_PROFILE_OUTPUT="SUMMARY"
 fi
@@ -98,7 +210,7 @@ Creating links in the INPUT subdirectory of the current run directory to
 the grid and (filtered) orography files ..."
 
 # Create links to fix files in the FIXlam directory.
-cd_vrfy ${DATA}/INPUT
+cd ${DATA}/INPUT
 
 #
 # For experiments in which the TN_MAKE_GRID task is run, we make the 
@@ -121,8 +233,7 @@ fi
 #target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
 symlink="grid_spec.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 
 # Symlink to halo-3 grid file with "halo3" stripped from name.
 mosaic_fn="grid_spec.nc"
@@ -130,8 +241,7 @@ grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
 
 target="${FIXlam}/${grid_fn}"
 symlink="${grid_fn}"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 
 # Symlink to halo-4 grid file with "${CRES}_" stripped from name.
 #
@@ -147,8 +257,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 
 
 #
@@ -165,8 +274,7 @@ fi
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="oro_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 #
 # Symlink to halo-4 orography file with "${CRES}_" stripped from name.
 #
@@ -182,8 +290,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 #
 # If using the FV3_HRRR physics suite, there are two files (that contain 
 # statistics of the orography) that are needed by the gravity wave drag 
@@ -198,8 +305,7 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   for file_id in "${file_ids[@]}"; do
     target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${file_id}.tile${TILE_RGNL}.halo${NH0}.nc"
     symlink="oro_data_${file_id}.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                           relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
 fi
 #
@@ -225,7 +331,7 @@ of the current run directory (DATA), where
   DATA = \"${DATA}\"
 ..."
 
-cd_vrfy ${DATA}/INPUT
+cd ${DATA}/INPUT
 
 #
 # The symlinks to be created point to files in the same directory (INPUT),
@@ -233,58 +339,54 @@ cd_vrfy ${DATA}/INPUT
 #
 relative_link_flag="FALSE"
 
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   COMIN="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
 
   target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="gfs_data.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="sfc_data.nc"
-  create_symlink_to_file target="$target" symlink="$symlink"  relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
   symlink="gfs_ctrl.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
     target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
     symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
   target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
   symlink="NEXUS_Expt.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   # create symlink to PT for point source in SRW-AQM
   target="${COMIN}/${NET}.${cycle}${dot_ensmem}.PT.nc"
   if [ -f ${target} ]; then
     symlink="PT.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   fi
 
 else
   target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="gfs_data.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="sfc_data.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
   symlink="gfs_ctrl.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
   for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
     target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
     symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
 fi
 #
@@ -298,7 +400,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${DATA}
+cd ${DATA}
 
 print_info_msg "$VERBOSE" "
 Creating links in the current run directory (DATA) to fixed (i.e.
@@ -317,7 +419,7 @@ static) files in the FIXam directory:
 # isn't really an advantage to using relative symlinks, so we use symlinks 
 # with absolute paths.
 #
-if [ "${SYMLINK_FIX_FILES}" == "FALSE" ]; then
+if [ $(boolify "${SYMLINK_FIX_FILES}") = "FALSE" ]; then
   relative_link_flag="TRUE"
 else
   relative_link_flag="FALSE"
@@ -335,8 +437,7 @@ for (( i=0; i<${num_symlinks}; i++ )); do
 
   symlink="${DATA}/$symlink"
   target="$FIXam/$target"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
 done
 #
@@ -347,7 +448,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_MERRA_CLIMO}" = "TRUE" ]; then
+if [ $(boolify "${USE_MERRA_CLIMO}") = "TRUE" ]; then
   for f_nm_path in ${FIXclim}/*; do
     f_nm=$( basename "${f_nm_path}" )
     pre_f="${f_nm%%.*}"
@@ -359,8 +460,7 @@ if [ "${USE_MERRA_CLIMO}" = "TRUE" ]; then
       symlink="${DATA}/${pre_f}.dat"
     fi
     target="${f_nm_path}"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
 fi
 #
@@ -372,8 +472,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${DATA}
-rm_vrfy -f time_stamp.out
+cd ${DATA}
+rm -f time_stamp.out
 #
 #-----------------------------------------------------------------------
 #
@@ -403,28 +503,22 @@ else
   relative_link_flag="FALSE"
 fi
 
-create_symlink_to_file target="${DATA_TABLE_FP}" \
-                       symlink="${DATA}/${DATA_TABLE_FN}" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file ${DATA_TABLE_FP} ${DATA}/${DATA_TABLE_FN} ${relative_link_flag}
 
-create_symlink_to_file target="${FIELD_TABLE_FP}" \
-                       symlink="${DATA}/${FIELD_TABLE_FN}" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN} ${relative_link_flag}
 
-create_symlink_to_file target="${FIELD_DICT_FP}" \
-                       symlink="${DATA}/${FIELD_DICT_FN}" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN} ${relative_link_flag}
 
-if [ ${WRITE_DOPOST} = "TRUE" ]; then
-  cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
-  if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
+  cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
 ====================================================================
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
 ===================================================================="
   else
-    if [ "${CPL_AQM}" = "TRUE" ]; then
+    if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
       post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
     else
       post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
@@ -434,11 +528,11 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   post_config_fp = \"${post_config_fp}\"
 ===================================================================="
   fi
-  cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
-  cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-  cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+  cp ${post_config_fp} ./postxconfig-NT_FH00.txt
+  cp ${post_config_fp} ./postxconfig-NT.txt
+  cp ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
-  if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
   else
     post_itag_add=""
@@ -463,7 +557,7 @@ fi
 #----------------------------------------------------------------------
 #
 
-cp_vrfy ${CCPP_PHYS_DIR}/noahmptable.tbl .
+cp ${CCPP_PHYS_DIR}/noahmptable.tbl .
 
 #
 #-----------------------------------------------------------------------
@@ -473,14 +567,17 @@ cp_vrfy ${CCPP_PHYS_DIR}/noahmptable.tbl .
 #-----------------------------------------------------------------------
 #
 STOCH="FALSE"
-if ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
-   [ "${DO_SKEB}" = "TRUE" ] || [ "${DO_LSM_SPP}" =  "TRUE" ]); then
+if ([ $(boolify "${DO_SPP}") = "TRUE" ] || \
+    [ $(boolify "${DO_SPPT}") = "TRUE" ] || \
+    [ $(boolify "${DO_SHUM}") = "TRUE" ] || \
+    [ $(boolify "${DO_SKEB}") = "TRUE" ] || \
+    [ $(boolify "${DO_LSM_SPP}") =  "TRUE" ]); then
      STOCH="TRUE"
 fi
-if [ "${STOCH}" == "TRUE" ]; then
-  cp_vrfy ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+if [ "${STOCH}" = "TRUE" ]; then
+  cp ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
  else
-  ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+  ln -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
 fi
 
 #
@@ -490,7 +587,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if ([ "$STOCH" == "TRUE" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]); then
+if ([ "$STOCH" == "TRUE" ] && [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]); then
   python3 $USHdir/set_fv3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
@@ -507,7 +604,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CPL_AQM}" = "TRUE" ] && [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] && [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   python3 $USHdir/update_input_nml.py \
     --namelist "${DATA}/${FV3_NML_FN}" \
     --aqm_na_13km || print_err_msg_exit "\
@@ -525,11 +622,11 @@ fi
 #-----------------------------------------------------------------------
 #
 flag_fcst_restart="FALSE"
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  cp_vrfy input.nml input.nml_orig
-  cp_vrfy model_configure model_configure_orig
-  if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp_vrfy aqm.rc aqm.rc_orig
+if [ $(boolify "${DO_FCST_RESTART}") = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+  cp input.nml input.nml_orig
+  cp model_configure model_configure_orig
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+    cp aqm.rc aqm.rc_orig
   fi
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
@@ -576,14 +673,14 @@ for the current cycle's (cdate) run directory (DATA) failed:
   done
 
   # Create soft-link of restart files in INPUT directory
-  cd_vrfy ${DATA}/INPUT
+  cd ${DATA}/INPUT
   for file_id in "${file_ids[@]}"; do
-    rm_vrfy "${file_id}"
+    rm "${file_id}"
     target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
-    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
-  cd_vrfy ${DATA}   
+  cd ${DATA}   
 fi
 #
 #-----------------------------------------------------------------------
@@ -592,8 +689,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+    if [ $(boolify "${COLDSTART}") = "TRUE" ] && \
+       [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && \
+       [ $(boolify "${flag_fcst_restart}") = "FALSE" ]; then
     init_concentrations="true"
   else
     init_concentrations="false"
@@ -732,9 +831,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${CPL_AQM}" = "TRUE" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   # create an intermediate symlink to RESTART
-  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
+  ln -sf "${DATA}/RESTART" "${COMIN}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -791,17 +890,17 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
     if [ -d "${COMIN}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
-      rm_vrfy -rf "${COMIN}/RESTART"
+      rm -rf "${COMIN}/RESTART"
     fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp_vrfy -Rp ${DATA}/RESTART ${COMIN}
+      cp -Rp ${DATA}/RESTART ${COMIN}
     fi
   fi
 
-  cp_vrfy -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 
   fhr_ct=0
   fhr=0
@@ -811,8 +910,8 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     source_phy="${DATA}/phyf${fhr_ct}.nc"
     target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
     target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
-    [ -f ${source_dyn} ] && cp_vrfy -p ${source_dyn} ${target_dyn}
-    [ -f ${source_phy} ] && cp_vrfy -p ${source_phy} ${target_phy}
+    [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
+    [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
     (( fhr=fhr+1 ))
   done                 
 fi
@@ -824,8 +923,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ ${WRITE_DOPOST} = "TRUE" ]; then
-	
+if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
+
   yyyymmdd=${PDY}
   hh=${cyc}
   fmn="00"
@@ -833,9 +932,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   if [ "${RUN_ENVIR}" != "nco" ]; then
     export COMOUT="${DATA}/postprd"
   fi
-  mkdir_vrfy -p "${COMOUT}"
+  mkdir -p "${COMOUT}"
 
-  cd_vrfy ${COMOUT}
+  cd ${COMOUT}
 
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
 
@@ -851,7 +950,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
-    if [ "${CPL_AQM}" = "TRUE" ]; then
+    if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
       fids=( "cmaq" )
     else
       fids=( "prslev" "natlev" )
@@ -862,23 +961,21 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
  
-      mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
+      mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
       if [ $RUN_ENVIR != "nco" ]; then
         basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
         symlink_suffix="_${basetime}f${fhr}${post_mn}"
-        create_symlink_to_file target="${post_renamed_fn}" \
-                         symlink="${FID}${symlink_suffix}" \
-	                 relative="TRUE"
+        create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
       fi
       # DBN alert
-      if [ $SENDDBN = "TRUE" ]; then
+      if [ "$SENDDBN" = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done
 
-    if [ "${CPL_AQM}" = "TRUE" ]; then	
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
     fi
   done
 

@@ -6,15 +6,14 @@ template.
 import argparse
 import os
 import sys
-import tempfile
 from textwrap import dedent
-from subprocess import STDOUT, CalledProcessError, check_output
+from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     import_vars,
-    load_shell_config,
+    load_yaml_config,
     lowercase,
     print_info_msg,
     print_input_args,
@@ -220,32 +219,11 @@ def create_model_configure_file(
     #
     model_config_fp = os.path.join(run_dir, MODEL_CONFIG_FN)
 
-    with tempfile.NamedTemporaryFile(dir="./",
-                                     mode="w+t",
-                                     suffix=".yaml",
-                                     prefix="model_config_settings.") as tmpfile:
-        tmpfile.write(settings_str)
-        tmpfile.seek(0)
-        cmd = " ".join(["uw template render",
-            "-i", MODEL_CONFIG_TMPL_FP,
-            "-o", model_config_fp,
-            "-v",
-            "--values-file", tmpfile.name,
-            ]
+    render(
+        input_file = MODEL_CONFIG_TMPL_FP,
+        output_file = model_config_fp,
+        values_src = settings
         )
-        indent = "  "
-        output = ""
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            output = e.output
-            print(f"Failed with status: {e.returncode}")
-            sys.exit(1)
-        finally:
-            print("Output:")
-            for line in output.split("\n"):
-                print(f"{indent * 2}{line}")
     return True
 
 
@@ -318,7 +296,7 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
+    cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_model_configure_file(

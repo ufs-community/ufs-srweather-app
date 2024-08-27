@@ -15,17 +15,17 @@ declare arg_1
 if [[ "${SRW_PLATFORM}" == cheyenne ]] || [[ "${SRW_PLATFORM}" == derecho ]]; then
     workflow_cmd=qsub
     arg_1=""
-    check_job="qstat -u ${USER} -r ${job_id}"
 else
     workflow_cmd=sbatch
     arg_1="--parsable"
-    check_job="squeue -u ${USER} -j ${job_id} --noheader"
 fi
 
 # Customize wrapper scripts
 if [[ "${SRW_PLATFORM}" == gaea ]]; then
     sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
     sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i 's|00:30:00|00:45:00|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i 's|${JOBSdir}/JREGIONAL_RUN_POST|$USHdir/load_modules_run_task.sh "gaea" "run_post" ${JOBSdir}/JREGIONAL_RUN_POST|g' ${WORKSPACE}/${SRW_PLATFORM}/ush/wrappers/run_post.sh
 fi
 
 if [[ "${SRW_PLATFORM}" == hera ]]; then
@@ -38,6 +38,10 @@ if [[ "${SRW_PLATFORM}" == jet ]]; then
     sed -i '15i #SBATCH --partition=xjet' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
+if [[ "${TASK_DEPTH}" == 0 ]] ; then
+    exit 0
+fi
+
 # Call job card and return job_id
 echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
 job_id=$(${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh)
@@ -48,6 +52,11 @@ sleep 10
 # Check for job and exit when done
 while true
 do
+    if [[ "${SRW_PLATFORM}" == derecho ]]; then
+        check_job="qstat -u ${USER} -r ${job_id}"
+    else
+	check_job="squeue -u ${USER} -j ${job_id} --noheader"
+    fi
     job_id_info=$($check_job)
     if [ ! -z "$job_id_info" ]; then
         echo "Job is still running. Check again in two minutes"
@@ -58,7 +67,7 @@ do
         # Return exit code and check for results file first
         results_file="${WORKSPACE}/${SRW_PLATFORM}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt"
         if [ ! -f "$results_file" ]; then
-            echo "Missing results file! \nexit 1"
+            echo -e "Missing results file! \nexit 1"
             exit 1
         fi
 

@@ -3,7 +3,7 @@ default_task_post: &default_task
   attrs:
     cycledefs: '#cycledef#'
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSdir;/JREGIONAL_RUN_POST"'
+  command: '&LOAD_MODULES_RUN_TASK; "run_post" "&JOBSdir;/JREGIONAL_RUN_POST"'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'

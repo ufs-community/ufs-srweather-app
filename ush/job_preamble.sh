@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set +u
+
 #
 #-----------------------------------------------------------------------
 #
@@ -67,13 +69,13 @@ export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 #
 #-----------------------------------------------------------------------
 #
-if [ ${subcyc} -ne 0 ]; then
+if [ ${subcyc:-0} -ne 0 ]; then
   export cycle="t${cyc}${subcyc}z"
 else
   export cycle="t${cyc}z"
 fi
 
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
     export dot_ensmem=".mem${ENSMEM_INDX}"
 else
     export dot_ensmem=
@@ -88,7 +90,7 @@ fi
 export DATA=
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
-    mkdir_vrfy -p $DATA
+    mkdir -p $DATA
     cd $DATA
 fi
 #
@@ -174,10 +176,10 @@ export -f POST_STEP
 #
 if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
     __EXPTLOG=${EXPTDIR}/log
-    mkdir_vrfy -p ${__EXPTLOG}
+    mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
         __LOGB=$(basename $i .${WORKFLOW_ID}.log)
-        ln_vrfy -sf $i ${__EXPTLOG}/${__LOGB}.log
+        ln -sf $i ${__EXPTLOG}/${__LOGB}.log
     done
 fi
 #
@@ -214,5 +216,4 @@ Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 }
-
 

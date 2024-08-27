@@ -8,7 +8,11 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_bias_correction_o3" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+  constants fixed_files grid_params \
+  task_bias_correction_o3 ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -199,7 +203,7 @@ POST_STEP
 
 cp ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
+if [ $(boolify "${DO_AQM_SAVE_AIRNOW_HIST}") = "TRUE" ]; then
   mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cp ${DATA}/out/ozone/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 

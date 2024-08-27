@@ -123,7 +123,7 @@ The community AQM configuration assumes that users have :term:`HPSS` access and 
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/data
 
-On Level 1 systems, users can find :term:`ICs/LBCs` in the usual :ref:`input data locations <Data>` under ``FV3GFS/netcdf/2023021700`` and ``FV3GFS/netcdf/2023021706``. Users can also download the data required for the community experiment from the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/FV3GFS/netcdf/>`__. 
+On Level 1 systems, users can find :term:`ICs/LBCs` in the usual :ref:`input data locations <Data>` under ``FV3GFS/netcdf/2023021700`` and ``FV3GFS/netcdf/2023021706``. Users can also download the data required for the community experiment from the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/input_model_data/FV3GFS/netcdf/>`__. 
 
 Users may also wish to change :term:`cron`-related parameters in ``config.yaml``. In the ``config.aqm.community.yaml`` file, which was copied into ``config.yaml``, cron is used for automatic submission and resubmission of the workflow:
 

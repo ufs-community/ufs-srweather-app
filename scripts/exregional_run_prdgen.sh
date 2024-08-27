@@ -8,7 +8,11 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_prdgen|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+  constants fixed_files grid_params \
+  task_run_post task_run_prdgen ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -166,7 +170,7 @@ net4=$(echo ${NET:0:4} | tr '[:upper:]' '[:lower:]')
 for leveltype in prslev natlev ififip testbed
 do
   if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]; then
-    ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2
+    ln -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2
     wgrib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2.idx
   fi
 done
@@ -175,7 +179,7 @@ done
 # Remap to additional output grids if requested
 #-----------------------------------------------
 
-if [ ${DO_PARALLEL_PRDGEN} == "TRUE" ]; then
+if [ $(boolify ${DO_PARALLEL_PRDGEN}) = "TRUE" ]; then
 #
 #  parallel run wgrib2 for product generation
 #
@@ -184,7 +188,7 @@ if [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
 
 DATA=$COMOUT
 DATAprdgen=$DATA/prdgen_${fhr}
-mkdir_vrfy $DATAprdgen
+mkdir $DATAprdgen
 
 wgrib2 ${COMOUT}/${NET}.${cycle}.prslev.f${fhr}.grib2 >& $DATAprdgen/prslevf${fhr}.txt
 
@@ -223,7 +227,7 @@ for domain in ${domains[@]}
 do
   for task in $(seq ${tasks[count]})
   do
-    mkdir_vrfy -p $DATAprdgen/prdgen_${domain}_${task}
+    mkdir -p $DATAprdgen/prdgen_${domain}_${task}
     echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc $task $domain ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
   done
   count=$count+1
@@ -269,7 +273,7 @@ else
 #
 if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
 
-  cd_vrfy ${COMOUT}
+  cd ${COMOUT}
 
   grid_specs_130="lambert:265:25.000000 233.862000:451:13545.000000 16.281000:337:13545.000000"
   grid_specs_200="lambert:253:50.000000 285.720000:108:16232.000000 16.201000:94:16232.000000"
@@ -289,7 +293,7 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
       
       eval grid_specs=\$grid_specs_${grid}
       subdir=${COMOUT}/${grid}_grid
-      mkdir_vrfy -p ${subdir}/${fhr}
+      mkdir -p ${subdir}/${fhr}
       bg_remap=${subdir}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
       # Interpolate fields to new grid
@@ -317,11 +321,11 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
       rm -f ${subdir}/${fhr}/tmp_${grid}.grib2
 
       # Save to com directory 
-      mkdir_vrfy -p ${COMOUT}/${grid}_grid
-      cp_vrfy ${bg_remap} ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+      mkdir -p ${COMOUT}/${grid}_grid
+      cp ${bg_remap} ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
       if [[ -f ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2
+         ln -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2
          wgrib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2.idx
       fi
 
@@ -331,7 +335,7 @@ fi
 
 fi  # block for parallel or series wgrib2 runs.
 
-rm_vrfy -rf ${DATA_FHR}
+rm -rf ${DATA_FHR}
 #
 #-----------------------------------------------------------------------
 #

@@ -3,12 +3,40 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-job to run chgres_cube for preparing initial conditions for the
+# FV3 forecast
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    RUN_ENVIR
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    EXPTDIR
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_ics" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -60,7 +88,7 @@ if [ $RUN_ENVIR = "nco" ]; then
 else
   export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
-mkdir_vrfy -p "${INPUT_DATA}"
+mkdir -p "${INPUT_DATA}"
 #
 #
 #-----------------------------------------------------------------------
@@ -72,8 +100,8 @@ mkdir_vrfy -p "${INPUT_DATA}"
 if [ $RUN_ENVIR = "community" ]; then
   DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_MAKE_ICS}"
   check_for_preexist_dir_file "$DATA" "delete"
-  mkdir_vrfy -p $DATA
-  cd_vrfy $DATA
+  mkdir -p $DATA
+  cd $DATA
 fi
 #
 #-----------------------------------------------------------------------

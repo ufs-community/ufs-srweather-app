@@ -3,12 +3,92 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-scrtipt that sets up and runs chgres_cube for preparing initial
+# conditions for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    COMOUT
+#    COMROOT
+#    DATA
+#    DATAROOT
+#    DATA_SHARE
+#    EXTRN_MDL_CDATE
+#    GLOBAL_VAR_DEFNS_FP
+#    INPUT_DATA
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    EXECdir
+#    MACHINE
+#    PARMdir
+#    RUN_ENVIR
+#    USHdir
+#
+#  platform:
+#    FIXgsm
+#    PRE_TASK_CMDS
+#    RUN_CMD_UTILS
+#
+#  workflow:
+#    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXTRN_MDL_VAR_DEFNS_FN
+#    FIXlam
+#    SDF_USES_RUC_LSM
+#    SDF_USES_THOMPSON_MP
+#    THOMPSON_MP_CLIMO_FP
+#    VERBOSE
+#
+#  task_make_ics:
+#    FVCOM_DIR
+#    FVCOM_FILE
+#    FVCOM_WCSTART
+#    KMP_AFFINITY_MAKE_ICS
+#    OMP_NUM_THREADS_MAKE_ICS
+#    OMP_STACKSIZE_MAKE_ICS
+#    USE_FVCOM
+#    VCOORD_FILE
+#
+#  task_get_extrn_ics:
+#    EXTRN_MDL_NAME_ICS
+#    FV3GFS_FILE_FMT_ICS
+#
+#  global:
+#    HALO_BLEND
+#
+#  cpl_aqm_parm:
+#    CPL_AQM
+#
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
+#
+#-----------------------------------------------------------------------
+#
+
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow global cpl_aqm_parm constants task_get_extrn_ics task_make_ics ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -306,7 +386,7 @@ convert_nst=""
 nsoill_out="4"
 if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \
      "${EXTRN_MDL_NAME_ICS}" = "RAP" ] && \
-   [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_RUC_LSM}") = "TRUE" ]; then
   nsoill_out="9"
 fi
 #
@@ -326,7 +406,7 @@ fi
 thomp_mp_climo_file=""
 if [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a \
      "${EXTRN_MDL_NAME_ICS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_THOMPSON_MP}") = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -643,22 +723,22 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+  if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     data_trans_path="${COMOUT}"
   else
     data_trans_path="${DATA_SHARE}"
   fi
-  cpreq -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  cpreq -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  cpreq -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-  cpreq -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+  cp -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
 else
-  mv_vrfy out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv_vrfy out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
-  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+  mv out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
+  mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
 fi
 #
 #-----------------------------------------------------------------------
@@ -667,7 +747,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_FVCOM}" = "TRUE" ]; then
+if [ $(boolify "${USE_FVCOM}") = "TRUE" ]; then
 
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_exec_fn="fvcom_to_FV3"
@@ -684,7 +764,7 @@ Please ensure that you've built this executable."
       print_err_msg_exit "${message_txt}"
     fi
   fi
-  cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
+  cp ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     message_txt="The file or path (fvcom_data_fp) does not exist:
@@ -699,8 +779,8 @@ Please check the following user defined variables:
     fi
   fi
 
-  cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
-  cd_vrfy ${INPUT_DATA}
+  cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
+  cd ${INPUT_DATA}
   PREP_STEP
   eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
        ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \

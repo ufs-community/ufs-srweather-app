@@ -8,15 +8,14 @@ model(s) from a template.
 import argparse
 import os
 import sys
-import tempfile
-from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
+from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     import_vars,
-    load_shell_config,
+    load_yaml_config,
     print_info_msg,
     print_input_args,
 )
@@ -124,49 +123,23 @@ def create_ufs_configure_file(run_dir,cfg):
             f"""
             The variable \"settings\" specifying values to be used in the \"{cfg["UFS_CONFIG_FN"]}\"
             file has been set as follows:\n
-            settings =\n\n"""
+            {settings=}\n\n"""
         )
-        + settings_str,
         verbose=cfg["VERBOSE"],
     )
     #
     #-----------------------------------------------------------------------
     #
-    # Call set_template function from workflow_tools to fill in jinja template
-    # to create ufs.configure file for this experiment
+    # Call uwtools "render" set_template function from workflow_tools to fill in jinja template
+    # from config template and settings variable to create ufs.configure file for this experiment
     #
     #-----------------------------------------------------------------------
-
-    # Store the settings in a temporary file; hopefully soon workflow tools will be able
-    # to accept a dictionary as an argument directly
-    with tempfile.NamedTemporaryFile(dir="./",
-                                     mode="w+t",
-                                     prefix="ufs_config_settings",
-                                     suffix=".yaml") as tmpfile:
-        tmpfile.write(settings_str)
-        tmpfile.seek(0)
-
-        cmd = " ".join(["uw template render",
-            "-i", cfg["UFS_CONFIG_TMPL_FP"],
-            "-o", ufs_config_fp,
-            "-v",
-            "--values-file", tmpfile.name,
-            ]
+    #
+    render(
+        input_file = cfg["UFS_CONFIG_TMPL_FP"],
+        output_file = ufs_config_fp,
+        values_src = settings,
         )
-
-        indent = "  "
-        output = ""
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            output = e.output
-            print(f"Failed with status: {e.returncode}")
-            sys.exit(1)
-        finally:
-            print("Output:")
-            for line in output.split("\n"):
-                print(f"{indent * 2}{line}")
     return True
 
 def parse_args(argv):
@@ -189,6 +162,6 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
+    cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     create_ufs_configure_file(run_dir=args.run_dir,cfg=cfg)

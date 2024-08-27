@@ -3,8 +3,18 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the METplus GridStat or PointStat tool for deterministic
-# verification.
+# This script runs the METplus GridStat or PointStat tool for
+# deterministic verification.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +27,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_gridstat" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
