@@ -75,6 +75,7 @@ def main():
     file_input['dust'][1:66,:,:] = dust_2_add
     file_input['coarsepm'][1:66,:,:] = coarsepm_2_add
 
+    print("FINAL FILE:", file_input)
     # Save the modified dataset back to the file
     file_input.to_netcdf(target_file, mode='w')
 
