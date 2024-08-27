@@ -15,7 +15,7 @@ OPTIONS
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
   -a, --app=APPLICATION
-      weather model application to build; for example, ATMAQ for Online-CMAQ
+      weather model application to build; for example, ATMAQ for SRW-AQM
       (e.g. ATM | ATMAQ | ATMW | S2S | S2SW)
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
@@ -50,6 +50,8 @@ OPTIONS
       number of build jobs; defaults to 4
   --use-sub-modules
       Use sub-component modules instead of top-level level SRW modules
+  --smoke
+      Build the app for Smoke and Dust (with production branch)
   -v, --verbose
       build with verbose output
 
@@ -82,6 +84,7 @@ Settings:
   DISABLE_OPTIONS=${DISABLE_OPTIONS}
   REMOVE=${REMOVE}
   CONTINUE=${CONTINUE}
+  SMOKE=${SMOKE}
   BUILD_TYPE=${BUILD_TYPE}
   BUILD_JOBS=${BUILD_JOBS}
   VERBOSE=${VERBOSE}
@@ -114,6 +117,7 @@ BUILD_TYPE="RELEASE"
 BUILD_JOBS=4
 REMOVE=false
 CONTINUE=false
+SMOKE=false
 VERBOSE=false
 
 # Turn off all apps to build and choose default later
@@ -160,6 +164,7 @@ while :; do
     --clean) CLEAN=true ;;
     --build) BUILD=true ;;
     --move) MOVE=true ;;
+    --smoke) SMOKE=true ;;
     --build-dir=?*) BUILD_DIR=${1#*=} ;;
     --build-dir|--build-dir=) usage_error "$1 requires argument." ;;
     --install-dir=?*) INSTALL_DIR=${1#*=} ;;
@@ -314,7 +319,11 @@ if [ -f ${RUN_VERSION_FILE} ]; then
 fi
 
 # set MODULE_FILE for this platform/compiler combination
-MODULE_FILE="build_${PLATFORM}_${COMPILER}_prod"
+if [ "${SMOKE}" = true ]; then
+  MODULE_FILE="build_${PLATFORM}_${COMPILER}_prod"
+else
+  MODULE_FILE="build_${PLATFORM}_${COMPILER}"
+fi
 if [ ! -f "${SRW_DIR}/modulefiles/${MODULE_FILE}.lua" ]; then
   printf "ERROR: module file does not exist for platform/compiler\n" >&2
   printf "  MODULE_FILE=${MODULE_FILE}\n" >&2
