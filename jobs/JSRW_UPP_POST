@@ -164,7 +164,7 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_post.sh
+${SCRIPTSsrw}/exsrw_upp_post.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then
