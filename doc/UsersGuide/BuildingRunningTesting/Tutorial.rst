@@ -665,7 +665,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
      PREDEF_GRID_NAME: RRFS_CONUS_13km
      DATE_FIRST_CYCL: '2019102812'
      DATE_LAST_CYCL: '2019102812'
-     FCST_LEN_HRS: 6
+     FCST_LEN_HRS: 12
      PREEXISTING_DIR_METHOD: rename
      VERBOSE: true
      COMPILER: intel
@@ -771,10 +771,43 @@ Users can save the location of the ``control`` directory in an environment varia
 
 Users should substitute ``/path/to/expt_dirs/control`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $CONTROL``, and it will take them to the ``control`` experiment directory. The variable will need to be reset for each login session. 
 
-Experiment 2: Test
-^^^^^^^^^^^^^^^^^^^^^^
+Experiment 2: Changing the forecast input
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the control case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow:`` section as follows:
+Users who need to download the ``halloween_rap.tgz`` file using any of the following methods will follow the instructions below: 
+
+   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz.
+
+   #. Download from a terminal using the AWS command line interface (CLI), if installed:
+
+      .. code-block:: console
+
+         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz halloween_rap.tgz
+   
+   #. Download from a terminal using ``wget``: 
+
+      .. code-block:: console
+
+         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
+
+After downloading ``halloween_rap.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
+
+.. code-block:: console
+
+   tar xvfz halloween_rap.tgz
+
+Save the path to this file in and ``HALLOWEENDATA`` environment variable:
+   
+.. code-block:: console 
+
+   cd Indy-Severe-Weather
+   export HALLOWEENDATA=$PWD
+
+.. note::
+
+   Users can untar the fix files and Natural Earth files by substituting those file names in the commands above. 
+
+Once the control case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` in the ``workflow:`` section as follows:
 
 .. code-block:: console
 
@@ -790,15 +823,18 @@ Once the control case is running, users can return to the ``config.yaml`` file (
 
 .. COMMENT: Maybe also FV3_RAP?
 
-Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data. Users will need to change the following lines in each section:
+Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use RAP data. Users will need to change the following lines in each section:
 
 .. code-block:: console
 
    task_get_extrn_ics:
-     EXTRN_MDL_NAME_ICS: HRRR
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}
+     EXTRN_MDL_NAME_ICS: RAP
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
    task_get_extrn_lbcs:
      EXTRN_MDL_NAME_LBCS: RAP
+     LBC_SPEC_INTVL_HRS: 3
+     USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
      EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
 
