@@ -71,6 +71,8 @@ else
 
   if [ -e "${rst_dir}/${rst_file_with_date}" ]; then
     fv_tracer_file="${rst_dir}/${rst_file_with_date}"
+  elif [ -e "${rst_dir}/${rst_file}" ]; then	
+    fv_tracer_file="${rst_dir}/${rst_file}"
   else
     message_txt="Tracer restart file: \"${fv_tracer_file}\" is NOT found"
     err_exit "${message_txt}"
@@ -82,6 +84,8 @@ else
   cplr_file_with_date="${PDY}.${cyc}0000.${cplr_file}"
   if [ -e "${rst_dir}/${cplr_file_with_date}" ]; then
     coupler_file="${rst_dir}/${cplr_file_with_date}"
+  elif [ -e "${rst_dir}/${cplr_file}" ]; then	
+    coupler_file="${rst_dir}/${cplr_file}"
   else
     message_txt="Coupler file: \"${coupler_file}\" is NOT found"
     err_exit "${message_txt}"
