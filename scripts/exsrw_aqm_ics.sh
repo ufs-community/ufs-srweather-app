@@ -58,23 +58,26 @@ else
   rst_file_with_date="${PDY}.${cyc}0000.${rst_file}"
 
   # Warm start
-  if [ $(boolify "${COLDSTART}") = "FALSE" ]; then
+  if [ $(boolify "${COLDSTART}") = "FALSE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     rst_dir="${WARMSTART_CYCLE_DIR}/RESTART"
   else
   # after the first cycle
-    if [ -e "${DATA_SHARE}/RESTART/${rst_file_with_date}" ]; then
-      rst_dir="${DATA_SHARE}/RESTART"
-    else
+    CDATEprev=$($NDATE -${INCR_CYCL_FREQ} ${PDY}${cyc})
+    PDYprev=${CDATEprev:0:8}
+    cycprev=${CDATEprev:8:2}
+    COMINprev=${COMIN}/${RUN}.${PDYprev}/${cycprev}${SLASH_ENSMEM_SUBDIR}
+    if [ -e "${COMINprev}/RESTART/${rst_file_with_date}" ]; then
       rst_dir="${COMINprev}/RESTART"
+    elif [ -e "${DATA_SHARE}/RESTART/${rst_file_with_date}" ]; then
+      rst_dir="${DATA_SHARE}/RESTART"
     fi
   fi
-
   if [ -e "${rst_dir}/${rst_file_with_date}" ]; then
     fv_tracer_file="${rst_dir}/${rst_file_with_date}"
   elif [ -e "${rst_dir}/${rst_file}" ]; then	
     fv_tracer_file="${rst_dir}/${rst_file}"
   else
-    message_txt="Tracer restart file: \"${fv_tracer_file}\" is NOT found"
+    message_txt="WARNING: Tracer restart file: \"${fv_tracer_file}\" is NOT found"
     err_exit "${message_txt}"
     print_err_msg_exit "${message_txt}"
   fi
@@ -87,7 +90,7 @@ else
   elif [ -e "${rst_dir}/${cplr_file}" ]; then	
     coupler_file="${rst_dir}/${cplr_file}"
   else
-    message_txt="Coupler file: \"${coupler_file}\" is NOT found"
+    message_txt="WARNING: Coupler file: \"${coupler_file}\" is NOT found"
     err_exit "${message_txt}"
     print_err_msg_exit "${message_txt}"
   fi

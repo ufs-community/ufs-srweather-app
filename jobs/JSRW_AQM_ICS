@@ -105,10 +105,10 @@ export RUN="${RUN:-${RUN_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
-  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver})}"
   export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
 else
-  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
   export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
 fi
 

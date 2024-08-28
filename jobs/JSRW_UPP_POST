@@ -115,7 +115,7 @@ export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
 export COMINfire="${COMINfire:-${COMINfire_default}}"
 
 # Create a teomporary share directory for RAVE interpolated data files
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables
@@ -187,7 +187,7 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
     fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
     if [ "${fhr}" = "${fcst_len_hrs}" ]; then
-      touch "${DATAROOT}/DATA_SHARE/${PDY}${cyc}/post_${PDY}${cyc}_task_complete.txt"
+      touch "${DATA_SHARE}/post_${PDY}${cyc}_task_complete.txt"
     fi
   fi
 fi

@@ -120,7 +120,6 @@ Copying the CRTM fix files from FIXcrtm:
   FIXcrtm = \"${FIXcrtm}\"
 ===================================================================="
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -288,28 +287,56 @@ fi
 echo "fhr=${fhr} and subh_fhr=${subh_fhr}"
 fhr=${subh_fhr}
 
-bgdawp=${NET}.${cycle}.prslev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-bgrd3d=${NET}.${cycle}.natlev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-bgifi=${NET}.${cycle}.ififip.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-bgavi=${NET}.${cycle}.aviati.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  bgdawp=${NET}.${cycle}.prslev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+  bgrd3d=${NET}.${cycle}.natlev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+  bgifi=${NET}.${cycle}.ififip.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+  bgavi=${NET}.${cycle}.aviati.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
-if [ -f "PRSLEV.GrbF${post_fhr}" ]; then
-  wgrib2 PRSLEV.GrbF${post_fhr} -set center 7 -grib ${bgdawp} >>$pgmout 2>>errfile
-fi
-if [ -f "NATLEV.GrbF${post_fhr}" ]; then
-  wgrib2 NATLEV.GrbF${post_fhr} -set center 7 -grib ${bgrd3d} >>$pgmout 2>>errfile
-fi
-if [ -f "IFIFIP.GrbF${post_fhr}" ]; then
-  wgrib2 IFIFIP.GrbF${post_fhr} -set center 7 -grib ${bgifi} >>$pgmout 2>>errfile
-fi
-if [ -f "AVIATI.GrbF${post_fhr}" ]; then
-  wgrib2 AVIATI.GrbF${post_fhr} -set center 7 -grib ${bgavi} >>$pgmout 2>>errfile
-fi
+  if [ -f "PRSLEV.GrbF${post_fhr}" ]; then
+    wgrib2 PRSLEV.GrbF${post_fhr} -set center 7 -grib ${bgdawp} >>$pgmout 2>>errfile
+  fi
+  if [ -f "NATLEV.GrbF${post_fhr}" ]; then
+    wgrib2 NATLEV.GrbF${post_fhr} -set center 7 -grib ${bgrd3d} >>$pgmout 2>>errfile
+  fi
+  if [ -f "IFIFIP.GrbF${post_fhr}" ]; then
+    wgrib2 IFIFIP.GrbF${post_fhr} -set center 7 -grib ${bgifi} >>$pgmout 2>>errfile
+  fi
+  if [ -f "AVIATI.GrbF${post_fhr}" ]; then
+    wgrib2 AVIATI.GrbF${post_fhr} -set center 7 -grib ${bgavi} >>$pgmout 2>>errfile
+  fi
 
-cp -p ${bgdawp} ${COMOUT}
-cp -p ${bgrd3d} ${COMOUT}
-cp -p ${bgifi} ${COMOUT}
-cp -p ${bgavi} ${COMOUT}
+  cp -p ${bgdawp} ${COMOUT}
+  cp -p ${bgrd3d} ${COMOUT}
+  cp -p ${bgifi} ${COMOUT}
+  cp -p ${bgavi} ${COMOUT}
+
+else
+
+  post_mn_or_null=""
+  dot_post_mn_or_null=""
+  if [ "${post_mn}" != "00" ]; then
+    post_mn_or_null="${post_mn}"
+    dot_post_mn_or_null=".${post_mn}"
+  fi
+  post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
+  post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
+  basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
+  symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+    fids=( "cmaq" )
+  else
+    fids=( "prslev" "natlev" )
+  fi
+  for fid in "${fids[@]}"; do
+    FID=$(echo_uppercase $fid)
+    post_orig_fn="${FID}.${post_fn_suffix}"
+    post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
+    mv ${post_orig_fn} ${post_renamed_fn}
+    cp -p ${post_renamed_fn} ${COMOUT}
+  done
+
+fi
 #
 #-----------------------------------------------------------------------
 #
