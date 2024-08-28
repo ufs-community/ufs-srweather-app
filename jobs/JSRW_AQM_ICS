@@ -140,20 +140,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
-#
-#-----------------------------------------------------------------------
-#
-if [ $RUN_ENVIR = "nco" ]; then
-  export INPUT_DATA="${COMIN}"
-else
-  export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
-fi
-mkdir -p "${INPUT_DATA}"
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job.
 #
 #-----------------------------------------------------------------------

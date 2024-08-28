@@ -161,7 +161,7 @@ fi
 #
 # Set namelist of upp.
 #
-if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
   dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc"
   phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc"
 else
@@ -176,7 +176,7 @@ post_dd=${post_time:6:2}
 post_hh=${post_time:8:2}
 post_mn=${post_time:10:2}
 
-if [ $(boolify "${CPL_AQM}") = "TRUE" ] && [ $(bookify "${DO_SMOKE_DUST}") = "FALSE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] && [ $(boolify "${DO_SMOKE_DUST}") = "FALSE" ]; then
   post_itag_add="aqf_on=.true.,"
 elif [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
   post_itag_add="slrutah_on=.true.,gtg_on=.true."

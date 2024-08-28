@@ -636,8 +636,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-  ln -nsf "${DATA}/RESTART" "${COMIN}/RESTART"
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  ln -nsf "${DATA}/RESTART" "${DATA_SHARE}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -680,7 +680,7 @@ export err=$?; err_chk
 #-----------------------------------------------------------------------
 #
 if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  cp -Rp RESTART ${COMOUT}
+  cp -rp RESTART ${COMOUT}
 
   fhr=0
   while [ $fhr -le ${FCST_LEN_HRS} ]; do
