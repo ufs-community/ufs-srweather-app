@@ -31,6 +31,10 @@ target=$1
 symlink=$2
 relative=${3:-TRUE}
 relative=$(boolify $relative)
+if [ "$relative" != "TRUE" ] && [ "$relative" != "FALSE" ]; then
+  usage
+  print_err_msg_exit "'relative' must be set to TRUE or FALSE"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -40,17 +44,6 @@ relative=$(boolify $relative)
 #
   local valid_vals_relative \
         relative_flag
-#
-#-----------------------------------------------------------------------
-#
-# If "relative" is not set (i.e. if it is set to a null string), reset 
-# it to a default value of "TRUE".  Then check that it is set to a vaild 
-# value.
-#
-#-----------------------------------------------------------------------
-#
-  valid_vals_relative=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
-  check_var_valid_value "relative" "valid_vals_relative"
 #
 #-----------------------------------------------------------------------
 #
