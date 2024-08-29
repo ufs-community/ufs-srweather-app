@@ -124,8 +124,7 @@ def create_ufs_configure_file(run_dir,cfg):
             The variable \"settings\" specifying values to be used in the \"{cfg["UFS_CONFIG_FN"]}\"
             file has been set as follows:\n
             {settings=}\n\n"""
-        )
-        verbose=cfg["VERBOSE"],
+        ), verbose=cfg["VERBOSE"]
     )
     #
     #-----------------------------------------------------------------------

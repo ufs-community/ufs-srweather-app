@@ -716,7 +716,7 @@ def generate_FV3LAM_wflow(
             input_format="nml",
             output_file=expt_config['workflow']['FIRE_NML_FP'],
             output_format="nml",
-            supplemental_configs=[fire_nml_dict],
+            update_config=get_nml_config(fire_nml_dict),
             )
 
     #

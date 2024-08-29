@@ -117,7 +117,7 @@
 #
 . $USHdir/source_util_funcs.sh
 for sect in user nco platform workflow global cpl_aqm_parm constants fixed_files \
-  task_get_extrn_lbcs task_run_fcst task_run_post ; do
+  task_get_extrn_lbcs task_run_fcst task_run_post fire; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
