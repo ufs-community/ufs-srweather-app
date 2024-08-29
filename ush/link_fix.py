@@ -40,12 +40,12 @@ def link_fix(
 
     Args:
         cfg_d           (dict): Dictionary of configuration settings
-        file_group      (str) : Choice of [``"grid"``, `"orog"`, ``"sfc_climo"``]
-        source_dir      (str) : Path to directory where the ``file_group`` fix files are linked from
-        target_dir      (str) : Directory where the fix files should be linked to
+        file_group      (str) : Choice of [``"grid"``, ``"orog"``, ``"sfc_climo"``]
+        source_dir      (str) : Path to directory that the ``file_group`` fix files are linked from
+        target_dir      (str) : Directory that the fix files should be linked to
         dot_or_uscore   (str) : Either a dot (``.``) or an underscore (``_``)
         nhw             (int) : Wide halo width (grid parameter setting: N=number of cells, H=halo, W=wide halo)
-        constants       (dict): Dictionary containing the constants used by SRW
+        constants       (dict): Dictionary containing the constants used by the SRW App
         run_task        (bool): Whether the task is to be run in the experiment
         climo_fields    (list): List of fields needed for surface climatology (see ``fixed_files_mapping.yaml`` for details)
 

@@ -42,11 +42,11 @@ def generate_FV3LAM_wflow(
         ushdir,
         logfile: str = "log.generate_FV3LAM_wflow",
         debug: bool = False) -> str:
-    """Function to setup a forecast experiment and create a workflow
-    (according to the parameters specified in the config file)
+    """
+    Sets up a forecast experiment and creates a workflow (according to the parameters specified in the configuration file)
 
     Args:
-        ushdir  (str) : The full path of the ush/ directory where this script is located
+        ushdir  (str) : The full path of the ``ush/`` directory where this script is located
         logfile (str) : The name of the file where logging is written
         debug   (bool): Enable extra output for debugging
     Returns:
@@ -725,13 +725,11 @@ def generate_FV3LAM_wflow(
 
 def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
     """
-    Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
-    messages with detailed timing and routine info in the specified text file.
-
-    If ``debug = True``, print all messages to both screen and log file.
+    Sets up logging, printing high-priority (INFO and higher) messages to screen and printing all
+    messages with detailed timing and routine info in the specified text file. If ``debug = True``, print all messages to both screen and log file.
 
     Args:
-        logfile (str) : The name of the file where logging is written
+        logfile (str) : The name of the file where logging information is written
         debug   (bool): Enable extra output for debugging
     Returns:
         None

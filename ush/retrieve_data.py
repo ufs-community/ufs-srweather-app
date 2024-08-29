@@ -15,7 +15,7 @@ To see usage for this script:
   
     python retrieve_data.py -h
 
-Also see the ``_parse_args`` function below.
+Also see the ``parse_args`` function below.
 """
 
 import argparse
@@ -166,7 +166,7 @@ def download_file(url):
 def arg_list_to_range(args):
 
     """
-    Given an ``argparse`` list argument, return the sequence to process.
+    Returns the sequence to process, given an ``argparse`` list.
 
     The length of the list will determine what sequence items are returned:
 
@@ -847,7 +847,7 @@ def main(argv):
         argv (list): List of command line arguments
     """
 
-    cla = _parse_args(argv)
+    cla = parse_args(argv)
 
     _setup_logging(cla.debug)
     print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
@@ -984,10 +984,16 @@ def get_ens_groups(members):
     return ens_groups
 
 
-def _parse_args(argv):
+def parse_args(argv):
 
     """
-    Function maintains the arguments accepted by this script. Please see Python's `argparse <https://docs.python.org/3/library/argparse.html>`__ documenation for more information about settings of each argument.
+    Maintains the arguments accepted by this script. Please see Python's `argparse <https://docs.python.org/3/library/argparse.html>`__ documenation for more information about settings of each argument.
+    
+    Args:
+        argv (list): Command line arguments to parse
+
+    Returns:
+        args: An argparse.Namespace object (parser.parse_args(argv))
     """
 
     description = (

@@ -7,13 +7,16 @@ import shutil
 import gzip
 
 def main():
-    """Identify the MRMS file closest to the valid time of the forecast. 
+    """Identifies the MRMS file closest to the valid time of the forecast. 
     METplus is configured to look for a MRMS composite reflectivity file 
     for the valid time of the forecast being verified; since MRMS composite 
     reflectivity files do not always exactly match the valid time, this 
     script is used to identify and rename the MRMS composite reflectivity 
     file to match the valid time of the forecast. 
 
+    Returns:
+        None
+        
     Raises: 
         FileNotFoundError: If no valid file was found within 15 minutes of the valid time of the forecast
 

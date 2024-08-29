@@ -28,7 +28,7 @@ def update_input_nml(namelist, restart, aqm_na_13km):
         aqm_na_13km (bool): Whether the 13km AQM config should be used?
 
     Returns:
-        None --- updates ``input.nml`` with the settings provided
+        None -- updates input.nml with the settings provided
     """
 
     print_input_args(locals())

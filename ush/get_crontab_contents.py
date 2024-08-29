@@ -46,7 +46,7 @@ def get_crontab_contents(called_from_cron, machine, debug):
 
 
 def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug) -> None:
-    """Add crontab line to cron table
+    """Adds crontab line to cron table
 
     Args:
         called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
@@ -120,7 +120,7 @@ def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug) ->
 
 
 def delete_crontab_line(called_from_cron, machine, crontab_line, debug) -> None:
-    """Delete crontab line after job is complete i.e., either SUCCESS/FAILURE
+    """Deletes crontab line after job is complete i.e., either SUCCESS/FAILURE
     but not IN PROGRESS status
 
     Args:
