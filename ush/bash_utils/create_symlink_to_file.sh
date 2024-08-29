@@ -23,7 +23,6 @@ function create_symlink_to_file() {
 #-----------------------------------------------------------------------
 #
 if [[ $# -lt 2 ]]; then
-  usage
   print_err_msg_exit "Function create_symlink_to_file() requires at least two arguments"
 fi
 
@@ -32,7 +31,6 @@ symlink=$2
 relative=${3:-TRUE}
 relative=$(boolify $relative)
 if [ "$relative" != "TRUE" ] && [ "$relative" != "FALSE" ]; then
-  usage
   print_err_msg_exit "'relative' must be set to TRUE or FALSE"
 fi
 #

@@ -760,7 +760,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${UFS_FIRE}" = "TRUE" ]; then
+if [ $(boolify "${UFS_FIRE}") = "TRUE" ]; then
   FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
   # This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
   # trying to octal all up in our business
@@ -781,13 +781,13 @@ if [ "${UFS_FIRE}" = "TRUE" ]; then
   /
 "
   # Hopefully future updates to uwtools will eliminate the need for this "temporary file" manipulation
-  echo "$settings" > fire.update.nml
+#  echo "$settings" > fire.update.nml
 
-  uw config realize --input-format nml --output-format nml -i "${FIRE_NML_FN}" -o "${FIRE_NML_FN}" fire.update.nml
+  echo $settings | uw config realize --input-format nml --output-format nml --input-file "${FIRE_NML_FP}" -o "${FIRE_NML_FN}"
   err=$?
   if [ $err -ne 0 ]; then
     print_err_msg_exit "\
-  Call to uw config realize to update ${FIRE_NML_FN} failed.
+  Call to uw config realize to create ${FIRE_NML_FN} failed.
   Parameters passed to this script are:
     FIRE_NML_FN = \"${FIRE_NML_FN}\"
     FIRE_NML_FP = \"${FIRE_NML_FP}\"
@@ -795,11 +795,8 @@ if [ "${UFS_FIRE}" = "TRUE" ]; then
     settings =
 $settings"
   fi
-
   # Link fire input file
-  create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
-                         symlink="geo_em.d01.nc" \
-                         relative="FALSE"
+  create_symlink_to_file ${FIRE_INPUT_DIR}/geo_em.d01.nc geo_em.d01.nc FALSE
 fi
 #
 #-----------------------------------------------------------------------
