@@ -2,11 +2,11 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 24
   SCHED: slurm
-  TEST_CCPA_OBS_DIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ndas/proc
-  TEST_NOHRSC_OBS_DIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
-  DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_NOHRSC_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
+  DOMAIN_PREGEN_BASEDIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: sjet,vjet,kjet,xjet
   QUEUE_DEFAULT: batch
   PARTITION_FCST: xjet
@@ -21,17 +21,17 @@ platform:
   SCHED_NATIVE_CMD: --export=NONE
   SCHED_NATIVE_CMD_HPSS: -n 1 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/input_model_data
-  TEST_PREGEN_BASEDIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
-  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
-  FIXaer: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_aer
-  FIXgsm: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_am
-  FIXlut: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_lut
-  FIXorg: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_orog
-  FIXsfc: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
-  FIXshp: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/NaturalEarth
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
+  FIXaer: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsm: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_am
+  FIXlut: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_lut
+  FIXorg: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_orog
+  FIXsfc: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
+  FIXshp: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
   ics_lbcs:
