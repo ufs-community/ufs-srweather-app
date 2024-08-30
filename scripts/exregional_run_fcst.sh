@@ -780,10 +780,8 @@ if [ $(boolify "${UFS_FIRE}") = "TRUE" ]; then
     end_second   = $((10#${FCST_END_DATE:12:2})),
   /
 "
-  # Hopefully future updates to uwtools will eliminate the need for this "temporary file" manipulation
-#  echo "$settings" > fire.update.nml
 
-  echo $settings | uw config realize --input-format nml --output-format nml --input-file "${FIRE_NML_FP}" -o "${FIRE_NML_FN}"
+  echo $settings | uw config realize --update-format nml --input-format nml --output-format nml --input-file "${FIRE_NML_FP}" -o "${FIRE_NML_FN}"
   err=$?
   if [ $err -ne 0 ]; then
     print_err_msg_exit "\
