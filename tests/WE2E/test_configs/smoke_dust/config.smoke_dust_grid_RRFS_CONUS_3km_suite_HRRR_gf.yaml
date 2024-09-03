@@ -20,9 +20,9 @@ workflow:
   DO_REAL_TIME: false
   COLDSTART: true
 nco:
-  envir_default: test_smoke_dust
-  NET_default: smoke_dust
-  RUN_default: smoke_dust
+  envir_default: we2e_smoke_dust
+  NET_default: we2e_smoke_dust
+  RUN_default: we2e_smoke_dust
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/upp_post.yaml"]|include }}'

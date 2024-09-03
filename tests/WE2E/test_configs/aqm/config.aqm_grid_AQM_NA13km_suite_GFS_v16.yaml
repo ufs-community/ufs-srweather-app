@@ -15,7 +15,9 @@ workflow:
   DO_REAL_TIME: false
   COLDSTART: true
 nco:
-  NET_default: aqm
+  envir_default: we2e_aqm
+  NET_default: we2e_aqm
+  RUN_default: we2e_aqm
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/upp_post.yaml", "parm/wflow/test.yaml"]|include }}'
