@@ -163,6 +163,9 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
       slash_ensmem_subdir_or_null=""
     fi
   fi
+elif [ "${FCST_OR_OBS}" = "OBS" ]; then
+  slash_cdate_or_null="/${CDATE}"
+  slash_ensmem_subdir_or_null="/obs"
 fi
 
 OBS_INPUT_DIR=""
@@ -175,7 +178,7 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   FCST_INPUT_DIR="${vx_fcst_input_basedir}"
   FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
-  OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}"
+  OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_fcst"
   OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
@@ -185,7 +188,7 @@ elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   OBS_INPUT_DIR="${OBS_DIR}"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE} )
 
-  OUTPUT_BASE="${vx_output_basedir}"
+  OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
   OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
@@ -212,28 +215,9 @@ elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}"
 fi
 
-# If processing obs, then for all cylces except the last one, calculate
-# a "forecast length" that will hours up to but not including the initial
-# (zeroth) hour of the next cycle.  For the last cycle, take the "forecast
-# length" of the obs to be the same as that of the forecast for the cycle.
-# This ensures that the PcpCombine_obs tasks for different cycles do not
-# overwrite or clobber output from another cycle (because with this
-# approach, the valid times on which the current PcpCombine_obs task is
-# operating is distinct from the ones for the PcpCombine_obs tasks for
-# every other cycle).
-fcst_len_hrs="${FCST_LEN_HRS}"
-if [ "${FCST_OR_OBS}" = "OBS" ]; then
-  yyyymmddhhmn="${PDY}${cyc}00"
-  if [ ${yyyymmddhhmn} -lt ${DATE_LAST_CYCL} ] && \
-     [ ${FCST_LEN_HRS} -ge ${INCR_CYCL_FREQ} ]; then
-    output_incr_hrs="1"
-    fcst_len_hrs=$((INCR_CYCL_FREQ - output_incr_hrs + 1))
-  fi
-fi
-
 set_vx_fhr_list \
   cdate="${CDATE}" \
-  fcst_len_hrs="${fcst_len_hrs}" \
+  fcst_len_hrs="${FCST_LEN_HRS}" \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
   base_dir="${base_dir}" \

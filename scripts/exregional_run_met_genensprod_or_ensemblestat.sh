@@ -131,7 +131,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 
   case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
     "APCP"*)
-      OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
       OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       FCST_INPUT_DIR="${vx_output_basedir}"
       ;;

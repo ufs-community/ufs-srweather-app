@@ -132,6 +132,7 @@ time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+
 ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" $(( 10#${ENSMEM_INDX})))
 ensmem_name="mem${ensmem_indx}"
 if [ "${RUN_ENVIR}" = "nco" ]; then
@@ -162,15 +163,15 @@ if [ "${grid_or_point}" = "grid" ]; then
 
   case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
     "APCP"*)
-      OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
       OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
-      FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
+      FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
       FCST_INPUT_FN_TEMPLATE="${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       ;;
     "ASNOW"*)
       OBS_INPUT_DIR="${OBS_DIR}"
       OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
-      FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
+      FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
       FCST_INPUT_FN_TEMPLATE="${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       ;;
     "REFC")
@@ -198,7 +199,7 @@ fi
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
 FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_INPUT_FN_TEMPLATE} )
 
-OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}"
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #
