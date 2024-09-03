@@ -175,7 +175,7 @@ def arg_list_to_range(args):
        * Length = 3:   A sequence of start, stop, increment
        * Length > 3:   List as is
 
-    ``argparse`` should provide a list of at least one item (nargs='+').
+    ``argparse`` should provide a list of at least one item (``nargs='+'``).
 
     Must ensure that the list contains integers.
 

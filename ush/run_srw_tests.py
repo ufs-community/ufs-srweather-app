@@ -15,7 +15,7 @@ class SRWTest:
   The script will work sequentially through each of the test directories and 
   launch the workflow for each with a call to ``launch_FV3LAM_wflow.sh``.
   After the initial launch, the ``checkTests`` method is called to monitor the
-  status of each test and call the ``launch_FV3LAM_wflow.sh`` script repeatedly 
+  status of each test and to call the ``launch_FV3LAM_wflow.sh`` script repeatedly 
   in each uncompleted workflow until all workflows are done."""
 
   def __init__(self, exptdir):
@@ -37,7 +37,11 @@ class SRWTest:
 
   def checkTests(self):
     """Check status of workflows/experiments; remove any that have failed or completed, 
-    and continue running the launch command for those that aren't complete."""
+    and continue running the launch command for those that aren't complete.
+    
+    Returns:
+      None
+    """
     while(len(self.testDirectories) > 0):
       cmdstring="grep -L 'wflow_status =' */log.launch_FV3LAM_wflow | xargs dirname"
       try:

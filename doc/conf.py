@@ -268,6 +268,8 @@ autodoc_default_options = {
     #"private-members": True
 }
 
+add_module_names = False
+
 # -- Options for napoleon extension ---------------------------------------
 
 napoleon_numpy_docstring = False

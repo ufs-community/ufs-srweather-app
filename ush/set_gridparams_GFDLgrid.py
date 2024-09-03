@@ -41,7 +41,7 @@ def set_gridparams_GFDLgrid(
     nh4,
     run_envir,
 ):
-    """Sets the parameters for a grid that is to be generated using the "GFDLgrid"
+    """Sets the parameters for a grid that is to be generated using the legacy "GFDLgrid"
     grid generation method (i.e., when ``GRID_GEN_METHOD: "ESGgrid"``).
 
     Args:
@@ -55,10 +55,10 @@ def set_gridparams_GFDLgrid(
          jstart_of_t7_on_t6g     (int): j-index on tile 6 at which the regional grid (tile 7) starts.
          jend_of_t7_on_t6g       (int): j-index on tile 6 at which the regional grid (tile 7) ends.
          verbose                (bool): Flag to print out additional informational messages
-         nh4                     (int): The width (in units of number of cells on tile 7) of the 4-cell-wide halo, i.e. NH4 = 4.
+         nh4                     (int): The width (in number of cells) of the 4-cell-wide halo, i.e. NH4 = 4.
          run_envir               (str): Workflow mode (*community* or *nco*)
     Returns:
-        Dictionary of inputs and outputs (see return statement)
+        Dictionary of inputs and outputs (see return statement in code for more detail)
     """
 
     print_input_args(locals())

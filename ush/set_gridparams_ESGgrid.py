@@ -15,7 +15,8 @@ from python_utils import (
 def set_gridparams_ESGgrid(
     lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, pazi, constants
 ):
-    """Sets the parameters for a grid that is to be generated using the "ESGgrid"
+    """
+    Sets the parameters for a grid that is to be generated using the "ESGgrid"
     grid generation method (i.e., when ``GRID_GEN_METHOD: "ESGgrid"``).
 
     Args:
@@ -23,13 +24,13 @@ def set_gridparams_ESGgrid(
         lat_ctr    (float): The latitude of the center of the grid (in degrees).
         nx           (int): The number of cells in the zonal direction on the regional grid.
         ny           (int): The number of cells in the meridional direction on the regional grid.
-        halo_width   (int): The width (in number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. Set automatically in ``set_gridparams_ESGgrid.py``.
+        halo_width   (int): The width (in number of grid cells) of the wide :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. For predefined grids, this value is set in ``setup.py`` based on the ``ESGgrid_WIDE_HALO_WIDTH`` value in ``predef_grid_params.yaml``. 
         delx       (float): The cell size in the zonal direction of the regional grid (in meters).
         dely       (float): The cell size in the meridional direction of the regional grid (in meters).
         pazi       (float): The rotational parameter for the “ESGgrid” (in degrees).
         constants   (dict): Dictionary of SRW constants
     Returns:
-        Dictionary of inputs and 4 outputs (see return statement)
+        Dictionary of inputs and 4 outputs (see return statement in code for details)
     """
 
     print_input_args(locals())
