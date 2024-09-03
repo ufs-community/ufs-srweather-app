@@ -335,10 +335,10 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  REMOVE_RAW_OBS_DIRS_CCPA: true
-  REMOVE_RAW_OBS_DIRS_MRMS: true
-  REMOVE_RAW_OBS_DIRS_NDAS: true
-  REMOVE_RAW_OBS_DIRS_NOHRSC: true
+  REMOVE_RAW_OBS_CCPA: true
+  REMOVE_RAW_OBS_MRMS: true
+  REMOVE_RAW_OBS_NDAS: true
+  REMOVE_RAW_OBS_NOHRSC: true
   #
   #-----------------------------------------------------------------------
   #
@@ -547,12 +547,17 @@ workflow:
   # default will point to:
   #
   #   EXPTDIR: "${EXPT_BASEDIR}/${EXPT_SUBDIR}"
+  #
+  # WFLOW_FLAG_FILES_DIR:
+  # Directory in which flag files marking completion of various workflow
+  # tasks can be placed.
   #-----------------------------------------------------------------------
   #
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: 'experiment'
   EXEC_SUBDIR: "exec"
   EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
+  WFLOW_FLAG_FILES_DIR: '{{ [workflow.EXPTDIR, "wflow_flag_files"]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1726,7 +1731,7 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   # KMP_AFFINITY_*:
-  # From Intel: "The Intel® runtime library has the ability to bind OpenMP
+  # From Intel: "The Intel runtime library has the ability to bind OpenMP
   # threads to physical processing units. The interface is controlled using
   # the KMP_AFFINITY environment variable. Depending on the system (machine)
   # topology, application, and operating system, thread affinity can have a
@@ -2464,7 +2469,7 @@ verification:
   # METplus Pb2nc tool on NDAS observations.  (These files will contain
   # obs ADPSFC or ADPUPA fields in NetCDF format.)
   #
-  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${OBS_CCPA_APCP_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 'ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2_a${ACCUM_HH}h.nc'
   OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT: '${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE}.nc'
   #
   # VX_FCST_MODEL_NAME:
