@@ -95,15 +95,20 @@ output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
 # List of times (each of the form YYYYMMDDHH) for which there is forecast
 # output for the current day.  We extract this list from the full list of
 # all forecast output times (i.e. from all cycles).
-output_times_crnt_day=($(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}"))
+output_times_crnt_day=()
+if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
+  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
+fi
 
 # If there are no forecast output times on the day of the current task,
 # exit the script.
 num_output_times_crnt_day=${#output_times_crnt_day[@]}
 if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
   print_info_msg "
-None of the forecast output times fall in the current day.  Thus, there
-is no need to retrieve any obs files."
+None of the forecast output times fall within the day associated with the
+current task (yyyymmdd_task):
+  yyyymmdd_task = \"${yyyymmdd_task}\"
+Thus, there is no need to retrieve any obs files."
   exit
 fi
 

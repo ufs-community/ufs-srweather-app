@@ -185,12 +185,16 @@ output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
 # constructing this by extracting from the full list of all forecast APCP
 # output times (i.e. from all cycles) all elements that contain the current
 # task's day (in the form YYYYMMDD).
-output_times_crnt_day=($(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}"))
+output_times_crnt_day=()
+if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
+  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
+fi
 # If the 0th hour of the current day is in this list (and if it is, it
 # will be the first element), remove it because for APCP, that time is
 # considered part of the previous day (because it represents precipitation
 # that occurred during the last hour of the previous day).
-if [[ ${output_times_crnt_day[0]} == "${yyyymmdd_task}00" ]]; then
+if [[ ${#output_times_crnt_day[@]} -gt 0 ]] && \
+   [[ ${output_times_crnt_day[0]} == "${yyyymmdd_task}00" ]]; then
   output_times_crnt_day=(${output_times_crnt_day[@]:1})
 fi
 # If the 0th hour of the next day (i.e. the day after yyyymmdd_task) is
@@ -208,9 +212,10 @@ fi
 num_output_times_crnt_day=${#output_times_crnt_day[@]}
 if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
   print_info_msg "
-None of the forecast APCP output times fall in the current day (including
-the 0th hour of the next day).  Thus, there is no need to retrieve any
-obs files."
+None of the forecast APCP output times fall within the day (including the
+0th hour of the next day) associated with the current task (yyyymmdd_task):
+  yyyymmdd_task = \"${yyyymmdd_task}\"
+Thus, there is no need to retrieve any obs files."
   exit
 fi
 
