@@ -24,12 +24,12 @@ task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: HRRR
   FV3GFS_FILE_FMT_ICS: grib2
   EXTRN_MDL_FILES_ICS:
-    - '{yyyy}{mm}{dd}.hrrr.t{hh}z.wrfprsf00.grib2'
+    - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
 task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/derecho/scratch/kavulich/FIRE/2024/test_data/HRRR"
   EXTRN_MDL_FILES_LBCS:
-    - '{yyyy}{mm}{dd}.hrrr.t{hh}z.wrfprsf00.grib2'
+    - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
   EXTRN_MDL_NAME_LBCS: HRRR
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   LBC_SPEC_INTVL_HRS: 3
