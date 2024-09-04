@@ -48,31 +48,9 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       FCST_THRESH: 'none'
     dependency:
       and:
-        # The following will include dependencies on the PcpCombine_obs task for
-        # the current cycle as well as those from other cycles that process CCPA
-        # obs at valid times that are part of the current cycle's forecast.  This
-        # dependence is necessary because each PcpCombine_obs task except the
-        # last one processes obs at valid times starting with the initial time
-        # of the current cycle's forecast and ending with the last output time
-        # of this forecast that is before the initial time of the next cycle's
-        # forecast.
         taskdep_pcpcombine_obs: &taskdep_pcpcombine_obs
           attrs:
-            task: '{%- set num_cycl_dep = (workflow.FCST_LEN_HRS/workflow.INCR_CYCL_FREQ)|round(0,"ceil")|int %}
-                   {%- set num_cycl_dep = num_cycl_dep %}
-                   {%- for n in range(0, num_cycl_dep) %}
-                     {%- set cycl_offset = n*workflow.INCR_CYCL_FREQ %}
-                     {%- if n == 0 %}
-                       {{- "run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
-                     {%- else %}
-                       {{- "      <or>\n" }}
-                       {{- "        <not><cycleexistdep cycle_offset=\"%02d:00:00\"/></not>\n" % cycl_offset }}
-                       {{- "        <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"%02d:00:00\"/>\n" % cycl_offset }}
-                       {{- "      </or>\n" }}
-                     {%- endif %}
-                   {%- endfor %}
-                   {{- "      <!-- The following task dependency is repeated because of current limitations of the XML generation system to include cross-cycle dependencies. -->\n" }}
-                   {{- "      <taskdep task=\"run_MET_PcpCombine_obs_APCP#ACCUM_HH#h\" cycle_offset=\"00:00:00\"" }}'
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
@@ -141,9 +119,25 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
       FCST_THRESH: 'none'
     dependency:
       and:
-        taskdep_get_obs_mrms:
+        datadep_all_get_obs_mrms_complete: &all_get_obs_mrms_complete
           attrs:
-            task: get_obs_mrms
+            age: 00:00:00:30
+          # Check that the flag files that indicate that the get_obs_mrms tasks
+          # are complete are all present before launching any EnsembleStat task.
+          text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+                 {%- set indent = "      " %}
+                 {%- set indent_p2 = indent + "  " %}
+                 {%- for n in range(0, num_obs_days) %}
+                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
+                   {%- if n == 0 %}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_mrms_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- else %}
+                     {{- indent ~ "</datadep>\n" }}
+                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_mrms_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- endif %}
+                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                 {%- endfor %}'
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_#VAR#
@@ -175,9 +169,25 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
     walltime: 01:00:00
     dependency:
       and:
-        taskdep_pb2nc:
+        datadep_all_pb2nc_obs_complete: &all_pb2nc_obs_complete
           attrs:
-            task: run_MET_Pb2nc_obs
+            age: 00:00:00:30
+          # Check that the flag files that indicate that the Pb2NC tasks are
+          # complete are all present before launching any EnsembleStat task.
+          text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+                 {%- set indent = "      " %}
+                 {%- set indent_p2 = indent + "  " %}
+                 {%- for n in range(0, num_obs_days) %}
+                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
+                   {%- if n == 0 %}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- else %}
+                     {{- indent ~ "</datadep>\n" }}
+                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- endif %}
+                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                 {%- endfor %}'
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_#VAR#
@@ -254,9 +264,8 @@ metatask_GridStat_MRMS_ensprob:
       FCST_THRESH: 'all'
     dependency:
       and:
-        taskdep_get_obs_mrms:
-          attrs:
-            task: get_obs_mrms
+        datadep_all_get_obs_mrms_complete:
+          <<: *all_get_obs_mrms_complete
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_#VAR#
@@ -282,9 +291,8 @@ metatask_PointStat_NDAS_ensmeanprob:
         FCST_THRESH: 'all'
       dependency:
         and:
-          taskdep_pb2nc:
-            attrs:
-              task: run_MET_Pb2nc_obs
+          datadep_all_pb2nc_obs_complete:
+            <<: *all_pb2nc_obs_complete
           taskdep_genensprod:
             attrs:
               task: run_MET_GenEnsProd_vx_#VAR#

@@ -1,7 +1,7 @@
 default_task_verify_pre: &default_task_verify_pre
   account: '&ACCOUNT;'
   attrs:
-    cycledefs: forecast
+    cycledefs: cycledef_obs_days_inst
     maxtries: '1'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
@@ -23,14 +23,19 @@ default_task_verify_pre: &default_task_verify_pre
 
 task_get_obs_ccpa:
   <<: *default_task_verify_pre
+  attrs:
+    cycledefs: cycledef_obs_days_cumul
+    maxtries: '1'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
-    ACCUM_HH: '01'
     OBS_DIR: '&CCPA_OBS_DIR;'
     OBTYPE: 'CCPA'
-    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_CCPA }}'
-    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+    OUTPUT_TIMES_ALL: &output_times_all_cumul
+                      '{%- for i in range(0, (workflow.OUTPUT_TIMES_ALL_CYCLES_CUMUL|length)) %}
+                         {{- " " ~ workflow.OUTPUT_TIMES_ALL_CYCLES_CUMUL[i] }}
+                       {%- endfor %}'
+    REMOVE_RAW_OBS: 'platform.REMOVE_RAW_OBS_CCPA'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -43,8 +48,8 @@ task_get_obs_nohrsc:
     <<: *default_vars
     OBS_DIR: '&NOHRSC_OBS_DIR;'
     OBTYPE: 'NOHRSC'
-    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_NOHRSC }}'
-    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+    OUTPUT_TIMES_ALL: *output_times_all_cumul
+    REMOVE_RAW_OBS: 'platform.REMOVE_RAW_OBS_NOHRSC'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -57,9 +62,12 @@ task_get_obs_mrms:
     <<: *default_vars
     OBS_DIR: '&MRMS_OBS_DIR;'
     OBTYPE: 'MRMS'
-    VAR: 'REFC RETOP'
-    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_MRMS }}'
-    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+    MRMS_FIELDS: 'REFC RETOP'
+    OUTPUT_TIMES_ALL: &output_times_all_inst
+                      '{%- for i in range(0, (workflow.OUTPUT_TIMES_ALL_CYCLES_INST|length)) %}
+                         {{- " " ~ workflow.OUTPUT_TIMES_ALL_CYCLES_INST[i] }}
+                       {%- endfor %}'
+    REMOVE_RAW_OBS: 'platform.REMOVE_RAW_OBS_MRMS'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -72,8 +80,8 @@ task_get_obs_ndas:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'
     OBTYPE: 'NDAS'
-    REMOVE_RAW_OBS_DIRS: '{{ platform.REMOVE_RAW_OBS_DIRS_NDAS }}'
-    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+    OUTPUT_TIMES_ALL: *output_times_all_inst
+    REMOVE_RAW_OBS: 'platform.REMOVE_RAW_OBS_NDAS'
   queue: "&QUEUE_HPSS;"
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -82,7 +90,7 @@ task_get_obs_ndas:
 task_run_MET_Pb2nc_obs:
   <<: *default_task_verify_pre
   attrs:
-    cycledefs: forecast
+    cycledefs: cycledef_obs_days_inst
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
@@ -92,6 +100,7 @@ task_run_MET_Pb2nc_obs:
     FCST_OR_OBS: OBS
     OBTYPE: NDAS
     OBS_DIR: '&NDAS_OBS_DIR;'
+    OUTPUT_TIMES_ALL: *output_times_all_inst
     METPLUSTOOLNAME: 'PB2NC'
   dependency:
     and:
@@ -127,14 +136,25 @@ metatask_PcpCombine_obs:
       and:
         datadep:
           text: "&CCPA_OBS_DIR;"
-        or:
-          not:
-            taskvalid:
-              attrs:
-                task: get_obs_ccpa
-          taskdep:
-            attrs:
-              task: get_obs_ccpa
+        datadep_all_get_obs_ccpa_complete:
+          attrs:
+            age: 00:00:00:30
+          # Check that the flag files that indicate that the get_obs_ccpa tasks
+          # are complete are all present before launching any PcpCombine task.
+          text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length %}
+                 {%- set indent = "      " %}
+                 {%- set indent_p2 = indent + "  " %}
+                 {%- for n in range(0, num_obs_days) %}
+                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_CUMUL[n] %}
+                   {%- if n == 0 %}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_ccpa_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- else %}
+                     {{- indent ~ "</datadep>\n" }}
+                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_ccpa_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- endif %}
+                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                 {%- endfor %}'
 
 metatask_check_post_output_all_mems:
   var:
