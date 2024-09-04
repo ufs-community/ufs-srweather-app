@@ -71,6 +71,43 @@ to convert NDAS prep buffer observation files to NetCDF format.
 #
 #-----------------------------------------------------------------------
 #
+#
+#
+#-----------------------------------------------------------------------
+#
+# The day (in the form YYYMMDD) associated with the current task via the
+# task's cycledefs attribute in the ROCOTO xml.
+yyyymmdd_task=${PDY}
+
+# The environment variable OUTPUT_TIMES_ALL set in the ROCOTO XML is a
+# scalar string containing all relevant forecast output times (each) in
+# the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
+# because in ROCOTO, there doesn't seem to be a way to pass a bash array
+# from the XML to task's script.  To have an array-valued variable to
+# work with, here, we create the new variable output_times_all that is
+# the array-valued counterpart of OUTPUT_TIMES_ALL.
+output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
+
+# List of times (each of the form YYYYMMDDHH) for which there is forecast
+# output for the current day.  We extract this list from the full list of
+# all forecast output times (i.e. from all cycles).
+output_times_crnt_day=()
+if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
+  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
+fi
+
+num_output_times_crnt_day=${#output_times_crnt_day[@]}
+if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
+  print_info_msg "
+None of the forecast output times fall within the day associated with the
+current task (yyyymmdd_task):
+  yyyymmdd_task = \"${yyyymmdd_task}\"
+Thus, there is no need to run ${METPLUSTOOLNAME} on any prepbufr files."
+  exit
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Get the cycle date and time in YYYYMMDDHH format.
 #
 #-----------------------------------------------------------------------
@@ -123,16 +160,52 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
 #
 #-----------------------------------------------------------------------
 #
-set_vx_fhr_list \
-  cdate="${CDATE}" \
-  fcst_len_hrs="${FCST_LEN_HRS}" \
-  field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
-  base_dir="${OBS_INPUT_DIR}" \
-  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_accum_contrib_files="FALSE" \
-  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
-  outvarname_fhr_list="FHR_LIST"
+FHR_LIST=""
+num_missing_files=0
+for yyyymmddhh in ${output_times_crnt_day[@]}; do
+  yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
+  hh=$(echo ${yyyymmddhh} | cut -c9-10)
+  fn="prepbufr.ndas.${yyyymmddhh}"
+  fp="${OBS_INPUT_DIR}/${fn}"
+  if [[ -f "${fp}" ]]; then
+    print_info_msg "
+Found ${OBTYPE} obs file corresponding to forecast output time (yyyymmddhh):
+  yyyymmddhh = \"${yyyymmddhh}\"
+  fp = \"${fp}\"
+"
+    hh_noZero=$((10#${hh}))
+    #FHR_LIST+=("${yyyymmddhh}")
+    FHR_LIST="${FHR_LIST},${hh_noZero}"
+  else
+    num_missing_files=$((num_missing_files+1))
+    print_info_msg "
+${OBTYPE} obs file corresponding to forecast output time (yyyymmddhh) does
+not exist on disk:
+  yyyymmddhh = \"${yyyymmddhh}\"
+  fp = \"${fp}\"
+Removing this time from the list of times to be processed by ${METPLUSTOOLNAME}.
+"
+  fi
+done
+
+# If the number of missing files is greater than the maximum allowed
+# (specified by num_missing_files_max), print out an error message and
+# exit.
+if [ "${num_missing_files}" -gt "${NUM_MISSING_OBS_FILES_MAX}" ]; then
+  print_err_msg_exit "\
+The number of missing ${OBTYPE} obs files (num_missing_files) is greater
+than the maximum allowed number (num_missing_files_max):
+  num_missing_files = ${num_missing_files}
+  num_missing_files_max = ${num_missing_files_max}"
+fi
+
+# Remove leading comma from FHR_LIST.
+FHR_LIST=$( echo "${FHR_LIST}" | $SED "s/^,//g" )
+print_info_msg "$VERBOSE" "\
+Final (i.e. after filtering for missing files) set of forecast hours
+(saved in a scalar string variable) is:
+  FHR_LIST = \"${FHR_LIST}\"
+"
 #
 #-----------------------------------------------------------------------
 #
@@ -282,7 +355,7 @@ uw template render \
   -o ${metplus_config_fp} \
   --verbose \
   --values-file "${tmpfile}" \
-  --search-path "/" 
+  --search-path "/"
 
 err=$?
 rm $tmpfile
@@ -312,6 +385,16 @@ print_err_msg_exit "
 Call to METplus failed with return code: $?
 METplus configuration file used is:
   metplus_config_fp = \"${metplus_config_fp}\""
+#
+#-----------------------------------------------------------------------
+#
+# Create flag file that indicates completion of task.  This is needed by
+# the workflow.
+#
+#-----------------------------------------------------------------------
+#
+mkdir -p ${WFLOW_FLAG_FILES_DIR}
+touch "${WFLOW_FLAG_FILES_DIR}/run_met_pb2nc_obs_${PDY}_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
