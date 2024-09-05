@@ -38,7 +38,7 @@ from python_utils import (
     load_xml_file,
 )
 
-from set_cycle_dates import \
+from set_cycle_and_obs_timeinfo import \
      set_cycle_dates, set_fcst_output_times_and_obs_days_all_cycles, \
      set_cycledefs_for_obs_days
 from set_predef_grid_params import set_predef_grid_params
