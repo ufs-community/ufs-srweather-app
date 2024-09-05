@@ -794,6 +794,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     rocoto_config['cycledefs']['cycledef_obs_days_inst'] = cycledef_obs_days_inst
     rocoto_config['cycledefs']['cycledef_obs_days_cumul'] = cycledef_obs_days_cumul
 
+    # The "cycled_from_second" cycledef in the default workflow configuration
+    # file (default_workflow.yaml) requires the starting date of the second
+    # cycle.  That is difficult to calculate in the yaml file itself because
+    # currently, there are no utilities to perform arithmetic with dates.
+    # Thus, we calculate it here and save it as a variable in the workflow
+    # configuration dictionary.  Note that correct functioning of the default
+    # workflow yaml file also requires that DATE_[FIRST|SECOND|LAST]_CYCL all
+    # be strings, not datetime objects.  We perform those conversions here.
+    date_second_cycl = date_first_cycl + cycl_intvl
+    workflow_config['DATE_FIRST_CYCL'] = datetime.datetime.strftime(date_first_cycl, "%Y%m%d%H")
+    workflow_config['DATE_SECOND_CYCL'] = datetime.datetime.strftime(date_second_cycl, "%Y%m%d%H")
+    workflow_config['DATE_LAST_CYCL'] = datetime.datetime.strftime(date_last_cycl, "%Y%m%d%H")
+
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
         fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
