@@ -50,7 +50,7 @@ This is the ex-script for the task that runs Smoke and Dust.
 
 if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
   echo "This step is skipped for the first cycle of COLDSTART."
-else
+else  
   #
   # Set CDATE used in the fire emission generation python script
   #
@@ -62,6 +62,7 @@ else
   if [ -e "${COMINsmoke}/${smokeFile}" ]; then
     cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
   else
+    eval ${PRE_TASK_CMDS}
     #
     # Link restart directory of the previous cycle in COMIN/COMOUT
     #

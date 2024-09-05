@@ -56,6 +56,7 @@ This is the ex-script for the task that runs prepstart.
 if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
   echo "This step is skipped for the first cycle of COLDSTART."
 else
+  eval ${PRE_TASK_CMDS}  
   if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
     # IC gfs data file: gfs_data.tile7.halo0.nc
     gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
