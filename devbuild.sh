@@ -265,19 +265,6 @@ if [ "${DEFAULT_BUILD}" = true ]; then
   BUILD_UPP="on"
 fi
 
-# Allow the use of RRFS model output files remapped into CONUS 3-km grid as ICS/LBCS,
-# before UFS_UTILS integrates use of native/full RRFS files 
-# Files could be retrieved from 
-# https://noaa-rrfs-pds.s3.amazonaws.com/rrfs_a/rrfs_a.{yyyymmdd}/{hh}/control/
-# in the format rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus_3km.grib2
-if [ "${BUILD_UFS_UTILS}" = "on" ]; then
-    os=$(uname) &&  SED=sed
-    test $os == Darwin && ( os=MacOSX && SED=gsed )
-    echo "SED is ${SED}"
-
-    CHGRES_CUBE=${SRW_DIR}/sorc/UFS_UTILS/sorc/chgres_cube.fd
-    ${SED} -i 's/"RAP","HRRR"/"RAP","HRRR","RRFS"/g' ${CHGRES_CUBE}/program_setup.F90
-fi
 # Choose components to build for air quality modeling (Online-CMAQ)
 if [ "${APPLICATION}" = "ATMAQ" ]; then
   if [ "${DEFAULT_BUILD}" = true ]; then
