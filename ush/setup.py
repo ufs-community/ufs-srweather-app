@@ -10,6 +10,7 @@ import logging
 from textwrap import dedent
 
 import yaml
+from pprint import pprint
 
 from python_utils import (
     log_info,
@@ -37,7 +38,9 @@ from python_utils import (
     load_xml_file,
 )
 
-from set_cycle_dates import set_cycle_dates
+from set_cycle_dates import \
+     set_cycle_dates, set_fcst_output_times_and_obs_days_all_cycles, \
+     set_cycledefs_for_obs_days
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
@@ -754,6 +757,43 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
     incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
 
+    # Set the forecast output interval.  Ideally, this should be obtained
+    # from the SRW App's configuration file, but such a variable doesn't
+    # yet exist in that file.
+    fcst_output_intvl_hrs = 1
+
+    # To enable arithmetic with dates and times, convert various time
+    # intervals from integer to datetime.timedelta objects.
+    cycl_intvl = datetime.timedelta(days=0, hours=incr_cycl_freq, minutes=0, seconds=0)
+    fcst_len = datetime.timedelta(days=0, hours=fcst_len_hrs, minutes=0, seconds=0)
+    fcst_output_intvl = datetime.timedelta(days=0, hours=fcst_output_intvl_hrs, minutes=0, seconds=0)
+
+    # Generate a list of forecast output times and a list of obs days (i.e.
+    # days on which observations are needed to perform verification) over all
+    # cycles, both for instantaneous fields (e.g. T2m, REFC, RETOP) and for
+    # cumulative ones (e.g. APCP).
+    output_times_all_cycles_inst, obs_days_all_cycles_inst, \
+    output_times_all_cycles_cumul, obs_days_all_cycles_cumul \
+    = set_fcst_output_times_and_obs_days_all_cycles( \
+      date_first_cycl, date_last_cycl, cycl_intvl, fcst_len, fcst_output_intvl)
+
+    # Add the list generated above to the dictionary containing workflow
+    # configuration variables.  These will be needed in generating the ROCOTO
+    # XML.
+    workflow_config['OUTPUT_TIMES_ALL_CYCLES_INST'] = output_times_all_cycles_inst
+    workflow_config['OBS_DAYS_ALL_CYCLES_INST'] = obs_days_all_cycles_inst
+    workflow_config['OUTPUT_TIMES_ALL_CYCLES_CUMUL'] = output_times_all_cycles_cumul
+    workflow_config['OBS_DAYS_ALL_CYCLES_CUMUL'] = obs_days_all_cycles_cumul
+
+    # Generate lists of ROCOTO cycledef strings corresonding to the obs days
+    # for instantaneous fields and those for cumulative ones.
+    cycledef_obs_days_inst = set_cycledefs_for_obs_days(obs_days_all_cycles_inst)
+    cycledef_obs_days_cumul = set_cycledefs_for_obs_days(obs_days_all_cycles_cumul)
+    # Save the lists of cycledefs in the dictionary containing values needed
+    # to construct the ROCOTO XML.
+    rocoto_config['cycledefs']['cycledef_obs_days_inst'] = cycledef_obs_days_inst
+    rocoto_config['cycledefs']['cycledef_obs_days_cumul'] = cycledef_obs_days_cumul
+
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
         fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
@@ -765,7 +805,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             num_cycles = len(set_cycle_dates(
                 date_first_cycl,
                 date_last_cycl,
-                incr_cycl_freq))
+                cycl_incr))
 
             if num_cycles != len(fcst_len_cycl):
               logger.error(f""" The number of entries in FCST_LEN_CYCL does
