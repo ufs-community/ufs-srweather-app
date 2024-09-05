@@ -46,8 +46,7 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
 
 def load_config_for_setup(ushdir, default_config, user_config):
-    """Load in the default, machine, and user configuration files into
-    Python dictionaries. Return the combined experiment dictionary.
+    """Updates a Python dictionary in place with experiment configuration settings from the default, machine, and user configuration files. 
 
     Args:
       ushdir             (str): Path to the ``ush`` directory for the SRW App
@@ -55,11 +54,11 @@ def load_config_for_setup(ushdir, default_config, user_config):
       user_config        (str): Path to the user-provided config YAML (usually named ``config.yaml``)
 
     Returns:
-      Python dictionary of configuration settings from YAML files
+        None
     
     Raises:
         FileNotFoundError: If the user-provided configuration file or the machine file does not exist.
-        Exception: If (1) the user-provided configuration file cannot be loaded or (2) if it contains invalid sections/keys or (3) if it does not contain mandatory information
+        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains invalid sections/keys or (3) it does not contain mandatory information or (4) an invalid datetime format is used. 
 
     """
 
@@ -285,14 +284,14 @@ def load_config_for_setup(ushdir, default_config, user_config):
 def set_srw_paths(ushdir, expt_config):
 
     """
-    Generate a dictionary of directories that describe the SRW App
-    structure, i.e., where SRW is installed, and the paths to
+    Generates a dictionary of directories that describe the SRW App
+    structure, i.e., where the SRW App is installed and the paths to
     external repositories managed via the ``manage_externals`` tool.
 
     Other paths for the SRW App are set as defaults in ``config_defaults.yaml``.
 
     Args:
-        ushdir      (str) : Path to the system location of the ``ush/`` directory under the SRW App clone
+        ushdir      (str) : Path to the system location of the ``ush`` directory under the SRW App clone
         expt_config (dict): Contains the configuration settings for the user-defined experiment
 
     Returns:
@@ -349,8 +348,8 @@ def set_srw_paths(ushdir, expt_config):
 
 
 def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
-    """Function that validates user-provided configuration settings and derives
-    a secondary set of parameters needed to configure a Rocoto-based SRW
+    """Validates user-provided configuration settings and derives
+    a secondary set of parameters needed to configure a Rocoto-based SRW App
     workflow. The secondary parameters are derived from a set of required
     parameters defined in ``config_defaults.yaml``, a user-provided
     configuration file (e.g., ``config.yaml``), or a YAML machine file.

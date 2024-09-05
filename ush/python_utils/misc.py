@@ -4,35 +4,35 @@ import re
 
 
 def uppercase(s):
-    """Function to convert a given string to uppercase
+    """Converts a given string to uppercase
 
     Args:
-        s: the string
+        s (str): The string to change to uppercase
     Return:
-        Uppercased str
+        Uppercased string
     """
 
     return s.upper()
 
 
 def lowercase(s):
-    """Function to convert a given string to lowercase
+    """Converts a given string to lowercase
 
     Args:
-        s: the string
+        s (str): The string to change to lowercase
     Return:
-        Lowercase str
+        Lowercased string
     """
 
     return s.lower()
 
 
 def find_pattern_in_str(pattern, source):
-    """Find regex pattern in a string
+    """Finds regex pattern in a string
 
     Args:
-        pattern: regex expression
-        source: string
+        pattern (str): Regex expression
+        source  (str): Text string to search for regex expression
     Return:
         A tuple of matched groups or None
     """
@@ -43,11 +43,11 @@ def find_pattern_in_str(pattern, source):
 
 
 def find_pattern_in_file(pattern, file_name):
-    """Find regex pattern in a file
+    """Finds regex pattern in a file
 
     Args:
-        pattern: regex expression
-        file_name: name of text file
+        pattern   (str): Regex expression
+        file_name (str): Name of text file
     Return:
         A tuple of matched groups or None
     """

@@ -9,14 +9,17 @@ from .print_msg import log_info
 
 
 def check_for_preexist_dir_file(path, method):
-    """Check for a preexisting directory or file and, if present, deal with it
+    """Checks for a preexisting directory or file and, if present, deals with it
     according to the specified method
 
     Args:
-        path: path to directory
-        method: could be any of [ 'delete', 'reuse', 'rename', 'quit' ]
+        path   (str): Path to directory
+        method (str): Could be any of [ ``'delete'``, ``'reuse'``, ``'rename'``, ``'quit'`` ]
     Returns:
         None
+    Raises:
+        ValueError: If an invalid method for dealing with a pre-existing directory is specified
+        FileExistsError: If the specified directory or file already exists
     """
 
     try:

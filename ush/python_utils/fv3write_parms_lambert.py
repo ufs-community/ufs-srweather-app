@@ -1,21 +1,30 @@
 #!/usr/bin/env python
-#
-# To use this tool, you should source the regional workflow environment
-#    $> source env/wflow_xxx.env
-# and activate pygraf (or any one with cartopy installation)
-#    $> conda activate pygraf
-#
+
+"""
+To use this tool, source the workflow environment:
+
+.. code-block:: console 
+    
+   $> source env/wflow_xxx.env
+   
+   $> module use modulefiles
+   $> module load wflow_<machine>.env
+
+and activate ``pygraf`` (or any one with cartopy installation)
+
+.. code-block:: console 
+
+   $> conda activate pygraf
+"""
 
 import argparse
 
 import cartopy.crs as ccrs
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#
-# Main function to return parameters for the FV3 write component.
-#
-
 if __name__ == "__main__":
+    """
+    Main function to return parameters for the FV3 write component.
+    """
 
     parser = argparse.ArgumentParser(
         description="Determine FV3 write component lat1/lon1 for Lamert Conformal map projection",

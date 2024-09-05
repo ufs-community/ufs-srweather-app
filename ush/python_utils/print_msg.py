@@ -7,12 +7,12 @@ from logging import getLogger
 
 
 def print_err_msg_exit(error_msg="", stack_trace=True):
-    """Function to print out an error message to stderr and exit.
+    """Prints out an error message to standard error and exits.
     It can optionally print the stack trace as well.
 
     Args:
-        error_msg : error message to print
-        stack_trace : set to True to print stack trace
+        error_msg    (str): Error message to print
+        stack_trace (bool): Set to ``True`` to print stack trace
     Returns:
         None
     """
@@ -25,15 +25,16 @@ def print_err_msg_exit(error_msg="", stack_trace=True):
 
 
 def print_info_msg(info_msg, verbose=True):
-    """Function to print information message to stdout, when verbose
-    is set to True. It does proper "dedentation" that is needed for readability
-    of python code.
+    """
+    Prints information message to standard output when ``verbose``
+    is set to ``True``. It does proper "dedentation" that is needed for readability
+    of Python code.
 
     Args:
-        info_msg : info message to print
-        verbose : set to False to silence printing
+        info_msg (str): Info message to print
+        verbose (bool): Set to ``False`` to silence printing
     Returns:
-        True: if message is successfully printed
+        True: If message is successfully printed
     """
 
     if verbose:
@@ -43,13 +44,14 @@ def print_info_msg(info_msg, verbose=True):
 
 
 def log_info(info_msg, verbose=True, dedent_=True):
-    """Function to print information message using the logging module. This function
-    should not be used if python logging has not been initialized.
+    """
+    Prints information message using the logging module. This function
+    should not be used if Python logging has not been initialized.
 
     Args:
-        info_msg : info message to print
-        verbose : set to False to silence printing
-        dedent_ : set to False to disable "dedenting" (print string as-is)
+        info_msg (str): Info message to print
+        verbose (bool): Set to ``False`` to silence printing
+        dedent_ (bool): Set to ``False`` to disable "dedenting" (print string as-is)
     Returns:
         None
     """
