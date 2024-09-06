@@ -150,7 +150,7 @@ metatask_run_ensemble:
 
   task_run_fcst_mem#mem#:
     <<: *default_task
-    command: '{% if smoke_dust_parm.DO_SMOKE_DUST or cpl_aqm_parm.CPL_AQM %}&LOAD_MODULES_RUN_TASK; "forecast" "&JOBSdir;/JSRW_FORECAST" {% else %}&LOAD_MODULES_RUN_TASK; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"{% endif %}'
+    command: '{% if smoke_dust_parm.DO_SMOKE_DUST or cpl_aqm_parm.CPL_AQM %}&LOAD_MODULES_RUN_TASK; "forecast" "&JOBSdir;/JSRW_FORECAST" {% else %}&LOAD_MODULES_RUN_TASK; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST" {% endif %}'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
