@@ -19,7 +19,7 @@ default_task_plot: &default_task
     nprocs: '{{ parent.nnodes * parent.ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nnodes: 2
+  nnodes: 1
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   ppn: 24
