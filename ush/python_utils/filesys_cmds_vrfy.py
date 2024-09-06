@@ -8,8 +8,8 @@ def cmd_vrfy(cmd, *args):
     """Execute system command
 
     Args:
-        cmd: the command
-        *args: its arguments
+        cmd (str): The command
+        *args: Its arguments
     Returns:
         Exit code
     """

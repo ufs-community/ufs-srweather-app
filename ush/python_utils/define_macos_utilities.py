@@ -9,8 +9,9 @@ from .environment import set_env_var
 
 def check_darwin(cmd):
     """Checks if Darwin command exists
+    
     Args:
-        cmd:
+        cmd: The command to check (e.g., ``gsed``, ``gln``)
     Returns:
         True if successful; otherwise prints error
     """
@@ -30,7 +31,7 @@ def check_darwin(cmd):
 
 def define_macos_utilities():
     """Sets some environment variables for Darwin systems differently
-    The variables are: READLINK, SED, DATE_UTIL and LN_UTIL
+    The variables are: ``READLINK``, ``SED``, ``DATE_UTIL`` and ``LN_UTIL``.
     """
 
     if os.uname()[0] == "Darwin":

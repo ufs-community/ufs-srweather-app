@@ -35,8 +35,9 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
-nitpick_ignore = [('py:class', 'obj'), ('py:class', 
-                   'yaml.dumper.Dumper'),]
+nitpick_ignore = [('py:class', 'obj'),('py:class', 
+                   'yaml.dumper.Dumper'),('py:class', 
+                   'xml.etree.ElementTree'),]
 
 # -- General configuration ---------------------------------------------------
 

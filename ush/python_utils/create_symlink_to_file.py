@@ -11,9 +11,9 @@ def create_symlink_to_file(target, symlink, relative=True):
     """Creates a symbolic link to the specified target file.
 
     Args:
-        target: target file
-        symlink: symbolic link to target file
-        relative: optional argument to specify relative symoblic link creation
+        target   (str) : Target file
+        symlink  (str) : Symbolic link to target file
+        relative (bool): Optional argument to specify relative symbolic link creation
     Returns:
         None
     """
