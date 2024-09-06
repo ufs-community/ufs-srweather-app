@@ -88,7 +88,7 @@ except NameError:
 
 def cfg_to_yaml_str(cfg):
     """
-    Gets contents of config file as a yaml string
+    Gets contents of config file as a YAML string
     """
 
     return yaml.dump(
@@ -98,7 +98,7 @@ def cfg_to_yaml_str(cfg):
 def cycstr(loader, node):
 
     """
-    Returns a cyclestring Element whose content corresponds to the
+    Returns a cyclestring element whose content corresponds to the
     input node argument
     """
 
@@ -108,8 +108,7 @@ def cycstr(loader, node):
 def include(filepaths):
 
     """
-    Returns a dictionary that includes the contents of the referenced
-    YAML file(s).
+    Returns a dictionary that includes the contents of the referenced YAML file(s).
     """
 
     srw_path = pathlib.Path(__file__).resolve().parents[0].parents[0]
@@ -133,11 +132,10 @@ def join_str(loader, node):
     return "".join([str(i) for i in seq])
 
 def startstopfreq(loader, node):
-
     """
-    Returns a Rocoto-formatted string for the contents of a cycledef
-    tag. Assume that the items in the node are env variables, and return
-    a Rocoto-formatted string
+    Returns a Rocoto-formatted string for the contents of a ``cycledef``
+    tag. Assumes that the items in the node are environment variables, and returns
+    a Rocoto-formatted string.
     """
 
     args = loader.construct_sequence(node)
@@ -180,7 +178,7 @@ def days_ago(arg):
 
 def extend_yaml(yaml_dict, full_dict=None, parent=None):
     """
-    Updates ``yaml_dict`` inplace by rendering any existing Jinja2 templates
+    Updates ``yaml_dict`` in place by rendering any existing Jinja2 templates
     that exist in a value.
     """
 
@@ -330,8 +328,8 @@ def load_shell_as_ini_config(file_name, return_string=1):
 
 
 def load_shell_config(config_file, return_string=0):
-    """Loads old style shell config files.
-    We source the config script in a subshell and gets the variables it sets
+    """Loads old-style shell config files.
+    We source the config script in a subshell and get the variables it sets
 
     Args:
          config_file: Path to config file script
@@ -571,7 +569,7 @@ def structure_dict(dict_o, dict_t):
 
 
 def update_dict(dict_o, dict_t, provide_default=False):
-    """Update a dictionary with another
+    """Updates a dictionary with another
 
     Args:
         dict_o: flat dictionary used as source
@@ -604,13 +602,13 @@ def check_structure_dict(dict_o, dict_t):
     """
     Checks if a dictionary's structure follows a template.
     The invalid entries are returned as a dictionary.
-    If all entries are valid, returns an empty dictionary
+    If all entries are valid, returns an empty dictionary.
 
     Args:
-        dict_o: Target dictionary
-        dict_t: Template dictionary to compare structure to
+        dict_o (dict): Target dictionary
+        dict_t (dict): Template dictionary to compare structure to
     Returns:
-        dict:  Invalid key-value pairs.
+        dict: Invalid key-value pairs.
     """
     inval = {}
     for k, v in dict_o.items():
@@ -628,9 +626,10 @@ def check_structure_dict(dict_o, dict_t):
 def filter_dict(dict_o, keys_regex):
     """
     Filters dictionary keys based on a list of keys
+
     Args:
         dict_o: The source dictionary
-        keys_regex (list): Keys to retain (could be regex expression)
+        keys_regex: Keys to retain (could be regex expression)
     """
 
     keys = []

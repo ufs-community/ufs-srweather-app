@@ -8,7 +8,7 @@ from .filesys_cmds_vrfy import ln_vrfy
 
 
 def create_symlink_to_file(target, symlink, relative=True):
-    """Create a symbolic link to the specified target file.
+    """Creates a symbolic link to the specified target file.
 
     Args:
         target: target file

@@ -177,7 +177,7 @@ def arg_list_to_range(args):
     Must ensure that the list contains integers.
 
     Args:
-        args (???): An ``argparse`` list argument
+        args (list): An ``argparse`` list argument
 
     Returns: 
         args: An ``argparse`` list

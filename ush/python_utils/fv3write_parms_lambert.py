@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 
 """
-To use this tool, source the workflow environment:
+To use this tool, first source the workflow environment:
 
 .. code-block:: console 
     
-   $> source env/wflow_xxx.env
-   
-   $> module use modulefiles
-   $> module load wflow_<machine>.env
+   $> module use /path/to/ufs-srweather-app/modulefiles
+   $> module load wflow_<machine>
+   $> conda activate srw_graphics
 
-and activate ``pygraf`` (or any one with cartopy installation)
+Make sure to adjust the modulefiles path and machine name to correspond to your system. 
+Even though the message printed to the console will direct users to run ``conda activate srw_app``, this script requires an environment (e.g., ``srw_graphics``) that includes ``pygraf`` or ``cartopy``. The ``srw_graphics`` environment uses ``cartopy`` for plotting. If the ``srw_app`` environment is already loaded, users can simply run ``conda activate srw_graphics`` to switch environments. 
+
+For usage instructions, run:
 
 .. code-block:: console 
 
-   $> conda activate pygraf
+    $> python fv3write_parms_lambert.py -h
+
 """
 
 import argparse

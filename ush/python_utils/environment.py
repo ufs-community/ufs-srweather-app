@@ -112,7 +112,7 @@ def type_to_str(v):
 
 def list_to_str(v, oneline=False):
     """Given a string or list of string, construct a string
-    to be used on right hand side of shell environement variables
+    to be used on right hand side of shell environment variables
 
     Args:
         v: a string/number, list of strings/numbers, or null string('')
@@ -134,13 +134,13 @@ def list_to_str(v, oneline=False):
 
 
 def str_to_list(v, return_string=0):
-    """Given a string, construct a string or list of strings.
-    Basically does the reverse operation of `list_to_string`.
+    """Constructs a string or list of strings based on the given string.
+    Basically does the reverse operation of ``list_to_str``.
 
     Args:
-        v: a string
+        v: A string
     Returns:
-        a string, list of strings or null string('')
+        A string, a list of strings, or a null string('')
     """
 
     if not isinstance(v, str):
@@ -167,11 +167,11 @@ def str_to_list(v, return_string=0):
 
 
 def set_env_var(param, value):
-    """Set an environment variable
+    """Sets an environment variable
 
     Args:
-        param: the variable to set
-        value: either a string, list of strings or None
+        param: The variable to set
+        value: A string, a list of strings, or None
     Returns:
         None
     """
@@ -180,12 +180,12 @@ def set_env_var(param, value):
 
 
 def get_env_var(param):
-    """Get the value of an environement variable
+    """Gets the value of an environment variable
 
     Args:
-        param: the environement variable
+        param: The environment variable
     Returns:
-        Returns either a string, list of strings or None
+        A string, a list of strings, or None
     """
 
     if not param in os.environ:
@@ -195,14 +195,16 @@ def get_env_var(param):
 
 
 def import_vars(dictionary=None, target_dict=None, env_vars=None):
-    """Import all (or select few) environment/dictionary variables as python global
-    variables of the caller module. Call this function at the beginning of a function
+    """Imports all (or a select few) environment/dictionary variables as Python global
+    variables of the caller module. Calls this function at the beginning of a function
     that uses environment variables.
 
     Note that for read-only environmental variables, calling this function once at the
     beginning should be enough. However, if the variable is modified in the module it is
     called from, the variable should be explicitly tagged as `global`, and then its value
-    should be exported back to the environment with a call to export_vars()
+    should be exported back to the environment with a call to ``export_vars()``:
+
+    .. code-block:: console
 
         import_vars() # import all environment variables
         global MY_VAR, MY_LIST_VAR
@@ -210,14 +212,14 @@ def import_vars(dictionary=None, target_dict=None, env_vars=None):
         MY_LIST_VAR.append("Hello")
         export_vars() # these exports all global variables
 
-    There doesn't seem to an easier way of imitating the shell script doing way of things, which
+    There doesn't seem to an easier way of imitating the shell script way of doing things, which
     assumes that everything is global unless specifically tagged local, while the opposite is true
-    for python.
+    for Python.
 
     Args:
-        dictionary: source dictionary (default=os.environ)
-        target_dict: target dictionary (default=caller module's globals())
-        env_vars: list of selected environement/dictionary variables to import, or None, in which case all environment/dictionary variables are imported
+        dictionary  (dict): Source dictionary (default=os.environ)
+        target_dict (dict): Target dictionary (default=caller module's globals())
+        env_vars    (list): List of selected environement/dictionary variables to import, or None, in which case all environment/dictionary variables are imported
     Returns:
         None
     """
@@ -239,14 +241,14 @@ def import_vars(dictionary=None, target_dict=None, env_vars=None):
 
 
 def export_vars(dictionary=None, source_dict=None, env_vars=None):
-    """Export all (or select few) global variables of the caller module's
-    to either the environement/dictionary. Call this function at the end of
+    """Exports all (or select few) global variables of the caller modules
+    to either the environment/dictionary. Calls this function at the end of
     a function that updates environment variables.
 
     Args:
-        dictionary: target dictionary to set (default=os.environ)
-        source_dict: source dictionary (default=caller modules globals())
-        env_vars: list of selected environement/dictionary variables to export, or None, in which case all environment/dictionary variables are exported
+        dictionary  (dict): Target dictionary to set (default=os.environ)
+        source_dict (dict): Source dictionary (default=caller modules globals())
+        env_vars    (list): List of selected environment/dictionary variables to export, or None, in which case all environment/dictionary variables are exported
     Returns:
         None
     """
