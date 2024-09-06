@@ -319,6 +319,21 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
 
     if use_cla_tmpl:
         file_templates = cla.file_templates if cla.file_templates else file_templates
+# nperlin 05/31/2024 diagnostics
+    msg = "Diagnostic prints in retrieve_data.py"
+    print(msg)
+    msg = f"cla is is {cla}!"
+    print(msg)
+    msg = f"cla.data_type is {cla.data_type}!"
+    print(msg)
+    msg = f"cla.file_fmt is {cla.file_fmt}!"
+    print(msg)
+    msg = f"cla.file_set is {cla.file_set}!"
+    print(msg)
+    msg = f"use_cla_tmpl is {use_cla_tmpl}!"
+    print(msg)
+    msg = f"cla.cycle_date is {cla.cycle_date}!"
+    print(msg)
 
     if isinstance(file_templates, dict):
         if cla.file_fmt is not None:
