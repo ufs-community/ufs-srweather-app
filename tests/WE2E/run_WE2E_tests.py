@@ -141,7 +141,6 @@ def run_we2e_tests(homedir, args) -> None:
     pretty_list = "\n".join(str(x) for x in tests_to_run)
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
-
     config_default_file = os.path.join(ushdir,'config_defaults.yaml')
     logging.debug(f"Loading config defaults file {config_default_file}")
     config_defaults = load_config_file(config_default_file)
@@ -159,7 +158,13 @@ def run_we2e_tests(homedir, args) -> None:
         # test-specific options, then write resulting complete config.yaml
         starttime = datetime.now()
         starttime_string = starttime.strftime("%Y%m%d%H%M%S")
-        test_name = os.path.basename(test).split('.')[1]
+        test_fn = os.path.basename(test)
+        # Set the test name to all characters between the initial "config." and 
+        # the final ".yaml" in the file name.  This will allow any characters to
+        # be used as part of the test name, in particular a ".".
+        prefix = 'config.'
+        suffix = '.yaml'
+        test_name = test_fn[test_fn.find(prefix)+len(prefix):test_fn.rfind(suffix)]
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
