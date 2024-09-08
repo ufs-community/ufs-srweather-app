@@ -11,7 +11,7 @@
 source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
 
 set -u
-set -x
+#set -x
 #
 #-----------------------------------------------------------------------
 #
