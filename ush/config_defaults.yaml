@@ -317,10 +317,10 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"
-  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"
-  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms/proc"
-  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas/proc"
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
+  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
   #
   #-----------------------------------------------------------------------
   #
