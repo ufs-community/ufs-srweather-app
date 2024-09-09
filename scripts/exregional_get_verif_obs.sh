@@ -31,7 +31,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco ; do
+for sect in user workflow nco ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

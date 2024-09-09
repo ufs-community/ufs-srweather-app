@@ -8,7 +8,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
+for sect in user ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 
 set -u
 #set -x
