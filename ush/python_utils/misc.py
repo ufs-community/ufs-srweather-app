@@ -8,7 +8,7 @@ def uppercase(s):
 
     Args:
         s (str): The string to change to uppercase
-    Return:
+    Returns:
         Uppercased string
     """
 
@@ -20,7 +20,7 @@ def lowercase(s):
 
     Args:
         s (str): The string to change to lowercase
-    Return:
+    Returns:
         Lowercased string
     """
 
@@ -28,12 +28,12 @@ def lowercase(s):
 
 
 def find_pattern_in_str(pattern, source):
-    """Finds regex pattern in a string
+    """Finds a regular expression (regex) pattern in a string
 
     Args:
-        pattern (str): Regex expression
-        source  (str): Text string to search for regex expression
-    Return:
+        pattern (str): Regex pattern
+        source  (str): Text string to search for regex pattern
+    Returns:
         A tuple of matched groups or None
     """
     pattern = re.compile(pattern)
@@ -43,12 +43,12 @@ def find_pattern_in_str(pattern, source):
 
 
 def find_pattern_in_file(pattern, file_name):
-    """Finds regex pattern in a file
+    """Finds a regular expression (regex) pattern in a file
 
     Args:
-        pattern   (str): Regex expression
+        pattern   (str): Regex pattern
         file_name (str): Name of text file
-    Return:
+    Returns:
         A tuple of matched groups or None
     """
     pattern = re.compile(pattern)

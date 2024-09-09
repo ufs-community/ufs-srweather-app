@@ -13,8 +13,6 @@ def print_err_msg_exit(error_msg="", stack_trace=True):
     Args:
         error_msg    (str): Error message to print
         stack_trace (bool): Set to ``True`` to print stack trace
-    Returns:
-        None
     """
     if stack_trace:
         traceback.print_stack(file=sys.stderr)
@@ -26,15 +24,15 @@ def print_err_msg_exit(error_msg="", stack_trace=True):
 
 def print_info_msg(info_msg, verbose=True):
     """
-    Prints information message to standard output when ``verbose``
-    is set to ``True``. It does proper "dedentation" that is needed for readability
+    Prints an informational message to standard output when ``verbose``
+    is set to ``True``. It does proper "dedentation"/formatting that is needed for readability
     of Python code.
 
     Args:
         info_msg (str): Info message to print
         verbose (bool): Set to ``False`` to silence printing
     Returns:
-        True: If message is successfully printed
+        Boolean value: True if message is successfully printed; False if ``verbose`` is set to False. 
     """
 
     if verbose:
@@ -51,7 +49,7 @@ def log_info(info_msg, verbose=True, dedent_=True):
     Args:
         info_msg (str): Info message to print
         verbose (bool): Set to ``False`` to silence printing
-        dedent_ (bool): Set to ``False`` to disable "dedenting" (print string as-is)
+        dedent_ (bool): Set to ``False`` to disable "dedenting"/formatting and print string as-is
     Returns:
         None
     """

@@ -7,7 +7,7 @@ def load_xml_file(xml_file):
     """Loads XML file
 
     Args:
-        xml_file: path to XML file
+        xml_file: Path to XML file
     Returns:
         tree: Root of the XML tree
     """

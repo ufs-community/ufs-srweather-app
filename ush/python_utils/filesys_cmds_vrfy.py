@@ -5,13 +5,13 @@ from .print_msg import print_err_msg_exit
 
 
 def cmd_vrfy(cmd, *args):
-    """Execute system command
+    """Executes system command
 
     Args:
         cmd (str): The command
         *args: Its arguments
     Returns:
-        Exit code
+        ret - Exit code
     """
 
     cmd += " " + " ".join([str(a) for a in args])
@@ -22,7 +22,7 @@ def cmd_vrfy(cmd, *args):
 
 
 def cp_vrfy(*args):
-    """Check that ``cp`` command executed successfully
+    """Checks that the ``cp`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
@@ -33,7 +33,7 @@ def cp_vrfy(*args):
 
 
 def rsync_vrfy(*args):
-    """Check that ``rsync`` command executed successfully
+    """Checks that the ``rsync`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
@@ -44,7 +44,7 @@ def rsync_vrfy(*args):
 
 
 def mv_vrfy(*args):
-    """Check that ``mv`` command executed successfully
+    """Checks that the ``mv`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
@@ -55,7 +55,7 @@ def mv_vrfy(*args):
 
 
 def rm_vrfy(*args):
-    """Check that ``rm`` command executed successfully
+    """Checks that the ``rm`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
@@ -66,7 +66,7 @@ def rm_vrfy(*args):
 
 
 def ln_vrfy(*args):
-    """Check that ``ln`` command executed successfully
+    """Checks that the ``ln`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
@@ -77,7 +77,7 @@ def ln_vrfy(*args):
 
 
 def mkdir_vrfy(*args):
-    """Check that ``mkdir`` command executed successfully
+    """Checks that the ``mkdir`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
@@ -88,7 +88,7 @@ def mkdir_vrfy(*args):
 
 
 def cd_vrfy(*args):
-    """Check that ``cd`` command executed successfully
+    """Checks that the ``cd`` command executed successfully
 
     Args:
         *args: Iterable object containing command with its command line arguments
