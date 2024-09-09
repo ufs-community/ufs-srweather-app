@@ -3,12 +3,52 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-script for checking the post output.
+#
+# Run-time environment variables:
+#
+#    ACCUM_HH
+#    CDATE
+#    ENSMEM_INDX
+#    GLOBAL_VAR_DEFNS_FP
+#    VAR
+#
+# Experiment variables
+#
+#  user:
+#    USHdir
+#
+#  workflow:
+#    FCST_LEN_HRS
+#
+#  global:
+#    DO_ENSEMBLE
+#    ENS_TIME_LAG_HRS
+#
+#  verification:
+#    FCST_FN_TEMPLATE
+#    FCST_SUBDIR_TEMPLATE
+#    NUM_MISSING_FCST_FILES_MAX
+#    VX_FCST_INPUT_BASEDIR
+#    VX_NDIGITS_ENSMEM_NAMES
+#
+#  constants:
+#    SECS_PER_HOUR
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco workflow global verification constants task_run_post ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -64,7 +104,7 @@ user-staged.
 #-----------------------------------------------------------------------
 #
 i="0"
-if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]; then
   i=$( bc -l <<< "${ENSMEM_INDX}-1" )
 fi
 time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )

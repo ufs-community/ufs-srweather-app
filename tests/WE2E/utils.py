@@ -21,7 +21,7 @@ from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     load_config_file,
-    load_shell_config
+    load_yaml_config
 )
 
 REPORT_WIDTH = 100
@@ -154,13 +154,13 @@ def calculate_core_hours(expts_dict: dict) -> dict:
 
     for expt in expts_dict:
         # Read variable definitions file
-        vardefs_file = os.path.join(expts_dict[expt]["expt_dir"],"var_defns.sh")
+        vardefs_file = os.path.join(expts_dict[expt]["expt_dir"],"var_defns.yaml")
         if not os.path.isfile(vardefs_file):
             logging.warning(f"\nWARNING: For experiment {expt}, variable definitions file")
             logging.warning(f"{vardefs_file}\ndoes not exist!\n\nDropping experiment from summary")
             continue
         logging.debug(f'Reading variable definitions file {vardefs_file}')
-        vardefs = load_shell_config(vardefs_file)
+        vardefs = load_yaml_config(vardefs_file)
         vdf = flatten_dict(vardefs)
         cores_per_node = vdf["NCORES_PER_NODE"]
         for task in expts_dict[expt]:
@@ -530,7 +530,7 @@ def compare_rocotostat(expt_dict,name):
             continue
         line_array = line.split()
         # Skip header lines
-        if line_array[0] == 'CYCLE':
+        if line_array[0] == 'CYCLE' or line_array[0] == '/apps/rocoto/1.3.3/lib/workflowmgr/launchserver.rb:40:':
             continue
         # We should now just have lines describing jobs, in the form:
         # line_array = ['cycle','task','jobid','status','exit status','num tries','walltime']

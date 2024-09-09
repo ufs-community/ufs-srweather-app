@@ -29,9 +29,15 @@ pipeline {
         stage('Launch SonarQube') {
             steps {
                 script {
+                    echo "BRANCH_NAME=${env.CHANGE_BRANCH}"
+                    echo "FORK_NAME=${env.CHANGE_FORK}"
+                    echo "CHANGE_URL=${env.CHANGE_URL}"
+                    echo "CHANGE_ID=${env.CHANGE_ID}"
                     build job: '/ufs-srweather-app/ufs-srw-sonarqube', parameters: [
                         string(name: 'BRANCH_NAME', value: env.CHANGE_BRANCH ?: 'develop'),
-                        string(name: 'FORK_NAME', value: env.CHANGE_FORK ?: '')
+                        string(name: 'FORK_NAME', value: env.CHANGE_FORK ?: ''),
+                        string(name: 'CHANGE_URL', value: env.CHANGE_URL ?: ''),
+                        string(name: 'CHANGE_ID', value: env.CHANGE_ID ?: '')
                     ], wait: false
                 }
             }
@@ -193,9 +199,9 @@ pipeline {
                     // Try a few Workflow Task scripts to make sure E2E tests can be launched in a follow-on 'Test' stage
                     stage('Functional WorkflowTaskTests') {
                         environment {
-                            TASK_DEPTH = "${env.SRW_WRAPPER_TASK_DEPTH}"
+                            TASK_DEPTH = "${params.SRW_WRAPPER_TASK_DEPTH}"
                         }
-                        
+
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "Running ${TASK_DEPTH} simple workflow script task tests on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
@@ -235,8 +241,6 @@ pipeline {
 
                                 sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests} SRW_WE2E_SINGLE_TEST=${single_test}" + ' bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_test.sh"'
 
-                                // Archive the test log files
-                                sh "[[ -d ${SRW_WE2E_EXPERIMENT_BASE_DIR} ]] && cd ${SRW_WE2E_EXPERIMENT_BASE_DIR} && tar --create --gzip --verbose --dereference --file ${WORKSPACE}/${SRW_PLATFORM}/we2e_test_logs-${SRW_PLATFORM}-${SRW_COMPILER}.tgz */log.generate_FV3LAM_wflow */log/* ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/WE2E_tests_*yaml WE2E_summary*txt ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/log.* || cat /dev/null > ${WORKSPACE}/${SRW_PLATFORM}/we2e_test_logs-${SRW_PLATFORM}-${SRW_COMPILER}.tgz"
                                 }
                                 sh "STAGE_NAME=${env.STAGE_NAME} " + 'bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/disk_usage.sh"'
                             }
@@ -244,10 +248,12 @@ pipeline {
 
                         post {
                             success {
-                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}/*_test_results-*-*.txt", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}/we2e_test_logs-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}/*-skill-score.txt", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                             }
                             always {
+                                // Archive the test log files
+                                sh "[[ -d ${SRW_WE2E_EXPERIMENT_BASE_DIR} ]] && cd ${SRW_WE2E_EXPERIMENT_BASE_DIR} && tar --create --gzip --verbose --dereference --file ${env.WORKSPACE}/${env.SRW_PLATFORM}/we2e_test_logs-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.tgz */log.generate_FV3LAM_wflow */log/* ${env.WORKSPACE}/${env.SRW_PLATFORM}/tests/WE2E/WE2E_tests_*yaml WE2E_summary*txt ${env.WORKSPACE}/${env.SRW_PLATFORM}/tests/WE2E/log.* || cat /dev/null > ${env.WORKSPACE}/${env.SRW_PLATFORM}/we2e_test_logs-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.tgz"
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}/*_test_results-*-*.txt", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}/we2e_test_logs-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}-*-time-srw_test.json", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}-*-disk-usage${env.STAGE_NAME}.csv", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                                 // Remove the data sets from the experiments directory to conserve disk space

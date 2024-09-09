@@ -3,12 +3,37 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-script that checks, pulls, and stages observation data for
+# model verification.
+#
+# Run-time environment variables:
+#
+#    FHR
+#    GLOBAL_VAR_DEFNS_FP
+#    OBS_DIR
+#    OBTYPE
+#    PDY
+#    VAR
+#
+# Experiment variables
+#
+#   user:
+#    USHdir
+#    PARMdir
+#
+#-----------------------------------------------------------------------
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 #
 #-----------------------------------------------------------------------
 #
