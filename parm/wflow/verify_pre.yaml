@@ -26,7 +26,7 @@ task_get_obs_ccpa:
   attrs:
     cycledefs: cycledef_obs_days_cumul
     maxtries: '1'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&CCPA_OBS_DIR;'
@@ -75,7 +75,7 @@ task_get_obs_mrms:
 
 task_get_obs_ndas:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'
