@@ -50,7 +50,7 @@ This is the ex-script for the task that runs prepstart.
 
 #-----------------------------------------------------------------------
 #
-#  smoke/dust cycling
+#  update IC files
 #
 #-----------------------------------------------------------------------
 if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then

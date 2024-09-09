@@ -47,87 +47,82 @@ In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs Smoke and Dust.
 ========================================================================"
+#
+# Set CDATE used in the fire emission generation python script
+#
+export CDATE="${PDY}${cyc}"
+#
+# Check if the fire file exists in the designated directory
+#
+smokeFile="${SMOKE_DUST_FILE_PREFIX}_${CDATE}00.nc"
+if [ -e "${COMINsmoke}/${smokeFile}" ]; then
+  cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
+else
+  eval ${PRE_TASK_CMDS}
+  #
+  # Link restart directory of the previous cycle in COMIN/COMOUT
+  #
+  CDATEprev=$($NDATE -${INCR_CYCL_FREQ} ${PDY}${cyc})
+  PDYprev=${CDATEprev:0:8}
+  cycprev=${CDATEprev:8:2}
+  path_restart=${COMIN}/${RUN}.${PDYprev}/${cycprev}${SLASH_ENSMEM_SUBDIR}/RESTART
+  ln -nsf ${path_restart} .
 
-if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
-  echo "This step is skipped for the first cycle of COLDSTART."
-else  
-  #
-  # Set CDATE used in the fire emission generation python script
-  #
-  export CDATE="${PDY}${cyc}"
-  #
-  # Check if the fire file exists in the designated directory
-  #
-  smokeFile="${SMOKE_DUST_FILE_PREFIX}_${CDATE}00.nc"
-  if [ -e "${COMINsmoke}/${smokeFile}" ]; then
-    cp -p "${COMINsmoke}/${smokeFile}" ${COMOUT}
+  # Check whether the RAVE files need to be split into hourly files
+  if [ "${EBB_DCYCLE}" -eq 1 ]; then
+    ddhh_to_use="${PDY}${cyc}"
   else
-    eval ${PRE_TASK_CMDS}
-    #
-    # Link restart directory of the previous cycle in COMIN/COMOUT
-    #
-    CDATEprev=$($NDATE -${INCR_CYCL_FREQ} ${PDY}${cyc})
-    PDYprev=${CDATEprev:0:8}
-    cycprev=${CDATEprev:8:2}
-    path_restart=${COMIN}/${RUN}.${PDYprev}/${cycprev}${SLASH_ENSMEM_SUBDIR}/RESTART
-    ln -nsf ${path_restart} .
-
-    # Check whether the RAVE files need to be split into hourly files
-    if [ "${EBB_DCYCLE}" -eq 1 ]; then
-      ddhh_to_use="${PDY}${cyc}"
-    else
-      ddhh_to_use="${PDYm1}${cyc}"
-    fi
-    for hour in {00..23}; do
-      fire_hr_cdate=$($NDATE +${hour} ${ddhh_to_use})
-      fire_hr_pdy="${fire_hr_cdate:0:8}"
-      fire_hr_fn="Hourly_Emissions_3km_${fire_hr_cdate}00_${fire_hr_cdate}00.nc"
-      if [ -f "${COMINfire}/${fire_hr_fn}" ]; then
-        echo "Hourly emission file for $hour was found: ${fire_hr_fn}"
-        ln -nsf ${COMINfire}/${fire_hr_fn} .
-      else
-        # Check various version of RAVE raw data files (new and old)
-        rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${fire_hr_cdate}00000_e${fire_hr_pdy}23*"
-        rave_raw_fn2="Hourly_Emissions_3km_${fire_hr_cdate}00_${fire_hr_pdy}23*"
-        # Find files matching the specified patterns
-        files_found=$(find "${COMINfire}" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
-        # Splitting 24-hour RAVE raw data into houly data
-        for file_to_use in $files_found; do
-          echo "Using file: $file_to_use"
-          echo "Splitting data for hour $hour..."
-          ncks -d time,$hour,$hour "${COMINfire}/${file_to_use}" "${DATA}/${fire_hr_fn}"
-          if [ -f "${DATA}/${fire_hr_fn}" ]; then
-            break
-          else
-            echo "WARNING: Hourly emission file for $hour was NOT created from ${file_to_use}."
-          fi
-        done
-      fi
-    done
-    #
-    #-----------------------------------------------------------------------
-    #
-    # Call python script to generate fire emission files.
-    #
-    #-----------------------------------------------------------------------
-    #
-    ${USHsrw}/generate_fire_emissions.py \
-      "${FIXsmoke}/${PREDEF_GRID_NAME}" \
-      "${DATA}" \
-      "${DATA_SHARE}" \
-      "${PREDEF_GRID_NAME}" \
-      "${EBB_DCYCLE}" \
-      "${RESTART_INTERVAL}"
-    export err=$?
-    if [ $err -ne 0 ]; then
-      message_txt="generate_fire_emissions.py failed with return code $err"
-      err_exit "${message_txt}"
-      print_err_msg_exit "${message_txt}"
-    fi
-
-    # Copy Smoke file to COMOUT
-    cp -p ${DATA}/${smokeFile} ${COMOUT}
+    ddhh_to_use="${PDYm1}${cyc}"
   fi
+  for hour in {00..23}; do
+    fire_hr_cdate=$($NDATE +${hour} ${ddhh_to_use})
+    fire_hr_pdy="${fire_hr_cdate:0:8}"
+    fire_hr_fn="Hourly_Emissions_3km_${fire_hr_cdate}00_${fire_hr_cdate}00.nc"
+    if [ -f "${COMINfire}/${fire_hr_fn}" ]; then
+      echo "Hourly emission file for $hour was found: ${fire_hr_fn}"
+      ln -nsf ${COMINfire}/${fire_hr_fn} .
+    else
+      # Check various version of RAVE raw data files (new and old)
+      rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${fire_hr_cdate}00000_e${fire_hr_pdy}23*"
+      rave_raw_fn2="Hourly_Emissions_3km_${fire_hr_cdate}00_${fire_hr_pdy}23*"
+      # Find files matching the specified patterns
+      files_found=$(find "${COMINfire}" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
+      # Splitting 24-hour RAVE raw data into houly data
+      for file_to_use in $files_found; do
+        echo "Using file: $file_to_use"
+        echo "Splitting data for hour $hour..."
+        ncks -d time,$hour,$hour "${COMINfire}/${file_to_use}" "${DATA}/${fire_hr_fn}"
+        if [ -f "${DATA}/${fire_hr_fn}" ]; then
+          break
+        else
+          echo "WARNING: Hourly emission file for $hour was NOT created from ${file_to_use}."
+        fi
+      done
+    fi
+  done
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Call python script to generate fire emission files.
+  #
+  #-----------------------------------------------------------------------
+  #
+  ${USHsrw}/generate_fire_emissions.py \
+    "${FIXsmoke}/${PREDEF_GRID_NAME}" \
+    "${DATA}" \
+    "${DATA_SHARE}" \
+    "${PREDEF_GRID_NAME}" \
+    "${EBB_DCYCLE}" \
+    "${RESTART_INTERVAL}"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="generate_fire_emissions.py failed with return code $err"
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
+  fi
+
+  # Copy Smoke file to COMOUT
+  cp -p ${DATA}/${smokeFile} ${COMOUT}
 fi
 #
 #-----------------------------------------------------------------------
