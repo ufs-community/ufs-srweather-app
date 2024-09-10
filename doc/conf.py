@@ -18,6 +18,7 @@ import sphinx
 from sphinx.util import logging
 sys.path.insert(0, os.path.abspath('../ush'))
 sys.path.insert(0, os.path.abspath('../tests'))
+sys.path.insert(0, os.path.abspath('../tests/WE2E'))
 
 
 
@@ -251,7 +252,7 @@ epub_exclude_files = ['search.html']
 # -- Options for autodoc extension ---------------------------------------
 
 autodoc_mock_imports = ["f90nml","cartopy","mpl_toolkits.basemap","fill_jinja_template",
-   "utils","monitor_jobs","matplotlib","numpy","uwtools","mpl_toolkits",
+   "matplotlib","numpy","uwtools","mpl_toolkits",
    ]
 
 logger = logging.getLogger(__name__)
