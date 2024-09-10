@@ -18,20 +18,16 @@ from utils import calculate_core_hours, write_monitor_file, update_expt_status,\
 
 def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
                  mode: str = 'continuous', debug: bool = False) -> str:
-    """Function to monitor and run jobs for the specified experiment using Rocoto
+    """Monitors and runs jobs for the specified experiment using Rocoto
 
     Args:
-        expts_dict  (dict): A dictionary containing the information needed to run
-                            one or more experiments. See example file monitor_jobs.yaml
-        monitor_file (str): [optional]
-        mode         (str): [optional] Mode of job monitoring
-                            continuous (default): monitor jobs continuously until complete
-                            advance: increment jobs once, then quit
+        expts_dict  (dict): A dictionary containing the information needed to run one or more experiments. See example file ``monitor_jobs.yaml``.
+        monitor_file (str): [optional] Name for the file used to monitor experiment results. Default is ``monitor_jobs.yaml``. ???
+        mode         (str): [optional] Mode of job monitoring. Options: (1) ``continuous`` (default): monitor jobs continuously until complete or (2) ``advance``: increment jobs once, then quit.
         debug       (bool): [optional] Enable extra output for debugging
 
     Returns:
-        str: The name of the file used for job monitoring (when script is finished, this
-             contains results/summary)
+        monitor_file: The name of the file used for job monitoring (when script is finished, this contains results/summary)
     """
     monitor_start = datetime.now()
     # Write monitor_file, which will contain information on each monitored experiment
@@ -143,6 +139,12 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
+
+    Args:
+        logfile  (str): Name of log file for WE2E tests (default: ``log.run_WE2E_tests``)
+        debug   (bool): Set to True to enable extra output for debugging
+    Returns:
+        None
     """
     logging.getLogger().setLevel(logging.DEBUG)
 
