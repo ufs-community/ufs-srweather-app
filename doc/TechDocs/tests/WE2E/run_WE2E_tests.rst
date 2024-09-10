@@ -1,7 +1,7 @@
-``run_WE2E_tests``
+run\_WE2E\_tests module
 =======================
 
-.. automodule:: WE2E.run_WE2E_tests
+.. automodule:: run_WE2E_tests
    :members:
    :undoc-members:
    :show-inheritance:

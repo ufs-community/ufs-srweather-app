@@ -1,7 +1,7 @@
-``monitor jobs``
+monitor\_jobs module
 ====================
 
-.. automodule:: WE2E.monitor_jobs
+.. automodule:: monitor_jobs
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,5 +1,7 @@
-``WE2E_summary``
+WE2E\_summary module
 ====================
 
-.. automodule:: WE2E.WE2E_summary
+.. automodule:: WE2E_summary
    :members:
+   :undoc-members:
+   :show-inheritance:

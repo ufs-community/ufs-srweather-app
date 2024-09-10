@@ -1,7 +1,7 @@
-``utils``
+utils module
 ============
 
-.. automodule:: WE2E.utils
+.. automodule:: utils
    :members:
    :undoc-members:
    :show-inheritance:
