@@ -22,8 +22,9 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
 
     Args:
         expts_dict  (dict): A dictionary containing the information needed to run one or more experiments. See example file ``monitor_jobs.yaml``.
-        monitor_file (str): [optional] Name for the file used to monitor experiment results. Default is ``monitor_jobs.yaml``. ???
-        mode         (str): [optional] Mode of job monitoring. Options: (1) ``continuous`` (default): monitor jobs continuously until complete or (2) ``advance``: increment jobs once, then quit.
+        monitor_file (str): [optional] Name of the file used to monitor experiment results. Default is ``monitor_jobs.yaml``. 
+        procs        (int): [optional] The number of parallel processes to run
+        mode         (str): [optional] Mode of job monitoring. Options: (1) ``'continuous'`` (default): monitor jobs continuously until complete or (2) ``'advance'``: increment jobs once, then quit.
         debug       (bool): [optional] Enable extra output for debugging
 
     Returns:
@@ -189,7 +190,7 @@ if __name__ == "__main__":
                              'advance: will only advance each experiment one step')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output. ' +
-                             'WARNING: increased verbosity may run very slow on some platforms')
+                             'WARNING: increased verbosity may run very slowly on some platforms')
 
     args = parser.parse_args()
 

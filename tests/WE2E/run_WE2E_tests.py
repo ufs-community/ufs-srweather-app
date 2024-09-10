@@ -358,7 +358,7 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
         cfg         (dict): Contents loaded from test configuration file
         mach        (dict): Contents loaded from machine settings file
         dflt        (dict): Contents loaded from default configuration file (``config_defaults.yaml``)
-        ics_or_lbcs (str): Perform checks for ICs task or LBCs task. Valid values: ``"ics"`` | ``"lbcs"``
+        ics_or_lbcs (str): Perform checks for either the ICs task or the LBCs task. Valid values: ``"ics"`` | ``"lbcs"``
 
     Returns:
         cfg_bcs: Updated dictionary for ``task_get_extrn_[ics|lbcs]`` section of test configuration file
@@ -439,7 +439,7 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
     messages with detailed timing and routine info to the specified text file.
 
     Args:
-        logfile  (str): Name of the test logging file
+        logfile  (str): Name of the test logging file (default: ``log.run_WE2E_tests``)
         debug   (bool): Set to True for more detailed output/information
     Returns:
         None
