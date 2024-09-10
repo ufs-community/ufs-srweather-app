@@ -24,9 +24,6 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
 task_plot_allvars:
   COMOUT_REF: ""
-global:
-  DO_ENSEMBLE: false
-  NUM_ENS_MEMBERS: 2
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
