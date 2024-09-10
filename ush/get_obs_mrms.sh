@@ -262,6 +262,6 @@ done
 #
 if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
   print_info_msg "Removing raw directories and files..."
-  rm -rf ${mrms_basedir_raw} || print_err_msg_exit "\
+  rm -rf ${basedir_raw} || print_err_msg_exit "\
 Failed to remove raw directories and files."
 fi
