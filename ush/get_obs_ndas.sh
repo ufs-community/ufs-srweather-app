@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user ; do
+for sect in user platform ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
@@ -182,10 +182,13 @@ fi
 # Whether to move or copy files from raw to processed directories.
 #mv_or_cp="mv"
 mv_or_cp="cp"
+# Whether to remove raw observations after processed directories have
+# been created from them.
+remove_raw_obs="${REMOVE_RAW_OBS_NDAS}"
 # If the raw directories and files are to be removed at the end of this
 # script, no need to copy the files since the raw directories are going
 # to be removed anyway.
-if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
+if [[ $(boolify "${remove_raw_obs}") == "TRUE" ]]; then
   mv_or_cp="mv"
 fi
 
@@ -301,12 +304,12 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# Clean up raw directories.
+# Clean up raw obs directories.
 #
 #-----------------------------------------------------------------------
 #
-if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
-  print_info_msg "Removing raw directories and files..."
+if [[ $(boolify "${remove_raw_obs}") == "TRUE" ]]; then
+  print_info_msg "Removing raw obs directories..."
   rm -rf ${basedir_raw} || print_err_msg_exit "\
-Failed to remove raw directories and files."
+Failed to remove raw obs directories."
 fi

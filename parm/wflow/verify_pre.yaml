@@ -35,7 +35,6 @@ task_get_obs_ccpa:
                       '{%- for i in range(0, (workflow.OUTPUT_TIMES_ALL_CYCLES_CUMUL|length)) %}
                          {{- " " ~ workflow.OUTPUT_TIMES_ALL_CYCLES_CUMUL[i] }}
                        {%- endfor %}'
-    REMOVE_RAW_OBS: '{{ platform.REMOVE_RAW_OBS_CCPA }}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -49,7 +48,6 @@ task_get_obs_nohrsc:
     OBS_DIR: '&NOHRSC_OBS_DIR;'
     OBTYPE: 'NOHRSC'
     OUTPUT_TIMES_ALL: *output_times_all_cumul
-    REMOVE_RAW_OBS: '{{ platform.REMOVE_RAW_OBS_NOHRSC }}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -67,7 +65,6 @@ task_get_obs_mrms:
                       '{%- for i in range(0, (workflow.OUTPUT_TIMES_ALL_CYCLES_INST|length)) %}
                          {{- " " ~ workflow.OUTPUT_TIMES_ALL_CYCLES_INST[i] }}
                        {%- endfor %}'
-    REMOVE_RAW_OBS: '{{ platform.REMOVE_RAW_OBS_MRMS }}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -81,7 +78,6 @@ task_get_obs_ndas:
     OBS_DIR: '&NDAS_OBS_DIR;'
     OBTYPE: 'NDAS'
     OUTPUT_TIMES_ALL: *output_times_all_inst
-    REMOVE_RAW_OBS: '{{ platform.REMOVE_RAW_OBS_NDAS }}'
   queue: "&QUEUE_HPSS;"
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
