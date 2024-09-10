@@ -175,7 +175,7 @@ mv_or_cp="cp"
 # If the raw directories and files are to be removed at the end of this
 # script, no need to copy the files since the raw directories are going
 # to be removed anyway.
-if [[ "${REMOVE_RAW_OBS}" == "TRUE" ]]; then
+if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
   mv_or_cp="mv"
 fi
 
@@ -260,7 +260,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-if [[ "${REMOVE_RAW_OBS}" == "TRUE" ]]; then
+if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
   print_info_msg "Removing raw directories and files..."
   rm -rf ${mrms_basedir_raw} || print_err_msg_exit "\
 Failed to remove raw directories and files."

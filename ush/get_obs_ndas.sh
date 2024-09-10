@@ -185,7 +185,7 @@ mv_or_cp="cp"
 # If the raw directories and files are to be removed at the end of this
 # script, no need to copy the files since the raw directories are going
 # to be removed anyway.
-if [[ "${REMOVE_RAW_OBS}" == "TRUE" ]]; then
+if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
   mv_or_cp="mv"
 fi
 
@@ -228,7 +228,7 @@ arcv_hr = ${arcv_hr}"
     fi
   done
 
-  if [[ ${do_retrieve} == "TRUE" ]]; then
+  if [[ $(boolify "${do_retrieve}") == "TRUE" ]]; then
 
     # Make sure the raw quarter-daily directory exists because it is used
     # below as the output directory of the retrieve_data.py script (so if
@@ -305,7 +305,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-if [[ "${REMOVE_RAW_OBS}" == "TRUE" ]]; then
+if [[ $(boolify "${REMOVE_RAW_OBS}") == "TRUE" ]]; then
   print_info_msg "Removing raw directories and files..."
   rm -rf ${basedir_raw} || print_err_msg_exit "\
 Failed to remove raw directories and files."
