@@ -135,21 +135,17 @@ done
 #
 #-----------------------------------------------------------------------
 #
-if [[ ${OBTYPE} == "CCPA" ]]; then
-  $USHdir/get_obs_ccpa.sh
-elif [[ ${OBTYPE} == "MRMS" ]]; then
-  $USHdir/get_obs_mrms.sh
-elif [[ ${OBTYPE} == "NDAS" ]]; then
-  $USHdir/get_obs_ndas.sh
-elif [[ ${OBTYPE} == "NOHRSC" ]]; then
-  $USHdir/get_obs_nohrsc.sh
-else
+valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC")
+if [[ ! ${valid_obtypes[@]} =~ ${OBTYPE} ]]; then
   print_err_msg_exit "\
-Invalid OBTYPE specified for script:
+Invalid observation type (OBTYPE) specified for script:
   OBTYPE = \"${OBTYPE}\"
-Valid options are CCPA, MRMS, NDAS, and NOHRSC.
+Valid observation types are:
+  $(printf "\"%s\" " ${valid_obtypes[@]})
 "
 fi
+script_bn="get_obs_$(echo_lowercase ${OBTYPE})"
+$USHdir/${script_bn}.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -158,9 +154,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-obtype=$(echo_lowercase ${OBTYPE})
 mkdir -p ${WFLOW_FLAG_FILES_DIR}
-touch "${WFLOW_FLAG_FILES_DIR}/get_obs_${obtype}_${PDY}_complete.txt"
+touch "${WFLOW_FLAG_FILES_DIR}/${script_bn}_${PDY}_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
