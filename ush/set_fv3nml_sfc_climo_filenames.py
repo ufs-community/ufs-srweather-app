@@ -38,8 +38,8 @@ NEEDED_VARS = [
 
 def set_fv3nml_sfc_climo_filenames(config, debug=False):
     """
-    Sets the values of the variables in the forecast model's namelist file that specify the paths to the surface
-    climatology files on the FV3LAM native grid (which are either pregenerated
+    Sets the values of the variables in the forecast model's namelist file that specify the paths 
+    to the surface climatology files on the FV3LAM native grid (which are either pregenerated
     or created by the ``make_sfc_climo`` task).  Note that the workflow
     generation scripts create symlinks to these surface climatology files
     in the ``FIXlam`` directory, and the values in the namelist file that get

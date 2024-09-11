@@ -23,13 +23,17 @@ from python_utils import (
 
 def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
     """
-    Creates new namelist files with unique stochastic "seed" parameters for an ensemble-enabled experiment (i.e., where
-    ``DO_ENSEMBLE: True``), using a base namelist file in ``${EXPTDIR}`` as a template. These new namelist files are stored within each member directory housed within each cycle directory. Files of any two ensemble members differ only in their stochastic "seed"
-    parameter values. These namelist files are generated when this file is called as part of the ``run_fcst`` task.
+    Creates new namelist files with unique stochastic "seed" parameters for an ensemble-enabled 
+    experiment (i.e., where ``DO_ENSEMBLE: True``), using a base namelist file in ``${EXPTDIR}`` 
+    as a template. These new namelist files are stored within each member directory housed within 
+    each cycle directory. Files of any two ensemble members differ only in their stochastic "seed"
+    parameter values. These namelist files are generated when this file is called as part of the 
+    ``run_fcst`` task.
 
     Args:
         cdate       (datetime.datetime): The cycle date
-        expt_config              (dict): The in-memory dictionary representing the experiment configuration file
+        expt_config              (dict): The in-memory dictionary representing the experiment 
+                                         configuration file
     Returns:
         None
     """
