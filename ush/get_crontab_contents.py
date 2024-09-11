@@ -28,6 +28,18 @@ def get_crontab_contents(called_from_cron, machine, debug):
     """
 
     crontab_cmd = "crontab"
+
+    print_info_msg(
+        f"""
+        Getting crontab content with command:
+        =========================================================
+          {crontab_cmd} -l
+        =========================================================""",
+        verbose=debug,
+    )
+
+    (_, crontab_contents, _) = run_command(f"{crontab_cmd} -l")
+
     if crontab_contents.startswith('no crontab for'):
         crontab_contents=''
 
