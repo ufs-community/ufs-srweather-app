@@ -18,7 +18,8 @@ def main():
         None
         
     Raises: 
-        FileNotFoundError: If no valid file was found within 15 minutes of the valid time of the forecast
+        FileNotFoundError: If no valid file was found within 15 minutes of the valid 
+                           time of the forecast
 
     """
     #Parse input arguments

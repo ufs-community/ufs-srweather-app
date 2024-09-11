@@ -46,20 +46,24 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
 
 def load_config_for_setup(ushdir, default_config, user_config):
-    """Updates a Python dictionary in place with experiment configuration settings from the default, machine, and user configuration files. 
+    """Updates a Python dictionary in place with experiment configuration settings from the 
+    default, machine, and user configuration files. 
 
     Args:
       ushdir             (str): Path to the ``ush`` directory for the SRW App
       default_config     (str): Path to ``config_defaults.yaml``
-      user_config        (str): Path to the user-provided config YAML (usually named ``config.yaml``)
+      user_config        (str): Path to the user-provided config YAML (usually named 
+                                ``config.yaml``)
 
     Returns:
         None
     
     Raises:
-        FileNotFoundError: If the user-provided configuration file or the machine file does not exist.
-        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains invalid sections/keys or (3) it does not contain mandatory information or (4) an invalid datetime format is used. 
-
+        FileNotFoundError: If the user-provided configuration file or the machine file does not 
+                           exist.
+        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains 
+                   invalid sections/keys or (3) it does not contain mandatory information or (4) 
+                   an invalid datetime format is used. 
     """
 
     # Load the default config.
@@ -271,10 +275,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
+                        Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
-                            For examples of valid formats, see the Users' Guide.
-                            """
+                        For examples of valid formats, see the Users' Guide.
+                        """
                 )
             )
 
@@ -291,15 +295,18 @@ def set_srw_paths(ushdir, expt_config):
     Other paths for the SRW App are set as defaults in ``config_defaults.yaml``.
 
     Args:
-        ushdir      (str) : Path to the system location of the ``ush`` directory under the SRW App clone
+        ushdir      (str) : Path to the system location of the ``ush`` directory under the 
+                            SRW App clone
         expt_config (dict): Contains the configuration settings for the user-defined experiment
 
     Returns:
         Dictionary of configuration settings and system paths as keys/values
     
     Raises:
-        KeyError: If the external repository required is not listed in the externals configuration file (e.g., ``Externals.cfg``)
-        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has not been cloned properly
+        KeyError: If the external repository required is not listed in the externals 
+                  configuration file (e.g., ``Externals.cfg``)
+        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has 
+                           not been cloned properly
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
@@ -359,18 +366,24 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     time.
 
     Args:
-        USHdir          (str): The full path of the ``ush/`` directory where this script (``setup.py``) is located
-        user_config_fn  (str): The name of a user-provided configuration YAML (usually ``config.yaml``)
+        USHdir          (str): The full path of the ``ush/`` directory where this script 
+                               (``setup.py``) is located
+        user_config_fn  (str): The name of a user-provided configuration YAML (usually 
+                               ``config.yaml``)
         debug          (bool): Enable extra output for debugging
 
     Returns:
         None
     
     Raises: 
-        ValueError: If checked configuration values are invalid (e.g., forecast length, ``EXPTDIR`` path)
-        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not set to a compatible handling method
-        FileNotFoundError: If the path to a particular file does not exist or if the file itself does not exist at the expected path
-        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no corresponding custom configuration file or CRTM fix file directory is set
+        ValueError: If checked configuration values are invalid (e.g., forecast length, 
+                    ``EXPTDIR`` path)
+        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not 
+                         set to a compatible handling method
+        FileNotFoundError: If the path to a particular file does not exist or if the file itself 
+                           does not exist at the expected path
+        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no 
+                   corresponding custom configuration file or CRTM fix file directory is set
         KeyError: If an invalid value is provided (i.e., for ``GRID_GEN_METHOD``)
     """
 

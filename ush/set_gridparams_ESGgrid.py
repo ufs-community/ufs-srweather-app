@@ -24,7 +24,11 @@ def set_gridparams_ESGgrid(
         lat_ctr    (float): The latitude of the center of the grid (in degrees).
         nx           (int): The number of cells in the zonal direction on the regional grid.
         ny           (int): The number of cells in the meridional direction on the regional grid.
-        halo_width   (int): The width (in number of grid cells) of the wide :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. For predefined grids, this value is set in ``setup.py`` based on the ``ESGgrid_WIDE_HALO_WIDTH`` value in ``predef_grid_params.yaml``. 
+        halo_width   (int): The width (in number of grid cells) of the wide :term:`halo` to add 
+                            around the regional grid before shaving the halo down to the width(s) 
+                            expected by the forecast model. For predefined grids, this value is 
+                            set in ``setup.py`` based on the ``ESGgrid_WIDE_HALO_WIDTH`` value in 
+                            ``predef_grid_params.yaml``. 
         delx       (float): The cell size in the zonal direction of the regional grid (in meters).
         dely       (float): The cell size in the meridional direction of the regional grid (in meters).
         pazi       (float): The rotational parameter for the “ESGgrid” (in degrees).

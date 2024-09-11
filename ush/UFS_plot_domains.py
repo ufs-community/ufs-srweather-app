@@ -128,15 +128,25 @@ ax1.add_patch(patch)
 
 
 def get_lambert_points(gnomonic_map, lambert_map, pps):
-    """This function takes the lambert domain we have defined, lambert_map, as well as
-    pps (the number of points to interpolate and draw for each side of the lambert "rectangle"),
-    and returns an array of two lists: one a list of tuples of the 4*ppf + 4 vertices mapping the approximate shape
-    of the lambert domain on the gnomonic map, the other a list of "draw" instructions to be used by
-    the PathPatch function
+    """This function takes the lambert domain we have defined, ``lambert_map``, and ``pps``,
+    and returns an array of two lists: one a list of tuples of the ``4*ppf + 4`` vertices mapping 
+    the approximate shape of the lambert domain on the gnomonic map, the other a list of "draw" 
+    instructions to be used by the PathPatch function.
 
-    pps is recommended 10 or less due to time of calculation
+    Start array with bottom left point, "MOVETO" instruction
 
-    Start array with bottom left point, "MOVETO" instruction"""
+    Args: 
+        gnomonic_map: 
+        lambert_map:
+        pps: The number of points to interpolate and draw for each side of the lambert 
+             "rectangle". It is recommended to set to 10 or less due to time of calculation.
+    
+    Returns:
+        vertices, instructions: A tuple of two lists---a list of tuples of the ``4*ppf + 4`` 
+                                vertices mapping the approximate shape of the lambert domain 
+                                on the gnomonic map, the other a list of "draw" instructions 
+                                to be used by the PathPatch function.
+    """
     
     vertices = [
         gnomonic_map(*lambert_map(lambert_map.xmin, lambert_map.ymin, inverse=True))

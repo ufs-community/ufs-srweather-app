@@ -21,7 +21,8 @@ def calculate_cost(config_fn):
         config_fn (str): Name of a configuration file containing experiment parameters
 
     Returns:
-        cost (list): Cost array containing information related to experiment parameters (e.g., time step and grid)
+        cost (list): Cost array containing information related to experiment parameters 
+                     (e.g., time step and grid)
 
     Raises:
         ValueError: If ``GRID_GEN_METHOD`` is set to an invalid value

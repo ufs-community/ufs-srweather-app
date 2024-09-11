@@ -18,7 +18,8 @@ def get_crontab_contents(called_from_cron, machine, debug):
     platforms the version or location of this may change depending on other circumstances.
 
     Args:
-        called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
+        called_from_cron  (bool): Set this value to ``True`` if script is called from within a 
+                                  crontab
         machine           (str) : The name of the current machine
         debug             (bool): ``True`` will give more verbose output
     Returns:
@@ -49,7 +50,8 @@ def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug) ->
     """Adds crontab line to cron table
 
     Args:
-        called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
+        called_from_cron  (bool): Set this value to ``True`` if script is called from within 
+                                  a crontab.
         machine           (str) : The name of the current machine
         crontab_line      (str) : Line to be added to cron table
         exptdir           (str) : Path to the experiment directory
@@ -124,7 +126,8 @@ def delete_crontab_line(called_from_cron, machine, crontab_line, debug) -> None:
     but not IN PROGRESS status
 
     Args:
-        called_from_cron  (bool): Set this value to ``True`` if script is called from within a crontab
+        called_from_cron  (bool): Set this value to ``True`` if script is called from within 
+                                  a crontab
         machine           (str) : The name of the current machine
         crontab_line      (str) : Line to be deleted from cron table
         debug             (bool): ``True`` will give more verbose output

@@ -194,16 +194,21 @@ def arg_list_to_range(args):
 
 def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
 
-    """Fills in the provided template string with date time information, and returns the resulting string.
+    """Fills in the provided template string with date time information, and returns the 
+    resulting string.
 
     Args:
       template_str         : A string containing Python templates
-      cycle_date           : A datetime object that will be used to fill in date and time information
-      templates_only (bool): When ``True``, this function will only return the templates available.
+      cycle_date           : A datetime object that will be used to fill in date and time 
+                             information
+      templates_only (bool): When ``True``, this function will only return the templates 
+                             available.
 
     Keyword Args:
-      ens_group (int): A number associated with a bin where ensemble members are stored in archive files.
-      fcst_hr   (int): An integer forecast hour. String formatting should be included in the ``template_str``.
+      ens_group (int): A number associated with a bin where ensemble members are stored in 
+                       archive files.
+      fcst_hr   (int): An integer forecast hour. String formatting should be included in the 
+                       ``template_str``.
       mem       (int): A single ensemble member. Should be a positive integer value.
 
     Returns:
@@ -279,8 +284,9 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
     Args:
         paths       (list): Archive paths
         file_names  (list): Archive file names
-        cycle_date  (int) : Cycle date (YYYYMMDDHH or YYYYMMDDHHmm format)
-        ens_group   (int) : A number associated with a bin where ensemble members are stored in archive files
+        cycle_date   (int): Cycle date (YYYYMMDDHH or YYYYMMDDHHmm format)
+        ens_group    (int): A number associated with a bin where ensemble members are stored 
+                            in archive files
 
     Returns:
         A tuple containing (existing_archives, list_item) or ("", 0)
@@ -317,7 +323,8 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
 
 def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
 
-    """Returns the file templates requested by user input, either from the command line, or from the known data information dictionary.
+    """Returns the file templates requested by user input, either from the command line, 
+    or from the known data information dictionary.
 
     Args:
 
@@ -359,15 +366,18 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     # pylint: disable=too-many-locals
 
-    """Copies files from disk locations or downloads files from a URL, depending on the option specified by the user.
+    """Copies files from disk locations or downloads files from a URL, depending on the option 
+    specified by the user.
 
     This function expects that the output directory exists and is writeable.
 
     Args:
       cla            (str) : Command line arguments (Namespace object)
       file_templates (list): A list of file templates
-      input_locs     (str) : A string containing a single data location, either a URL or disk path, or a list of paths/URLs.
-      method         (str) : Choice of ``"disk"`` or ``"download"`` to indicate protocol for retrieval
+      input_locs     (str) : A string containing a single data location, either a URL or disk 
+                             path, or a list of paths/URLs.
+      method         (str) : Choice of ``"disk"`` or ``"download"`` to indicate protocol for 
+                             retrieval
 
     Keyword Args:
       members     (list): A list of integers corresponding to the ensemble members
@@ -461,12 +471,13 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
 def hsi_single_file(file_path, mode="ls"):
 
-    """Calls ``hsi`` as a subprocess for Python and returns information about whether the ``file_path`` was found.
+    """Calls ``hsi`` as a subprocess for Python and returns information about whether the 
+    ``file_path`` was found.
 
     Args:
         file_path   (str): File path on HPSS
-        mode        (str): The ``hsi`` command to run. ``ls`` is default. May also pass ``get`` to retrieve the file path.
-
+        mode        (str): The ``hsi`` command to run. ``ls`` is default. May also pass ``get`` 
+                           to retrieve the file path.
     """
     cmd = f"hsi {mode} {file_path}"
 
@@ -488,19 +499,23 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
     # pylint: disable=too-many-locals
 
-    """This function interacts with the "hpss" protocol in a provided data store specs file to download a set of files requested by the user. Depending on the type of archive file (``zip`` or ``tar``), it will
-    either pull the entire file and unzip it or attempt to pull individual files from a tar file.
+    """This function interacts with the "hpss" protocol in a provided data store specs file to 
+    download a set of files requested by the user. Depending on the type of archive file (``zip`` 
+    or ``tar``), it will either pull the entire file and unzip it or attempt to pull individual 
+    files from a tar file.
 
-    It cleans up the local disk after files are deemed available in order to remove any empty subdirectories that may still be present.
+    It cleans up the local disk after files are deemed available in order to remove any empty 
+    subdirectories that may still be present.
 
     This function exepcts that the output directory exists and is writable.
 
     Args:
-        cla         (str) : Command line arguments (Namespace object)
+        cla          (str): Command line arguments (Namespace object)
         file_names  (list): List of file names
         store_specs (dict): Data-store specifications (specs) file
         members     (list): A list of integers corresponding to the ensemble members
-        ens_group   (int) : A number associated with a bin where ensemble members are stored in archive files
+        ens_group    (int): A number associated with a bin where ensemble members are stored in 
+                            archive files
 
     Returns:
         A Python set of unavailable files
@@ -666,7 +681,8 @@ def load_str(arg):
 def config_exists(arg):
 
     """
-    Checks to ensure that the provided config file exists. If it does, load it with YAML's safe loader and return the resulting dictionary.
+    Checks to ensure that the provided config file exists. If it does, load it with YAML's safe 
+    loader and return the resulting dictionary.
 
     Args: 
         arg (str): Path to a configuration file
@@ -698,15 +714,18 @@ def pair_locs_with_files(input_locs, file_templates, check_all):
         #. Get multiple files from multiple corresponding paths/URLs
         #. Check all paths for all file templates until files are found
 
-    The default will be to handle #1 and #2. #3 will be indicated by a flag in the YAML: ``check_all: True``
+    The default will be to handle #1 and #2. #3 will be indicated by a flag in the YAML: 
+    ``check_all: True``
 
     Args:
         input_locs     (list): Input locations
         file_templates (list): File templates
-        check_all      (bool): Flag that indicates whether all input locations should be checked for all available file templates
+        check_all      (bool): Flag that indicates whether all input locations should be checked 
+                               for all available file templates
     
     Returns:
-        locs_files (list): Iterable containing multiple locations and file templates for files that should be searched in those locations
+        locs_files (list): Iterable containing multiple locations and file templates for files 
+                           that should be searched in those locations
     """
 
     if not check_all:
@@ -758,7 +777,8 @@ def path_exists(arg):
 
 def _setup_logging(debug=False):
 
-    """Calls initialization functions for logging package, and sets the user-defined level for logging in the script."""
+    """Calls initialization functions for logging package, and sets the user-defined level for 
+    logging in the script."""
 
     level = logging.INFO
     if debug:
@@ -771,7 +791,8 @@ def _setup_logging(debug=False):
 
 def _write_summary_file(cla, data_store, file_templates) -> None:
 
-    """Given the command line arguments and the data store from which the data was retrieved, write a bash summary file that is needed by the workflow elements downstream.
+    """Given the command line arguments and the data store from which the data was retrieved, 
+    write a bash summary file that is needed by the workflow elements downstream.
     """
 
     members =  cla.members if isinstance(cla.members, list) else [-1]
@@ -960,7 +981,8 @@ def get_ens_groups(members):
     Args:
         members (list): List of ensemble members.
     Returns:
-        ens_groups: A dictionary where keys are the ensemble group and values are lists of ensemble members requested in that group
+        ens_groups: A dictionary where keys are the ensemble group and values are lists of 
+                    ensemble members requested in that group
     """
 
     if members is None:
@@ -979,7 +1001,9 @@ def get_ens_groups(members):
 def parse_args(argv):
 
     """
-    Maintains the arguments accepted by this script. Please see Python's `argparse <https://docs.python.org/3/library/argparse.html>`__ documenation for more information about settings of each argument.
+    Maintains the arguments accepted by this script. Please see Python's 
+    `argparse <https://docs.python.org/3/library/argparse.html>`_ documenation for more 
+    information about settings of each argument.
     
     Args:
         argv (list): Command line arguments to parse
