@@ -92,7 +92,8 @@ function eval_METplus_timestr_tmpl() {
 #
   if [ -z "${METplus_timestr_tmpl}" ]; then
     print_err_msg_exit "\
-The specified METplus time string template (METplus_timestr_tmpl) cannot be empty:
+The specified METplus time string template (METplus_timestr_tmpl) cannot
+be empty:
   METplus_timestr_tmpl = \"${METplus_timestr_tmpl}\""
   fi
 
@@ -100,21 +101,21 @@ The specified METplus time string template (METplus_timestr_tmpl) cannot be empt
   if [[ ${init_time} =~ ^[0-9]+$ ]]; then
     if [ "$len" -ne 10 ] && [ "$len" -ne 12 ] && [ "$len" -ne 14 ]; then
       print_err_msg_exit "\
-The specified initial time string (init_time) must contain exactly 10,
-12, or 14 integers (but contains $len):
+The specified initial time string (init_time) must contain 10, 12, or 14
+digits (but contains $len):
   init_time = \"${init_time}\""
     fi
   else
     print_err_msg_exit "\
-The specified initial time string (init_time) must consist of only
-integers and cannot be empty:
+The specified initial time string (init_time) must consist of digits only
+and cannot be empty:
   init_time = \"${init_time}\""
   fi
 
   if ! [[ $fhr =~ ^[0-9]+$ ]]; then
     print_err_msg_exit "\
-The specified forecast hour (fhr) must consist of only integers and
-cannot be empty:
+The specified forecast hour (fhr) must consist of digits only and cannot
+be empty:
   fhr = \"${fhr}\""
   fi
 #

@@ -49,7 +49,8 @@ def set_fcst_output_times_and_obs_days_all_cycles(
     observations are needed to perform verification (each element of the form
     'YYYYMMDD').  The first pair of lists is for instantaneous output fields
     (e.g. REFC, RETOP, T2m), and the second pair is for cumulative ones (e.g.
-    APCP or accumulated precipitation).
+    APCP or accumulated precipitation).  The accumulation period for the latter
+    is the forecast output interval.
 
     Args:
         start_time_first_cycl:
