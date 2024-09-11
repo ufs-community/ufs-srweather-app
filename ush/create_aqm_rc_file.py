@@ -26,7 +26,8 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     Args:
         cdate                (str): cycle date
         run_dir              (str): run directory
-        init_concentrations (bool): Flag to reset initial AQM concentrations (tracer values) to zero.
+        init_concentrations (bool): Flag to reset initial AQM concentrations (tracer values) to 
+                                    zero.
     Returns:
         True
     """
@@ -141,9 +142,7 @@ def _parse_args(argv):
     """Parses command line arguments"""
     parser = argparse.ArgumentParser(description="Creates aqm.rc file.")
 
-    parser.add_argument(
-        "-r", "--run-dir", dest="run_dir", required=True, help="Run directory."
-    )
+    parser.add_argument("-r", "--run-dir", dest="run_dir", required=True, help="Run directory.")
 
     parser.add_argument(
         "-c",
