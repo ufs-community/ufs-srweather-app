@@ -31,7 +31,8 @@ def create_model_configure_file(
         fhrot (int): Forecast hour at restart
         run_dir (str): Run directory
         sub_hourly_post (bool): Sets subhourly post to either ``True`` or ``False``
-        dt_subhourly_post_mnts (int): Subhourly forecast model output and post-processing frequency in minutes
+        dt_subhourly_post_mnts (int): Subhourly forecast model output and post-processing 
+                                      frequency in minutes
         dt_atmos (int): Atmospheric forecast model's main timestep in seconds
 
     Returns:
