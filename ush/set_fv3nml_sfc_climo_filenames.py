@@ -46,7 +46,8 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
     set by this function are relative or full paths to these links.
 
     Args:
-        config  (dict): Section of configuration file specifying surface climatology fields (as a flattened dictionary)
+        config  (dict): Section of configuration file specifying surface climatology fields 
+                        (as a flattened dictionary)
         debug   (bool): Enable extra output for debugging
     Returns:
         None
