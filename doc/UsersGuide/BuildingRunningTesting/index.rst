@@ -13,4 +13,4 @@ Building, Running, and Testing the SRW App
    Tutorial
    VXCases
    AQM
-   RRFS-SD
+   SRW-SD
