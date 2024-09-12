@@ -177,7 +177,7 @@ basedir_proc=${OBS_DIR}
 # scalar string containing all relevant forecast output times (each in
 # the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
 # because in ROCOTO, there doesn't seem to be a way to pass a bash array
-# from the XML to task's script.  To have an array-valued variable to
+# from the XML to the task's script.  To have an array-valued variable to
 # work with, here, we create the new variable output_times_all that is
 # the array-valued counterpart of OUTPUT_TIMES_ALL.
 output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
