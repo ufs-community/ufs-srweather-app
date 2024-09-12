@@ -4,8 +4,7 @@ user:
   RUN_ENVIR: community
   MACHINE: hera
   ACCOUNT: [account name]
-platform:
-  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_intel_prod'
+#platform:
 #  EXTRN_MDL_DATA_STORES: disk
 workflow:
   USE_CRON_TO_RELAUNCH: true

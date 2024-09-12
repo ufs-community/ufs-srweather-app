@@ -2,8 +2,6 @@ metadata:
   description: config for Smoke and Dust, RRFS_CONUS_3km
 user:
   RUN_ENVIR: community
-platform:
-  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_intel_prod'
 workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_3km
   CCPP_PHYS_SUITE: FV3_HRRR_gf
