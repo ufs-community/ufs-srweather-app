@@ -613,7 +613,7 @@ After loading the workflow, users should follow the instructions printed to the 
    module load wflow_hera
    conda activate srw_app
 
-Configurations
+Configuration
 -------------------------
 
 Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
