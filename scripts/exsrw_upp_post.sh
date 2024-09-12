@@ -93,7 +93,7 @@ else
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_config_fp="${PARMsrw}/upp/postxconfig-NT-AQM.txt"
   else
-    post_config_fp="${PARMsrw}/upp/postxconfig-NT-rrfs.txt"
+    post_config_fp="${PARMsrw}/upp/postxconfig-NT-fv3lam_rrfs.txt"
   fi
   print_info_msg "
 ====================================================================

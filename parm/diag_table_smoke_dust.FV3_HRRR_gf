@@ -4,8 +4,8 @@
 "grid_spec",              -1,  "months",  1, "days",  "time"
 "atmos_static",           -1,  "hours",   1, "hours", "time"
 #"atmos_4xdaily",          1,  "hours",   1, "days",  "time"
-"fv3_history",             1,  "years",   1, "hours", "time"
-"fv3_history2d",           1,  "years",   1, "hours", "time"
+"fv3_history",             0,  "hours",   1, "hours", "time"
+"fv3_history2d",           0,  "hours",   1, "hours", "time"
 
 #
 #=======================
@@ -150,6 +150,7 @@
 "gfs_phys",  "DSWRFtoa",      "dswrf_avetoa","fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "USWRFtoa",      "uswrf_avetoa","fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "ULWRFtoa",      "ulwrf_avetoa","fv3_history2d",         "all",  .false.,  "none",  2
+"gfs_phys",  "ULWRFItoa",     "ulwrf_toa",   "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "gflux_ave",     "gflux_ave",   "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "hpbl",          "hpbl",        "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "lhtfl_ave",     "lhtfl_ave",   "fv3_history2d",         "all",  .false.,  "none",  2
@@ -367,13 +368,105 @@
 "gfs_phys",    "frozrb",    "frozrb",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "tsnowp",    "tsnowp",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "tsnowpb",   "tsnowpb",     "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_phys",    "rhonewsn",  "rhonewsn",    "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "snow",      "snow",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "graupel",   "graupel",     "fv3_history2d",  "all",  .false.,  "none",  2
 # lightning threat indices
 "gfs_sfc",     "ltg1_max",  "ltg1_max",    "fv3_history2d",   "all", .false.,   "none", 2
 "gfs_sfc",     "ltg2_max",  "ltg2_max",    "fv3_history2d",   "all", .false.,   "none", 2
 "gfs_sfc",     "ltg3_max",  "ltg3_max",    "fv3_history2d",   "all", .false.,   "none", 2
+# CLM lake model
+"gfs_sfc",     "lakefrac",         "lakefrac",         "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lakedepth",        "lakedepth",        "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t2m",         "lake_t2m",         "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_q2m",         "lake_q2m",         "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_albedo",      "lake_albedo",      "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_h2osno2d",    "lake_h2osno2d",    "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_sndpth2d",    "lake_sndpth2d",    "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_snl2d",       "lake_snl2d",       "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_grnd2d",    "lake_t_grnd2d",    "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_savedtke12d", "lake_savedtke12d", "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_1",  "lake_t_h2osoi_vol3d_1",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_2",  "lake_t_h2osoi_vol3d_2",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_3",  "lake_t_h2osoi_vol3d_3",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_4",  "lake_t_h2osoi_vol3d_4",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_5",  "lake_t_h2osoi_vol3d_5",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_6",  "lake_t_h2osoi_vol3d_6",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_7",  "lake_t_h2osoi_vol3d_7",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_8",  "lake_t_h2osoi_vol3d_8",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_9",  "lake_t_h2osoi_vol3d_9",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_10",  "lake_t_h2osoi_vol3d_10",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_11",  "lake_t_h2osoi_vol3d_11",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_12",  "lake_t_h2osoi_vol3d_12",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_13",  "lake_t_h2osoi_vol3d_13",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_14",  "lake_t_h2osoi_vol3d_14",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_vol3d_15",  "lake_t_h2osoi_vol3d_15",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_1",  "lake_t_h2osoi_liq3d_1",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_2",  "lake_t_h2osoi_liq3d_2",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_3",  "lake_t_h2osoi_liq3d_3",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_4",  "lake_t_h2osoi_liq3d_4",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_5",  "lake_t_h2osoi_liq3d_5",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_6",  "lake_t_h2osoi_liq3d_6",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_7",  "lake_t_h2osoi_liq3d_7",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_8",  "lake_t_h2osoi_liq3d_8",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_9",  "lake_t_h2osoi_liq3d_9",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_10",  "lake_t_h2osoi_liq3d_10",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_11",  "lake_t_h2osoi_liq3d_11",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_12",  "lake_t_h2osoi_liq3d_12",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_13",  "lake_t_h2osoi_liq3d_13",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_14",  "lake_t_h2osoi_liq3d_14",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_liq3d_15",  "lake_t_h2osoi_liq3d_15",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_1",  "lake_t_h2osoi_ice3d_1",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_2",  "lake_t_h2osoi_ice3d_2",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_3",  "lake_t_h2osoi_ice3d_3",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_4",  "lake_t_h2osoi_ice3d_4",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_5",  "lake_t_h2osoi_ice3d_5",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_6",  "lake_t_h2osoi_ice3d_6",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_7",  "lake_t_h2osoi_ice3d_7",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_8",  "lake_t_h2osoi_ice3d_8",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_9",  "lake_t_h2osoi_ice3d_9",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_10",  "lake_t_h2osoi_ice3d_10",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_11",  "lake_t_h2osoi_ice3d_11",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_12",  "lake_t_h2osoi_ice3d_12",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_13",  "lake_t_h2osoi_ice3d_13",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_14",  "lake_t_h2osoi_ice3d_14",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_h2osoi_ice3d_15",  "lake_t_h2osoi_ice3d_15",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_1",  "lake_t_soisno3d_1",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_2",  "lake_t_soisno3d_2",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_3",  "lake_t_soisno3d_3",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_4",  "lake_t_soisno3d_4",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_5",  "lake_t_soisno3d_5",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_6",  "lake_t_soisno3d_6",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_7",  "lake_t_soisno3d_7",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_8",  "lake_t_soisno3d_8",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_9",  "lake_t_soisno3d_9",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_10",  "lake_t_soisno3d_10",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_11",  "lake_t_soisno3d_11",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_12",  "lake_t_soisno3d_12",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_13",  "lake_t_soisno3d_13",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_14",  "lake_t_soisno3d_14",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_soisno3d_15",  "lake_t_soisno3d_15",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_1",  "lake_t_lake3d_1",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_2",  "lake_t_lake3d_2",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_3",  "lake_t_lake3d_3",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_4",  "lake_t_lake3d_4",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_5",  "lake_t_lake3d_5",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_6",  "lake_t_lake3d_6",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_7",  "lake_t_lake3d_7",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_8",  "lake_t_lake3d_8",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_9",  "lake_t_lake3d_9",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_t_lake3d_10",  "lake_t_lake3d_10",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_1",  "lake_icefrac3d_1",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_2",  "lake_icefrac3d_2",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_3",  "lake_icefrac3d_3",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_4",  "lake_icefrac3d_4",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_5",  "lake_icefrac3d_5",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_6",  "lake_icefrac3d_6",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_7",  "lake_icefrac3d_7",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_8",  "lake_icefrac3d_8",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_9",  "lake_icefrac3d_9",  "fv3_history",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lake_icefrac3d_10",  "lake_icefrac3d_10",  "fv3_history",  "all",  .false.,  "none",  2
+
+"gfs_sfc",     "use_lake_model",    "use_lake_model",    "fv3_history2d","all",  .false.,  "none",  2
 #=============================================================================================
 #
 #====> This file can be used with diag_manager/v2.0a (or higher) <====
