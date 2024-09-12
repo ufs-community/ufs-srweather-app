@@ -55,8 +55,8 @@ The SRW App requires input files to run. These include static datasets, initial 
      - File location
    * - Derecho
      - /glade/work/epicufsrt/contrib/UFS_SRW_data/|data|/input_model_data
-   * - Gaea (C3/C4/C5)
-     - /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Gaea
+     - /gpfs/f5/epic/world-shared/UFS_SRW_data/|data|/input_model_data/
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/|data|/input_model_data/
    * - Hercules

@@ -314,4 +314,4 @@ autoyaml_root = "../ush"
 autoyaml_doc_delimiter = "###" # Character(s) which start a documentation comment.
 autoyaml_comment = "#" #Comment start character(s).
 autoyaml_level = 6
-autoyaml_safe_loader = False
+#autoyaml_safe_loader = False
