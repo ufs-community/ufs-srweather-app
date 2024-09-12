@@ -30,15 +30,13 @@
 <!-- Explicitly state what tests were run on these changes, or if any are still pending (for README or other text-only changes, just put "None required"). Make note of the compilers used, the platform/machine, and other relevant details as necessary. For more complicated changes, or those resulting in scientific changes, please be explicit! -->
 <!-- Add an X to check off a box. -->
 
-- [ ] hera.intel
-- [ ] orion.intel
-- [ ] hercules.intel
-- [ ] cheyenne.intel
-- [ ] cheyenne.gnu
 - [ ] derecho.intel
 - [ ] gaea.intel
-- [ ] gaeac5.intel
+- [ ] hera.gnu
+- [ ] hera.intel
+- [ ] hercules.intel
 - [ ] jet.intel
+- [ ] orion.intel
 - [ ] wcoss2.intel
 - [ ] NOAA Cloud (indicate which platform)
 - [ ] Jenkins
