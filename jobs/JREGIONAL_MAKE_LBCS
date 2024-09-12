@@ -32,7 +32,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco workflow ; do
+for sect in user nco workflow cpl_aqm_parm smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 . $USHdir/job_preamble.sh
@@ -99,6 +99,9 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
   mkdir -p $DATA
   cd $DATA
+fi
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  mkdir -p ${DATA_SHARE}
 fi
 #
 #-----------------------------------------------------------------------

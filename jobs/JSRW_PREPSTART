@@ -3,8 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script adds extra species for air quality modeling (AQM) to the 
-# lateral boundary conditions (LBCs) files.
+# This script runs prepstart to update IC files for Smoke/Dust
 #
 #-----------------------------------------------------------------------
 #
@@ -31,8 +30,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global cpl_aqm_parm cpl_aqm_parm task_get_extrn_lbcs \
-  task_make_orog task_make_lbcs ; do
+for sect in user nco platform workflow global smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -59,9 +57,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the aqm boundary conditions from 
-which the model needs.
+This is the J-job script for the task that copies or fetches RAVE fire
+emission data files from disk, or HPSS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -106,13 +103,12 @@ export RUN="${RUN:-${RUN_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
-  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver})}"
   export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
 else
-  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
   export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
 fi
-export COMINgefs="${COMINgefs:-${COMINgefs_default}}"
 
 mkdir -p ${COMOUT}
 
@@ -149,7 +145,7 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_aqm_lbcs.sh
+${SCRIPTSsrw}/exsrw_prepstart.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then

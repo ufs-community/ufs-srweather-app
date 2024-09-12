@@ -1462,7 +1462,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         logging.debug(f'New fix file list:\n{fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"]=}')
         logging.debug(f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}')
 
-
     #
     # -----------------------------------------------------------------------
     #
@@ -1509,7 +1508,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
     var_defns_cfg.dump(global_var_defns_fp)
 
-
+    if expt_config["workflow"].get("COLDSTART"):
+        coldstart_date=workflow_config["DATE_FIRST_CYCL"]
+        fn_pass=f"task_skip_coldstart_{coldstart_date}.txt"
+        open(os.path.join(exptdir,fn_pass), 'a').close()
     #
     # -----------------------------------------------------------------------
     #

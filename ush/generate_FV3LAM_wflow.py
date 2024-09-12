@@ -418,6 +418,11 @@ def generate_FV3LAM_wflow(
         "print_diff_pgr": PRINT_DIFF_PGR,
     })
 
+    if DO_SMOKE_DUST:
+        gfs_physics_nml_dict.update({
+            "ebb_dcycle": EBB_DCYCLE,
+    })
+
     if CPL_AQM:
         gfs_physics_nml_dict.update({
             "cplaqm": True,

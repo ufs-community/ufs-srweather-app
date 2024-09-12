@@ -3,8 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script adds extra species for air quality modeling (AQM) to the 
-# lateral boundary conditions (LBCs) files.
+# The J-Job that runs the forecast
 #
 #-----------------------------------------------------------------------
 #
@@ -31,8 +30,26 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global cpl_aqm_parm cpl_aqm_parm task_get_extrn_lbcs \
-  task_make_orog task_make_lbcs ; do
+#
+#-----------------------------------------------------------------------
+#
+# Run-time environment variables:
+#
+#    CDATE
+#    COMIN
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#-----------------------------------------------------------------------
+#
+for sect in user nco platform workflow global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -59,9 +76,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the aqm boundary conditions from 
-which the model needs.
+This is the J-job script for the task that runs a forecast with FV3 for
+the specified cycle.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -112,11 +128,10 @@ else
   export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
   export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
 fi
-export COMINgefs="${COMINgefs:-${COMINgefs_default}}"
 
 mkdir -p ${COMOUT}
 
-# Create a teomporary share directory
+# Create a teomporary share directory for RAVE interpolated data files
 export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 mkdir -p ${DATA_SHARE}
 
@@ -149,7 +164,7 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_aqm_lbcs.sh
+${SCRIPTSsrw}/exsrw_forecast.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then
