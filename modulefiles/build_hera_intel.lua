@@ -28,6 +28,11 @@ load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
 
+unload("fms/2023.02.01")
+unload("g2tmpl/1.10.2")
+setenv("g2tmpl_ROOT","/scratch1/BMC/wrfruc/mhu/rrfs/lib/g2tmpl/install")
+setenv("FMS_ROOT","/scratch1/BMC/wrfruc/mhu/rrfs/lib/fms.2024.01/build")
+
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")
