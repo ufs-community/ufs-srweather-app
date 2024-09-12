@@ -24,7 +24,7 @@ OPTIONS
       directory rather than "exec". Has no effect if \`-b\` is not specified.
   -f, --force
       Remove directories as requested, without asking for user confirmation of their deletion.
-  -s, -sub-modules
+  -s, --sub-modules
       Remove sub-module directories. They need to be checked out again by sourcing "\${SRW_DIR}/manage_externals/checkout_externals" before attempting subsequent builds
   -v, --verbose
       Provide more verbose output
