@@ -12,14 +12,6 @@ valid_vals_PREDEF_GRID_NAME: [
 "RRFS_CONUS_25km",
 "RRFS_CONUS_13km",
 "RRFS_CONUS_3km",
-"RRFS_CONUScompact_25km",
-"RRFS_CONUScompact_13km",
-"RRFS_CONUScompact_3km",
-"RRFS_AK_13km",
-"RRFS_AK_3km",
-"CONUS_25km_GFDLgrid",
-"CONUS_3km_GFDLgrid",
-"GSD_HRRR_25km",
 "AQM_NA_13km",
 "RRFS_NA_13km",
 "RRFS_NA_3km",
@@ -27,11 +19,8 @@ valid_vals_PREDEF_GRID_NAME: [
 "WoFS_3km"
 ]
 valid_vals_CCPP_PHYS_SUITE: [
-"FV3_GFS_v15p2",
-"FV3_GFS_v15_thompson_mynn_lam3km",
 "FV3_GFS_v16",
 "FV3_GFS_v17_p8",
-"FV3_RRFS_v1beta",
 "FV3_WoFS_v0",
 "FV3_HRRR",
 "FV3_HRRR_gf",
