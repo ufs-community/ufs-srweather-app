@@ -631,7 +631,7 @@ Users can save the location of the ``ush`` directory in an environment variable 
 
 Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. The variable will need to be reset for each login session. 
 
-Experiment 1: Control
+Experiment 1: Rap Data
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
@@ -665,12 +665,12 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
    workflow:
      USE_CRON_TO_RELAUNCH: false
-     EXPT_SUBDIR: control
+     EXPT_SUBDIR: halloween
      CCPP_PHYS_SUITE: FV3_GFS_v16
      PREDEF_GRID_NAME: RRFS_CONUS_13km
-     DATE_FIRST_CYCL: '2019102812'
-     DATE_LAST_CYCL: '2019102812'
-     FCST_LEN_HRS: 12
+     DATE_FIRST_CYCL: '2019103012'
+     DATE_LAST_CYCL: '2019103012'
+     FCST_LEN_HRS: 6
      PREEXISTING_DIR_METHOD: rename
      VERBOSE: true
      COMPILER: intel
@@ -681,7 +681,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
    Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
 
-``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different forecasts --- one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite --- "gfsv16_physics_fcst" could be a good alternative directory name.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``halloween`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different types of forecast data input --- halloween_rap could be a good alternative name.
 
 ``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid provides a higher resolution forecast, more detailed forecast; however, it is more computationally expensive compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
 
@@ -703,7 +703,7 @@ should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
           walltime: 06:00:00
         task_run_fcst_mem#mem#:
           walltime: 06:00:00
-        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+      taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
 
 For more information on how to turn on/off tasks in the workflow, please
@@ -714,9 +714,9 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
 .. code-block:: console
 
    task_get_extrn_ics:
-     EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
-     FV3GFS_FILE_FMT_ICS: nemsio
-     USE_USER_STAGED_EXTRN_FILES: false
+     EXTRN_MDL_NAME_ICS: RAP
+     USE_USER_STAGED_EXTRN_FILES: True
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
@@ -725,28 +725,25 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
 .. code-block:: console
 
    task_get_extrn_lbcs:
-     EXTRN_MDL_NAME_LBCS: UFS-CASE-STUDY
+     EXTRN_MDL_NAME_LBCS: RAP
      LBC_SPEC_INTVL_HRS: 3
-     FV3GFS_FILE_FMT_LBCS: nemsio
-     USE_USER_STAGED_EXTRN_FILES: false
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
 
 For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
 Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
 
 
-Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6`` and  ``PLOT_DOMAINS: ["regional"]``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
 
 .. code-block:: console
 
    task_plot_allvars:
      COMOUT_REF: ""
      PLOT_FCST_INC: 6
-     PLOT_DOMAINS: ["regional"]
 
-``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z).
-
-``PLOT_DOMAINS:`` The plotting scripts are designed to generate plots over the entire CONUS by default, but by setting this variable to ["regional"], the experiment will generate plots for the smaller SUBCONUS_Ind_3km regional domain instead. 
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z). 
 
 After configuring the forecast, users can generate the forecast by running:
 
@@ -768,86 +765,16 @@ Users will need to rerun the ``rocotorun`` and ``rocotostat`` commands above reg
 
    When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
 
-Users can save the location of the ``control`` directory in an environment variable (``$CONTROL``). This makes it easier to navigate between directories later. For example:
+Users can save the location of the ``Halloween`` directory in an environment variable (``$CONTROL``). This makes it easier to navigate between directories later. For example:
 
 .. code-block:: console
 
    export CONTROL=/path/to/expt_dirs/control
 
-Users should substitute ``/path/to/expt_dirs/control`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $CONTROL``, and it will take them to the ``control`` experiment directory. The variable will need to be reset for each login session. 
+Users should substitute ``/path/to/expt_dirs/Halloween`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $Halloween``, and it will take them to the ``halloween`` experiment directory. The variable will need to be reset for each login session. 
 
 Experiment 2: Changing the forecast input
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Users who need to download the ``halloween_rap.tgz`` file using any of the following methods will follow the instructions below: 
-
-   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz.
-
-   #. Download from a terminal using the AWS command line interface (CLI), if installed:
-
-      .. code-block:: console
-
-         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz halloween_rap.tgz
-   
-   #. Download from a terminal using ``wget``: 
-
-      .. code-block:: console
-
-         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
-
-After downloading ``halloween_rap.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
-
-.. code-block:: console
-
-   tar xvfz halloween_rap.tgz
-
-Save the path to this file in and ``HALLOWEENDATA`` environment variable:
-   
-.. code-block:: console 
-
-   cd Indy-Severe-Weather
-   export HALLOWEENDATA=$PWD
-
-.. note::
-
-   Users can untar the fix files and Natural Earth files by substituting those file names in the commands above. 
-
-Once the control case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` in the ``workflow:`` section as follows:
-
-.. code-block:: console
-
-   workflow:
-     EXPT_SUBDIR: test_expt
-     CCPP_PHYS_SUITE: FV3_GFS_v16
-
-``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be renamed, and the new experiment will take its place (see :numref:`Section %s <preexisting-dirs>` for details). To avoid this issue, this tutorial uses ``test_expt`` as the second experiment's name, but the user may select a different name if desired.
-
-.. hint:: 
-   
-   Later, users may want to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. 
-
-.. COMMENT: Maybe also FV3_RAP?
-
-Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use RAP data. Users will need to change the following lines in each section:
-
-.. code-block:: console
-
-   task_get_extrn_ics:
-     EXTRN_MDL_NAME_ICS: RAP
-     USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
-   task_get_extrn_lbcs:
-     EXTRN_MDL_NAME_LBCS: RAP
-     LBC_SPEC_INTVL_HRS: 3
-     USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
-     EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
-
-HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
-
-``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (:term:`LBCs`) from a previous forecast run that was started earlier than the start time of the forecast being configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
-
-Under ``rocoto:tasks:``, add a section to increase the maximum wall time for the postprocessing tasks. The walltime is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
 
 
 Tutorial Content
