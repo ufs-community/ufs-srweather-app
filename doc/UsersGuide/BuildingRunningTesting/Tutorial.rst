@@ -683,7 +683,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 ``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different forecasts --- one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite --- "gfsv16_physics_fcst" could be a good alternative directory name.
 
-``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid allows for fewer computational restraints compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
+``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid provides a higher resolution forecast, more detailed forecast; however, it is more computationally expensive compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
 
 For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
