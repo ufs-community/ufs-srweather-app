@@ -227,7 +227,8 @@ Glossary
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
 
    RRFS
-      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ (RRFS) is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain. 
+      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ (RRFS) is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain, see also `NOAA Rapid Refresh Forecast System (RRFS) <https://registry.opendata.aws/noaa-rrfs/>`__. Experimental data is currently available from the `AWS S3 NOAA-RRFS  <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`__ bucket for deterministic forecasts out to 60 hours at 00, 06, 12, and 18 UTC. Additionally, hourly forecasts out to 18 hours may be available for more recent RRFS model runs; the user needs to verify that data exists for needed dates.
+
 
    SDF
       Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.

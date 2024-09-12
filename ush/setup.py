@@ -1447,8 +1447,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
         # If the model ICs or BCs are not from RAP or HRRR, they will not contain aerosol
         # climatology data needed by the Thompson scheme, so we need to provide a separate file
-        if (get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RAP"] or
-           get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RAP"]):
+        if (get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RRFS", "RAP"] or
+           get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RRFS", "RAP"]):
             fixed_files["THOMPSON_FIX_FILES"].append(workflow_config["THOMPSON_MP_CLIMO_FN"])
 
         # Add thompson-specific fix files to CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING and

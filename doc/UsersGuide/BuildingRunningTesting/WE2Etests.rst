@@ -78,6 +78,7 @@ For convenience, the WE2E tests are currently grouped into the following categor
              FV3GFS:
              RAP:
              HRRR:
+             RRFS:
 
 Some tests are duplicated among the above categories via symbolic links, both for legacy reasons (when tests for different capabilities were consolidated) and for convenience when a user would like to run all tests for a specific category (e.g., verification tests).
 
