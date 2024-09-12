@@ -584,7 +584,12 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 Data
 -------
 
-On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Halloween Storm in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Halloween Storm Case Study <https://ufs-case-studies.readthedocs.io/en/develop/2019HaloweenStorm.html>`__.
+On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Halloween Storm in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The RAP data can also be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
+
+.. code-block:: console
+
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
+   tar -xzf halloween_rap.tgz
 
 Load the workflow
 ---------------------
