@@ -598,7 +598,7 @@ To load the workflow environment, source the lmod-setup file. Then load the work
 
 .. code-block:: console
    
-   source etc/lmod-setup.sh <platform>       # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
+   source etc/lmod-setup.sh <platform>
    module use modulefiles
    module load wflow_<platform>
 
