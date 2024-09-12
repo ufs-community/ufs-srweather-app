@@ -86,7 +86,7 @@ yyyymmdd_task=${PDY}
 basedir_proc=${OBS_DIR}
 
 # The environment variable OUTPUT_TIMES_ALL set in the ROCOTO XML is a
-# scalar string containing all relevant forecast output times (each) in
+# scalar string containing all relevant forecast output times (each in
 # the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
 # because in ROCOTO, there doesn't seem to be a way to pass a bash array
 # from the XML to task's script.  To have an array-valued variable to
