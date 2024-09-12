@@ -15,8 +15,8 @@ def get_crontab_contents(called_from_cron, machine, debug):
     """
     This function returns the contents of the user's cron table, as well as the command used to
     manipulate the cron table. Typically this latter value will be `crontab`, but on some 
-    platforms the version or location of this may change depending on other circumstances, e.g. on
-    Cheyenne, this depends on whether a script that wants to call `crontab` is itself being called
+    platforms the version or location of this may change depending on other circumstances;
+    this depends on whether a script that wants to call `crontab` is itself being called
     from a cron job.
 
     Args:
@@ -28,13 +28,6 @@ def get_crontab_contents(called_from_cron, machine, debug):
         crontab_contents  (str) : String containing the contents of the user's cron table.
     """
 
-    #
-    # On Cheyenne, simply typing "crontab" will launch the crontab command
-    # at "/glade/u/apps/ch/opt/usr/bin/crontab".  This is a containerized
-    # version of crontab that will not work if called from scripts that are
-    # themselves being called as cron jobs.  In that case, we must instead
-    # call the system version of crontab at /usr/bin/crontab.
-    #
     crontab_cmd = "crontab"
 
     print_info_msg(
