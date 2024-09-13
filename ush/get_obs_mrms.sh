@@ -116,7 +116,7 @@ fi
 
 # Check whether any obs files already exist on disk.  If so, adjust the
 # starting archive hour.  In the process, keep a count of the number of
-# files that already exist on disk.
+# obs files that already exist on disk.
 num_existing_files=0
 num_mrms_fields=${#mrms_fields[@]}
 for (( i=0; i<${num_mrms_fields}; i++ )); do

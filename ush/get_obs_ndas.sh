@@ -102,21 +102,21 @@ fi
 # Sequence interval must be 6 hours because the archives are 6-hourly.
 arcv_hr_incr=6
 
-# Initial guess for starting archive hour.  This is set to the hour
-# corresponding to the first forecast output time of the day.
+# Initial guess for starting archive hour.  This is set to the archive 
+# hour containing obs at the first forecast output time of the day.
 hh_first=$(echo ${output_times_crnt_day[0]} | cut -c9-10)
 hr_first=$((10#${hh_first}))
 arcv_hr_start=$(( (hr_first/arcv_hr_incr + 1)*arcv_hr_incr ))
 
-# Ending archive hour.  This is set to the hour corresponding to the last
-# forecast output time of the day.
+# Ending archive hour.  This is set to the archive hour containing obs at
+# the last forecast output time of the day.
 hh_last=$(echo ${output_times_crnt_day[-1]} | cut -c9-10)
 hr_last=$((10#${hh_last}))
 arcv_hr_end=$(( (hr_last/arcv_hr_incr + 1)*arcv_hr_incr ))
 
 # Check whether any obs files already exist on disk.  If so, adjust the
 # starting archive hour.  In the process, keep a count of the number of
-# files that already exist on disk.
+# obs files that already exist on disk.
 num_existing_files=0
 for yyyymmddhh in ${output_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
