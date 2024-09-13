@@ -445,9 +445,6 @@ Set File Path Parameters
 ``UFS_CONFIG_TMPL_FP``: (Default: ``'{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'``) 
    Path to the ``UFS_CONFIG_FN`` file. 
 
-``UFS_CONFIG_TMPL_FP:``: (Default: ``'{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'``)
-   Path to the ``UFS_CONFIG_FN`` file.
-
 ``AQM_RC_TMPL_FP``: (Default: ``'{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'``) 
    Path to the ``AQM_RC_TMPL_FN`` file. 
 
