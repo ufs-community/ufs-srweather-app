@@ -1096,7 +1096,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 
       For more information, see the `Intel Development Reference Guide <https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-10/thread-affinity-interface.html>`__. 
 
-``OMP_NUM_THREADS_RUN_FCST``: (Default: 1)
+``OMP_NUM_THREADS_RUN_FCST``: (Default: 2)
    The number of OpenMP threads to use for parallel regions. Corresponds to the ``atmos_nthreads`` value in ``model_configure``.
 
 ``OMP_STACKSIZE_RUN_FCST``: (Default: "1024m")
