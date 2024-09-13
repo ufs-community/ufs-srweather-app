@@ -103,6 +103,7 @@ cd $DATA
 #
 export NET="${NET:-${NET_default}}"
 export RUN="${RUN:-${RUN_default}}"
+export MAILTO="${MAILTO:-${MAILTO_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
