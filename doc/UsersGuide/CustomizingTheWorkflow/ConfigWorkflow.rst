@@ -159,9 +159,6 @@ These settings define platform-specific run commands. Users should set run comma
 ``RUN_CMD_NEXUS``: (Default: "")
   The run command for the AQM NEXUS tasks.
 
-``RUN_CMD_NEXUS``: (Default: "")
-  The run command for the AQM NEXUS tasks.
-
 ``RUN_CMD_AQMLBC``: (Default: "")
   The run command for the ``aqm_lbcs`` task.
 
@@ -396,9 +393,6 @@ Set File Name Parameters
    Name of a file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``UFS_CONFIG_FN``: (Default: "ufs.configure")
-   Name of a file that contains information about the various :term:`UFS` components and their run sequence. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
-
-``UFS_CONFIG_FN``: (Default: "ufs.configure")
   Name of a template file that contains information about the various UFS components and their run sequence (ufs-weather-model: ufs.configure). Its default value is the name of the file that the ufs weather model expects to read in.
 
 ``AQM_RC_FN``: (Default: "aqm.rc")
@@ -434,9 +428,6 @@ Set File Path Parameters
 ``UFS_CONFIG_TMPL_FP``: (Default: ``'{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'``) 
    Path to the ``UFS_CONFIG_FN`` file. 
 
-``UFS_CONFIG_TMPL_FP:``: (Default: ``'{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'``)
-   Path to the ``UFS_CONFIG_FN`` file.
-
 ``AQM_RC_TMPL_FP``: (Default: ``'{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'``) 
    Path to the ``AQM_RC_TMPL_FN`` file. 
 
@@ -451,9 +442,6 @@ This section contains files and paths to files that are staged in the experiment
 
 ``FIELD_TABLE_FP``: (Default: ``'{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'``)
    Path to the field table in the experiment directory. (The field table specifies tracers that the forecast model reads in.)
-
-``UFS_CONFIG_FP``: (Default: ``'{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'``)
-   Path to the ``UFS_CONFIG_FN`` file in the experiment directory. 
 
 ``UFS_CONFIG_FP``: (Default: ``'{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'``)
    Path to the ``UFS_CONFIG_FN`` file in the experiment directory. 
