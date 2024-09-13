@@ -409,9 +409,6 @@ Set File Name Parameters
 ``UFS_CONFIG_FN``: (Default: "ufs.configure")
    Name of a file that contains information about the various :term:`UFS` components and their run sequence. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
-``UFS_CONFIG_FN``: (Default: "ufs.configure")
-  Name of a template file that contains information about the various UFS components and their run sequence (ufs-weather-model: ufs.configure). Its default value is the name of the file that the ufs weather model expects to read in.
-
 ``AQM_RC_FN``: (Default: "aqm.rc")
    Name of resource file for NOAA Air Quality Model (AQM). 
 
