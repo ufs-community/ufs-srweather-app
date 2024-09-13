@@ -12,10 +12,12 @@ default_task_plot: &default_task
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
     subcyc: !cycstr "@M"
+    fhr: '#fhr#'
     LOGDIR: !cycstr "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: '#mem#'
-    nprocs: '{{ nnodes * ppn }}'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nnodes: 1
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
@@ -24,25 +26,31 @@ default_task_plot: &default_task
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 
-task_plot_allvars:
-  <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "plot_allvars" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  dependency:
-    or_do_post: &post_files_exist
-      and_run_post: # If post was meant to run, wait on the whole post metatask
-        taskvalid:
-          attrs:
-            task: run_post_mem000_f000
-        metataskdep:
-          attrs:
-            metatask: run_ens_post
-      and_inline_post: # If inline post ran, wait on the forecast task to complete
-        not:
-          taskvalid:
-            attrs:
-              task: run_post_mem000_f000
-        taskdep:
-          attrs:
-            task: run_fcst_mem000
+metatask_plot_allvars:
+  var:
+    mem: '{% if global.DO_ENSEMBLE %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  metatask_plot_allvars_mem#mem#_all_fhrs:
+    var:
+      fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
+      cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_CYCL|min %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
+    task_plot_allvars_mem#mem#_f#fhr#:
+      <<: *default_task
+      command: '&LOAD_MODULES_RUN_TASK; "plot_allvars" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"'
+      dependency:
+        or_do_post: &post_files_exist
+          and_run_post: # If post was meant to run, wait on the whole post metatask
+            taskvalid:
+              attrs:
+                task: run_post_mem#mem#_f#fhr#
+            metataskdep:
+              attrs:
+                metatask: run_ens_post
+          and_inline_post: # If inline post ran, wait on the forecast task to complete
+            not:
+              taskvalid:
+                attrs:
+                  task: run_post_mem#mem#_f#fhr#
+            taskdep:
+              attrs:
+                task: run_post_mem#mem#_f#fhr#
 

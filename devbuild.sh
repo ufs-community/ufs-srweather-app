@@ -212,11 +212,6 @@ printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 if [ "${PLATFORM}" = "wcoss2" ]; then
     BUILD_CONDA="off"
 fi
-# Conda is not used on Gaea-c5 F2 filesystem 
-# it needs to be reevaluated when moved to F2 filesystem
-if [ "${PLATFORM}" = "gaea-c5" ]; then
-    BUILD_CONDA="off"
-fi
 
 # build conda and conda environments, if requested.
 if [ "${BUILD_CONDA}" = "on" ] ; then
@@ -288,7 +283,7 @@ set -eu
 # automatically determine compiler
 if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
-    jet|hera|gaea-c5) COMPILER=intel ;;
+    jet|hera|gaea) COMPILER=intel ;;
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
@@ -505,6 +500,40 @@ else
            mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
        fi
     fi
+fi
+
+# Copy config/python directories from component to main directory (EE2 compliance)
+if [ "${BUILD_UFS_UTILS}" = "on" ]; then
+  if [ -d "${SRW_DIR}/parm/ufs_utils_parm" ]; then
+    rm -rf ${SRW_DIR}/parm/ufs_utils_parm
+  fi
+  cp -rp ${SRW_DIR}/sorc/UFS_UTILS/parm ${SRW_DIR}/parm/ufs_utils_parm
+fi
+if [ "${BUILD_UPP}" = "on" ]; then
+  if [ -d "${SRW_DIR}/parm/upp_parm" ]; then
+    rm -rf ${SRW_DIR}/parm/upp_parm
+  fi
+  cp -rp ${SRW_DIR}/sorc/UPP/parm ${SRW_DIR}/parm/upp_parm
+fi
+if [ "${BUILD_NEXUS}" = "on" ]; then
+  if [ -d "${SRW_DIR}/parm/nexus_config" ]; then
+    rm -rf ${SRW_DIR}/parm/nexus_config
+  fi
+  cp -rp ${SRW_DIR}/sorc/arl_nexus/config ${SRW_DIR}/parm/nexus_config
+  if [ -d "${SRW_DIR}/ush/nexus_utils" ]; then
+    rm -rf ${SRW_DIR}/ush/nexus_utils
+  fi
+  cp -rp ${SRW_DIR}/sorc/arl_nexus/utils ${SRW_DIR}/ush/nexus_utils
+fi
+if [ "${BUILD_AQM_UTILS}" = "on" ]; then
+  if [ -d "${SRW_DIR}/parm/aqm_utils_parm" ]; then
+    rm -rf ${SRW_DIR}/parm/aqm_utils_parm
+  fi
+  cp -rp ${SRW_DIR}/sorc/AQM-utils/parm ${SRW_DIR}/parm/aqm_utils_parm
+  if [ -d "${SRW_DIR}/ush/aqm_utils_python" ]; then
+    rm -rf ${SRW_DIR}/ush/aqm_utils_python
+  fi
+  cp -rp ${SRW_DIR}/sorc/AQM-utils/python_utils ${SRW_DIR}/ush/aqm_utils_python
 fi
 
 exit 0

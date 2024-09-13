@@ -3,9 +3,32 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs wgrib2 to create various subdomain GRIB2 files from
-# the raw UPP-generated GRIB2 output from the run_post task of the
+# The J-Job that runs wgrib2 to create various subdomain GRIB2 files
+# from the raw UPP-generated GRIB2 output from the run_post task of the
 # FV3-LAM model.
+#
+# Run-time environment variables:
+#
+#    COMIN
+#    COMOUT
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  workflow:
+#    RUN_ENVIR
+#
+#  task_run_post:
+#    SUB_HOURLY_POST
 #
 #-----------------------------------------------------------------------
 #
@@ -18,7 +41,9 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_prdgen|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in user nco platform workflow task_run_post ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -84,18 +109,18 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 if [ "${RUN_ENVIR}" = "community" ]; then
   export COMOUT="${DATA}/postprd"
 fi
-mkdir_vrfy -p "${COMOUT}"
+mkdir -p "${COMOUT}"
 
 # subhourly post
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
   export DATA_FHR="${DATA:-$COMOUT}/$fhr"
 fi
 check_for_preexist_dir_file "${DATA_FHR}" "delete"
-mkdir_vrfy -p "${DATA_FHR}"
+mkdir -p "${DATA_FHR}"
 
-cd_vrfy "${DATA_FHR}"
+cd "${DATA_FHR}"
 #
 #-----------------------------------------------------------------------
 #

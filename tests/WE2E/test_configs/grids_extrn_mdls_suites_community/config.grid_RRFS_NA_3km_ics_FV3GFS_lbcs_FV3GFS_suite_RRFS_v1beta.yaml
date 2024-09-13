@@ -33,7 +33,7 @@ task_run_prdgen:
   DO_PARALLEL_PRDGEN: true
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/prdgen.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/prdgen.yaml", "parm/wflow/test.yaml"]|include }}'
     task_make_orog:
       walltime: 01:00:00
     metatask_run_ensemble:

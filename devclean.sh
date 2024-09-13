@@ -4,33 +4,31 @@
 usage () {
 cat << EOF_USAGE
 
-Clean the UFS-SRW Application build
+Clean the UFS-SRW Application build.
+
+NOTE: If user included custom directories at build time, those directories must be deleted manually
+
 Usage: $0 [OPTIONS] ...
 
 OPTIONS
   -h, --help
-      show this help guide
+      Show this help guide
   -a, --all
-      removes "bin", "build" directories, and other build artifacts
-  --remove
-      removes the "build" directory, keeps the "bin", "lib" and other build artifacts intact
-  --clean
-      removes "bin", "build" directories, and other build artifacts (same as "-a", "--all")
-  --conda
-      removes "conda" directory and conda_loc file in SRW
-  --install-dir=INSTALL_DIR
-      installation  directory name (\${SRW_DIR} by default)
-  --build-dir=BUILD_DIR
-      main build directory, absolute path (\${SRW_DIR}/build/ by default)
-  --bin-dir=BIN_DIR
-      binary directory name ("exec" by default); full path is \${INSTALL_DIR}/\${BIN_DIR})
-  --conda-dir=CONDA_DIR
-      directory where conda is installed. caution: if outside the SRW clone, it may have broader use
-  --sub-modules
-      remove sub-module directories. They will need to be checked out again by sourcing "\${SRW_DIR}/manage_externals/checkout_externals" before attempting subsequent builds
+      Remove all build artifacts, conda and submodules (equivalent to \`-b -c -s\`)
+  -b, --build
+      Remove build directories and artifacts:  build/ exec/ share/ include/ lib/ lib64/
+  -c, --conda
+      Remove "conda" directory and conda_loc file in SRW main directory
+  --container
+      For cleaning builds within the SRW containers, will remove the "container-bin"
+      directory rather than "exec". Has no effect if \`-b\` is not specified.
+  -f, --force
+      Remove directories as requested, without asking for user confirmation of their deletion.
+  -s, --sub-modules
+      Remove sub-module directories. They need to be checked out again by sourcing "\${SRW_DIR}/manage_externals/checkout_externals" before attempting subsequent builds
   -v, --verbose
-      provide more verbose output
-
+      Provide more verbose output
+      
 EOF_USAGE
 }
 
@@ -39,17 +37,10 @@ settings () {
 cat << EOF_SETTINGS
 Settings:
 
-  INSTALL_DIR=${INSTALL_DIR}
-  BUILD_DIR=${BUILD_DIR}
-  BIN_DIR=${BIN_DIR}
-  CONDA_DIR=${CONDA_DIR}
-  REMOVE=${REMOVE}
+  FORCE=${REMOVE}
   VERBOSE=${VERBOSE}
-
-Default cleaning options: (if no arguments provided, then nothing is cleaned)
- REMOVE=${REMOVE}
- CLEAN=${CLEAN}
- INCLUDE_SUB_MODULES=${INCLUDE_SUB_MODULES}
+  REMOVE_SUB_MODULES=${REMOVE_SUB_MODULES}
+  REMOVE_CONDA=${REMOVE_CONDA}  
 
 EOF_SETTINGS
 }
@@ -63,46 +54,28 @@ usage_error () {
 
 # default settings
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-INSTALL_DIR=${INSTALL_DIR:-${SRW_DIR}}
-BUILD_DIR=${BUILD_DIR:-"${SRW_DIR}/build"}
-BIN_DIR="exec"
-CONDA_DIR=${CONDA_DIR:-"${SRW_DIR}/conda"}
-REMOVE=false
 VERBOSE=false
 
 # default clean options
 REMOVE=false
-CLEAN=false
-INCLUDE_SUB_MODULES=false #changes to true if '--sub-modules' option is provided
+REMOVE_BUILD=false
+REMOVE_CONDA=false
+REMOVE_SUB_MODULES=false
+CONTAINER=false
 
-# process requires arguments
-if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
-  usage
-  exit 0
-fi
-
-# process optional arguments
+# process arguments
 while :; do
   case $1 in
     --help|-h) usage; exit 0 ;;
-    --all|-a) ALL_CLEAN=true ;;
-    --remove) REMOVE=true ;;
-    --remove=?*|--remove=) usage_error "$1 argument ignored." ;;
-    --clean) CLEAN=true ;;
-    --conda) REMOVE_CONDA=true ;;
-    --install-dir=?*) INSTALL_DIR=${1#*=} ;;
-    --install-dir|--install-dir=) usage_error "$1 requires argument." ;;
-    --build-dir=?*) BUILD_DIR=${1#*=} ;;
-    --build-dir|--build-dir=) usage_error "$1 requires argument." ;;
-    --bin-dir=?*) BIN_DIR=${1#*=} ;;
-    --bin-dir|--bin-dir=) usage_error "$1 requires argument." ;;
-    --conda-dir=?*) CONDA_DIR=${1#*=} ;;
-    --conda-dir|--conda-dir=) usage_error "$1 requires argument." ;;
-    --sub-modules) INCLUDE_SUB_MODULES=true ;;
+    --all|-a) REMOVE_BUILD=true; REMOVE_CONDA=true; REMOVE_SUB_MODULES=true ;;
+    --build|-b) REMOVE_BUILD=true ;;
+    --conda|-c) REMOVE_CONDA=true ;;
+    --container) CONTAINER=true ;;
+    --force) REMOVE=true ;;
+    --force=?*|--force=) usage_error "$1 argument ignored." ;;
+    --sub-modules|-s) REMOVE_SUB_MODULES=true ;;
+    --sub-modules=?*|--sub-modules=) usage_error "$1 argument ignored." ;;
     --verbose|-v) VERBOSE=true ;;
-    --verbose=?*|--verbose=) usage_error "$1 argument ignored." ;;
-    # targets
-    default) ALL_CLEAN=false ;;
     # unknown
     -?*|?*) usage_error "Unknown option $1" ;;
     *) break ;;
@@ -110,66 +83,94 @@ while :; do
   shift
 done
 
-# choose defaults to clean
-if [ "${ALL_CLEAN}" = true ]; then
-  CLEAN=true
-fi
 
 # print settings
 if [ "${VERBOSE}" = true ] ; then
   settings
 fi
 
-# clean if build directory already exists 
-if [ "${REMOVE}" = true ] && [ "${CLEAN}" = false ] ; then
-  printf '%s\n' "Remove the \"build\" directory only, BUILD_DIR = $BUILD_DIR "
-  [[ -d ${BUILD_DIR} ]] && rm -rf ${BUILD_DIR} && printf '%s\n' "rm -rf ${BUILD_DIR}"
-elif [ "${CLEAN}" = true ]; then
-  printf '%s\n' "Remove build directory, bin directory, and other build artifacts "
-  printf '%s\n' " from the installation directory = ${INSTALL_DIR} "
+# Populate "removal_list" as an array of files/directories to remove, based on user selections
+declare -a removal_list='()'
 
-  directories=( \
-    "${BUILD_DIR}" \
-    "${INSTALL_DIR}/${BIN_DIR}" \
-    "${INSTALL_DIR}/share" \
-    "${INSTALL_DIR}/include" \
-    "${INSTALL_DIR}/lib" \
-    "${INSTALL_DIR}/lib64" \
+# Clean standard build artifacts
+if [ ${REMOVE_BUILD} == true ]; then
+  removal_list=( \
+    "${SRW_DIR}/build" \
+    "${SRW_DIR}/share" \
+    "${SRW_DIR}/include" \
+    "${SRW_DIR}/lib" \
+    "${SRW_DIR}/lib64" \
   )
-  if [ ${#directories[@]} -ge 1 ]; then
-    for dir in ${directories[@]}; do 
-     [[ -d "${dir}" ]] &&  rm -rfv ${dir} 
-    done
-  echo " "
+  if [ ${CONTAINER} == true ]; then
+    removal_list+=("${SRW_DIR}/container-bin")
+  else
+    removal_list+=("${SRW_DIR}/exec")
   fi
 fi
-# Clean all the submodules if requested. Note: Need to check out them again before attempting subsequent builds, by sourcing ${SRW_DIR}/manage_externals/checkout_externals
-if [ ${INCLUDE_SUB_MODULES} == true ]; then
-  printf '%s\n' "Removing submodules ..."
+
+# Clean all the submodules if requested.
+if [ ${REMOVE_SUB_MODULES} == true ]; then
   declare -a submodules='()'
-  submodules=(${SRW_DIR}/sorc/*) 
-# echo " submodules are: ${submodules[@]} (total of ${#submodules[@]}) "
-  if [ ${#submodules[@]} -ge 1 ]; then
-    for sub in ${submodules[@]}; do [[ -d "${sub}" ]] && ( rm -rf ${sub} && printf '%s\n' "rm -rf ${sub}" ); done
+  submodules=(./sorc/*)
+  # Only add directories to make sure we don't delete CMakeLists.txt
+  for sub in ${submodules[@]}; do [[ -d "${sub}" ]] && removal_list+=( "${sub}" ); done
+  if [ "${VERBOSE}" = true ] ; then
+    printf '%s\n' "Note: Need to check out submodules again for any subsequent builds, " \
+      " by running ${SRW_DIR}/manage_externals/checkout_externals "
   fi
-  printf '%s\n' "Note: Need to check out submodules again for any subsequent builds, " \
-    " by sourcing ${SRW_DIR}/manage_externals/checkout_externals "
 fi
-#
 
 # Clean conda if requested
 if [ "${REMOVE_CONDA}" = true ] ; then
-  printf '%s\n' "Removing conda location file"
-  rm -rf ${SRW_DIR}/conda_loc
-  printf '%s\n' "Removing conda installation"
-  rm -rf ${CONDA_DIR}
+  # Do not read "conda_loc" file to determine location of conda install; if the user has changed it to a different location
+  # they likely do not want to remove it!
+  conda_location=$(<${SRW_DIR}/conda_loc)
+  if [ "${VERBOSE}" = true ] ; then
+    echo "conda_location=$conda_location"
+  fi
+  if [ "${conda_location}" == "${SRW_DIR}/conda" ]; then
+    removal_list+=("${SRW_DIR}/conda_loc")
+    removal_list+=("${SRW_DIR}/conda")
+  else
+    echo "WARNING: location of conda build in ${SRW_DIR}/conda_loc is not the default location!"
+    echo "Will not attempt to remove conda!"
+  fi
 fi
 
+# If array is empty, that means user has not selected any removal options
+if [ ${#removal_list[@]} -eq 0 ]; then
+  usage_error "No removal options specified"
+fi
 
+while [ ${REMOVE} == false ]; do
+  # Make user confirm deletion of directories unless '--force' option was provided
+  printf "The following files/directories will be deleted:\n\n"
+  for i in "${removal_list[@]}"; do
+     echo "$i"
+  done
+  echo ""
+  read -p "Confirm that you want to delete these files/directories! (Yes/No): " choice
+  case ${choice} in
+    [Yy]* ) REMOVE=true ;;
+    [Nn]* ) echo "User chose not to delete, exiting..."; exit ;;
+    * ) printf "Invalid option selected.\n" ;;
+  esac
+done
 
-echo " "
-echo "All the requested cleaning tasks have been completed"
-echo " "
+if [ ${REMOVE} == true ]; then
+  for dir in ${removal_list[@]}; do
+    echo "Removing ${dir}"
+    if [ "${VERBOSE}" = true ] ; then 
+      rm -rfv ${dir}
+    else
+      rm -rf ${dir}
+    fi
+  done
+  echo " "
+  echo "All the requested cleaning tasks have been completed"
+  echo " "
+fi
+
 
 exit 0
 

@@ -115,16 +115,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing functions that execute filesystem commands
-# (e.g. "cp", "mv") with verification (i.e. verifying that the commands
-# completed successfully).
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/filesys_cmds_vrfy.sh
-#
-#-----------------------------------------------------------------------
-#
 # Source the file containing the function that searches an array for a
 # specified string.
 #
@@ -230,15 +220,15 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/eval_METplus_timestr_tmpl.sh
-#
-#-----------------------------------------------------------------------
-#
-# Source the file containing the function that sources config files.
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/source_config.sh
 
+#
+#-----------------------------------------------------------------------
+#
+# Source the file that sources YAML files as if they were bash
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/source_yaml.sh
 }
 source_util_funcs
 
