@@ -466,9 +466,6 @@ This section contains files and paths to files that are staged in the experiment
 ``UFS_CONFIG_FP``: (Default: ``'{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'``)
    Path to the ``UFS_CONFIG_FN`` file in the experiment directory. 
 
-``UFS_CONFIG_FP``: (Default: ``'{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'``)
-   Path to the ``UFS_CONFIG_FN`` file in the experiment directory. 
-
 ``FV3_NML_FP``: (Default: ``'{{ [EXPTDIR, FV3_NML_FN]|path_join }}'``)
    Path to the ``FV3_NML_FN`` file in the experiment directory.
 
