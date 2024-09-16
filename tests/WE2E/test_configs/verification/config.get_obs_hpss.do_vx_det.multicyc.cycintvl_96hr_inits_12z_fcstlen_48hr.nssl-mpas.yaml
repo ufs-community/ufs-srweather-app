@@ -59,7 +59,7 @@ task_run_post:
 verification:
   METPLUS_VERBOSITY_LEVEL: 5
   VX_FCST_MODEL_NAME: 'NSSL-MPAS-HN'
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/forecasts_for_SRW_WE2E_tests'
+  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests'
   FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{{VX_FCST_MODEL_NAME}}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}{% endif %}'
   FCST_FN_TEMPLATE: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%H?shift=${time_lag}}.grib2'
   FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${VAR}_a${ACCUM_HH}h.nc'
