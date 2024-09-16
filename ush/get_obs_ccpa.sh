@@ -173,31 +173,31 @@ yyyymmdd_task=${PDY}
 # processing by this script is complete.
 basedir_proc=${OBS_DIR}
 
-# The environment variable OUTPUT_TIMES_ALL set in the ROCOTO XML is a
-# scalar string containing all relevant forecast output times (each in
+# The environment variable FCST_OUTPUT_TIMES_ALL set in the ROCOTO XML is
+# a scalar string containing all relevant forecast output times (each in
 # the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
 # because in ROCOTO, there doesn't seem to be a way to pass a bash array
 # from the XML to the task's script.  To have an array-valued variable to
-# work with, here, we create the new variable output_times_all that is
-# the array-valued counterpart of OUTPUT_TIMES_ALL.
-output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
+# work with, here, we create the new variable fcst_output_times_all that
+# is the array-valued counterpart of FCST_OUTPUT_TIMES_ALL.
+fcst_output_times_all=($(printf "%s" "${FCST_OUTPUT_TIMES_ALL}"))
 
 # List of times (each of the form YYYYMMDDHH) for which there is forecast
 # APCP (accumulated precipitation) output for the current day.  We start
 # constructing this by extracting from the full list of all forecast APCP
 # output times (i.e. from all cycles) all elements that contain the current
 # task's day (in the form YYYYMMDD).
-output_times_crnt_day=()
-if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
-  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
+fcst_output_times_crnt_day=()
+if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
+  fcst_output_times_crnt_day=( $(printf "%s\n" "${fcst_output_times_all[@]}" | grep "^${yyyymmdd_task}") )
 fi
 # If the 0th hour of the current day is in this list (and if it is, it
 # will be the first element), remove it because for APCP, that time is
 # considered part of the previous day (because it represents precipitation
 # that occurred during the last hour of the previous day).
-if [[ ${#output_times_crnt_day[@]} -gt 0 ]] && \
-   [[ ${output_times_crnt_day[0]} == "${yyyymmdd_task}00" ]]; then
-  output_times_crnt_day=(${output_times_crnt_day[@]:1})
+if [[ ${#fcst_output_times_crnt_day[@]} -gt 0 ]] && \
+   [[ ${fcst_output_times_crnt_day[0]} == "${yyyymmdd_task}00" ]]; then
+  fcst_output_times_crnt_day=(${fcst_output_times_crnt_day[@]:1})
 fi
 # If the 0th hour of the next day (i.e. the day after yyyymmdd_task) is
 # one of the output times in the list of all APCP output times, we include
@@ -205,14 +205,14 @@ fi
 # considered part of the current day (because it represents precipitation 
 # that occured during the last hour of the current day).
 yyyymmdd00_task_p1d=$(${DATE_UTIL} --date "${yyyymmdd_task} 1 day" +%Y%m%d%H)
-if [[ ${output_times_all[@]} =~ ${yyyymmdd00_task_p1d} ]]; then
-  output_times_crnt_day+=(${yyyymmdd00_task_p1d})
+if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd00_task_p1d} ]]; then
+  fcst_output_times_crnt_day+=(${yyyymmdd00_task_p1d})
 fi
 
 # If there are no forecast APCP output times on the day of the current
 # task, exit the script.
-num_output_times_crnt_day=${#output_times_crnt_day[@]}
-if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
+num_fcst_output_times_crnt_day=${#fcst_output_times_crnt_day[@]}
+if [[ ${num_fcst_output_times_crnt_day} -eq 0 ]]; then
   print_info_msg "
 None of the forecast APCP output times fall within the day (including the
 0th hour of the next day) associated with the current task (yyyymmdd_task):
@@ -237,14 +237,14 @@ arcv_hr_incr=6
 
 # Initial guess for starting archive hour.  This is set to the archive 
 # hour containing obs at the first forecast output time of the day.
-hh_first=$(echo ${output_times_crnt_day[0]} | cut -c9-10)
+hh_first=$(echo ${fcst_output_times_crnt_day[0]} | cut -c9-10)
 hr_first=$((10#${hh_first}))
 arcv_hr_start=$(ceil ${hr_first} ${arcv_hr_incr})
 arcv_hr_start=$(( arcv_hr_start*arcv_hr_incr ))
 
 # Ending archive hour.  This is set to the archive hour containing obs at
 # the last forecast output time of the day.
-hh_last=$(echo ${output_times_crnt_day[-1]} | cut -c9-10)
+hh_last=$(echo ${fcst_output_times_crnt_day[-1]} | cut -c9-10)
 hr_last=$((10#${hh_last}))
 if [[ ${hr_last} -eq 0 ]]; then
   arcv_hr_end=24
@@ -257,7 +257,7 @@ fi
 # starting archive hour.  In the process, keep a count of the number of
 # obs files that already exist on disk.
 num_existing_files=0
-for yyyymmddhh in ${output_times_crnt_day[@]}; do
+for yyyymmddhh in ${fcst_output_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
   day_dir_proc="${basedir_proc}/${yyyymmdd}"
@@ -283,7 +283,7 @@ done
 
 # If the number of obs files that already exist on disk is equal to the
 # number of files needed, then there is no need to retrieve any files.
-num_needed_files=$((num_output_times_crnt_day))
+num_needed_files=$((num_fcst_output_times_crnt_day))
 if [[ ${num_existing_files} -eq ${num_needed_files} ]]; then
   print_info_msg "
 All obs files needed for the current day (yyyymmdd_task) already exist
@@ -361,9 +361,8 @@ arcv_hr = ${arcv_hr}"
   yyyymmddhh_qrtrday_start=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} 5 hours ago" +%Y%m%d%H)
   yyyymmddhh_qrtrday_end=${yyyymmddhh_arcv}
   do_retrieve="FALSE"
-  nout=${#output_times_crnt_day[@]}
-  for (( i=0; i<${nout}; i++ )); do
-    output_time=${output_times_crnt_day[i]}
+  for (( i=0; i<${num_fcst_output_times_crnt_day}; i++ )); do
+    output_time=${fcst_output_times_crnt_day[i]}
     if [[ "${output_time}" -ge "${yyyymmddhh_qrtrday_start}" ]] && \
        [[ "${output_time}" -le "${yyyymmddhh_qrtrday_end}" ]]; then
       do_retrieve="TRUE"
@@ -416,7 +415,7 @@ arcv_hr = ${arcv_hr}"
       yyyymmddhh=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} ${hrs_ago} hours ago" +%Y%m%d%H)
       yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
       hh=$(echo ${yyyymmddhh} | cut -c9-10)
-      if [[ ${output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
+      if [[ ${fcst_output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
         fn_raw="ccpa.t${hh}z.${accum}h.hrap.conus.gb2"
         fp_raw="${qrtrday_dir_raw}/${fn_raw}"
         day_dir_proc="${basedir_proc}/${yyyymmdd}"
@@ -445,7 +444,7 @@ archive are:
   yyyymmddhh_qrtrday_start = \"${yyyymmddhh_qrtrday_start}\"
   yyyymmddhh_qrtrday_end = \"${yyyymmddhh_qrtrday_end}\"
 The forecast output times for APCP are:
-  output_times_crnt_day = ($(printf "\"%s\" " ${output_times_crnt_day[@]}))"
+  fcst_output_times_crnt_day = ($(printf "\"%s\" " ${fcst_output_times_crnt_day[@]}))"
 
   fi
 

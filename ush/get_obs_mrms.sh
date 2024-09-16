@@ -85,27 +85,27 @@ yyyymmdd_task=${PDY}
 # all processing by this script is complete.
 basedir_proc=${OBS_DIR}
 
-# The environment variable OUTPUT_TIMES_ALL set in the ROCOTO XML is a
-# scalar string containing all relevant forecast output times (each in
+# The environment variable FCST_OUTPUT_TIMES_ALL set in the ROCOTO XML is
+# a scalar string containing all relevant forecast output times (each in
 # the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
 # because in ROCOTO, there doesn't seem to be a way to pass a bash array
 # from the XML to the task's script.  To have an array-valued variable to
-# work with, here, we create the new variable output_times_all that is
-# the array-valued counterpart of OUTPUT_TIMES_ALL.
-output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
+# work with, here, we create the new variable fcst_output_times_all that
+# is the array-valued counterpart of FCST_OUTPUT_TIMES_ALL.
+fcst_output_times_all=($(printf "%s" "${FCST_OUTPUT_TIMES_ALL}"))
 
 # List of times (each of the form YYYYMMDDHH) for which there is forecast
 # output for the current day.  We extract this list from the full list of
 # all forecast output times (i.e. from all cycles).
-output_times_crnt_day=()
-if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
-  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
+fcst_output_times_crnt_day=()
+if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
+  fcst_output_times_crnt_day=( $(printf "%s\n" "${fcst_output_times_all[@]}" | grep "^${yyyymmdd_task}") )
 fi
 
 # If there are no forecast output times on the day of the current task,
 # exit the script.
-num_output_times_crnt_day=${#output_times_crnt_day[@]}
-if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
+num_fcst_output_times_crnt_day=${#fcst_output_times_crnt_day[@]}
+if [[ ${num_fcst_output_times_crnt_day} -eq 0 ]]; then
   print_info_msg "
 None of the forecast output times fall within the day associated with the
 current task (yyyymmdd_task):
@@ -120,7 +120,7 @@ fi
 num_existing_files=0
 num_mrms_fields=${#mrms_fields[@]}
 for (( i=0; i<${num_mrms_fields}; i++ )); do
-  for yyyymmddhh in ${output_times_crnt_day[@]}; do
+  for yyyymmddhh in ${fcst_output_times_crnt_day[@]}; do
     yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
     hh=$(echo ${yyyymmddhh} | cut -c9-10)
     day_dir_proc="${basedir_proc}/${yyyymmdd}"
@@ -139,7 +139,7 @@ done
 
 # If the number of obs files that already exist on disk is equal to the
 # number of files needed, then there is no need to retrieve any files.
-num_needed_files=$((num_output_times_crnt_day*num_mrms_fields))
+num_needed_files=$((num_fcst_output_times_crnt_day*num_mrms_fields))
 if [[ ${num_existing_files} -eq $((num_needed_files)) ]]; then
   print_info_msg "
 All obs files needed for the current day (yyyymmdd_task) already exist
@@ -246,7 +246,7 @@ $cmd || print_err_msg_exit "Could not retrieve obs from HPSS."
 # process renaming it) to the processed location.
 for hr in $(seq 0 1 23); do
   yyyymmddhh=$(${DATE_UTIL} --date "${yyyymmdd_task} ${hr} hours" +%Y%m%d%H)
-  if [[ ${output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
+  if [[ ${fcst_output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
     for (( i=0; i<${num_mrms_fields}; i++ )); do
       python ${USHdir}/mrms_pull_topofhour.py \
         --valid_time ${yyyymmddhh} \

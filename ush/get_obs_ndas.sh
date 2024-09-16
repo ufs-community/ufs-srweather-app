@@ -59,27 +59,27 @@ yyyymmdd_task=${PDY}
 # all processing by this script is complete.
 basedir_proc=${OBS_DIR}
 
-# The environment variable OUTPUT_TIMES_ALL set in the ROCOTO XML is a
-# scalar string containing all relevant forecast output times (each in
+# The environment variable FCST_OUTPUT_TIMES_ALL set in the ROCOTO XML is
+# a scalar string containing all relevant forecast output times (each in
 # the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
 # because in ROCOTO, there doesn't seem to be a way to pass a bash array
 # from the XML to the task's script.  To have an array-valued variable to
-# work with, here, we create the new variable output_times_all that is
-# the array-valued counterpart of OUTPUT_TIMES_ALL.
-output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
+# work with, here, we create the new variable fcst_output_times_all that
+# is the array-valued counterpart of FCST_OUTPUT_TIMES_ALL.
+fcst_output_times_all=($(printf "%s" "${FCST_OUTPUT_TIMES_ALL}"))
 
 # List of times (each of the form YYYYMMDDHH) for which there is forecast
 # output for the current day.  We extract this list from the full list of
 # all forecast output times (i.e. from all cycles).
-output_times_crnt_day=()
-if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
-  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
+fcst_output_times_crnt_day=()
+if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
+  fcst_output_times_crnt_day=( $(printf "%s\n" "${fcst_output_times_all[@]}" | grep "^${yyyymmdd_task}") )
 fi
 
 # If there are no forecast output times on the day of the current task,
 # exit the script.
-num_output_times_crnt_day=${#output_times_crnt_day[@]}
-if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
+num_fcst_output_times_crnt_day=${#fcst_output_times_crnt_day[@]}
+if [[ ${num_fcst_output_times_crnt_day} -eq 0 ]]; then
   print_info_msg "
 None of the forecast output times fall within the day associated with the
 current task (yyyymmdd_task):
@@ -104,13 +104,13 @@ arcv_hr_incr=6
 
 # Initial guess for starting archive hour.  This is set to the archive 
 # hour containing obs at the first forecast output time of the day.
-hh_first=$(echo ${output_times_crnt_day[0]} | cut -c9-10)
+hh_first=$(echo ${fcst_output_times_crnt_day[0]} | cut -c9-10)
 hr_first=$((10#${hh_first}))
 arcv_hr_start=$(( (hr_first/arcv_hr_incr + 1)*arcv_hr_incr ))
 
 # Ending archive hour.  This is set to the archive hour containing obs at
 # the last forecast output time of the day.
-hh_last=$(echo ${output_times_crnt_day[-1]} | cut -c9-10)
+hh_last=$(echo ${fcst_output_times_crnt_day[-1]} | cut -c9-10)
 hr_last=$((10#${hh_last}))
 arcv_hr_end=$(( (hr_last/arcv_hr_incr + 1)*arcv_hr_incr ))
 
@@ -118,7 +118,7 @@ arcv_hr_end=$(( (hr_last/arcv_hr_incr + 1)*arcv_hr_incr ))
 # starting archive hour.  In the process, keep a count of the number of
 # obs files that already exist on disk.
 num_existing_files=0
-for yyyymmddhh in ${output_times_crnt_day[@]}; do
+for yyyymmddhh in ${fcst_output_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
   day_dir_proc="${basedir_proc}"
@@ -143,7 +143,7 @@ done
 
 # If the number of obs files that already exist on disk is equal to the
 # number of files needed, then there is no need to retrieve any files.
-num_needed_files=$((num_output_times_crnt_day))
+num_needed_files=$((num_fcst_output_times_crnt_day))
 if [[ ${num_existing_files} -eq ${num_needed_files} ]]; then
   print_info_msg "
 All obs files needed for the current day (yyyymmdd_task) already exist
@@ -221,9 +221,8 @@ arcv_hr = ${arcv_hr}"
   yyyymmddhh_qrtrday_start=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} 6 hours ago" +%Y%m%d%H)
   yyyymmddhh_qrtrday_end=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} 1 hours ago" +%Y%m%d%H)
   do_retrieve="FALSE"
-  nout=${#output_times_crnt_day[@]}
-  for (( i=0; i<${nout}; i++ )); do
-    output_time=${output_times_crnt_day[i]}
+  for (( i=0; i<${num_fcst_output_times_crnt_day}; i++ )); do
+    output_time=${fcst_output_times_crnt_day[i]}
     if [[ "${output_time}" -ge "${yyyymmddhh_qrtrday_start}" ]] && \
        [[ "${output_time}" -le "${yyyymmddhh_qrtrday_end}" ]]; then
       do_retrieve="TRUE"
@@ -276,7 +275,7 @@ arcv_hr = ${arcv_hr}"
       yyyymmddhh=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} ${hrs_ago} hours ago" +%Y%m%d%H)
       yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
       hh=$(echo ${yyyymmddhh} | cut -c9-10)
-      if [[ ${output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
+      if [[ ${fcst_output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
         fn_raw="nam.t${hh_arcv}z.prepbufr.tm${hrs_ago}.nr"
         fp_raw="${qrtrday_dir_raw}/${fn_raw}"
         day_dir_proc="${basedir_proc}"
@@ -296,7 +295,7 @@ are:
   yyyymmddhh_qrtrday_start = \"${yyyymmddhh_qrtrday_start}\"
   yyyymmddhh_qrtrday_end = \"${yyyymmddhh_qrtrday_end}\"
 The forecast output times are:
-  output_times_crnt_day = ($(printf "\"%s\" " ${output_times_crnt_day[@]}))"
+  fcst_output_times_crnt_day = ($(printf "\"%s\" " ${fcst_output_times_crnt_day[@]}))"
 
   fi
 
