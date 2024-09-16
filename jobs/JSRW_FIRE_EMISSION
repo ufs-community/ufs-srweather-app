@@ -5,6 +5,15 @@
 #
 # This script gets fire emission data files from disk or HPSS
 #
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  nco:
+#    NCO variables
+#
+#  global:
+#    DO_ENSEMBLE
+#
 #-----------------------------------------------------------------------
 #
 date
@@ -30,7 +39,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global cpl_aqm_parm cpl_aqm_parm ; do
+for sect in platform nco global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

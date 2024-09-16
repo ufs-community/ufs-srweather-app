@@ -227,8 +227,8 @@ FV3_HRRR_gf:
     min_lakeice: 0.15
     min_seaice: 0.15
     mix_chem : true
-    mosaic_lu: 0
-    mosaic_soil: 0
+    mosaic_lu: 1
+    mosaic_soil: 1
     nsfullradar_diag: 3600
     nst_anl: null
     nstf_name: null

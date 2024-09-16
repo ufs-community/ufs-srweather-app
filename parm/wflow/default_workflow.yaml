@@ -40,7 +40,7 @@ rocoto:
     COMIN_DIR: '{% if smoke_dust_parm.get("DO_SMOKE_DUST") or cpl_aqm_parm.get("CPL_AQM") %}&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
     DATASHARE_DIR: '&DATAROOT;/DATA_SHARE/@Y@m@d@H'
     FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
-    LOGDIR: '{% if smoke_dust_parm.get("DO_SMOKE_DUST") or cpl_aqm_parm.get("CPL_AQM") %}&COMROOT;/output/logs/@Y@m@d{% else %}{{ workflow.EXPTDIR }}/log{% endif %}'
+    LOGDIR: '&COMROOT;/output/logs/@Y@m@d'
   attrs:
     cyclethrottle: "200"
     realtime: "F"

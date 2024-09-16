@@ -75,6 +75,21 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
+    # Link log directory to EXPDIR
+    #
+    # -----------------------------------------------------------------------
+    #
+    nco_ptmp = expt_config["nco"]["PTMP"]
+    nco_envir = expt_config["nco"]["envir_default"]
+    exptdir = expt_config["workflow"]["EXPTDIR"]
+
+    logdir_orig = os.path.join(nco_ptmp,nco_envir,"com/output/logs")
+    mkdir_vrfy("-p", logdir_orig)
+    logdir_expt = os.path.join(exptdir,"logs")
+    ln_vrfy(f"""-fsn '{logdir_orig}' '{logdir_expt}'""")
+    #
+    # -----------------------------------------------------------------------
+    #
     # Set the full path to the experiment's rocoto workflow xml file.  This
     # file will be placed at the top level of the experiment directory and
     # then used by rocoto to run the workflow.
@@ -82,10 +97,7 @@ def generate_FV3LAM_wflow(
     # -----------------------------------------------------------------------
     #
     wflow_xml_fn = expt_config["workflow"]["WFLOW_XML_FN"]
-    wflow_xml_fp = os.path.join(
-        expt_config["workflow"]["EXPTDIR"],
-        wflow_xml_fn,
-    )
+    wflow_xml_fp = os.path.join(exptdir,wflow_xml_fn)
     #
     # -----------------------------------------------------------------------
     #
@@ -127,7 +139,6 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    exptdir = expt_config["workflow"]["EXPTDIR"]
     wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
     wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
     log_info(

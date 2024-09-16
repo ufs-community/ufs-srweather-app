@@ -1162,15 +1162,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    # Use env variables for NCO variables and create NCO directories
-    workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
-    if run_envir == "nco" and workflow_manager == "rocoto":
-        # Update the rocoto string for the fcst output location if
-        # running an ensemble in nco mode
-        if global_sect["DO_ENSEMBLE"]:
-            rocoto_config["entities"]["FCST_DIR"] = \
-                "{{ nco.PTMP }}/{{ nco.envir_default }}/tmp/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
-
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
 
@@ -1482,6 +1473,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
     var_defns_cfg.dump(global_var_defns_fp)
 
+    # Generate a flag file for cold start
     if expt_config["workflow"].get("COLDSTART"):
         coldstart_date=workflow_config["DATE_FIRST_CYCL"]
         fn_pass=f"task_skip_coldstart_{coldstart_date}.txt"

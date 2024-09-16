@@ -179,12 +179,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-varmap_file=""
+varmap_file_fp=""
 
 case "${CCPP_PHYS_SUITE}" in
 #
-  "FV3_GFS_2017_gfdlmp" | \
-  "FV3_GFS_2017_gfdlmp_regional" | \
   "FV3_GFS_v16" | \
   "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"
@@ -200,7 +198,11 @@ case "${CCPP_PHYS_SUITE}" in
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "RRFS" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
-      varmap_file="GSDphys_var_map.txt"
+      if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+        varmap_file="GSDphys_var_map_smoke.txt"
+      else
+        varmap_file="GSDphys_var_map.txt"
+      fi
     elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "UFS-CASE-STUDY" ] || \
@@ -215,14 +217,13 @@ case "${CCPP_PHYS_SUITE}" in
     message_txt="The variable \"varmap_file\" has not yet been specified for 
 this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
     ;;
 #
 esac
+
+varmap_file_fp="${PARMdir}/ufs_utils/varmap_tables/${varmap_file}"
 #
 #-----------------------------------------------------------------------
 #
@@ -525,12 +526,8 @@ case "${EXTRN_MDL_NAME_ICS}" in
 
 "HRRR"|"RRFS")
   external_model="HRRR"
-
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
-#
-# Path to the HRRRX geogrid file.
-#
   geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_HRRRX"
 # Note that vgfrc, shdmin/shdmax (minmax_vgfrc), and lai fields are only available in HRRRX
 # files after mid-July 2019, and only so long as the record order didn't change afterward
@@ -547,9 +544,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
   external_model="RAP"
   fn_grib2="${EXTRN_MDL_FNS[0]}"
   input_type="grib2"
-#
-# Path to the RAPX geogrid file.
-#
   geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_RAPX"
   vgtyp_from_climo=True
   sotyp_from_climo=True
@@ -558,6 +552,13 @@ case "${EXTRN_MDL_NAME_ICS}" in
   lai_from_climo=True
   tg3_from_soil=True
   convert_nst=False
+#  if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+#    sotyp_from_climo=False
+#    vgtyp_from_climo=False
+#  else
+#    sotyp_from_climo=True
+#    vgtyp_from_climo=True
+#  fi
   ;;
 
 "NAM")
@@ -577,11 +578,8 @@ case "${EXTRN_MDL_NAME_ICS}" in
   message_txt="External-model-dependent namelist variables have not yet been specified
 for this external IC model (EXTRN_MDL_NAME_ICS):
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
   ;;
 
 esac
@@ -609,11 +607,8 @@ if [ ! -f "${exec_fp}" ]; then
 on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -635,40 +630,39 @@ fi
 #
 settings="
 'config':
- 'fix_dir_target_grid': ${FIXlam}
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
- 'orog_dir_target_grid': ${FIXlam}
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
- 'vcoord_file_target_grid': ${VCOORD_FILE}
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
- 'data_dir_input_grid': ${extrn_mdl_staging_dir}
  'atm_files_input_grid': ${fn_atm}
- 'sfc_files_input_grid': ${fn_sfc}
- 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'convert_atm': True
+ 'convert_nst': ${convert_nst}
+ 'convert_sfc': True
  'cycle_mon': $((10#${mm}))
  'cycle_day': $((10#${dd}))
  'cycle_hour': $((10#${hh}))
- 'convert_atm': True
- 'convert_sfc': True
- 'convert_nst': ${convert_nst}
- 'regional': 1
- 'halo_bndy': $((10#${NH4}))
- 'halo_blend': $((10#${HALO_BLEND}))
- 'input_type': ${input_type}
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
  'external_model': ${external_model}
- 'tracers_input': ${tracers_input}
- 'tracers': ${tracers}
- 'nsoill_out': $((10#${nsoill_out}))
+ 'fix_dir_target_grid': ${FIXlam}
  'geogrid_file_input_grid': ${geogrid_file_input_grid}
- 'vgtyp_from_climo': ${vgtyp_from_climo}
- 'sotyp_from_climo': ${sotyp_from_climo}
- 'vgfrc_from_climo': ${vgfrc_from_climo}
- 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'halo_blend': $((10#${HALO_BLEND}))
+ 'halo_bndy': $((10#${NH4}))
+ 'input_type': ${input_type}
  'lai_from_climo': ${lai_from_climo}
+ 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'nsoill_out': $((10#${nsoill_out}))
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'regional': 1
+ 'sfc_files_input_grid': ${fn_sfc}
+ 'sotyp_from_climo': ${sotyp_from_climo}
  'tg3_from_soil': ${tg3_from_soil}
  'thomp_mp_climo_file': ${thomp_mp_climo_file}
+ 'tracers': ${tracers}
+ 'tracers_input': ${tracers_input}
+ 'varmap_file': ${varmap_file_fp}
+ 'vcoord_file_target_grid': ${VCOORD_FILE}
+ 'vgfrc_from_climo': ${vgfrc_from_climo}
+ 'vgtyp_from_climo': ${vgtyp_from_climo}
 "
-
 
 nml_fn="fort.41"
 
@@ -686,11 +680,8 @@ if [ $err -ne 0 ]; then
   message_txt="Error creating namelist read by ${exec_fn} failed.
      Settings for input are:
 $settings"
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 
 #

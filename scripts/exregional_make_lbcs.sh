@@ -178,19 +178,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-varmap_file=""
+varmap_file_fp=""
 
 case "${CCPP_PHYS_SUITE}" in
 #
-  "FV3_GFS_2017_gfdlmp" | \
-  "FV3_GFS_2017_gfdlmp_regional" | \
   "FV3_GFS_v16" | \
   "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"
     ;;
 #
   "FV3_RRFS_v1beta" | \
-  "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
   "FV3_HRRR" | \
@@ -199,7 +196,11 @@ case "${CCPP_PHYS_SUITE}" in
     if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "RRFS" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
-      varmap_file="GSDphys_var_map.txt"
+      if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+        varmap_file="GSDphys_var_map_smoke.txt"
+      else
+        varmap_file="GSDphys_var_map.txt"
+      fi
     elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "UFS-CASE-STUDY" ] || \
@@ -214,14 +215,13 @@ case "${CCPP_PHYS_SUITE}" in
   message_txt="The variable \"varmap_file\" has not yet been specified 
 for this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
   ;;
 #
 esac
+
+varmap_file_fp="${PARMdir}/ufs_utils/varmap_tables/${varmap_file}"
 #
 #-----------------------------------------------------------------------
 #
@@ -418,11 +418,8 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   message_txt="External-model-dependent namelist variables have not yet been 
 specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
   ;;
 
 esac
@@ -440,11 +437,8 @@ if [ ! -f "${exec_fp}" ]; then
 on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -512,14 +506,11 @@ for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
-   message_txt="The external model output file name to use in the chgres_cube 
+    message_txt="The external model output file name to use in the chgres_cube 
 FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
     ;;
   esac
 #
@@ -563,7 +554,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
  'orog_dir_target_grid': ${FIXlam}
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
  'vcoord_file_target_grid': ${VCOORD_FILE}
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
+ 'varmap_file': ${varmap_file_fp}
  'data_dir_input_grid': ${extrn_mdl_staging_dir}
  'atm_files_input_grid': ${fn_atm}
  'grib2_file_input_grid': \"${fn_grib2}\"
@@ -597,11 +588,8 @@ EOF
     message_txt="Error creating namelist read by ${exec_fn} failed.
        Settings for input are:
 $settings"
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 #
 #-----------------------------------------------------------------------

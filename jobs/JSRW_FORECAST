@@ -5,6 +5,15 @@
 #
 # The J-Job that runs the forecast
 #
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  nco:
+#    NCO variables
+#
+#  global:
+#    DO_ENSEMBLE
+#
 #-----------------------------------------------------------------------
 #
 date
@@ -30,26 +39,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-#
-#-----------------------------------------------------------------------
-#
-# Run-time environment variables:
-#
-#    CDATE
-#    COMIN
-#    DATA
-#    GLOBAL_VAR_DEFNS_FP
-#    SLASH_ENSMEM_SUBDIR
-#
-# Experiment variables
-#
-#  user:
-#    SCRIPTSdir
-#    USHdir
-#
-#-----------------------------------------------------------------------
-#
-for sect in user nco platform workflow global ; do
+for sect in platform nco global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
