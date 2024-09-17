@@ -1,19 +1,95 @@
 #!/usr/bin/env python
 
+"""This script generates a plot of the ESG grid and the write component grid. 
+    To use this script, modify the ESG grid and write component grid parameters in this script
+    manually to reflect the configuration of the grids you wish to plot. Then run the script. """
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from matplotlib.path import Path
 import matplotlib.patches as patches
 import numpy as np
 
-"""This script generates a plot of the ESG grid and the write component grid. 
-To use this script, modify the ESG grid and write component grid parameters in this script
-manually to reflect the configuration of the grids you wish to plot. Then run the script. """
+# Define a function to get the lambert points in the gnomonic space
+    
+def get_lambert_points(gnomonic_map, lambert_map, pps):
+
+    """This function takes the lambert domain we have defined, ``lambert_map``, and ``pps``,
+    and returns an array of two lists: one a list of tuples of the ``4*ppf + 4`` vertices mapping 
+    the approximate shape of the lambert domain on the gnomonic map, the other a list of "draw" 
+    instructions to be used by the PathPatch function.
+
+    Start array with bottom left point, "MOVETO" instruction
+
+    Args: 
+        gnomonic_map (Basemap): A map of the ESG grid
+        lambert_map (Basemap): A map of the write component grid
+        pps: The number of points to interpolate and draw for each side of the lambert 
+            "rectangle." It is recommended to set to 10 or less due to time of calculation.
+        
+    Returns:
+        vertices, instructions: A tuple of two lists---a list of tuples of the ``4*ppf + 4`` 
+                                vertices mapping the approximate shape of the lambert domain 
+                                on the gnomonic map, the other a list of "draw" instructions 
+                                to be used by the PathPatch function.
+    """
+    
+    vertices = [
+        gnomonic_map(*lambert_map(lambert_map.xmin, lambert_map.ymin, inverse=True))
+    ]
+    instructions = [Path.MOVETO]
+
+    # Next generate the rest of the left side
+    lefty = np.linspace(lambert_map.ymin, lambert_map.ymax, num=pps + 1, endpoint=False)
+
+    for y in lefty[1:]:
+        vertices.append(
+            tuple(gnomonic_map(*lambert_map(lambert_map.xmin, y, inverse=True)))
+        )
+        instructions.append(Path.LINETO)
+
+    # Next generate the top of the domain
+    topx = np.linspace(lambert_map.xmin, lambert_map.xmax, num=pps + 1, endpoint=False)
+
+    for x in topx:
+        vertices.append(
+            tuple(gnomonic_map(*lambert_map(x, lambert_map.ymax, inverse=True)))
+        )
+        instructions.append(Path.LINETO)
+
+    # Next generate the right side of the domain
+    righty = np.linspace(
+        lambert_map.ymax, lambert_map.ymin, num=pps + 1, endpoint=False
+    )
+
+    for y in righty:
+        vertices.append(
+            tuple(gnomonic_map(*lambert_map(lambert_map.xmax, y, inverse=True)))
+        )
+        instructions.append(Path.LINETO)
+
+    # Finally generate the bottom of the domain
+    bottomx = np.linspace(
+        lambert_map.xmax, lambert_map.xmin, num=pps + 1, endpoint=False
+    )
+
+    for x in bottomx:
+        vertices.append(
+            tuple(gnomonic_map(*lambert_map(x, lambert_map.ymin, inverse=True)))
+        )
+        instructions.append(Path.LINETO)
+
+    # Need to replace final instruction with Path.CLOSEPOLY
+    instructions[-1] = Path.CLOSEPOLY
+
+    return vertices, instructions
+
+
 
 #### User-defined variables
 
 if __name__ == "__main__":
-
+    
     # Computational grid definitions
     ESGgrid_LON_CTR = -153.0
     ESGgrid_LAT_CTR = 61.0
@@ -126,85 +202,8 @@ if __name__ == "__main__":
     patch = patches.PathPatch(path, facecolor="r", lw=2, alpha=0.5)
     ax1.add_patch(patch)
 
-
     # Draw lambert write grid rectangle:
-
-    # Define a function to get the lambert points in the gnomonic space
-
-
-    def get_lambert_points(gnomonic_map, lambert_map, pps):
-        """This function takes the lambert domain we have defined, ``lambert_map``, and ``pps``,
-        and returns an array of two lists: one a list of tuples of the ``4*ppf + 4`` vertices mapping 
-        the approximate shape of the lambert domain on the gnomonic map, the other a list of "draw" 
-        instructions to be used by the PathPatch function.
-
-        Start array with bottom left point, "MOVETO" instruction
-
-        Args: 
-            gnomonic_map (Basemap): A map of the ESG grid
-            lambert_map (Basemap): A map of the write component grid
-            pps: The number of points to interpolate and draw for each side of the lambert 
-                "rectangle." It is recommended to set to 10 or less due to time of calculation.
-        
-        Returns:
-            vertices, instructions: A tuple of two lists---a list of tuples of the ``4*ppf + 4`` 
-                                    vertices mapping the approximate shape of the lambert domain 
-                                    on the gnomonic map, the other a list of "draw" instructions 
-                                    to be used by the PathPatch function.
-        """
-        
-        vertices = [
-            gnomonic_map(*lambert_map(lambert_map.xmin, lambert_map.ymin, inverse=True))
-        ]
-        instructions = [Path.MOVETO]
-
-        # Next generate the rest of the left side
-        lefty = np.linspace(lambert_map.ymin, lambert_map.ymax, num=pps + 1, endpoint=False)
-
-        for y in lefty[1:]:
-            vertices.append(
-                tuple(gnomonic_map(*lambert_map(lambert_map.xmin, y, inverse=True)))
-            )
-            instructions.append(Path.LINETO)
-
-        # Next generate the top of the domain
-        topx = np.linspace(lambert_map.xmin, lambert_map.xmax, num=pps + 1, endpoint=False)
-
-        for x in topx:
-            vertices.append(
-                tuple(gnomonic_map(*lambert_map(x, lambert_map.ymax, inverse=True)))
-            )
-            instructions.append(Path.LINETO)
-
-        # Next generate the right side of the domain
-        righty = np.linspace(
-            lambert_map.ymax, lambert_map.ymin, num=pps + 1, endpoint=False
-        )
-
-        for y in righty:
-            vertices.append(
-                tuple(gnomonic_map(*lambert_map(lambert_map.xmax, y, inverse=True)))
-            )
-            instructions.append(Path.LINETO)
-
-        # Finally generate the bottom of the domain
-        bottomx = np.linspace(
-            lambert_map.xmax, lambert_map.xmin, num=pps + 1, endpoint=False
-        )
-
-        for x in bottomx:
-            vertices.append(
-                tuple(gnomonic_map(*lambert_map(x, lambert_map.ymin, inverse=True)))
-            )
-            instructions.append(Path.LINETO)
-
-        # Need to replace final instruction with Path.CLOSEPOLY
-        instructions[-1] = Path.CLOSEPOLY
-
-        return vertices, instructions
-
-
-    # Call the function we just defined to generate a polygon roughly approximating the lambert "rectangle" in gnomonic space
+    # Call get_lambert_points() to generate a polygon roughly approximating the lambert "rectangle" in gnomonic space
 
     verts3, codes3 = get_lambert_points(map1, map3, 10)
 
