@@ -546,6 +546,31 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+    # For vx fields that are accumulated, remove those accumulation hours
+    # that are longer than the forecast length.  If that leaves the array
+    # of accumulation hours for that field empty, then remove the field
+    # from the list of fields to be verified.
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Get the vx fields specified in the experiment configuration.
+    vx_fields_config = expt_config["verification"]["VX_FIELDS"]
+
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    vx_fields_accum = ["APCP", "ASNOW"]
+    for field in vx_fields_accum:
+        if field in vx_fields_config:
+            accum_periods_array_name = "".join(["VX_", field, "_ACCUMS_HRS"])
+            accum_periods = expt_config["verification"][accum_periods_array_name]
+            accum_periods = [accum for accum in accum_periods if (accum <= fcst_len_hrs)]
+            expt_config["verification"][accum_periods_array_name] = accum_periods
+            if not accum_periods:
+                vx_fields_config.remove(field)
+
+    expt_config["verification"]["VX_FIELDS"] = vx_fields_config 
+    #
+    # -----------------------------------------------------------------------
+    #
     # Remove all verification [meta]tasks for which no fields are specified.
     #
     # -----------------------------------------------------------------------
@@ -562,10 +587,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     vx_fields_all["NOHRSC"] = ["ASNOW"]
     vx_metatasks_all["NOHRSC"] = ["task_get_obs_nohrsc",
-                                "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems",
-                                "metatask_GridStat_NOHRSC_all_accums_all_mems",
-                                "metatask_GenEnsProd_EnsembleStat_NOHRSC",
-                                "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
+                                  "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems",
+                                  "metatask_GridStat_NOHRSC_all_accums_all_mems",
+                                  "metatask_GenEnsProd_EnsembleStat_NOHRSC",
+                                  "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
 
     vx_fields_all["MRMS"] = ["REFC", "RETOP"]
     vx_metatasks_all["MRMS"] = ["metatask_GridStat_MRMS_all_mems",
@@ -577,9 +602,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                                 "metatask_PointStat_NDAS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_NDAS",
                                 "metatask_PointStat_NDAS_ensmeanprob"]
-
-    # Get the vx fields specified in the experiment configuration.
-    vx_fields_config = expt_config["verification"]["VX_FIELDS"]
 
     # If there are no vx fields specified, remove those tasks that are necessary
     # for all observation types.
@@ -602,7 +624,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                         are specified for verification."""
                     ))
                     rocoto_config['tasks'].pop(metatask)
-
     #
     # -----------------------------------------------------------------------
     #
