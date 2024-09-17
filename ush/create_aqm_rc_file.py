@@ -24,8 +24,8 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     """Creates an ``aqm.rc`` file in the specified run directory
 
     Args:
-        cdate                (str): cycle date
-        run_dir              (str): run directory
+        cdate                (str): Cycle date
+        run_dir              (str): Run directory
         init_concentrations (bool): Flag to reset initial AQM concentrations (tracer values) to 
                                     zero.
     Returns:

@@ -1002,7 +1002,7 @@ def parse_args(argv):
 
     """
     Maintains the arguments accepted by this script. Please see Python's 
-    `argparse <https://docs.python.org/3/library/argparse.html>`_ documenation for more 
+    `argparse <https://docs.python.org/3/library/argparse.html>`_ documentation for more 
     information about settings of each argument.
     
     Args:

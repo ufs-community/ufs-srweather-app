@@ -11,7 +11,7 @@ def str_to_date(s):
     """Gets Python datetime object from string.
 
     Args:
-        s (str): a string
+        s (str): A string
     Returns:
         Datetime object or None
     """
@@ -36,7 +36,7 @@ def date_to_str(d, format="%Y%m%d%H%M"):
     By default it converts to ``YYYYMMDDHHmm`` format unless told otherwise by passing a different format.
 
     Args:
-        d (datetime.datetime): datetime object
+        d (datetime.datetime): Datetime object
         format (str): Format of the datetime string; default is ``"%Y%m%d%H%M"`` (see `format codes <https://docs.python.org/3/library/datetime.html#format-codes>`_ for other options).
     Returns:
         String in YYYYMMDDHHmm or shorter version of it
@@ -52,7 +52,7 @@ def str_to_type(s, return_string=0):
     pass ``return_string = 1``.
 
     Args:
-        s (str): a string
+        s (str): A string
         return_string (int): Set to ``1`` to return the string itself. Set to ``2`` to return the string itself only for a datetime object
     Returns:
         A float, int, boolean, datetime, or the string itself when all else fails
@@ -93,9 +93,9 @@ def type_to_str(v):
     """Gets a string representing the value of a given float, int, boolean, date or list of these types. 
 
     Args:
-        v: a variable of the above types
+        v: A variable of the above types
     Returns:
-        a string
+        A string
     """
     if isinstance(v, bool):
         return "TRUE" if v else "FALSE"
@@ -113,10 +113,10 @@ def list_to_str(v, oneline=False):
     to be used on right hand side of shell environment variables.
 
     Args:
-        v: a string/number, list of strings/numbers, or null string(``''``)
+        v: A string/number, list of strings/numbers, or null string(``''``)
         oneline (bool): If the string is a single line (True) or multiple (False) ?
     Returns:
-        a string
+        A string
     """
     if isinstance(v, str):
         return v
@@ -137,7 +137,7 @@ def str_to_list(v, return_string=0):
     Basically does the reverse operation of ``list_to_str``.
 
     Args:
-        v: a string
+        v: A string
     Returns:
         A string, a list of strings, or a null string(``''``)
     """

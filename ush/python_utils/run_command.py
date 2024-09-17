@@ -7,7 +7,7 @@ def run_command(cmd):
     """Runs system command in a subprocess
 
     Args:
-        cmd (str): command to execute
+        cmd (str): Command to execute
     Returns:
         Tuple of (exit code, std_out, std_err)
     """

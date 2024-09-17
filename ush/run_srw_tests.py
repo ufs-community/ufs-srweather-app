@@ -11,7 +11,7 @@ class SRWTest:
   The expectation is to have a "clean" experiment directory with only new experiments
   that are ready to run (e.g., no ``_old*`` experiments left around from previous tests).
   This script takes only one parameter (``-e`` or ``--exptdir``) which points to the 
-  ``expt_basedir`` specified when the ``run_WE2E_tests.sh`` is run to set up the tests.
+  ``expt_basedir`` specified when the ``run_WE2E_tests.sh`` script is run to set up the tests.
   The script will work sequentially through each of the test directories and 
   launch the workflow for each with a call to ``launch_FV3LAM_wflow.sh``.
   After the initial launch, the ``checkTests`` method is called to monitor the

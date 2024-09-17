@@ -11,7 +11,7 @@ def cmd_vrfy(cmd, *args):
         cmd (str): The command
         *args: Its arguments
     Returns:
-        ret - Exit code
+        ret: Exit code
     """
 
     cmd += " " + " ".join([str(a) for a in args])
