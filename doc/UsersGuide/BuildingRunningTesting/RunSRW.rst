@@ -549,6 +549,7 @@ The ``data:`` section of the machine file can point to various data sources that
          netcdf: /Users/username/DATA/UFS/FV3GFS/netcdf
       RAP: /Users/username/DATA/UFS/RAP/grib2
       HRRR: /Users/username/DATA/UFS/HRRR/grib2
+      RRFS: /Users/username/DATA/UFS/RRFS/grib2
 
 This can be helpful when conducting multiple experiments with different types of data. 
 
