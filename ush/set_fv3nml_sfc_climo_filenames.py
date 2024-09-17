@@ -29,7 +29,7 @@ NEEDED_VARS = [
     "EXPTDIR",
     "FIXlam",
     "FV3_NML_FP",
-    "PARMdir",
+    "HOMEdir",
     ]
 
 
@@ -53,7 +53,7 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
 
     import_vars(dictionary=config, env_vars=NEEDED_VARS)
 
-    fixed_cfg = get_yaml_config(os.path.join(PARMdir, "fixed_files_mapping.yaml"))["fixed_files"]
+    fixed_cfg = get_yaml_config(os.path.join(HOMEdir, "parm/fixed_files_mapping.yaml"))["fixed_files"]
 
     # The regular expression regex_search set below will be used to extract
     # from the elements of the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING

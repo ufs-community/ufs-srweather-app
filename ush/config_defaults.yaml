@@ -33,9 +33,6 @@ user:
   # The path to the user's modulefiles directory in their ufs-srweather-app 
   # clone.
   # 
-  # EXECdir: 
-  # The path to the user's exec directory in their ufs-srweather-app clone.
-  #
   # METPLUS_CONF: 
   # The path to the user's final METplus configuration file. By default, 
   # METplus configuration files reside in ufs-srweather-app/parm/metplus.
@@ -54,7 +51,6 @@ user:
 
   HOMEdir: '{{ user.HOMEdir }}'
   MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
-  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
   METPLUS_CONF: '{{ [HOMEdir, "parm/metplus"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
 
@@ -538,7 +534,7 @@ workflow:
   # FV3_EXEC_FN:
   # Name to use for the forecast model executable when it is copied from
   # the directory in which it is created in the build step to the executables
-  # directory (EXECDIR; this is set during experiment generation).
+  # directory; this is set during experiment generation).
   #
   # DATA_TABLE_FN: 
   # Name of the file that contains the data table read in by the forecast model. 
@@ -1659,7 +1655,7 @@ task_run_fcst:
   #------------------------------------------------------------------------
   NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
   PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
-  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
+  FV3_EXEC_FP: '{{ [user.HOMEdir, "exec", workflow.FV3_EXEC_FN]|path_join }}'
   IO_LAYOUT_Y: 1
   #
   #-----------------------------------------------------------------------

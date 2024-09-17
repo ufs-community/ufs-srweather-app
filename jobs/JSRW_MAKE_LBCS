@@ -6,6 +6,9 @@
 # The J-job to run chgres_cube for preparing lateral boundary conditions
 # for the FV3 forecast
 #
+#  user:
+#    MACHINE
+#
 #  platform:
 #    WORKFLOW_MANAGER
 #
@@ -40,7 +43,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in platform nco global ; do
+for sect in user platform nco global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

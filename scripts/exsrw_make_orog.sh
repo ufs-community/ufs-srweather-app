@@ -37,10 +37,6 @@
 #
 # Experiment variables
 #
-#  user:
-#    EXECdir
-#    USHdir
-#
 #  platform:
 #    FIXorg
 #    PRE_TASK_CMDS
@@ -240,7 +236,7 @@ print_info_msg "$VERBOSE" "Starting orography file generation..."
 export pgm="orog"
 . prep_step
 
-eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm < "${input_redirect_fn}" >>$pgmout 2>errfile
+eval ${RUN_CMD_SERIAL} ${EXECsrw}/$pgm < "${input_redirect_fn}" >>$pgmout 2>errfile
 export err=$?; err_chk
 mv errfile ${DATA}/errfile_orog
 #
@@ -295,7 +291,7 @@ EOF
   export pgm="orog_gsl"
   . prep_step
 
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm < "${input_redirect_fn}" >>$pgmout 2>errfile
+  eval ${RUN_CMD_SERIAL} ${EXECsrw}/$pgm < "${input_redirect_fn}" >>$pgmout 2>errfile
   export err=$?; err_chk
   mv errfile ${DATA}/errfile_orog_gsl
 
@@ -409,7 +405,7 @@ print_info_msg "$VERBOSE" "Starting filtering of orography..."
 export pgm="filter_topo"
 . prep_step
 
-eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm >>$pgmout 2>errfile
+eval ${RUN_CMD_SERIAL} ${EXECsrw}/$pgm >>$pgmout 2>errfile
 export err=$?; err_chk
 mv errfile ${DATA}/errfile_filter_topo
 
@@ -467,7 +463,7 @@ for halo_num in "${halo_num_list[@]}"; do
 
   . prep_step
 
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm < ${nml_fn} >>$pgmout 2>errfile
+  eval ${RUN_CMD_SERIAL} ${EXECsrw}/$pgm < ${nml_fn} >>$pgmout 2>errfile
   export err=$?; err_chk
   mv errfile ${DATA}/errfile_shave_${halo_num}
   mv ${shaved_fp} ${OROG_DIR}

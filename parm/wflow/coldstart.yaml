@@ -18,6 +18,7 @@ default_task: &default_task
     cyc: !cycstr "@H"
     nprocs: '{{ parent.nnodes * parent.ppn }}'
     subcyc: !cycstr "@M"
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
@@ -95,7 +96,6 @@ metatask_run_ensemble:
     command: '&LOAD_MODULES_RUN_TASK; "make_ics" "&HOMEdir;/jobs/JSRW_MAKE_ICS"'
     envars:
       <<: *default_vars
-      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12
@@ -134,7 +134,6 @@ metatask_run_ensemble:
     command: '&LOAD_MODULES_RUN_TASK; "make_lbcs" "&HOMEdir;/jobs/JSRW_MAKE_LBCS"'
     envars:
       <<: *default_vars
-      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
       bcgrp: '00'
       bcgrpnum: '1'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -152,7 +151,6 @@ metatask_run_ensemble:
     command: '&LOAD_MODULES_RUN_TASK; "forecast" "&HOMEdir;/jobs/JSRW_FORECAST"'
     envars:
       <<: *default_vars
-      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
       nprocs:
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'

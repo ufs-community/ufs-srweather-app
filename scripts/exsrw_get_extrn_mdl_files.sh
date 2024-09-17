@@ -26,9 +26,6 @@
 #
 #  user:
 #    MACHINE
-#    PARMdir
-#    RUN_ENVIR
-#    USHdir
 #
 #  platform:
 #    EXTRN_MDL_DATA_STORES
@@ -237,7 +234,7 @@ cmd="
 python3 -u ${USHsrw}/retrieve_data.py \
   --debug \
   --file_set ${file_set} \
-  --config ${PARMdir}/data_locations.yml \
+  --config ${PARMsrw}/data_locations.yml \
   --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
   --data_type ${EXTRN_MDL_NAME} \

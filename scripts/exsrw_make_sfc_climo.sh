@@ -17,10 +17,6 @@
 #
 # Experiment variables
 #
-#   user:
-#     EXECdir
-#     USHdir
-#
 #   platform:
 #     FIXsfc
 #     PRE_TASK_CMDS
@@ -170,7 +166,7 @@ fi
 export pgm="sfc_climo_gen"
 . prep_step
 
-$APRUN $EXECdir/$pgm >>$pgmout 2>errfile
+eval ${RUN_CMD_SERIAL} ${EXECsrw}/$pgm >>$pgmout 2>errfile
 export err=$?; err_chk
 #
 #-----------------------------------------------------------------------

@@ -47,7 +47,7 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . ${scrfunc_dir}/preamble.sh; } > /dev/null 2>&1
+i{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #

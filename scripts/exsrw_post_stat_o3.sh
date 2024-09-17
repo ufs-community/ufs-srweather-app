@@ -92,7 +92,7 @@ EOF1
 
 # convert from netcdf to grib2 format
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
+eval ${RUN_CMD_SERIAL} ${EXECsrw}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
 export err=$?
  err_chk
 POST_STEP
@@ -216,7 +216,7 @@ EOF1
   fi
 
   PREP_STEP
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
+  eval ${RUN_CMD_SERIAL} ${EXECsrw}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
   export err=$?
     err_chk
   POST_STEP

@@ -38,7 +38,7 @@ source $USHdir/source_util_funcs.sh
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 
 #
 #-----------------------------------------------------------------------

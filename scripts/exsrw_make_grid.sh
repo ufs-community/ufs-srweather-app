@@ -48,10 +48,6 @@
 #
 # Experiment variables
 #
-#  user:
-#    EXECdir
-#    USHdir
-#
 #  platform:
 #    PRE_TASK_CMDS
 #    RUN_CMD_SERIAL
@@ -301,7 +297,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
     --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
     --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
     --halo 1 \
-    --great_circle_algorithm >>$pgmout 2>${tmpdir}/errfile
+    --great_circle_algorithm >>$pgmout 2>errfile
   export err=$?; err_chk
   mv errfile errfile_make_hgrid
   #
@@ -358,7 +354,7 @@ EOF
   export pgm="regional_esg_grid"
   . prep_step
 
-  eval $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} >>$pgmout 2>errfile
+  eval $RUN_CMD_SERIAL ${EXECsrw}/$pgm ${rgnl_grid_nml_fp} >>$pgmout 2>errfile
   export err=$?; err_chk
   mv errfile errfile_regional_esg_grid
   #
@@ -385,7 +381,7 @@ print_info_msg "$VERBOSE" "Grid file generation completed successfully."
 export pgm="global_equiv_resol"
 . prep_step
 
-eval $RUN_CMD_SERIAL ${exec_fp} "${grid_fp}" >>$pgmout 2>errfile
+eval $RUN_CMD_SERIAL ${EXECsrw}/$pgm "${grid_fp}" >>$pgmout 2>errfile
 export err=$?; err_chk
 mv errfile errfile_global_equiv_resol
 
@@ -493,14 +489,14 @@ for halo_num in "${halo_num_list[@]}"; do
   print_info_msg "Shaving grid file with ${halo_num}-cell-wide halo..."
 
   nml_fn="input.shave.grid.halo${halo_num}"
-  shaved_fp="${tmpdir}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${halo_num}.nc"
+  shaved_fp="${DATA}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${halo_num}.nc"
   printf "%s %s %s %s %s\n" \
   $NX $NY ${halo_num} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}
 
   . prep_step
 
-  eval $RUN_CMD_SERIAL ${EXECdir}/$pgm < ${nml_fn} >>$pgmout 2>errfile
+  eval $RUN_CMD_SERIAL ${EXECsrw}/$pgm < ${nml_fn} >>$pgmout 2>errfile
   export err=$?; err_chk
   mv errfile errfile_shave_nh${halo_num}
   mv ${shaved_fp} ${GRID_DIR}
@@ -525,7 +521,7 @@ for halo_num in "${halo_num_list[@]}"; do
 
   . prep_step
 
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm \
+  eval ${RUN_CMD_SERIAL} ${EXECsrw}/$pgm \
       --num_tiles 1 \
       --dir "${GRID_DIR}" \
       --tile_file "${grid_fn}" \

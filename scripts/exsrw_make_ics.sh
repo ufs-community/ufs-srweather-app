@@ -25,11 +25,7 @@
 # Experiment variables
 #
 #  user:
-#    EXECdir
 #    MACHINE
-#    PARMdir
-#    RUN_ENVIR
-#    USHdir
 #
 #  platform:
 #    FIXgsm

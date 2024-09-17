@@ -6,6 +6,9 @@
 # This script adds extra species for air quality modeling (AQM) to the 
 # initial conditions (ICs).
 #
+#  user:
+#    MACHINE
+#
 #  platform:
 #    WORKFLOW_MANAGER
 #
@@ -40,7 +43,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in platform nco global ; do
+for sect in user platform nco global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

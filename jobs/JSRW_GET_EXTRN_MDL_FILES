@@ -21,11 +21,13 @@
 # Experiment variables
 #
 #  user:
-#    SCRIPTSdir
-#    USHdir
+#    MACHINE
 #
-#  workflow:
-#    EXPTDIR
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  nco:
+#    NCO variables
 #
 #  task_get_extrn_lbcs:
 #    EXTRN_MDL_FILES_LBCS
@@ -71,9 +73,21 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco workflow task_get_extrn_lbcs task_get_extrn_ics ; do
+for sect in user platform nco global workflow task_get_extrn_lbcs task_get_extrn_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
