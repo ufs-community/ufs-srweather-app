@@ -6,6 +6,10 @@ from matplotlib.path import Path
 import matplotlib.patches as patches
 import numpy as np
 
+"""This script generates a plot of the ESG grid and the write component grid. 
+To use this script, modify the ESG grid and write component grid parameters in this script
+manually to reflect the configuration of the grids you wish to plot. Then run the script. """
+
 #### User-defined variables
 
 if __name__ == "__main__":
@@ -137,10 +141,10 @@ if __name__ == "__main__":
         Start array with bottom left point, "MOVETO" instruction
 
         Args: 
-            gnomonic_map: 
-            lambert_map: 
+            gnomonic_map (Basemap): A map of the ESG grid
+            lambert_map (Basemap): A map of the write component grid
             pps: The number of points to interpolate and draw for each side of the lambert 
-                "rectangle". It is recommended to set to 10 or less due to time of calculation.
+                "rectangle." It is recommended to set to 10 or less due to time of calculation.
         
         Returns:
             vertices, instructions: A tuple of two lists---a list of tuples of the ``4*ppf + 4`` 
