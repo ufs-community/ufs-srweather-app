@@ -81,8 +81,9 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm constants task_get_extrn_ics task_make_ics ; do
+. ${USHsrw}/source_util_funcs.sh
+for sect in user nco platform workflow global cpl_aqm_parm \
+   smoke_dust_parm constants task_get_extrn_ics task_make_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -93,7 +94,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -149,8 +150,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
-
-
 #
 #-----------------------------------------------------------------------
 #
@@ -159,13 +158,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_ics.${share_pid}${SLASH_ENSMEM_SUBDIR}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-else
-    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS${SLASH_ENSMEM_SUBDIR}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-fi
+extrn_mdl_staging_dir="${DATA_SHARE}"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
@@ -219,7 +213,7 @@ this physics suite (CCPP_PHYS_SUITE):
 #
 esac
 
-varmap_file_fp="${PARMdir}/ufs_utils/varmap_tables/${varmap_file}"
+varmap_file_fp="${PARMsrw}/ufs_utils/varmap_tables/${varmap_file}"
 #
 #-----------------------------------------------------------------------
 #
@@ -592,23 +586,6 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #
 #-----------------------------------------------------------------------
 #
-# Check that the executable that generates the ICs exists.
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="chgres_cube"
-exec_fp="$EXECdir/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
-  message_txt="The executable (exec_fp) for generating initial conditions 
-on the FV3-LAM native grid does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-  err_exit "${message_txt}"
-  print_err_msg_exit "${message_txt}"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Build the FORTRAN namelist file that chgres_cube will read in.
 #
 #-----------------------------------------------------------------------
@@ -687,26 +664,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# NOTE:
-# Often when the chgres_cube.exe run fails, it still returns a zero
-# return code, so the failure isn't picked up the the logical OR (||)
-# below.  That should be fixed.  This might be due to the RUN_CMD_UTILS
-# command - maybe that is returning a zero exit code even though the
-# exit code of chgres_cube is nonzero.  A similar thing happens in the
-# forecast task.
-#
-PREP_STEP
-eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-  print_err_msg_exit "\
-Call to executable (exec_fp) to generate surface and initial conditions
-(ICs) files for the FV3-LAM failed:
-  exec_fp = \"${exec_fp}\"
-The external model from which the ICs files are to be generated is:
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-The external model files that are inputs to the executable (exec_fp) are
-located in the following directory:
-  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
-POST_STEP
+export pgm="chgres_cube"
+
+. prep_step
+eval ${RUN_CMD_UTILS} ${EXECsrw}/$pgm >>$pgmout 2>errfile
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #
@@ -716,8 +678,6 @@ POST_STEP
 #-----------------------------------------------------------------------
 #
 if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
-  mkdir -p ${COMOUT}
   if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     data_trans_path="${COMOUT}"
   else
@@ -732,10 +692,10 @@ if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TR
     cp -p gfs.bndy.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
   fi
 else
-  mv out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
-  mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+  mv out.atm.tile${TILE_RGNL}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv out.sfc.tile${TILE_RGNL}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv gfs_ctrl.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
+  mv gfs.bndy.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
 fi
 #
 #-----------------------------------------------------------------------
@@ -746,22 +706,8 @@ fi
 #
 if [ $(boolify "${USE_FVCOM}") = "TRUE" ]; then
 
-#Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
-  fvcom_exec_fn="fvcom_to_FV3"
-  fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
+  #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${DATE_FIRST_CYCL:8:2}:00:00.000000"
-  if [ ! -f "${fvcom_exec_fp}" ]; then
-    message_txt="The executable (fvcom_exec_fp) for processing FVCOM data 
-onto FV3-LAM native grid does not exist:
-  fvcom_exec_fp = \"${fvcom_exec_fp}\"
-Please ensure that you've built this executable."
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"\
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
-  fi
-  cp ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     message_txt="The file or path (fvcom_data_fp) does not exist:
@@ -769,30 +715,19 @@ Please ensure that you've built this executable."
 Please check the following user defined variables:
   FVCOM_DIR = \"${FVCOM_DIR}\"
   FVCOM_FILE= \"${FVCOM_FILE}\" "
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 
-  cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
-  cd ${INPUT_DATA}
-  PREP_STEP
-  eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
-       ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
-       ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
-  fvcom_exe = \"${fvcom_exe}\"
-The following variables were being used:
-  FVCOM_DIR = \"${FVCOM_DIR}\"
-  FVCOM_FILE = \"${FVCOM_FILE}\"
-  fvcom_time = \"${fvcom_time}\"
-  FVCOM_WCSTART = \"${FVCOM_WCSTART}\"
-  INPUT_DATA = \"${INPUT_DATA}\"
-  fvcom_exe_dir = \"${fvcom_exe_dir}\"
-  fvcom_exe = \"${fvcom_exe}\""
-  POST_STEP
+  cp ${fvcom_data_fp} ${DATA}/fvcom.nc
+  cd ${DATA}
+
+  pgm="fvcom_to_FV3"
+
+  . prep_step 
+  eval ${RUN_CMD_UTILS} ${EXECsrw}/$pgm ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc \  
+${FVCOM_WCSTART} ${fvcom_time} >>$pgmout 2>errfile
+  export err=$?; err_chk
 fi
 #
 #-----------------------------------------------------------------------

@@ -81,8 +81,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
-set -x
+. ${USHsrw}/source_util_funcs.sh
 for sect in user nco platform  workflow global cpl_aqm_parm smoke_dust_parm constants task_get_extrn_lbcs task_make_lbcs ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -94,7 +93,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -158,13 +157,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_lbcs.${share_pid}${SLASH_ENSMEM_SUBDIR}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-else
-    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-fi
+extrn_mdl_staging_dir="${DATA_SHARE}"
+extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 . ${extrn_mdl_var_defns_fp}
 #
 #-----------------------------------------------------------------------
@@ -217,7 +211,7 @@ for this physics suite (CCPP_PHYS_SUITE):
 #
 esac
 
-varmap_file_fp="${PARMdir}/ufs_utils/varmap_tables/${varmap_file}"
+varmap_file_fp="${PARMsrw}/ufs_utils/varmap_tables/${varmap_file}"
 #
 #-----------------------------------------------------------------------
 #
@@ -422,23 +416,6 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Check that the executable that generates the LBCs exists.
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="chgres_cube"
-exec_fp="$EXECdir/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
-  message_txt="The executable (exec_fp) for generating initial conditions 
-on the FV3-LAM native grid does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-  err_exit "${message_txt}"
-  print_err_msg_exit "${message_txt}"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Loop through the LBC update times and run chgres_cube for each such time to
 # obtain an LBC file for each that can be used as input to the FV3-LAM.
 #
@@ -451,99 +428,97 @@ for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
   i=$(( ii + bcgrp10 ))
   if [ ${i} -lt ${num_fhrs} ]; then
     echo " group ${bcgrp10} processes member ${i}"
-#
-# Get the forecast hour of the external model.
-#
-  fhr="${EXTRN_MDL_FHRS[$i]}"
-#
-# Set external model output file name and file type/format.  Note that
-# these are now inputs into chgres_cube.
-#
-  fn_atm=""
-  fn_grib2=""
+    #
+    # Get the forecast hour of the external model.
+    #
+    fhr="${EXTRN_MDL_FHRS[$i]}"
+    #
+    # Set external model output file name and file type/format.  Note that
+    # these are now inputs into chgres_cube.
+    #
+    fn_atm=""
+    fn_grib2=""
 
-  case "${EXTRN_MDL_NAME_LBCS}" in
-  "GSMGFS")
-    fn_atm="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "FV3GFS")
-    if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+    case "${EXTRN_MDL_NAME_LBCS}" in
+    "GSMGFS")
       fn_atm="${EXTRN_MDL_FNS[$i]}"
-    elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
+      ;;
+    "FV3GFS")
+      if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+        fn_atm="${EXTRN_MDL_FNS[$i]}"
+      elif [ "${FV3GFS_FILE_FMT_LBCS}" = "grib2" ]; then
+        fn_grib2="${EXTRN_MDL_FNS[$i]}"
+      elif [ "${FV3GFS_FILE_FMT_LBCS}" = "netcdf" ]; then
+        fn_atm="${EXTRN_MDL_FNS[$i]}"
+      fi
+      ;;
+    "UFS-CASE-STUDY")
+      if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+        hh="${EXTRN_MDL_CDATE:8:2}"
+        fhr_str=$(printf "%03d" ${fhr})
+        fn_atm="gfs.t${hh}z.atmf${fhr_str}.nemsio"
+        unset hh fhr_str
+      fi
+      ;;
+    "GDAS")
+      fn_atm="${EXTRN_MDL_FNS[$i]}"
+      ;;
+    "GEFS")
       fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    elif [ "${FV3GFS_FILE_FMT_LBCS}" = "netcdf" ]; then
-      fn_atm="${EXTRN_MDL_FNS[$i]}"
-    fi
-    ;;
-  "UFS-CASE-STUDY")
-    if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
-      hh="${EXTRN_MDL_CDATE:8:2}"
-      fhr_str=$(printf "%03d" ${fhr})
-      fn_atm="gfs.t${hh}z.atmf${fhr_str}.nemsio"
-      unset hh fhr_str
-    fi
-    ;;
-  "GDAS")
-    fn_atm="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "GEFS")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "RAP")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "HRRR")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "RRFS")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "NAM")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  *)
-    message_txt="The external model output file name to use in the chgres_cube 
+      ;;
+    "RAP")
+      fn_grib2="${EXTRN_MDL_FNS[$i]}"
+      ;;
+    "HRRR")
+      fn_grib2="${EXTRN_MDL_FNS[$i]}"
+      ;;
+    "RRFS")
+      fn_grib2="${EXTRN_MDL_FNS[$i]}"
+      ;;
+    "NAM")
+      fn_grib2="${EXTRN_MDL_FNS[$i]}"
+      ;;
+    *)
+      message_txt="The external model output file name to use in the chgres_cube 
 FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
-    err_exit "${message_txt}"
-    print_err_msg_exit "${message_txt}"
-    ;;
-  esac
-#
-# Get the starting date (year, month, and day together), month, day, and
-# hour of the the external model forecast.  Then add the forecast hour
-# to it to get a date and time corresponding to the current forecast time.
-#
-  yyyymmdd="${EXTRN_MDL_CDATE:0:8}"
-  mm="${EXTRN_MDL_CDATE:4:2}"
-  dd="${EXTRN_MDL_CDATE:6:2}"
-  hh="${EXTRN_MDL_CDATE:8:2}"
+      err_exit "${message_txt}"
+      print_err_msg_exit "${message_txt}"
+      ;;
+    esac
+    #
+    # Get the starting date (year, month, and day together), month, day, and
+    # hour of the the external model forecast.  Then add the forecast hour
+    # to it to get a date and time corresponding to the current forecast time.
+    #
+    yyyymmdd="${EXTRN_MDL_CDATE:0:8}"
+    mm="${EXTRN_MDL_CDATE:4:2}"
+    dd="${EXTRN_MDL_CDATE:6:2}"
+    hh="${EXTRN_MDL_CDATE:8:2}"
 
-  cdate_crnt_fhr=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
-#
-# Get the month, day, and hour corresponding to the current forecast time
-# of the the external model.
-#
-  mm="${cdate_crnt_fhr:4:2}"
-  dd="${cdate_crnt_fhr:6:2}"
-  hh="${cdate_crnt_fhr:8:2}"
-#
-# Build the FORTRAN namelist file that chgres_cube will read in.
-#
-
-#
-# Create a multiline variable that consists of a yaml-compliant string
-# specifying the values that the namelist variables need to be set to
-# (one namelist variable per line, plus a header and footer).  Below,
-# this variable will be passed to a python script that will create the
-# namelist file.
-#
-# IMPORTANT:
-# If we want a namelist variable to be removed from the namelist file,
-# in the "settings" variable below, we need to set its value to the
-# string "null".
-#
-  settings="
+    cdate_crnt_fhr=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
+    #
+    # Get the month, day, and hour corresponding to the current forecast time
+    # of the the external model.
+    #
+    mm="${cdate_crnt_fhr:4:2}"
+    dd="${cdate_crnt_fhr:6:2}"
+    hh="${cdate_crnt_fhr:8:2}"
+    #
+    # Build the FORTRAN namelist file that chgres_cube will read in.
+    #
+    # Create a multiline variable that consists of a yaml-compliant string
+    # specifying the values that the namelist variables need to be set to
+    # (one namelist variable per line, plus a header and footer).  Below,
+    # this variable will be passed to a python script that will create the
+    # namelist file.
+    #
+    # IMPORTANT:
+    # If we want a namelist variable to be removed from the namelist file,
+    # in the "settings" variable below, we need to set its value to the
+    # string "null".
+    #
+    settings="
 'config':
  'fix_dir_target_grid': ${FIXlam}
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
@@ -568,9 +543,9 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
  'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
 
-  nml_fn="fort.41"
-  # UW takes input from stdin when no -i/--input-config flag is provided
-  (cat << EOF
+    nml_fn="fort.41"
+    # UW takes input from stdin when no -i/--input-config flag is provided
+    (cat << EOF
 $settings
 EOF
 ) | uw config realize \
@@ -579,68 +554,40 @@ EOF
      --output-format nml \
     -v \
 
-  export err=$?
-  if [ $err -ne 0 ]; then
-    message_txt="Error creating namelist read by ${exec_fn} failed.
+    export err=$?
+    if [ $err -ne 0 ]; then
+      message_txt="Error creating namelist read by ${exec_fn} failed.
        Settings for input are:
 $settings"
-    err_exit "${message_txt}"
-    print_err_msg_exit "${message_txt}"
-  fi
-#
-#-----------------------------------------------------------------------
-#
-# Run chgres_cube.
-#
-#-----------------------------------------------------------------------
-#
-# NOTE:
-# Often when the chgres_cube.exe run fails, it still returns a zero
-# return code, so the failure isn't picked up the the logical OR (||)
-# below.  That should be fixed.  This might be due to the RUN_CMD_UTILS
-# command - maybe that is returning a zero exit code even though the
-# exit code of chgres_cube is nonzero.  A similar thing happens in the
-# forecast task.
-#
-  PREP_STEP
-  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}
-  export err=$?
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_chk
-  else
-    if [ $err -ne 0 ]; then
-      print_err_msg_exit "\
-Call to executable (exec_fp) to generate lateral boundary conditions (LBCs)
-file for the FV3-LAM for forecast hour fhr failed:
-  exec_fp = \"${exec_fp}\"
-  fhr = \"$fhr\"
-The external model from which the LBCs files are to be generated is:
-  EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\"
-The external model files that are inputs to the executable (exec_fp) are
-located in the following directory:
-  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+      err_exit "${message_txt}"
+      print_err_msg_exit "${message_txt}"
     fi
-  fi
-  POST_STEP
-#
-# Move LBCs file for the current lateral boundary update time to the LBCs
-# work directory.  Note that we rename the file by including in its name
-# the forecast hour of the FV3-LAM (which is not necessarily the same as
-# that of the external model since their start times may be offset).
-#
-  lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
-  fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
-  fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
-  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-    cp -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
-  elif [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-    COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
-    mkdir -p ${COMOUT}
-    cp -p gfs.bndy.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
-  else
-    mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
-  fi
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Run chgres_cube.
+    #
+    #-----------------------------------------------------------------------
+    #
+    export pgm="chgres_cube"
 
+    . prep_step
+    eval ${RUN_CMD_UTILS} ${EXECsrw}/$pgm >>$pgmout 2>errfile
+    export err=$?; err_chk
+    #
+    # Move LBCs file for the current lateral boundary update time to the LBCs
+    # work directory.  Note that we rename the file by including in its name
+    # the forecast hour of the FV3-LAM (which is not necessarily the same as
+    # that of the external model since their start times may be offset).
+    #
+    lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
+    fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
+    fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
+    if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+      cp -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+    else
+      cp -p gfs.bndy.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+    fi
   fi
 done
 #

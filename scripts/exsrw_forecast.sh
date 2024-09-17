@@ -679,24 +679,22 @@ export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #
-if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-  cp -rp RESTART ${COMOUT}
+cp -rp RESTART ${COMOUT}
 
-  fhr=0
-  while [ $fhr -le ${FCST_LEN_HRS} ]; do
-    fhr_ct=$(printf "%03d" $fhr)
-    source_dyn="${DATA}/dynf${fhr_ct}.nc"
-    source_phy="${DATA}/phyf${fhr_ct}.nc"
-    target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
-    target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
-    [ -f ${source_dyn} ] && mv ${source_dyn} ${target_dyn}
-    [ -f ${source_phy} ] && mv ${source_phy} ${target_phy}
-    (( fhr=fhr+1 ))
-  done
+fhr=0
+while [ $fhr -le ${FCST_LEN_HRS} ]; do
+  fhr_ct=$(printf "%03d" $fhr)
+  source_dyn="${DATA}/dynf${fhr_ct}.nc"
+  source_phy="${DATA}/phyf${fhr_ct}.nc"
+  target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
+  target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
+  [ -f ${source_dyn} ] && mv ${source_dyn} ${target_dyn}
+  [ -f ${source_phy} ] && mv ${source_phy} ${target_phy}
+  (( fhr=fhr+1 ))
+done
 
-  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-    cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
-  fi
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 fi
 #
 #-----------------------------------------------------------------------

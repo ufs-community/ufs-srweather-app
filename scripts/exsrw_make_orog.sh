@@ -155,7 +155,7 @@ mkdir -p ${filter_dir}
 shave_dir="${DATA}/shave_tmp"
 mkdir -p ${shave_dir}
 
-tmp_orog_data="${DATA}/temp_orog_data"
+tmp_orog_data="${DATA}/tmp_orog_data"
 mkdir -p "${tmp_orog_data}"
 
 tmp_dir="${raw_dir}/tmp"

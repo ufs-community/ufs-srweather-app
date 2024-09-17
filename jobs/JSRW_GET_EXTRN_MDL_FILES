@@ -157,7 +157,12 @@ fi
 mkdir -p ${COMOUT}
 
 # Create a teomporary share directory
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
+if [ "${ICS_OR_LBCS}" = "ICS" ]; then
+  export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}/ICS}"
+elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
+  export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}/LBCS}"
+fi
+
 mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables
