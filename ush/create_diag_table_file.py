@@ -23,7 +23,7 @@ def create_diag_table_file(run_dir):
     """Creates an FV3 diagnostic table (``diag_table``) file for each cycle to be run
 
     Args:
-        run_dir (str): run directory
+        run_dir (str): Run directory
     Returns:
         True
     """
