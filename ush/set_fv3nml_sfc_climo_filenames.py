@@ -30,7 +30,6 @@ NEEDED_VARS = [
     "FIXlam",
     "FV3_NML_FP",
     "PARMdir",
-    "RUN_ENVIR",
     ]
 
 
@@ -79,8 +78,6 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
         check_var_valid_value(sfc_climo_field_name, fixed_cfg["SFC_CLIMO_FIELDS"])
 
         file_path = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
-        if RUN_ENVIR != "nco":
-            file_path = os.path.relpath(os.path.realpath(file_path), start=dummy_run_dir)
 
         namsfc_dict[nml_var_name] = file_path
 

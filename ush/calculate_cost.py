@@ -44,7 +44,6 @@ def calculate_cost(config_fn):
             iend_of_t7_on_t6g=cfg['GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G'],
             jstart_of_t7_on_t6g=cfg['GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G'],
             jend_of_t7_on_t6g=cfg['GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G'],
-            run_envir="community",
             verbose=False,
             nh4=4,
         )

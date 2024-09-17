@@ -112,7 +112,7 @@ def generate_FV3LAM_wflow(
     if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
 
         template_xml_fp = os.path.join(
-            expt_config["user"]["PARMdir"],
+            expt_config["user"]["HOMEdir"],"parm",
             wflow_xml_fn,
         )
 
@@ -486,13 +486,6 @@ def generate_FV3LAM_wflow(
         fp = '""'
         if FIXam_fn:
             fp = os.path.join(FIXam, FIXam_fn)
-            #
-            # If not in NCO mode, for portability and brevity, change fp so that it
-            # is a relative path (relative to any cycle directory immediately under
-            # the experiment directory).
-            #
-            if RUN_ENVIR != "nco":
-                fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant
         # format) the name of the current namelist variable and the value it should

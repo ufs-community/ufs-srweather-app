@@ -749,8 +749,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             else:
                 grid_config[param] = value
 
-    run_envir = expt_config["user"].get("RUN_ENVIR", "")
-
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
     date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
     date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
@@ -846,7 +844,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             jend_of_t7_on_t6g=grid_config["GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G"],
             verbose=verbose,
             nh4=expt_config["constants"]["NH4"],
-            run_envir=run_envir,
         )
     elif grid_gen_method == "ESGgrid":
         grid_params = set_gridparams_ESGgrid(

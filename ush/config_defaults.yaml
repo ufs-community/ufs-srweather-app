@@ -455,7 +455,7 @@ workflow:
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   CRONTAB_LINE: ""
-  LOAD_MODULES_RUN_TASK_FP: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'
+  LOAD_MODULES_RUN_TASK_FP: '{{ [user.HOMEdir, "ush", "load_modules_run_task.sh"]|path_join }}'
 
   #
   #-----------------------------------------------------------------------
@@ -636,15 +636,15 @@ workflow:
   #-----------------------------------------------------------------------
   #
 
-  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
-  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
+  FV3_NML_BASE_SUITE_FP: '{{ [user.HOMEdir, "parm", FV3_NML_BASE_SUITE_FN]|path_join }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ [user.HOMEdir, "parm", FV3_NML_YAML_CONFIG_FN]|path_join }}'
   FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
-  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
-  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
-  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
-  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
-  UFS_CONFIG_TMPL_FP: '{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'
-  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
+  DATA_TABLE_TMPL_FP: '{{ [user.HOMEdir, "parm", DATA_TABLE_FN]|path_join }}'
+  DIAG_TABLE_TMPL_FP: '{{ [user.HOMEdir, "parm", DIAG_TABLE_TMPL_FN]|path_join }}'
+  FIELD_TABLE_TMPL_FP: '{{ [user.HOMEdir, "parm", FIELD_TABLE_TMPL_FN]|path_join }}'
+  MODEL_CONFIG_TMPL_FP: '{{ [user.HOMEdir, "parm", MODEL_CONFIG_FN]|path_join }}'
+  UFS_CONFIG_TMPL_FP: '{{ [user.HOMEdir, "parm", UFS_CONFIG_FN]|path_join }}'
+  AQM_RC_TMPL_FP: '{{ [user.HOMEdir, "parm", AQM_RC_TMPL_FN]|path_join }}'
 
   # 
   #-----------------------------------------------------------------------
@@ -730,7 +730,7 @@ workflow:
 
   GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
   ROCOTO_YAML_FP: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}'
-  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.HOMEdir, "ush", WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
   WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
   #
   #-----------------------------------------------------------------------
