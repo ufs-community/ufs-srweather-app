@@ -67,8 +67,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
-
+. ${USHsrw}/source_util_funcs.sh
 for sect in user nco platform workflow global task_get_extrn_lbcs \
   task_get_extrn_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
@@ -81,7 +80,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -232,13 +231,10 @@ fi
 
 mkdir -p ${EXTRN_MDL_STAGING_DIR}${mem_dir}
 
-if [ $RUN_ENVIR = "nco" ]; then
-    EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-else
-    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-fi
+EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+
 cmd="
-python3 -u ${USHdir}/retrieve_data.py \
+python3 -u ${USHsrw}/retrieve_data.py \
   --debug \
   --file_set ${file_set} \
   --config ${PARMdir}/data_locations.yml \
@@ -258,11 +254,8 @@ if [ $err -ne 0 ]; then
 The command was:
 ${cmd}
 "
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 
 #

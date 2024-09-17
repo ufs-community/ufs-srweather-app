@@ -196,15 +196,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing the function that creates a symlink to a
-# file (including performing checks).
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/create_symlink_to_file.sh
-#
-#-----------------------------------------------------------------------
-#
 # Source the file containing the function that gets the stripped contents
 # of a bash script or function.
 #

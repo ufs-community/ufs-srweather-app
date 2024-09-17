@@ -54,7 +54,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 for sect in user nco platform workflow constants task_make_sfc_climo ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -66,7 +66,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -107,45 +107,40 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_SFC_CLIMO}
 #
 #-----------------------------------------------------------------------
 #
-# Are these machine dependent??
-#
-#-----------------------------------------------------------------------
-#
-ulimit -s unlimited
-#
-#-----------------------------------------------------------------------
-#
-# Change location to the temporary directory.
-#
-#-----------------------------------------------------------------------
-#
-cd $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Create the namelist that the sfc_climo_gen code will read in.
 #
-# Question: Should this instead be created from a template file?
-#
 #-----------------------------------------------------------------------
 #
+if [ "${PREDEF_GRID_NAME}" = "RRFS_FIREWX_1.5km" ]; then
+  input_substrate_temperature_file="${SFC_CLIMO_INPUT_DIR}/substrate_temperature.gfs.0.5.nc"
+  input_soil_type_file="${SFC_CLIMO_INPUT_DIR}/soil_type.bnu.v2.30s.nc"
+  input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.viirs.v2.igbp.30s.nc"
+  vegsoilt_frac=.true.
+else
+  input_substrate_temperature_file="${SFC_CLIMO_INPUT_DIR}/substrate_temperature.2.6x1.5.nc"
+  input_soil_type_file="${SFC_CLIMO_INPUT_DIR}/soil_type.statsgo.0.05.nc"
+  input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
+  vegsoilt_frac=.false.
+fi
+
 cat << EOF > ./fort.41
 &config
-input_facsf_file="${FIXsfc}/facsf.1.0.nc"
-input_substrate_temperature_file="${FIXsfc}/substrate_temperature.2.6x1.5.nc"
-input_maximum_snow_albedo_file="${FIXsfc}/maximum_snow_albedo.0.05.nc"
-input_snowfree_albedo_file="${FIXsfc}/snowfree_albedo.4comp.0.05.nc"
-input_slope_type_file="${FIXsfc}/slope_type.1.0.nc"
-input_soil_type_file="${FIXsfc}/soil_type.statsgo.0.05.nc"
-input_vegetation_type_file="${FIXsfc}/vegetation_type.igbp.0.05.nc"
-input_vegetation_greenness_file="${FIXsfc}/vegetation_greenness.0.144.nc"
-mosaic_file_mdl="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
-orog_dir_mdl="${FIXlam}"
+input_facsf_file="${SFC_CLIMO_INPUT_DIR}/facsf.1.0.nc"
+input_substrate_temperature_file="${input_substrate_temperature_file}"
+input_maximum_snow_albedo_file="${SFC_CLIMO_INPUT_DIR}/maximum_snow_albedo.0.05.nc"
+input_snowfree_albedo_file="${SFC_CLIMO_INPUT_DIR}/snowfree_albedo.4comp.0.05.nc"
+input_slope_type_file="${SFC_CLIMO_INPUT_DIR}/slope_type.1.0.nc"
+input_soil_type_file="${input_soil_type_file}"
+input_vegetation_type_file="${input_vegetation_type_file}"
+input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
+mosaic_file_mdl="${FIXLAM}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
+orog_dir_mdl="${FIXLAM}"
 orog_files_mdl="${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 halo=${NH4}
 maximum_snow_albedo_method="bilinear"
 snowfree_albedo_method="bilinear"
 vegetation_greenness_method="bilinear"
+fract_vegsoil_type=${vegsoilt_frac}
 /
 EOF
 #
@@ -172,25 +167,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the name and path to the executable and make sure that it exists.
-#
-exec_fn="sfc_climo_gen"
-exec_fp="$EXECdir/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for generating the surface climatology files
-does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-fi
+export pgm="sfc_climo_gen"
+. prep_step
 
-PREP_STEP
-eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-print_err_msg_exit "\
-Call to executable (exec_fp) to generate surface climatology files returned
-with nonzero exit code:
-  exec_fp = \"${exec_fp}\""
-POST_STEP
+$APRUN $EXECdir/$pgm >>$pgmout 2>errfile
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #
@@ -258,7 +239,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/link_fix.py \
+${USHsrw}/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "sfc_climo" || \
 print_err_msg_exit "\

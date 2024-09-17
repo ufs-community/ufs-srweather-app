@@ -12,31 +12,6 @@ user:
   #
   #-----------------------------------------------------------------------
   #
-  # Set the RUN_ENVIR variable that is listed and described in the WCOSS
-  # Implementation Standards document:
-  #
-  #   NCEP Central Operations
-  #   WCOSS Implementation Standards
-  #   April 19, 2022
-  #   Version 11.0.0
-  #
-  # RUN_ENVIR is described in this document as follows:
-  #
-  #   Set to "nco" if running in NCO's production environment. Used to 
-  #   distinguish between organizations.
-  #
-  # Valid values are "nco" and "community".  Here, we use it to generate
-  # and run the experiment either in NCO mode (if RUN_ENVIR is set to "nco")
-  # or in community mode (if RUN_ENVIR is set to "community").  This has 
-  # implications on the experiment variables that need to be set and the
-  # the directory structure used.
-  #
-  #-----------------------------------------------------------------------
-  #
-  RUN_ENVIR: "nco"
-  #
-  #-----------------------------------------------------------------------
-  #
   # Set machine and queue parameters.  Definitions:
   #
   # MACHINE:
@@ -54,23 +29,6 @@ user:
   # The path to the user's ufs-srweather-app clone. This path 
   # is set in ush/setup.py as the parent directory to USHdir. 
   #
-  # USHdir: 
-  # The path to the user's ush directory in their ufs-srweather-app clone. 
-  # This path is set automatically in the main function of setup.py and 
-  # corresponds to the location of setup.py (i.e., the ush directory).
-  # 
-  # SCRIPTSdir: 
-  # The path to the user's scripts directory in their ufs-srweather-app clone.
-  # 
-  # JOBSdir: 
-  # The path to the user's jobs directory in their ufs-srweather-app clone.
-  # 
-  # SORCdir: 
-  # The path to the user's sorc directory in their ufs-srweather-app clone.
-  # 
-  # PARMdir: 
-  # The path to the user's parm directory in their ufs-srweather-app clone.
-  # 
   # MODULESdir: 
   # The path to the user's modulefiles directory in their ufs-srweather-app 
   # clone.
@@ -90,25 +48,15 @@ user:
   # knowledge of HOMEdir and often corresponds to ufs-srweather-app/
   # sorc/ufs-weather-model.
   # 
-  # ARL_NEXUS_DIR: 
-  # The path to the user's NEXUS directory. By default, NEXUS source 
-  # code resides in ufs-srweather-app/sorc/arl_nexus
-  # 
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
 
   HOMEdir: '{{ user.HOMEdir }}'
-  USHdir: '{{ user.USHdir }}'
-  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
-  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
-  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
-  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
   MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
   EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
-  METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
+  METPLUS_CONF: '{{ [HOMEdir, "parm/metplus"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
-  ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
 
 #----------------------------
 # PLATFORM config parameters
@@ -1100,8 +1048,15 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco"). All variables have the suffix [_default] meaning the default value.
+  # Set parameters that are listed and described in the WCOSS
+  # Implementation Standards document:
+  #
+  #   NCEP Central Operations
+  #   WCOSS Implementation Standards
+  #   April 19, 2022
+  #   Version 11.0.0
+  #
+  # All parameters have the suffix [_default] meaning the default value.
   # This is because they are supposed to be defined in job cards for the 
   # production using ecFlow.
   #

@@ -1,7 +1,6 @@
 metadata:
   description: config for Smoke and Dust, RRFS_CONUS_3km
 user:
-  RUN_ENVIR: community
   MACHINE: hera
   ACCOUNT: [account name]
 platform:

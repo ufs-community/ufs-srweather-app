@@ -5,11 +5,6 @@ default_task: &default_task
     maxtries: '1'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    USHdir: '&USHdir;'
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
-    subcyc: !cycstr "@M"
     HOMEdir: '&HOMEdir;'
     envir: '&envir;'
     model_ver: '&model_ver;'
@@ -19,6 +14,10 @@ default_task: &default_task
     DATAROOT: '&DATAROOT;'
     DCOMROOT: '&DCOMROOT;'
     LOGDIR: !cycstr "&LOGDIR;"
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    subcyc: !cycstr "@M"
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
@@ -28,7 +27,7 @@ default_task: &default_task
 
 task_get_extrn_ics:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK; "get_extrn_ics" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_extrn_ics" "&HOMEdir;/jobs/JSRW_GET_EXTRN_MDL_FILES"'
   attrs:
     cycledefs: forecast
     maxtries: '2'
@@ -59,7 +58,7 @@ task_get_extrn_ics:
 
 task_get_extrn_lbcs:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK; "get_extrn_lbcs" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+  command: '&LOAD_MODULES_RUN_TASK; "get_extrn_lbcs" "&HOMEdir;/jobs/JSRW_GET_EXTRN_MDL_FILES"'
   attrs:
     cycledefs: forecast
     maxtries: '2'
@@ -93,7 +92,7 @@ metatask_run_ensemble:
     mem: '{% if global.DO_ENSEMBLE %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   task_make_ics_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_ICS"'
+    command: '&LOAD_MODULES_RUN_TASK; "make_ics" "&HOMEdir;/jobs/JSRW_MAKE_ICS"'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
@@ -132,7 +131,7 @@ metatask_run_ensemble:
 
   task_make_lbcs_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK; "make_lbcs" "&JOBSdir;/JREGIONAL_MAKE_LBCS"'
+    command: '&LOAD_MODULES_RUN_TASK; "make_lbcs" "&HOMEdir;/jobs/JSRW_MAKE_LBCS"'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
@@ -150,7 +149,7 @@ metatask_run_ensemble:
 
   task_run_fcst_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK; "forecast" "&JOBSdir;/JSRW_FORECAST"'
+    command: '&LOAD_MODULES_RUN_TASK; "forecast" "&HOMEdir;/jobs/JSRW_FORECAST"'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
@@ -233,5 +232,4 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: prepstart
-
 

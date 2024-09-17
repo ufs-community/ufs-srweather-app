@@ -88,7 +88,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 for sect in user nco platform workflow constants grid_params task_make_grid task_make_orog task_make_grid ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -101,8 +101,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
-set -x
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -147,43 +146,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Create the (cycle-independent) subdirectories under the experiment
-# directory (EXPTDIR) that are needed by the various steps and substeps
-# in this script.
+# Create sub-directories for the various steps and substeps in this script.
 #
 #-----------------------------------------------------------------------
 #
-check_for_preexist_dir_file "${OROG_DIR}" "${PREEXISTING_DIR_METHOD}"
-mkdir -p "${OROG_DIR}"
+raw_dir="${DATA}/raw_topo"
+mkdir -p ${raw_dir}
 
-raw_dir="${OROG_DIR}/raw_topo"
-mkdir -p "${raw_dir}"
+filter_dir="${DATA}/filtered_topo"
+mkdir -p ${filter_dir}
 
-filter_dir="${OROG_DIR}/filtered_topo"
-mkdir -p "${filter_dir}"
+shave_dir="${DATA}/shave_tmp"
+mkdir -p ${shave_dir}
 
-shave_dir="${OROG_DIR}/shave_tmp"
-mkdir -p "${shave_dir}"
-#
-#
-#-----------------------------------------------------------------------
-#
-# Preparatory steps before calling raw orography generation code.
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="orog"
-exec_fp="$EXECdir/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for generating the orography file does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-fi
+tmp_orog_data="${DATA}/temp_orog_data"
+mkdir -p "${tmp_orog_data}"
 
-DATA="${DATA:-${raw_dir}/tmp}"
-mkdir -p "${DATA}"
-cd "${DATA}"
+tmp_dir="${raw_dir}/tmp"
+mkdir -p ${tmp_dir}
+cd ${tmp_dir}
 #
 # Copy topography and related data files from the system directory (FIXorg)
 # to the temporary directory.
@@ -254,21 +235,18 @@ cat "${input_redirect_fn}"
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "\
-Starting orography file generation..."
+print_info_msg "$VERBOSE" "Starting orography file generation..."
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR} || \
-      print_err_msg_exit "\
-Call to executable (exec_fp) that generates the raw orography file returned
-with nonzero exit code:
-  exec_fp = \"${exec_fp}\""
-POST_STEP
+export pgm="orog"
+. prep_step
 
+eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm < "${input_redirect_fn}" >>$pgmout 2>errfile
+export err=$?; err_chk
+mv errfile ${DATA}/errfile_orog
 #
 # Change location to the original directory.
 #
-cd -
+cd ${DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -276,7 +254,7 @@ cd -
 #
 #-----------------------------------------------------------------------
 #
-raw_orog_fp_orig="${DATA}/out.oro.nc"
+raw_orog_fp_orig="${tmp_dir}/out.oro.nc"
 raw_orog_fn_prefix="${CRES}${DOT_OR_USCORE}raw_orog"
 fn_suffix_with_halo="tile${TILE_RGNL}.halo${NHW}.nc"
 raw_orog_fn="${raw_orog_fn_prefix}.${fn_suffix_with_halo}"
@@ -291,11 +269,9 @@ mv "${raw_orog_fp_orig}" "${raw_orog_fp}"
 #
 #-----------------------------------------------------------------------
 #
-suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
+suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v17_p8" )
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
-  DATA="${DATA:-${OROG_DIR}/temp_orog_data}"
-  mkdir -p ${DATA}
-  cd ${DATA}
+  cd ${tmp_orog_data}
   mosaic_fn_gwd="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
   mosaic_fp_gwd="${FIXlam}/${mosaic_fn_gwd}"
   grid_fn_gwd=$( get_charvar_from_netcdf "${mosaic_fp_gwd}" "gridfiles" ) || \
@@ -303,9 +279,9 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   grid_fp_gwd="${FIXlam}/${grid_fn_gwd}"
   ls_fn="geo_em.d01.lat-lon.2.5m.HGT_M.nc"
   ss_fn="HGT.Beljaars_filtered.lat-lon.30s_res.nc"
-  create_symlink_to_file ${grid_fp_gwd} ${DATA}/${grid_fn_gwd} TRUE
-  create_symlink_to_file ${FIXam}/${ls_fn} ${DATA}/${ls_fn} TRUE
-  create_symlink_to_file ${FIXam}/${ss_fn} ${DATA}/${ss_fn} TRUE
+  ln -nsf ${grid_fp_gwd} ${DATA}/${grid_fn_gwd}
+  ln -nsf ${FIXam}/${ls_fn} ${DATA}/${ls_fn}
+  ln -nsf ${FIXam}/${ss_fn} ${DATA}/${ss_fn}
 
   input_redirect_fn="grid_info.dat"
   cat > "${input_redirect_fn}" <<EOF
@@ -314,31 +290,18 @@ ${CRES:1}
 ${NH4}
 EOF
 
-  exec_fn="orog_gsl"
-  exec_fp="$EXECdir/${exec_fn}"
-  if [ ! -f "${exec_fp}" ]; then
-    print_err_msg_exit "\
-The executable (exec_fp) for generating the GSL orography GWD data files
-does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-  fi
+  print_info_msg "$VERBOSE" "Starting orography file generation..."
 
-  print_info_msg "$VERBOSE" "
-Starting orography file generation..."
+  export pgm="orog_gsl"
+  . prep_step
 
-  PREP_STEP
-  eval ${RUN_CMD_SERIAL} "${exec_fp}" < "${input_redirect_fn}"  ${REDIRECT_OUT_ERR} || \
-      print_err_msg_exit "\
-Call to executable (exec_fp) that generates the GSL orography GWD data files
-returned with nonzero exit code:
-  exec_fp = \"${exec_fp}\""
-  POST_STEP
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm < "${input_redirect_fn}" >>$pgmout 2>errfile
+  export err=$?; err_chk
+  mv errfile ${DATA}/errfile_orog_gsl
 
   mv "${CRES}${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc" \
      "${CRES}${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc" \
-     "${OROG_DIR}"
- 
+     "${OROG_DIR}" 
 fi
 #
 #-----------------------------------------------------------------------
@@ -378,38 +341,14 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-
-# Note:
-# It is also possible to use the equivalent global uniform cubed-sphere
-# resolution when filtering on a GFDLgrid type grid by setting the namelist
-# parameters as follows:
-#
-#  res="${CRES:1}"
-#  stretch_fac="1" (or "0.999" if "1" makes it crash)
-#  refine_ratio="1"
-#
-# Really depends on what EMC wants to do.
-
   res="${GFDLgrid_NUM_CELLS}"
   refine_ratio="${GFDLgrid_REFINE_RATIO}"
-
 elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
-
   res="${CRES:1}"
   refine_ratio="1"
-
 fi
 #
-# Set the name and path to the executable and make sure that it exists.
-#
-exec_fn="filter_topo"
-exec_fp="$EXECdir/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for filtering the raw orography does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-fi
+#-----------------------------------------------------------------------
 #
 # The filter_topo program overwrites its input file with filtered
 # output, which is specified by topo_file in the namelist, but with a
@@ -424,6 +363,8 @@ fi
 # (2) ends with the string ".tile${N}.nc" expected by the orography
 #     filtering code.
 #
+#-----------------------------------------------------------------------
+#
 fn_suffix_without_halo="tile${TILE_RGNL}.nc"
 filtered_orog_fn_prefix="${CRES}${DOT_OR_USCORE}filtered_orog"
 filtered_orog_fp_prefix="${filter_dir}/${filtered_orog_fn_prefix}"
@@ -435,7 +376,7 @@ cp "${raw_orog_fp}" "${filtered_orog_fp}"
 # variable in the mosaic file) in its own run directory. Make a symlink
 # to it.
 #
-create_symlink_to_file ${grid_fp} ${filter_dir}/${grid_fn} TRUE
+ln -nsf ${grid_fp} ${filter_dir}/${grid_fn}
 #
 # Create the namelist file (in the filter_dir directory) that the orography
 # filtering executable will read in.
@@ -463,15 +404,15 @@ cd "${filter_dir}"
 #
 # Run the orography filtering executable.
 #
-print_info_msg "$VERBOSE" "
-Starting filtering of orography..."
+print_info_msg "$VERBOSE" "Starting filtering of orography..."
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} "${exec_fp}" ${REDIRECT_OUT_ERR} || \
-  print_err_msg_exit "\
-Call to executable that generates filtered orography file returned with
-non-zero exit code."
-POST_STEP
+export pgm="filter_topo"
+. prep_step
+
+eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm >>$pgmout 2>errfile
+export err=$?; err_chk
+mv errfile ${DATA}/errfile_filter_topo
+
 #
 # For clarity, rename the filtered orography file in filter_dir
 # such that its new name contains the halo size.
@@ -480,13 +421,13 @@ filtered_orog_fn_orig=$( basename "${filtered_orog_fp}" )
 filtered_orog_fn="${filtered_orog_fn_prefix}.${fn_suffix_with_halo}"
 filtered_orog_fp=$( dirname "${filtered_orog_fp}" )"/${filtered_orog_fn}"
 mv "${filtered_orog_fn_orig}" "${filtered_orog_fn}"
+cp "${filtered_orog_fp}" "${OROG_DIR}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NHW}.nc"
 #
 # Change location to the original directory.
 #
-cd -
+cd ${DATA}
 
-print_info_msg "$VERBOSE" "
-Filtering of orography complete."
+print_info_msg "$VERBOSE" "Filtering of orography complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -499,18 +440,6 @@ Filtering of orography complete."
 #
 #-----------------------------------------------------------------------
 #
-# Set the name and path to the executable and make sure that it exists.
-#
-exec_fn="shave"
-exec_fp="$EXECdir/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for \"shaving\" down the halo in the orography
-file does not exist:
-  exec_fp = \"${exec_fp}\"
-Please ensure that you've built this executable."
-fi
-
 unshaved_fp="${filtered_orog_fp}"
 #
 # We perform the work in shave_dir, so change location to that directory.
@@ -523,60 +452,28 @@ cd "${shave_dir}"
 # the shave executable.  Finally, move the resultant file to the OROG_DIR
 # directory.
 #
-print_info_msg "$VERBOSE" "
-\"Shaving\" filtered orography file with a ${NHW}-cell-wide halo to obtain
-a filtered orography file with a ${NH0}-cell-wide halo..."
+export pgm="shave"
 
-ascii_fn="input.shave.orog.halo${NH0}"
-shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
-printf "%s %s %s %s %s\n" \
-  $NX $NY ${NH0} \"${unshaved_fp}\" \"${shaved_fp}\" \
-  > ${ascii_fn}
+halo_num_list=('0' '4')
+halo_num_list[${#halo_num_list[@]}]="${NHW}"
+for halo_num in "${halo_num_list[@]}"; do
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${exec_fp} < ${ascii_fn} ${REDIRECT_OUT_ERR} || \
-print_err_msg_exit "\
-Call to executable (exec_fp) to generate a (filtered) orography file with
-a ${NH0}-cell-wide halo from the orography file with a {NHW}-cell-wide halo
-returned with nonzero exit code:
-  exec_fp = \"${exec_fp}\"
-The config file (ascii_fn) used in this call is in directory shave_dir:
-  ascii_fn = \"${ascii_fn}\"
-  shave_dir = \"${shave_dir}\""
-POST_STEP
-mv ${shaved_fp} ${OROG_DIR}
-#
-# Create an input config file for the shave executable to generate an
-# orography file with a 4-cell-wide halo from the one with a wide halo.
-# Then call the shave executable.  Finally, move the resultant file to
-# the OROG_DIR directory.
-#
-print_info_msg "$VERBOSE" "
-\"Shaving\" filtered orography file with a ${NHW}-cell-wide halo to obtain
-a filtered orography file with a ${NH4}-cell-wide halo..."
+  print_info_msg "Shaving filtered orography file with ${halo_num}-cell-wide halo..."
+  nml_fn="input.shave.orog.halo${halo_num}"
+  shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${halo_num}.nc"
+  printf "%s %s %s %s %s\n" \
+  $NX $NY ${halo_num} \"${unshaved_fp}\" \"${shaved_fp}\" \
+  > ${nml_fn}
 
-ascii_fn="input.shave.orog.halo${NH4}"
-shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-printf "%s %s %s %s %s\n" \
-  $NX $NY ${NH4} \"${unshaved_fp}\" \"${shaved_fp}\" \
-  > ${ascii_fn}
+  . prep_step
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${exec_fp} < ${ascii_fn} ${REDIRECT_OUT_ERR} || \
-print_err_msg_exit "\
-Call to executable (exec_fp) to generate a (filtered) orography file with
-a ${NH4}-cell-wide halo from the orography file with a {NHW}-cell-wide halo
-returned with nonzero exit code:
-  exec_fp = \"${exec_fp}\"
-The namelist file (ascii_fn) used in this call is in directory shave_dir:
-  ascii_fn = \"${ascii_fn}\"
-  shave_dir = \"${shave_dir}\""
-POST_STEP
-mv "${shaved_fp}" "${OROG_DIR}"
-#
-# Change location to the original directory.
-#
-cd -
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/$pgm < ${nml_fn} >>$pgmout 2>errfile
+  export err=$?; err_chk
+  mv errfile ${DATA}/errfile_shave_${halo_num}
+  mv ${shaved_fp} ${OROG_DIR}
+done
+
+cd ${OROG_DIR}
 #
 #-----------------------------------------------------------------------
 #
@@ -589,7 +486,7 @@ cd -
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/link_fix.py \
+${USHsrw}/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "orog" || \
 print_err_msg_exit "\
@@ -611,5 +508,4 @@ In directory:    \"${scrfunc_dir}\"
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
 

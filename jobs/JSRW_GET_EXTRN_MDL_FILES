@@ -48,7 +48,20 @@
 #
 #-----------------------------------------------------------------------
 #
-
+date
+export PS4='+ $SECONDS + '
+set -xue
+#
+#-----------------------------------------------------------------------
+#
+# Set the NCO standard environment variables (Table 1, pp.4)
+#
+#-----------------------------------------------------------------------
+#
+export USHsrw="${HOMEdir}/ush"
+export EXECsrw="${HOMEdir}/exec"
+export PARMsrw="${HOMEdir}/parm"
+export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 #-----------------------------------------------------------------------
 #
@@ -56,34 +69,11 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+export USHdir="${USHsrw}"  # should be removed later
+. ${USHsrw}/source_util_funcs.sh
 for sect in user nco workflow task_get_extrn_lbcs task_get_extrn_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
-. $USHdir/job_preamble.sh
-
-
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
-# Get the full path to the file in which this script/function is located 
-# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
-# which the file is located (scrfunc_dir).
-#
-#-----------------------------------------------------------------------
-#
-scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
-scrfunc_fn=$( basename "${scrfunc_fp}" )
-scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
@@ -100,6 +90,81 @@ This is the J-job script for the task that copies or fetches external
 model files from disk, HPSS, or URL, and stages them for downstream use
 to generate initial or lateral boundary conditions for the FV3 model.
 ========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Define job and jobid by default for rocoto
+#
+#-----------------------------------------------------------------------
+#
+WORKFLOW_MANAGER="${WORKFLOW_MANAGER:-rocoto}"
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  if [ "${SCHED}" = "slurm" ]; then
+    job=${SLURM_JOB_NAME}
+    pid=${SLURM_JOB_ID}
+  elif [ "${SCHED}" = "pbspro" ]; then
+    job=${PBS_JOBNAME}
+    pid=${PBS_JOBID}
+  else
+    job="task"
+    pid=$$
+  fi
+  jobid="${job}.${PDY}${cyc}.${pid}"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Create a temp working directory (DATA) and cd into it.
+#
+#-----------------------------------------------------------------------
+#
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
+mkdir -p $DATA
+cd $DATA
+#
+#-----------------------------------------------------------------------
+#
+# Define NCO environment variables and set COM type definitions.
+#
+#-----------------------------------------------------------------------
+#
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+
+[[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+if [ "${MACHINE}" = "WCOSS2" ]; then
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+else
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
+  export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+fi
+
+mkdir -p ${COMOUT}
+
+# Create a teomporary share directory
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
+mkdir -p ${DATA_SHARE}
+
+# Run setpdy to initialize PDYm and PDYp variables
+export cycle="${cycle:-t${cyc}z}"
+setpdy.sh
+. ./PDY
+#
+#-----------------------------------------------------------------------
+#
+# Set sub-cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
+fi
+if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+  export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+  export dot_ensmem=
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -131,7 +196,6 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   export EXTRN_MDL_NAME=${EXTRN_MDL_NAME_LBCS}
   GFS_FILE_FMT=${FV3GFS_FILE_FMT_LBCS}
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -139,11 +203,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-
 yyyymmdd=${PDY}
 hh=${cyc}
 export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
-
 #
 #-----------------------------------------------------------------------
 #
@@ -153,7 +215,6 @@ export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIM
 #
 #-----------------------------------------------------------------------
 #
-
 function data_unavailable() {
 
   local name cdate end_date min_max
@@ -246,17 +307,11 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory where the external model files should be stored
+# Set the directory where the external model files should be stored
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export EXTRN_MDL_STAGING_DIR="${EXTRN_MDL_STAGING_DIR:-${DATA}}"
-else
-    export EXTRN_MDL_STAGING_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
-    mkdir -p "${EXTRN_MDL_STAGING_DIR}"
-    cd "${EXTRN_MDL_STAGING_DIR}"
-fi
+export EXTRN_MDL_STAGING_DIR="${EXTRN_MDL_STAGING_DIR:-${DATA_SHARE}}"
 #
 #-----------------------------------------------------------------------
 #
@@ -264,23 +319,24 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_get_extrn_mdl_files.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+export pgmout="${DATA}/OUTPUT.$$"
+env
+
+${SCRIPTSsrw}/exsrw_get_extrn_mdl_files.sh
+export err=$?; err_chk
+
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
 #
 #-----------------------------------------------------------------------
 #
-# Run job postamble.
+# Whether or not working directory DATA should be kept.
 #
 #-----------------------------------------------------------------------
 #
-job_postamble "FALSE"
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options saved at the beginning of this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ restore_shell_opts; } > /dev/null 2>&1
+if [ "${KEEPDATA}" = "NO" ]; then
+  rm -rf ${DATA}
+fi
+date
 

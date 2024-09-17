@@ -3,15 +3,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# The J-Job that generates input NetCDF grid files for running the
-# regional configuration of FV3 
-#
-# Run-time environment variables:
-#
-#    GLOBAL_VAR_DEFNS_FP
-#    DATA
-#
-# Experiment variables
+# The J-job to run chgres_cube for preparing lateral boundary conditions
+# for the FV3 forecast
 #
 #  platform:
 #    WORKFLOW_MANAGER
@@ -21,9 +14,6 @@
 #
 #  global:
 #    DO_ENSEMBLE
-#
-#  task_make_grid:
-#    GRID_DIR
 #
 #-----------------------------------------------------------------------
 #
@@ -50,7 +40,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in platform nco global task_make_grid ; do
+for sect in platform nco global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -77,7 +67,9 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that generates grid files.
+This is the J-job script for the task that generates lateral boundary 
+condition (LBC) files (in NetCDF format) for all LBC update hours (except 
+hour zero). 
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -122,7 +114,7 @@ export RUN="${RUN:-${RUN_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
-  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver})}"
   export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
 else
   export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
@@ -131,18 +123,14 @@ fi
 
 mkdir -p ${COMOUT}
 
-# Create a teomporary share directory for RAVE interpolated data files
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
+# Create a teomporary share directory
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
 setpdy.sh
 . ./PDY
-
-# Create GRID_DIR
-check_for_preexist_dir_file "${GRID_DIR}" "${PREEXISTING_DIR_METHOD}"
-mkdir -p "${GRID_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -168,36 +156,12 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_make_grid.sh
+${SCRIPTSsrw}/exsrw_make_lbcs.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then
   cat $pgmout
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Create a flag file to make rocoto aware that the make_grid task has 
-# successfully completed (so that other tasks that depend on it can be
-# launched).  
-#
-# Although we can use the <taskdep> tag to make other tasks depend on 
-# the successful completion of make_grid, it turns out that the <task-
-# dep> tag assumes that the task it specifies (in this case make_grid)
-# runs for the same set of cycles as the one in which it appears as a 
-# dependency.  Thus, if we use <taskdep> in a cycle-dependent task in 
-# the workflow to make it depend on the make_grid, then the workflow 
-# will wait for make_grid to run for each cycle for which that cycle-de-
-# pendent task is defined before running the task.  But since make_grid
-# will not run for each cycle (except possibly for the very first one),
-# the cycle-dependent task will not be able to run for any of the cycles
-# except the first one.  For this reason, we cannot use the <taskdep> 
-# tag to make other cycle-dependent tasks depend on make_grid and must
-# instead use a flag file.
-#
-#-----------------------------------------------------------------------
-#
-touch "${GRID_DIR}/make_grid_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
