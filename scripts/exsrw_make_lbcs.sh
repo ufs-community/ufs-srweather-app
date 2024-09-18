@@ -82,7 +82,8 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform  workflow global cpl_aqm_parm smoke_dust_parm constants task_get_extrn_lbcs task_make_lbcs ; do
+for sect in user nco platform  workflow global cpl_aqm_parm \
+  smoke_dust_parm constants task_get_extrn_lbcs task_make_lbcs ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -520,27 +521,27 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
     #
     settings="
 'config':
- 'fix_dir_target_grid': ${FIXlam}
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
- 'orog_dir_target_grid': ${FIXlam}
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
- 'vcoord_file_target_grid': ${VCOORD_FILE}
- 'varmap_file': ${varmap_file_fp}
- 'data_dir_input_grid': ${extrn_mdl_staging_dir}
  'atm_files_input_grid': ${fn_atm}
- 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'convert_atm': True
  'cycle_mon': $((10#${mm}))
  'cycle_day': $((10#${dd}))
  'cycle_hour': $((10#${hh}))
- 'convert_atm': True
- 'regional': 2
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
+ 'external_model': ${external_model}
+ 'fix_dir_target_grid': ${FIXlam}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
  'halo_bndy': $((10#${NH4}))
  'halo_blend': $((10#${HALO_BLEND}))
  'input_type': ${input_type}
- 'external_model': ${external_model}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'regional': 2
+ 'thomp_mp_climo_file': ${thomp_mp_climo_file}
  'tracers_input': ${tracers_input}
  'tracers': ${tracers}
- 'thomp_mp_climo_file': ${thomp_mp_climo_file}
+ 'varmap_file': ${varmap_file_fp}
+ 'vcoord_file_target_grid': ${VCOORD_FILE}
 "
 
     nml_fn="fort.41"

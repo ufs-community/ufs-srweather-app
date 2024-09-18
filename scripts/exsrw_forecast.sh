@@ -15,10 +15,8 @@
 #    DATA
 #    DBNROOT
 #    GLOBAL_VAR_DEFNS_FP
-#    INPUT_DATA
 #    NET
 #    PDY
-#    REDIRECT_OUT_ERR
 #    RUN
 #    SENDDBN
 #    SLASH_ENSMEM_SUBDIR
@@ -27,9 +25,6 @@
 #
 #  user:
 #    MACHINE
-#    PARMdir
-#    RUN_ENVIR
-#    USHdir
 #
 #  platform:
 #    PRE_TASK_CMDS
@@ -116,7 +111,8 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm constants fixed_files \
+for sect in user nco platform workflow global cpl_aqm_parm \
+  smoke_dust_parm constants fixed_files \
   task_get_extrn_lbcs task_run_fcst task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -673,58 +669,25 @@ export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #
-# Copy RESTART directory to COMOUT.
-# Move dyn and phy files to COMOUT. 
-# Copy AQM output product file to COMOUT only for AQM.
-#
-#-----------------------------------------------------------------------
-#
-cp -rp RESTART ${COMOUT}
-
-fhr=0
-while [ $fhr -le ${FCST_LEN_HRS} ]; do
-  fhr_ct=$(printf "%03d" $fhr)
-  source_dyn="${DATA}/dynf${fhr_ct}.nc"
-  source_phy="${DATA}/phyf${fhr_ct}.nc"
-  target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
-  target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
-  [ -f ${source_dyn} ] && mv ${source_dyn} ${target_dyn}
-  [ -f ${source_phy} ] && mv ${source_phy} ${target_phy}
-  (( fhr=fhr+1 ))
-done
-
-if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
-fi
-#
-#-----------------------------------------------------------------------
-#
 # If doing inline post, create the directory in which the post-processing 
 # output will be stored (postprd_dir).
 #
 #-----------------------------------------------------------------------
 #
 if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
-
   yyyymmdd=${PDY}
   hh=${cyc}
   fmn="00"
 
-  if [ "${RUN_ENVIR}" != "nco" ]; then
-    export COMOUT="${DATA}/postprd"
-  fi
-  mkdir -p "${COMOUT}"
-
-  cd ${COMOUT}
+  mkdir -p "${DATA}/postprd"
+  cd ${DATA}/postprd
 
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-
     if [ ${fhr:0:1} = "0" ]; then
       fhr_d=${fhr:1:2}
     else
       fhr_d=${fhr}
     fi
-
     post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
     post_mn=${post_time:10:2}
     post_mn_or_null=""
@@ -753,14 +716,35 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done
-
-    if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc
-      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.nc
-    fi
   done
-
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Copy RESTART directory to COMOUT.
+# Move dyn and phy files to COMOUT. 
+# Copy AQM output product file to COMOUT only for AQM.
+#
+#-----------------------------------------------------------------------
+#
+cp -rp RESTART ${COMOUT}
+
+fhr=0
+while [ $fhr -le ${FCST_LEN_HRS} ]; do
+  fhr_ct=$(printf "%03d" $fhr)
+  source_dyn="${DATA}/dynf${fhr_ct}.nc"
+  source_phy="${DATA}/phyf${fhr_ct}.nc"
+  target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
+  target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.${POST_OUTPUT_DOMAIN_NAME}.nc"
+  [ -f ${source_dyn} ] && mv ${source_dyn} ${target_dyn}
+  [ -f ${source_phy} ] && mv ${source_phy} ${target_phy}
+  (( fhr=fhr+1 ))
+done
+
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+fi
+
 #
 #-----------------------------------------------------------------------
 #

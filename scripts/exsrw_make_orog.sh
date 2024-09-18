@@ -85,7 +85,8 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow constants grid_params task_make_grid task_make_orog task_make_grid ; do
+for sect in user nco platform workflow constants grid_params \
+  task_make_grid task_make_orog task_make_grid ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
@@ -165,9 +166,14 @@ cd ${tmp_dir}
 # Copy topography and related data files from the system directory (FIXorg)
 # to the temporary directory.
 #
-cp ${FIXorg}/topography.antarctica.ramp.30s.nc .
-cp ${FIXorg}/landcover.umd.30s.nc .
-cp ${FIXorg}/topography.gmted2010.30s.nc .
+cp ${FIXorg}/thirty.second.antarctic.new.bin fort.15
+cp ${FIXorg}/landcover30.fixed .
+cp ${FIXorg}/gmted2010.30sec.int fort.235
+# for new hash of ufs_utils (should replace the above three lines)
+#cp ${FIXorg}/topography.antarctica.ramp.30s.nc .
+#cp ${FIXorg}/landcover.umd.30s.nc .
+#cp ${FIXorg}/topography.gmted2010.30s.nc .
+
 #
 #-----------------------------------------------------------------------
 #
@@ -189,13 +195,34 @@ grid_fp="${FIXlam}/${grid_fn}"
 #
 #-----------------------------------------------------------------------
 #
+mtnres=1
+lonb=0
+latb=0
+jcap=0
+NR=0
+NF1=0
+NF2=0
+efac=0
+blat=0
 input_redirect_fn="INPS"
 orogfile="none"
-#
+
+echo $mtnres $lonb $latb $jcap $NR $NF1 $NF2 $efac $blat > "${input_redirect_fn}"
 echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
+echo "\"$orogfile\"" >> "${input_redirect_fn}"
 echo ".false." >> "${input_redirect_fn}" #MASK_ONLY
 echo "none" >> "${input_redirect_fn}" #MERGE_FILE
 cat "${input_redirect_fn}"
+
+# for new hash of ufs_utils (should replace the above seventeen lines)
+#input_redirect_fn="INPS"
+#orogfile="none"
+
+#echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
+#echo ".false." >> "${input_redirect_fn}" #MASK_ONLY
+#echo "none" >> "${input_redirect_fn}" #MERGE_FILE
+#cat "${input_redirect_fn}"
+
 #
 #-----------------------------------------------------------------------
 #

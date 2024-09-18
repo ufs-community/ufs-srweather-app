@@ -542,13 +542,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
   lai_from_climo=True
   tg3_from_soil=True
   convert_nst=False
-#  if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-#    sotyp_from_climo=False
-#    vgtyp_from_climo=False
-#  else
-#    sotyp_from_climo=True
-#    vgtyp_from_climo=True
-#  fi
   ;;
 
 "NAM")

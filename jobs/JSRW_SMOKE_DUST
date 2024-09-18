@@ -72,8 +72,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies or fetches RAVE fire
-emission data files from disk, or HPSS.
+This is the J-job script for the task that create input files for smoke/
+dust from RAVE fire emission data.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
