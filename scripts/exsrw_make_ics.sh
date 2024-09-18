@@ -698,7 +698,6 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $(boolify "${USE_FVCOM}") = "TRUE" ]; then
-
   #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${DATE_FIRST_CYCL:8:2}:00:00.000000"
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"

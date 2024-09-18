@@ -45,7 +45,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs Smoke and Dust.
+This is the ex-script for the task that runs the post-processor (UPP) on
+the output files corresponding to a specified forecast hour.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -73,6 +74,23 @@ if [ -z "${RUN_CMD_POST:-}" ] ; then
 else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_POST}\'."
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that fhr is a non-empty string consisting of only digits.
+#
+#-----------------------------------------------------------------------
+#
+export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only
+digits:
+  fhr = \"${fhr}\""
+fi
+if [ $(boolify "${SUB_HOURLY_POST}") != "TRUE" ]; then
+  export fmn="00"
 fi
 #
 #-----------------------------------------------------------------------
@@ -346,7 +364,7 @@ fi
 #
 print_info_msg "
 ========================================================================
-UPP post-processing has successfully generated output files !!!!
+UPP post-processing has successfully generated output files for $fhr !!!!
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

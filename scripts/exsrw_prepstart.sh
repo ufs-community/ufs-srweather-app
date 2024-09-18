@@ -5,11 +5,33 @@
 #
 # Source the variable definitions file and the bash utility functions.
 #
+#  platform:
+#    PRE_TASK_CMDS
+#
+#  workflow:
+#    COLDSTART
+#    DATE_FIRST_CYCL
+#    INCR_CYCL_FREQ
+#    VERBOSE
+#
+#  nco:
+#    NCO variables
+#
+#  constants:
+#    TILE_RGNL
+#    NH0
+#
+#  task_run_fcst:
+#    IO_LAYOUT_Y
+#
+#  smoke_dust_parm:
+#    DO_SMOKE_DUST
+#
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global smoke_dust_parm \
-  constants fixed_files grid_params task_run_fcst ; do
+for sect in platform workflow nco constants task_run_fcst \
+  smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

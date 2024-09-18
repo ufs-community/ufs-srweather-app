@@ -11,6 +11,11 @@
 #  platform:
 #    WORKFLOW_MANAGER
 #
+#  workflow:
+#    FCST_LEN_CYCL
+#    INCR_CYCL_FREQ
+#    DATE_FIRST_CYCL
+#
 #  nco:
 #    NCO variables
 #
@@ -42,7 +47,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user platform nco global ; do
+for sect in user platform workflow nco global ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -145,23 +150,6 @@ if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
   export dot_ensmem=".mem${ENSMEM_INDX}"
 else
   export dot_ensmem=
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Make sure that fhr is a non-empty string consisting of only digits.
-#
-#-----------------------------------------------------------------------
-#
-export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
-if [ -z "$fhr" ]; then
-  print_err_msg_exit "\
-The forecast hour (fhr) must be a non-empty string consisting of only
-digits:
-  fhr = \"${fhr}\""
-fi
-if [ $(boolify "${SUB_HOURLY_POST}") != "TRUE" ]; then
-  export fmn="00"
 fi
 #
 #-----------------------------------------------------------------------
