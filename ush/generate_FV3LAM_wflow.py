@@ -75,18 +75,30 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # Link log directory to EXPDIR
+    # Link log/tmp/com directories within EXPDIR
     #
     # -----------------------------------------------------------------------
     #
     nco_ptmp = expt_config["nco"]["PTMP"]
     nco_envir = expt_config["nco"]["envir_default"]
+    nco_net = expt_config["nco"]["NET_default"]
+    nco_model_ver = expt_config["nco"]["model_ver_default"]
     exptdir = expt_config["workflow"]["EXPTDIR"]
 
     logdir_orig = os.path.join(nco_ptmp,nco_envir,"com/output/logs")
     mkdir_vrfy("-p", logdir_orig)
-    logdir_expt = os.path.join(exptdir,"logs")
+    logdir_expt = os.path.join(exptdir,"nco_logs")
     ln_vrfy(f"""-fsn '{logdir_orig}' '{logdir_expt}'""")
+
+    tmpdir_orig = os.path.join(nco_ptmp,nco_envir,"tmp")
+    mkdir_vrfy("-p", tmpdir_orig)
+    tmpdir_expt = os.path.join(exptdir,"nco_tmp")
+    ln_vrfy(f"""-fsn '{tmpdir_orig}' '{tmpdir_expt}'""")
+
+    comdir_orig = os.path.join(nco_ptmp,nco_envir,"com",nco_net,nco_model_ver)
+    mkdir_vrfy("-p", comdir_orig)
+    comdir_expt = os.path.join(exptdir,"nco_com")
+    ln_vrfy(f"""-fsn '{comdir_orig}' '{comdir_expt}'""")
     #
     # -----------------------------------------------------------------------
     #

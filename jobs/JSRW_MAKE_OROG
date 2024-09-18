@@ -133,8 +133,8 @@ fi
 
 mkdir -p ${COMOUT}
 
-# Create a teomporary share directory for RAVE interpolated data files
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
+# Create a teomporary share directory
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables

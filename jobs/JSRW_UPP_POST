@@ -123,10 +123,7 @@ fi
 
 mkdir -p ${COMOUT}
 
-export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
-export COMINfire="${COMINfire:-${COMINfire_default}}"
-
-# Create a teomporary share directory for RAVE interpolated data files
+# Create a teomporary share directory
 export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 mkdir -p ${DATA_SHARE}
 
