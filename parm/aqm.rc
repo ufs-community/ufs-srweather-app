@@ -91,6 +91,7 @@ anthro_species::
     ALD2          1.00000  ALD2          KG/M2/S
     ALD2_PRIMARY  1.00000  ALD2_PRIMARY  KG/M2/S
     ALDX          1.00000  ALDX          KG/M2/S
+    APIN          1.00000  APIN          KG/M2/S
     BENZ          1.00000  BENZ          KG/M2/S
     BUTADIENE13   1.00000  BUTADIENE13   KG/M2/S
     CH4           1.00000  CH4           KG/M2/S
