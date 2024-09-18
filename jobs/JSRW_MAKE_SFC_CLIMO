@@ -200,7 +200,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-touch "${EXPTDIR}/make_sfc_climo_task_complete.txt"
+touch "${SFC_CLIMO_DIR}/make_sfc_climo_task_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
