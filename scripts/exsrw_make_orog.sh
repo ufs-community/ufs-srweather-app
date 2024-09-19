@@ -74,6 +74,9 @@
 #    NY
 #    STRETCH_FAC
 #
+#  smoke_dust_parm:
+#    DO_SMOKE_DUST
+#
 #-----------------------------------------------------------------------
 #
 
@@ -86,7 +89,7 @@
 #
 . ${USHsrw}/source_util_funcs.sh
 for sect in user nco platform workflow constants grid_params \
-  task_make_grid task_make_orog task_make_grid ; do
+  task_make_grid task_make_orog task_make_grid smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
@@ -163,18 +166,6 @@ tmp_dir="${raw_dir}/tmp"
 mkdir -p ${tmp_dir}
 cd ${tmp_dir}
 #
-# Copy topography and related data files from the system directory (FIXorg)
-# to the temporary directory.
-#
-cp ${FIXorg}/thirty.second.antarctic.new.bin fort.15
-cp ${FIXorg}/landcover30.fixed .
-cp ${FIXorg}/gmted2010.30sec.int fort.235
-# for new hash of ufs_utils (should replace the above three lines)
-#cp ${FIXorg}/topography.antarctica.ramp.30s.nc .
-#cp ${FIXorg}/landcover.umd.30s.nc .
-#cp ${FIXorg}/topography.gmted2010.30s.nc .
-
-#
 #-----------------------------------------------------------------------
 #
 # Get the grid file info from the mosaic file
@@ -192,37 +183,53 @@ grid_fp="${FIXlam}/${grid_fn}"
 #
 # Set input parameters for the orog executable in a formatted text file.
 # The executable takes its parameters via the command line.
+# 
+# Since Smoke/Dust uses the production branch of ufs-weather-model/UFS_UTILS,
+# the old version of files and input namelist are necessary. Once they are
+# updated, this if-statement should be updated accordingly
 #
 #-----------------------------------------------------------------------
 #
-mtnres=1
-lonb=0
-latb=0
-jcap=0
-NR=0
-NF1=0
-NF2=0
-efac=0
-blat=0
-input_redirect_fn="INPS"
-orogfile="none"
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  # Copy topography and related data files from FIXorg
+  cp -p ${FIXorg}/thirty.second.antarctic.new.bin ${tmp_dir}/fort.15
+  cp -p ${FIXorg}/landcover30.fixed ${tmp_dir}
+  cp -p ${FIXorg}/gmted2010.30sec.int ${tmp_dir}/fort.235
 
-echo $mtnres $lonb $latb $jcap $NR $NF1 $NF2 $efac $blat > "${input_redirect_fn}"
-echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
-echo "\"$orogfile\"" >> "${input_redirect_fn}"
-echo ".false." >> "${input_redirect_fn}" #MASK_ONLY
-echo "none" >> "${input_redirect_fn}" #MERGE_FILE
-cat "${input_redirect_fn}"
+  mtnres=1
+  lonb=0
+  latb=0
+  jcap=0
+  NR=0
+  NF1=0
+  NF2=0
+  efac=0
+  blat=0
+  input_redirect_fn="INPS"
+  orogfile="none"
 
-# for new hash of ufs_utils (should replace the above seventeen lines)
-#input_redirect_fn="INPS"
-#orogfile="none"
+  echo $mtnres $lonb $latb $jcap $NR $NF1 $NF2 $efac $blat > "${input_redirect_fn}"
+  echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
+  echo "\"$orogfile\"" >> "${input_redirect_fn}"
+  echo ".false." >> "${input_redirect_fn}" #MASK_ONLY
+  echo "none" >> "${input_redirect_fn}" #MERGE_FILE
+  cat "${input_redirect_fn}"
 
-#echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
-#echo ".false." >> "${input_redirect_fn}" #MASK_ONLY
-#echo "none" >> "${input_redirect_fn}" #MERGE_FILE
-#cat "${input_redirect_fn}"
+# for recent version of ufs_utils
+else
+  # Copy topography and related data files from FIXorg
+  cp -p ${FIXorg}/topography.antarctica.ramp.30s.nc ${tmp_dir}
+  cp -p ${FIXorg}/landcover.umd.30s.nc ${tmp_dir}
+  cp -p ${FIXorg}/topography.gmted2010.30s.nc ${tmp_dir}
 
+  input_redirect_fn="INPS"
+  orogfile="none"
+
+  echo "\"${grid_fp}\"" >> "${input_redirect_fn}"
+  echo ".false." >> "${input_redirect_fn}" #MASK_ONLY
+  echo "none" >> "${input_redirect_fn}" #MERGE_FILE
+  cat "${input_redirect_fn}"
+fi
 #
 #-----------------------------------------------------------------------
 #
