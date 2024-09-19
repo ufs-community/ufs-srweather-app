@@ -299,30 +299,11 @@ def set_srw_paths(ushdir, expt_config):
     # HOMEdir is the location of the SRW clone, one directory above ush/
     homedir = expt_config.get("user", {}).get("HOMEdir")
 
-    # Read Externals.cfg
-    mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
-    try:
-        mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
-    except:
-        pass
-    cfg = load_ini_config(mng_extrns_cfg_fn)
-
     # Get the base directory of the FV3 forecast model code.
     external_name = expt_config.get("workflow", {}).get("FCST_MODEL")
-    property_name = "local_path"
-
-    try:
-        ufs_wthr_mdl_dir = get_ini_value(cfg, external_name, property_name)
-    except KeyError:
-        errmsg = dedent(
-            f"""
-            Externals configuration file {mng_extrns_cfg_fn}
-            does not contain '{external_name}'."""
-        )
-        raise Exception(errmsg) from None
 
     # Check that the model code has been downloaded
-    ufs_wthr_mdl_dir = os.path.join(homedir, ufs_wthr_mdl_dir)
+    ufs_wthr_mdl_dir = os.path.join(homedir, "sorc", external_name)
     if not os.path.exists(ufs_wthr_mdl_dir):
         raise FileNotFoundError(
             dedent(
