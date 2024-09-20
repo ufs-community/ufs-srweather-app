@@ -192,21 +192,32 @@ while :; do
   shift
 done
 
-# Ensure uppercase / lowercase ============================================
-APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
-PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
-COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
+# Conda environment should have linux utilities to perform these tasks on macos.
+SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
+BUILD_DIR="${BUILD_DIR:-${SRW_DIR}/build}"
+INSTALL_DIR=${INSTALL_DIR:-$SRW_DIR}
+CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
+echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
 
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
-  printf "\nERROR: Please set PLATFORM.\n\n"
-  usage
-  exit 0
+  # Automatically detect NOAA HPC Tier-1 platforms
+  source ${SRW_DIR}/parm/detect_platform.sh
+  if [[ "$PLATFORM" == "unknown" ]]; then
+    printf "\nERROR: Please set PLATFORM.\n\n"
+    usage
+    exit 0
+  fi
 fi
 # set PLATFORM (MACHINE)
 MACHINE="${PLATFORM}"
 printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
+# Ensure uppercase / lowercase ============================================
+APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
+PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
+COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
 
 # Conda is not used on WCOSS2
 if [ "${PLATFORM}" = "wcoss2" ]; then
@@ -249,14 +260,6 @@ else
     conda activate
   fi
 fi
-
-# Conda environment should have linux utilities to perform these tasks on macos.
-SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
-BUILD_DIR="${BUILD_DIR:-${SRW_DIR}/build}"
-INSTALL_DIR=${INSTALL_DIR:-$SRW_DIR}
-CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
-echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
 
 # choose default apps to build
 if [ "${DEFAULT_BUILD}" = true ]; then
