@@ -133,7 +133,7 @@ File already exists on disk:
     hr=$((10#${hh}))
     arcv_hr_start=$(( (hr/arcv_hr_incr + 1)*arcv_hr_incr ))
     print_info_msg "
-File does not exists on disk:
+File does not exist on disk:
   fp_proc = \"${fp_proc}\"
 Setting the hour (since 00) of the first archive to retrieve to:
   arcv_hr_start = \"${arcv_hr_start}\""
