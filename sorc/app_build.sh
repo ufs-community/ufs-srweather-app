@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # usage instructions
 usage () {
 cat << EOF_USAGE
@@ -41,6 +43,7 @@ OPTIONS
       installation prefix
   --bin-dir=BIN_DIR
       installation binary directory name ("exec" by default; any name is available)
+  --conda=BUILD_CONDA (on|off)
   --conda-dir=CONDA_DIR
       installation location for miniconda (SRW clone conda subdirectory by default)
   --build-type=BUILD_TYPE
@@ -70,7 +73,7 @@ settings () {
 cat << EOF_SETTINGS
 Settings:
 
-  SRW_DIR=${SRW_DIR}
+  HOME_DIR=${HOME_DIR}
   BUILD_DIR=${BUILD_DIR}
   INSTALL_DIR=${INSTALL_DIR}
   BIN_DIR=${BIN_DIR}
@@ -103,6 +106,10 @@ usage_error () {
 
 # default settings
 LCL_PID=$$
+SORC_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+HOME_DIR="${SORC_DIR}/.."
+BUILD_DIR="${SORC_DIR}/build"
+INSTALL_DIR="${SORC_DIR}/build"
 BIN_DIR="exec"
 CONDA_BUILD_DIR="conda"
 COMPILER=""
@@ -166,6 +173,8 @@ while :; do
     --install-dir|--install-dir=) usage_error "$1 requires argument." ;;
     --bin-dir=?*) BIN_DIR=${1#*=} ;;
     --bin-dir|--bin-dir=) usage_error "$1 requires argument." ;;
+    --conda=?*) BUILD_CONDA=${1#*=} ;;
+    --conda|--conda=) usage_error "$1 requires argument." ;;
     --conda-dir=?*) CONDA_BUILD_DIR=${1#*=} ;;
     --conda-dir|--conda-dir=) usage_error "$1 requires argument." ;;
     --build-type=?*) BUILD_TYPE=${1#*=} ;;
@@ -179,7 +188,6 @@ while :; do
     default) ;;
     all) DEFAULT_BUILD=false; BUILD_UFS="on";
          BUILD_UFS_UTILS="on"; BUILD_UPP="on";;
-    conda_only) DEFAULT_BUILD=false;;
     ufs) DEFAULT_BUILD=false; BUILD_UFS="on" ;;
     ufs_utils) DEFAULT_BUILD=false; BUILD_UFS_UTILS="on" ;;
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
@@ -192,18 +200,28 @@ while :; do
   shift
 done
 
-# Conda environment should have linux utilities to perform these tasks on macos.
-SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
-BUILD_DIR="${BUILD_DIR:-${SRW_DIR}/build}"
-INSTALL_DIR=${INSTALL_DIR:-$SRW_DIR}
-CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
-echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
+# Ensure uppercase / lowercase ============================================
+APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
+PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
+COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
+
+# move the pre-compiled executables to the designated location and exit
+if [ "${BUILD}" = false ] && [ "${MOVE}" = true ]; then
+  if [[ ! ${HOME_DIR} -ef ${INSTALL_DIR} ]]; then
+    printf "... Moving pre-compiled executables to designated location ...\n"
+    mkdir -p ${HOME_DIR}/${BIN_DIR}
+    cd "${INSTALL_DIR}/${BIN_DIR}"
+    for file in *; do
+      [ -x "${file}" ] && mv "${file}" "${HOME_DIR}/${BIN_DIR}"
+    done
+  fi
+  exit 0
+fi
 
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
   # Automatically detect NOAA HPC Tier-1 platforms
-  source ${SRW_DIR}/parm/detect_platform.sh
+  source ${HOME_DIR}/parm/detect_platform.sh
   if [[ "$PLATFORM" == "unknown" ]]; then
     printf "\nERROR: Please set PLATFORM.\n\n"
     usage
@@ -214,14 +232,45 @@ fi
 MACHINE="${PLATFORM}"
 printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
-# Ensure uppercase / lowercase ============================================
-APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
-PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
-COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
+# Remove option
+if [ "${REMOVE}" = true ]; then
+  printf "Remove build directory\n"
+  printf "  BUILD_DIR=${BUILD_DIR}\n"
+  if [ -d "${BUILD_DIR}" ]; then
+    rm -rf ${BUILD_DIR}
+  fi
+  printf "Remove BIN_DIR directory\n"
+  printf "  BIN_DIR=${HOME_DIR}/${BIN_DIR}\n"
+  if [ -d "${HOME_DIR}/${BIN_DIR}" ]; then
+    rm -rf "${HOME_DIR}/${BIN_DIR}"
+  fi
+  printf "Remove external components\n"
+  if [ -d "${SORC_DIR}/AQM-utils" ]; then
+    printf "... Remove AQM-utils ...\n"
+    rm -rf "${SORC_DIR}/AQM-utils"
+  fi
+  if [ -d "${SORC_DIR}/UFS_UTILS" ]; then
+    printf "... Remove UFS_UTILS ...\n"
+    rm -rf "${SORC_DIR}/UFS_UTILS"
+  fi
+  if [ -d "${SORC_DIR}/UPP" ]; then
+    printf "... Remove UPP ...\n"
+    rm -rf "${SORC_DIR}/UPP"
+  fi
+  if [ -d "${SORC_DIR}/arl_nexus" ]; then
+    printf "... Remove arl_nexus ...\n"
+    rm -rf "${SORC_DIR}/arl_nexus"
+  fi
+  if [ -d "${SORC_DIR}/ufs-weather-model" ]; then
+    printf "... Remove ufs-weather-model ...\n"
+    rm -rf "${SORC_DIR}/ufs-weather-model"
+  fi
+  exit 0  
+fi
 
 # Conda is not used on WCOSS2
 if [ "${PLATFORM}" = "wcoss2" ]; then
-    BUILD_CONDA="off"
+  BUILD_CONDA="off"
 fi
 
 # build conda and conda environments, if requested.
@@ -243,14 +292,14 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   fi
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
-    mamba env create -n srw_app --file environment.yml
+    mamba env create -n srw_app --file ${HOME_DIR}/parm/environment.yml
   fi
   if ! conda env list | grep -q "^srw_graphics\s" ; then
-    mamba env create -n srw_graphics --file graphics_environment.yml
+    mamba env create -n srw_graphics --file ${HOME_DIR}/parm/graphics_environment.yml
   fi
   if [ "${APPLICATION}" = "ATMAQ" ]; then
     if ! conda env list | grep -q "^srw_aqm\s" ; then
-      mamba env create -n srw_aqm --file aqm_environment.yml
+      mamba env create -n srw_aqm --file ${HOME_DIR}/parm/aqm_environment.yml
     fi
   fi
 
@@ -260,6 +309,9 @@ else
     conda activate
   fi
 fi
+
+CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
+echo ${CONDA_BUILD_DIR} > ${HOME_DIR}/parm/conda_loc
 
 # choose default apps to build
 if [ "${DEFAULT_BUILD}" = true ]; then
@@ -307,18 +359,18 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # source version file only if it is specified in versions directory
-BUILD_VERSION_FILE="${SRW_DIR}/versions/build.ver.${PLATFORM}"
+BUILD_VERSION_FILE="${HOME_DIR}/versions/build.ver.${PLATFORM}"
 if [ -f ${BUILD_VERSION_FILE} ]; then
   . ${BUILD_VERSION_FILE}
 fi
-RUN_VERSION_FILE="${SRW_DIR}/versions/run.ver.${PLATFORM}"
+RUN_VERSION_FILE="${HOME_DIR}/versions/run.ver.${PLATFORM}"
 if [ -f ${RUN_VERSION_FILE} ]; then
   . ${RUN_VERSION_FILE}
 fi
 
 # set MODULE_FILE for this platform/compiler combination
 MODULE_FILE="build_${PLATFORM}_${COMPILER}"
-if [ ! -f "${SRW_DIR}/modulefiles/${MODULE_FILE}.lua" ]; then
+if [ ! -f "${HOME_DIR}/modulefiles/${MODULE_FILE}.lua" ]; then
   printf "ERROR: module file does not exist for platform/compiler\n" >&2
   printf "  MODULE_FILE=${MODULE_FILE}\n" >&2
   printf "  PLATFORM=${PLATFORM}\n" >&2
@@ -398,80 +450,80 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # Before we go on load modules, we first need to activate Lmod for some systems
-source ${SRW_DIR}/etc/lmod-setup.sh $MACHINE
+source ${HOME_DIR}/etc/lmod-setup.sh $MACHINE
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
 
 if [ $USE_SUB_MODULES = true ]; then
-    #helper to try and load module
-    function load_module() {
+  #helper to try and load module
+  function load_module() {
 
-        set +e
-        #try most specialized modulefile first
-        MODF="$1${PLATFORM}.${COMPILER}"
-        if [ $BUILD_TYPE != "RELEASE" ]; then
-            MODF="${MODF}.debug"
-        else
-            MODF="${MODF}.release"
-        fi
-        module is-avail ${MODF}
-        if [ $? -eq 0 ]; then
-            module load ${MODF}
-            return
-        fi
-        # without build type
-        MODF="$1${PLATFORM}.${COMPILER}"
-        module is-avail ${MODF}
-        if [ $? -eq 0 ]; then
-            module load ${MODF}
-            return
-        fi
-        # without compiler
-        MODF="$1${PLATFORM}"
-        module is-avail ${MODF}
-        if [ $? -eq 0 ]; then
-            module load ${MODF}
-            return
-        fi
-        set -e
+    set +e
+    #try most specialized modulefile first
+    MODF="$1${PLATFORM}.${COMPILER}"
+    if [ $BUILD_TYPE != "RELEASE" ]; then
+      MODF="${MODF}.debug"
+    else
+      MODF="${MODF}.release"
+    fi
+    module is-avail ${MODF}
+    if [ $? -eq 0 ]; then
+      module load ${MODF}
+      return
+    fi
+    # without build type
+    MODF="$1${PLATFORM}.${COMPILER}"
+    module is-avail ${MODF}
+    if [ $? -eq 0 ]; then
+      module load ${MODF}
+      return
+    fi
+    # without compiler
+    MODF="$1${PLATFORM}"
+    module is-avail ${MODF}
+    if [ $? -eq 0 ]; then
+      module load ${MODF}
+      return
+    fi
+    set -e
 
-        # else fallback on app level modulefile
-        printf "... Fall back to app level modulefile ...\n"
-        module use ${SRW_DIR}/modulefiles
-        module load ${MODULE_FILE}
-    }
-    if [ $BUILD_UFS = "on" ]; then
-        printf "... Loading UFS modules ...\n"
-        module use ${SRW_DIR}/sorc/ufs-weather-model/modulefiles
-        load_module "ufs_"
-    fi
-    if [ $BUILD_UFS_UTILS = "on" ]; then
-        printf "... Loading UFS_UTILS modules ...\n"
-        module use ${SRW_DIR}/sorc/UFS_UTILS/modulefiles
-        load_module "build."
-    fi
-    if [ $BUILD_UPP = "on" ]; then
-        printf "... Loading UPP modules ...\n"
-        module use ${SRW_DIR}/sorc/UPP/modulefiles
-        load_module ""
-    fi
-    if [ $BUILD_NEXUS = "on" ]; then
-        printf "... Loading NEXUS modules ...\n"
-        module use ${SRW_DIR}/sorc/arl_nexus/modulefiles
-        load_module ""
-    fi
-    if [ $BUILD_AQM_UTILS = "on" ]; then
-        printf "... Loading AQM-utils modules ...\n"
-        module use ${SRW_DIR}/sorc/AQM-utils/modulefiles
-        load_module ""
-    fi
-else
-    module use ${SRW_DIR}/modulefiles
+    # else fallback on app level modulefile
+    printf "... Fall back to app level modulefile ...\n"
+    module use ${SORC_DIR}/modulefiles
     module load ${MODULE_FILE}
-    if [[ "${PLATFORM}" == "macos" ]]; then
-        export LDFLAGS+=" -L$MPI_ROOT/lib "
-    fi
+  }
+  if [ $BUILD_UFS = "on" ]; then
+    printf "... Loading UFS modules ...\n"
+    module use ${SORC_DIR}/ufs-weather-model/modulefiles
+    load_module "ufs_"
+  fi
+  if [ $BUILD_UFS_UTILS = "on" ]; then
+    printf "... Loading UFS_UTILS modules ...\n"
+    module use ${SORC_DIR}/UFS_UTILS/modulefiles
+    load_module "build."
+  fi
+  if [ $BUILD_UPP = "on" ]; then
+    printf "... Loading UPP modules ...\n"
+    module use ${SORC_DIR}/UPP/modulefiles
+    load_module ""
+  fi
+  if [ $BUILD_NEXUS = "on" ]; then
+    printf "... Loading NEXUS modules ...\n"
+    module use ${SORC_DIR}/arl_nexus/modulefiles
+    load_module ""
+  fi
+  if [ $BUILD_AQM_UTILS = "on" ]; then
+    printf "... Loading AQM-utils modules ...\n"
+    module use ${SORC_DIR}/AQM-utils/modulefiles
+    load_module ""
+  fi
+else
+  module use ${HOME_DIR}/modulefiles
+  module load ${MODULE_FILE}
+  if [[ "${PLATFORM}" == "macos" ]]; then
+    export LDFLAGS+=" -L$MPI_ROOT/lib "
+  fi
 fi
 module list
 
@@ -479,64 +531,63 @@ mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 if [ "${CLEAN}" = true ]; then
-    if [ -f $PWD/Makefile ]; then
-       printf "... Clean executables ...\n"
-       make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
-    fi
-elif [ "${BUILD}" = true ]; then
-    printf "... Generate CMAKE configuration ...\n"
-    cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
-
-    printf "... Compile executables ...\n"
-    make ${MAKE_SETTINGS} build 2>&1 | tee log.make
+  if [ -f $PWD/Makefile ]; then
+    printf "... Clean executables ...\n"
+    make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
+  fi
 else
-    printf "... Generate CMAKE configuration ...\n"
-    cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
+  printf "... Generate CMAKE configuration ...\n"
+  cmake ${SORC_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
 
-    printf "... Compile and install executables ...\n"
-    make ${MAKE_SETTINGS} install 2>&1 | tee log.make
+  printf "... Compile and install executables ...\n"
+  make ${MAKE_SETTINGS} install 2>&1 | tee log.make
 
-    if [ "${MOVE}" = true ]; then
-       if [[ ! ${SRW_DIR} -ef ${INSTALL_DIR} ]]; then
-           printf "... Moving executables to final locations ...\n"
-           mkdir -p ${SRW_DIR}/${BIN_DIR}
-           mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
-       fi
-    fi
+  # move executables to the designated location (HOMEdir/exec) only when 
+  # both --build and --move are not set (no additional arguments) or
+  # both --build and --move are set in the build command line
+  if [[ "${BUILD}" = false && "${MOVE}" = false ]] || 
+     [[ "${BUILD}" = true && "${MOVE}" = true ]]; then
+    printf "... Moving pre-compiled executables to designated location ...\n"
+    mkdir -p ${HOME_DIR}/${BIN_DIR}
+    cd "${INSTALL_DIR}/${BIN_DIR}"
+    for file in *; do
+      [ -x "${file}" ] && mv "${file}" "${HOME_DIR}/${BIN_DIR}"
+    done
+  fi
 fi
 
 # Copy config/python directories from component to main directory (EE2 compliance)
 if [ "${BUILD_UFS_UTILS}" = "on" ]; then
-  if [ -d "${SRW_DIR}/parm/ufs_utils_parm" ]; then
-    rm -rf ${SRW_DIR}/parm/ufs_utils_parm
+  if [ -d "${HOME_DIR}/parm/ufs_utils_parm" ]; then
+    rm -rf ${HOME_DIR}/parm/ufs_utils_parm
   fi
-  cp -rp ${SRW_DIR}/sorc/UFS_UTILS/parm ${SRW_DIR}/parm/ufs_utils_parm
+  cp -rp ${SORC_DIR}/UFS_UTILS/parm ${HOME_DIR}/parm/ufs_utils_parm
 fi
 if [ "${BUILD_UPP}" = "on" ]; then
-  if [ -d "${SRW_DIR}/parm/upp_parm" ]; then
-    rm -rf ${SRW_DIR}/parm/upp_parm
+  if [ -d "${HOME_DIR}/parm/upp_parm" ]; then
+    rm -rf ${HOME_DIR}/parm/upp_parm
   fi
-  cp -rp ${SRW_DIR}/sorc/UPP/parm ${SRW_DIR}/parm/upp_parm
+  cp -rp ${SORC_DIR}/UPP/parm ${HOME_DIR}/parm/upp_parm
 fi
 if [ "${BUILD_NEXUS}" = "on" ]; then
-  if [ -d "${SRW_DIR}/parm/nexus_config" ]; then
-    rm -rf ${SRW_DIR}/parm/nexus_config
+  if [ -d "${HOME_DIR}/parm/nexus_config" ]; then
+    rm -rf ${HOME_DIR}/parm/nexus_config
   fi
-  cp -rp ${SRW_DIR}/sorc/arl_nexus/config ${SRW_DIR}/parm/nexus_config
-  if [ -d "${SRW_DIR}/ush/nexus_utils" ]; then
-    rm -rf ${SRW_DIR}/ush/nexus_utils
+  cp -rp ${SORC_DIR}/arl_nexus/config ${HOME_DIR}/parm/nexus_config
+  if [ -d "${HOME_DIR}/ush/nexus_utils" ]; then
+    rm -rf ${HOME_DIR}/ush/nexus_utils
   fi
-  cp -rp ${SRW_DIR}/sorc/arl_nexus/utils ${SRW_DIR}/ush/nexus_utils
+  cp -rp ${SORC_DIR}/arl_nexus/utils ${HOME_DIR}/ush/nexus_utils
 fi
 if [ "${BUILD_AQM_UTILS}" = "on" ]; then
-  if [ -d "${SRW_DIR}/parm/aqm_utils_parm" ]; then
-    rm -rf ${SRW_DIR}/parm/aqm_utils_parm
+  if [ -d "${HOME_DIR}/parm/aqm_utils_parm" ]; then
+    rm -rf ${HOME_DIR}/parm/aqm_utils_parm
   fi
-  cp -rp ${SRW_DIR}/sorc/AQM-utils/parm ${SRW_DIR}/parm/aqm_utils_parm
-  if [ -d "${SRW_DIR}/ush/aqm_utils_python" ]; then
-    rm -rf ${SRW_DIR}/ush/aqm_utils_python
+  cp -rp ${SORC_DIR}/AQM-utils/parm ${HOME_DIR}/parm/aqm_utils_parm
+  if [ -d "${HOME_DIR}/ush/aqm_utils_python" ]; then
+    rm -rf ${HOME_DIR}/ush/aqm_utils_python
   fi
-  cp -rp ${SRW_DIR}/sorc/AQM-utils/python_utils ${SRW_DIR}/ush/aqm_utils_python
+  cp -rp ${SORC_DIR}/AQM-utils/python_utils ${HOME_DIR}/ush/aqm_utils_python
 fi
 
 exit 0

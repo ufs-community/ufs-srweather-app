@@ -1,3 +1,137 @@
+# This is the main cmake file for ufs-srweather-app.
+
+cmake_minimum_required(VERSION 3.15)
+
+# Set the project name and version.
+project(ufs-srweather-app VERSION 1.0 LANGUAGES C CXX Fortran)
+
+find_package(MPI REQUIRED COMPONENTS C CXX Fortran)
+
+# Set extended version info.
+SET(SRWA_VERSION_MAJOR 1)
+SET(SRWA_VERSION_MINOR 0)
+SET(SRWA_VERSION_PATCH 0)
+SET(SRWA_VERSION_NOTE "-development")
+SET(SRWA_VERSION ${SRWA_VERSION_MAJOR}.${SRWA_VERSION_MINOR}.${SRWA_VERSION_PATCH}${SRWA_VERSION_NOTE})
+
+# A function used to create autotools-style 'yes/no' definitions.
+# If a variable is set, it 'yes' is returned. Otherwise, 'no' is
+# returned.
+#
+# Also creates a version of the ret_val prepended with 'NC',
+# when feature is true, which is used to generate ufs_srweather_app_meta.h.
+FUNCTION(is_disabled feature ret_val)
+  IF(${feature})
+    SET(${ret_val} "no" PARENT_SCOPE)
+  ELSE()
+    SET(${ret_val} "yes" PARENT_SCOPE)
+    SET("SRWA_${ret_val}" 1 PARENT_SCOPE)
+  ENDIF(${feature})
+ENDFUNCTION()
+
+# A function used to create autotools-style 'yes/no' definitions.
+# If a variable is set, it 'yes' is returned. Otherwise, 'no' is
+# returned.
+#
+# Also creates a version of the ret_val prepended with 'NC',
+# when feature is true, which is used to generate ufs_srweather_app_meta.h.
+FUNCTION(is_enabled feature ret_val)
+  IF(${feature})
+    SET(${ret_val} "yes" PARENT_SCOPE)
+    SET("SRWA_${ret_val}" 1 PARENT_SCOPE)
+  ELSE()
+    SET(${ret_val} "no" PARENT_SCOPE)
+    SET("SRWA_${ret_val}" 0 PARENT_SCOPE)
+  ENDIF(${feature})
+ENDFUNCTION()
+
+# Turn on testing.
+enable_testing()
+include(CTest)
+
+# Default bin directory
+if(NOT DEFINED CMAKE_INSTALL_BINDIR)
+    set(CMAKE_INSTALL_BINDIR bin)
+endif()
+
+#####
+# Configure and print the ufs-srweather-app.settings file.
+#####
+
+# Determine the configure date.
+IF(DEFINED ENV{SOURCE_DATE_EPOCH})
+  EXECUTE_PROCESS(
+    COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
+    OUTPUT_VARIABLE CONFIG_DATE
+    )
+ELSE()
+  EXECUTE_PROCESS(
+    COMMAND date
+    OUTPUT_VARIABLE CONFIG_DATE
+    )
+ENDIF()
+IF(CONFIG_DATE)
+        string(STRIP ${CONFIG_DATE} CONFIG_DATE)
+ENDIF()
+
+# Get system configuration, Use it to determine osname, os release, cpu. These
+# will be used when committing to CDash.
+find_program(UNAME NAMES uname)
+IF(UNAME)
+  macro(getuname name flag)
+    exec_program("${UNAME}" ARGS "${flag}" OUTPUT_VARIABLE "${name}")
+  endmacro(getuname)
+  getuname(osname -s)
+  getuname(osrel  -r)
+  getuname(cpu    -m)
+ENDIF()
+
+# Set variables.
+SET(host_cpu "${cpu}")
+SET(host_vendor "${osname}")
+SET(host_os "${osrel}")
+SET(abs_top_builddir "${CMAKE_CURRENT_BINARY_DIR}")
+SET(abs_top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
+
+SET(CC_VERSION "${CMAKE_C_COMPILER}")
+
+# Set values for .settings file.
+SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
+SET(CPPFLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_CPP_FLAGS_${CMAKE_BUILD_TYPE}}")
+SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
+SET(prefix ${CMAKE_INSTALL_PREFIX})
+
+# Determine output yes/no values.
+is_disabled(BUILD_SHARED_LIBS enable_static)
+is_enabled(BUILD_SHARED_LIBS enable_shared)
+is_enabled(STATUS_PARALLEL HAS_PARALLEL)
+
+# Generate file from template.
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/ufs_srweather_app.settings.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app.settings"
+  @ONLY)
+
+# Read in settings file, print out.
+# Avoid using system-specific calls so that this
+# might also work on Windows.
+FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app.settings"
+  UFS-SRWEATHER-APP_SETTINGS)
+MESSAGE(${UFS-SRWEATHER-APP_SETTINGS})
+
+# Install ufs_srweather_app.settings file into same location
+# as the app.
+INSTALL(FILES "${CMAKE_BINARY_DIR}/ufs_srweather_app.settings"
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+#####
+# Create 'ufs_srweather_app_meta.h' include file.
+#####
+configure_file(ufs_srweather_app_meta.h.in ufs_srweather_app_meta.h @ONLY)
+
+FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
+
+add_custom_target(build DEPENDS pbuild)
+
 include(ExternalProject)
 
 # Options
@@ -93,6 +227,19 @@ if(BUILD_UFS_UTILS)
     "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
     "-DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}"
     "-DBUILD_TESTING=OFF"
+    "-DCHGRES=ON"
+    "-DCPLD_GRIDGEN=OFF"
+    "-DFRENCTOOLS=ON"
+    "-DFVCOMTOOLS=ON"
+    "-DGBLEVENTS=OFF"
+    "-DGCYCLE=OFF"
+    "-DGRIDTOOLS=ON"
+    "-DICEBLEND=OFF"
+    "-DOROG_MASK_TOOLS=ON"
+    "-DSFC_CLIMO_GEN=ON"
+    "-DSNOW2MDL=OFF"
+    "-DVCOORD_GEN=OFF"
+    "-DWEIGHT_GEN=OFF"
   )
 
   ExternalProject_Add(UFS_UTILS
@@ -110,12 +257,20 @@ endif()
 if (BUILD_UPP)
   list(APPEND TARGET_LIST UPP)
 
+  list(APPEND UPP_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+    "-Dexec_dir=${CMAKE_INSTALL_BINDIR}"
+    "-DINTERNAL_IFI=${BUILD_IFI}"
+    "-DBUILD_WITH_GTG=${BUILD_GTG}"
+  )
+
   ExternalProject_Add(UPP
     DEPENDS ${UFS_DEPEND}
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UPP
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UPP
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -Dexec_dir=${CMAKE_INSTALL_BINDIR}
+    CMAKE_ARGS ${UPP_ARGS}
     BUILD_ALWAYS TRUE
     STEP_TARGETS build
     )
@@ -125,26 +280,49 @@ if (CPL_AQM)
   if (BUILD_NEXUS)
     list(APPEND TARGET_LIST NEXUS)
 
+    list(APPEND NEXUS_ARGS
+      "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+      "-DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}"
+      "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+    )
+
     ExternalProject_Add(arl_nexus
       DEPENDS ${UFS_DEPEND}
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}/arl_nexus
       SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/arl_nexus
       INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
+      CMAKE_ARGS ${NEXUS_ARGS}
       BUILD_ALWAYS TRUE
+      STEP_TARGETS build
     )
   endif()
 
   if (BUILD_AQM_UTILS)
     list(APPEND TARGET_LIST AQM_UTILS)
 
+    list(APPEND AQM_UTILS_ARGS
+      "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+      "-DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}"
+      "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+      "-DBUILD_POST_STAT=${BUILD_POST_STAT}"
+      "-DGEFS2LBCS=ON"
+      "-DAQM_POST_GRIB2=OFF"
+      "-DAQM_POST_MAXI_GRIB2=OFF"
+      "-DAQM_POST_BIAS_COR_GRIB2=OFF"
+      "-DAQM_POST_MAXI_BIAS_COR_GRIB2=OFF"
+      "-DAQM_BIAS_CORRECT=OFF"
+      "-DAQM_BIAS_INTERPOLATE=OFF"
+      "-DCONVERT_AIRNOW_CSV=OFF"
+    )
+
     ExternalProject_Add(AQM-utils
       DEPENDS ${UFS_DEPEND}
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}/AQM-utils
       SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/AQM-utils
       INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR} -DBUILD_POST_STAT=${BUILD_POST_STAT}
+      CMAKE_ARGS ${AQM_UTILS_ARGS}
       BUILD_ALWAYS TRUE
+      STEP_TARGETS build
     )
   endif()
 endif()
