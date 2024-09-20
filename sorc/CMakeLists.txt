@@ -49,6 +49,8 @@ if (BUILD_UFS)
     "-DCMAKE_MODULE_PATH=${MAPL_ROOT}/share/MAPL/cmake"
     "-DNETCDF_DIR=$ENV{NETCDF}"
     "-D32BIT=ON"
+    "-DCCPP_32BIT=ON"
+    "-DMPI=ON"
     "-DINLINE_POST=ON"
     "-DAPP=${APP}"
   )
