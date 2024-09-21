@@ -29,7 +29,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${USHsrw}/source_util_funcs.sh
+. ${PARMsrw}/source_util_funcs.sh
 for sect in platform workflow nco constants task_run_fcst \
   smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

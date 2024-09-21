@@ -87,7 +87,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${USHsrw}/source_util_funcs.sh
+. ${PARMsrw}/source_util_funcs.sh
 for sect in user nco platform workflow constants grid_params \
   task_make_grid task_make_orog task_make_grid smoke_dust_parm ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

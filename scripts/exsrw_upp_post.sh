@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${USHsrw}/source_util_funcs.sh
+. ${PARMsrw}/source_util_funcs.sh
 for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm \
   task_run_fcst task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

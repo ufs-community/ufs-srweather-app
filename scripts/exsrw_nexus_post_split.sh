@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${USHsrw}/source_util_funcs.sh
+. ${PARMsrw}/source_util_funcs.sh
 for sect in user nco platform workflow global verification cpl_aqm_parm \
   constants fixed_files grid_params ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

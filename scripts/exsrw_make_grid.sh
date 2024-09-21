@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 #
 #-----------------------------------------------------------------------
 #
@@ -97,7 +96,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${USHsrw}/source_util_funcs.sh
+. ${PARMsrw}/source_util_funcs.sh
 for sect in user nco platform workflow constants grid_params task_make_grid ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -537,7 +536,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-${USHsrw}/link_fix.py \
+${PARMsrw}/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "grid" || \
 print_err_msg_exit "\
@@ -555,7 +554,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-${USHsrw}/set_fv3nml_sfc_climo_filenames.py \
+${PARMsrw}/set_fv3nml_sfc_climo_filenames.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist
