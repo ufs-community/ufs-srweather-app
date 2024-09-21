@@ -19,6 +19,7 @@ parm/conda_loc
 parm/nexus_config/
 parm/ufs_utils_parm/
 parm/upp_parm/
+parm/config.yaml
 parm/*.swp
 parm/log.*
 tests/WE2E/WE2E_tests_*.yaml
@@ -28,7 +29,6 @@ tests/WE2E/log.*
 ush/__pycache__/
 ush/aqm_utils_python/
 ush/nexus_utils/
-ush/config.yaml
 ush/python_utils/__pycache__/
 ush/python_utils/workflow-tools/
 ush/*.swp
