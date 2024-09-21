@@ -99,7 +99,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp ${PARMsrw}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp ${PARMsrw}/upp_parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -109,9 +109,9 @@ Copying the user-defined file specified by CUSTOM_POST_CONFIG_FP:
 ===================================================================="
 else
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-    post_config_fp="${PARMsrw}/upp/postxconfig-NT-AQM.txt"
+    post_config_fp="${PARMsrw}/upp_parm/postxconfig-NT-AQM.txt"
   else
-    post_config_fp="${PARMsrw}/upp/postxconfig-NT-fv3lam_rrfs.txt"
+    post_config_fp="${PARMsrw}/upp_parm/postxconfig-NT-fv3lam_rrfs.txt"
   fi
   print_info_msg "
 ====================================================================
@@ -120,7 +120,7 @@ Copying the default post flat file specified by post_config_fp:
 ===================================================================="
 fi
 cp ${post_config_fp} ./postxconfig-NT.txt
-cp ${PARMsrw}/upp/params_grib2_tbl_new .
+cp ${PARMsrw}/upp_parm/params_grib2_tbl_new .
 
 if [ $(boolify ${DO_SMOKE_DUST}) = "TRUE" ] || [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
   ln -nsf ${FIXcrtm}/Nalli.IRwater.EmisCoeff.bin .

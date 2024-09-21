@@ -377,7 +377,7 @@ ln -nsf ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN}
 ln -nsf ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN}
 
 if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
-  cp -p ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cp -p ${PARMdir}/upp_parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
@@ -386,9 +386,9 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
 ===================================================================="
   else
     if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-      post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
+      post_config_fp="${PARMdir}/upp_parm/postxconfig-NT-AQM.txt"
     else
-      post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+      post_config_fp="${PARMdir}/upp_parm/postxconfig-NT-fv3lam.txt"
     fi
     print_info_msg "
 ====================================================================
@@ -397,7 +397,7 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
   fi
   cp -p ${post_config_fp} ./postxconfig-NT_FH00.txt
   cp -p ${post_config_fp} ./postxconfig-NT.txt
-  cp -p ${PARMdir}/upp/params_grib2_tbl_new .
+  cp -p ${PARMdir}/upp_parm/params_grib2_tbl_new .
   # Set itag for inline-post:
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
