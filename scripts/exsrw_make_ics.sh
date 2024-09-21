@@ -158,7 +158,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-extrn_mdl_staging_dir="${DATA_SHARE}"
+extrn_mdl_staging_dir="${DATA_SHARE}/ICS"
 extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 . ${extrn_mdl_var_defns_fp}
 #
