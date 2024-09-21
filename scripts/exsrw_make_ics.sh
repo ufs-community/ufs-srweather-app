@@ -213,7 +213,7 @@ this physics suite (CCPP_PHYS_SUITE):
 #
 esac
 
-varmap_file_fp="${PARMsrw}/ufs_utils/varmap_tables/${varmap_file}"
+varmap_file_fp="${PARMsrw}/ufs_utils_parm/varmap_tables/${varmap_file}"
 #
 #-----------------------------------------------------------------------
 #
