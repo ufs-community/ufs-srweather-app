@@ -3,6 +3,9 @@
 import os
 import argparse
 
+dirpath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dirpath, '../parm'))
+
 from python_utils import (
     set_env_var,
     load_config_file,

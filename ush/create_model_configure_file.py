@@ -9,6 +9,9 @@ import sys
 from textwrap import dedent
 from uwtools.api.template import render
 
+dirpath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dirpath, '../parm'))
+
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,

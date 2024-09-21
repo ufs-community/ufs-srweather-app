@@ -235,7 +235,7 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-${USHsrw}/link_fix.py \
+${PARMsrw}/link_fix.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --file-group "sfc_climo" || \
 print_err_msg_exit "\

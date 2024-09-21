@@ -11,6 +11,9 @@ from textwrap import dedent
 
 from uwtools.api.config import get_nml_config, realize
 
+dirpath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dirpath, '../parm'))
+
 from python_utils import (
     print_input_args,
     print_info_msg,
