@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 # usage instructions
 usage () {
 cat << EOF_USAGE
