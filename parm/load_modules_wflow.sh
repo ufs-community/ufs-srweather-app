@@ -49,7 +49,7 @@ fi
 
 # Source modulefile for this machine
 WFLOW_MOD_FN="wflow_${machine}"
-source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+source "${HOMEdir}/parm/bash_utils/lmod-setup.sh" ${machine}
 module use "${HOMEdir}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || { echo "ERROR:
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 

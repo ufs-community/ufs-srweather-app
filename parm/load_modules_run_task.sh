@@ -115,7 +115,7 @@ default_modules_dir="$HOMEdir/modulefiles"
 test ! $(module is-loaded ecflow > /dev/null 2>&1) && ecflow_loaded=false
 
 if [ "$ecflow_loaded" = "false" ] ; then
-  source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+  source "${HOMEdir}/parm/bash_utils/lmod-setup.sh" ${machine}
 fi
 module use "${default_modules_dir}"
 

@@ -448,7 +448,7 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # Before we go on load modules, we first need to activate Lmod for some systems
-source ${HOME_DIR}/etc/lmod-setup.sh $MACHINE
+source ${HOME_DIR}/parm/bash_utils/lmod-setup.sh $MACHINE
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
