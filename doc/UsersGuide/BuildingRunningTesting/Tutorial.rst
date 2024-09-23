@@ -665,12 +665,12 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
    workflow:
      USE_CRON_TO_RELAUNCH: false
-     EXPT_SUBDIR: halloween
-     CCPP_PHYS_SUITE: FV3_GFS_v16
+     EXPT_SUBDIR: halloweenRAP
+     CCPP_PHYS_SUITE: FV3_RAP
      PREDEF_GRID_NAME: RRFS_CONUS_13km
      DATE_FIRST_CYCL: '2019103012'
      DATE_LAST_CYCL: '2019103012'
-     FCST_LEN_HRS: 6
+     FCST_LEN_HRS: 36
      PREEXISTING_DIR_METHOD: rename
      VERBOSE: true
      COMPILER: intel
@@ -716,7 +716,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: RAP
      USE_USER_STAGED_EXTRN_FILES: True
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_ICS
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
@@ -728,7 +728,7 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      EXTRN_MDL_NAME_LBCS: RAP
      LBC_SPEC_INTVL_HRS: 3
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_LBCS
 
 For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
@@ -775,7 +775,55 @@ Users should substitute ``/path/to/expt_dirs/Halloween`` with the actual path on
 
 Experiment 2: Changing the forecast input
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In this experiment we will be changing the forecast input to use HRRR data. This will include edits to the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below
 
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
+
+.. code-block:: console
+
+   workflow:
+     USE_CRON_TO_RELAUNCH: false
+     EXPT_SUBDIR: halloweenHRRR
+     CCPP_PHYS_SUITE: FV3_RAP
+     PREDEF_GRID_NAME: RRFS_CONUScompact_13km
+     DATE_FIRST_CYCL: '2019103012'
+     DATE_LAST_CYCL: '2019103012'
+     FCST_LEN_HRS: 36
+     PREEXISTING_DIR_METHOD: rename
+     VERBOSE: true
+     COMPILER: intel
+
+.. note::
+
+   Since HRRR is a high-resolution model than RAP, we will need to utilize the ``RRFS_CONUScompact_13km`` grid in order for the experiment to run successfully.
+
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_FILES_ICS``. 
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: HRRR
+     USE_USER_STAGED_EXTRN_FILES: false
+     EXTRN_MDL_FILES_ICS:
+     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
+
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_FILES_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
+
+.. code-block:: console
+
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: HRRR
+     LBC_SPEC_INTVL_HRS: 3
+     USE_USER_STAGED_EXTRN_FILES: false
+     EXTRN_MDL_FILES_LBCS:
+     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+
+
+For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
+
+Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
 
 Tutorial Content
 -------------------
