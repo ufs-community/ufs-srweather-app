@@ -25,10 +25,8 @@ OPTIONS
   --disable-options="OPTION1,OPTION2,..."
       disable ufs-weather-model options; delimited with ','
       (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
-  --continue
-      continue with existing build
   --remove
-      removes existing build; overrides --continue
+      removes existing build.
   --clean
       does a "make clean"
   --build
@@ -82,7 +80,6 @@ Settings:
   ENABLE_OPTIONS=${ENABLE_OPTIONS}
   DISABLE_OPTIONS=${DISABLE_OPTIONS}
   REMOVE=${REMOVE}
-  CONTINUE=${CONTINUE}
   BUILD_TYPE=${BUILD_TYPE}
   BUILD_JOBS=${BUILD_JOBS}
   VERBOSE=${VERBOSE}
@@ -118,7 +115,6 @@ DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
 BUILD_JOBS=4
 REMOVE=false
-CONTINUE=false
 VERBOSE=false
 
 # Turn off all apps to build and choose default later
@@ -160,8 +156,6 @@ while :; do
     --disable-options|--disable-options=) usage_error "$1 requires argument." ;;
     --remove) REMOVE=true ;;
     --remove=?*|--remove=) usage_error "$1 argument ignored." ;;
-    --continue) CONTINUE=true ;;
-    --continue=?*|--continue=) usage_error "$1 argument ignored." ;;
     --clean) CLEAN=true ;;
     --build) BUILD=true ;;
     --move) MOVE=true ;;
@@ -263,6 +257,17 @@ if [ "${REMOVE}" = true ]; then
     printf "... Remove ufs-weather-model ...\n"
     rm -rf "${SORC_DIR}/ufs-weather-model"
   fi
+  printf "... Check out external components again ..."
+  python --version 1>/dev/null 2>/dev/null
+  if [[ $? -ne 0 ]]; then
+    module load python
+  fi
+  if [ "${APPLICATION}" == "ATMAQ" ]; then
+    ./manage_externals/checkout_externals -e Externals_aqm.cfg
+  else
+    ./manage_externals/checkout_externals -e Externals_smoke_dust.cfg
+  fi
+
   exit 0  
 fi
 
@@ -380,38 +385,29 @@ fi
 
 printf "MODULE_FILE=${MODULE_FILE}\n" >&2
 
-# if build directory already exists then exit
-if [ "${REMOVE}" = true ]; then
-  printf "Remove build directory\n"
-  printf "  BUILD_DIR=${BUILD_DIR}\n\n"
-  rm -rf ${BUILD_DIR}
-elif [ "${CONTINUE}" = true ]; then
-  printf "Continue build in directory\n"
-  printf "  BUILD_DIR=${BUILD_DIR}\n\n"
-else
-  if [ -d "${BUILD_DIR}" ]; then
-    while true; do
-      if [[ $(ps -o stat= -p ${LCL_PID}) != *"+"* ]] ; then
-        printf "ERROR: Build directory already exists\n" >&2
-        printf "  BUILD_DIR=${BUILD_DIR}\n\n" >&2
-        usage >&2
-        exit 64
-      fi
-      # interactive selection
-      printf "Build directory (${BUILD_DIR}) already exists\n"
-      printf "Please choose what to do:\n\n"
-      printf "[R]emove the existing directory\n"
-      printf "[C]ontinue building in the existing directory\n"
-      printf "[Q]uit this build script\n"
-      read -p "Choose an option (R/C/Q):" choice
-      case ${choice} in
-        [Rr]* ) rm -rf ${BUILD_DIR}; break ;;
-        [Cc]* ) break ;;
-        [Qq]* ) exit ;;
-        * ) printf "Invalid option selected.\n" ;;
-      esac
-    done
-  fi
+# if build directory already exists then choose options
+if [ -d "${BUILD_DIR}" ]; then
+  while true; do
+    if [[ $(ps -o stat= -p ${LCL_PID}) != *"+"* ]] ; then
+      printf "ERROR: Build directory already exists\n" >&2
+      printf "  BUILD_DIR=${BUILD_DIR}\n\n" >&2
+      usage >&2
+      exit 64
+    fi
+    # interactive selection
+    printf "Build directory (${BUILD_DIR}) already exists\n"
+    printf "Please choose what to do:\n\n"
+    printf "[R]emove the existing directory\n"
+    printf "[C]ontinue building in the existing directory\n"
+    printf "[Q]uit this build script\n"
+    read -p "Choose an option (R/C/Q):" choice
+    case ${choice} in
+      [Rr]* ) rm -rf ${BUILD_DIR}; break ;;
+      [Cc]* ) break ;;
+      [Qq]* ) exit ;;
+      * ) printf "Invalid option selected.\n" ;;
+    esac
+  done
 fi
 
 # cmake settings

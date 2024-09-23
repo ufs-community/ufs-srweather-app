@@ -183,8 +183,8 @@ if (BUILD_UFS)
     "-DCMAKE_MODULE_PATH=${MAPL_ROOT}/share/MAPL/cmake"
     "-DNETCDF_DIR=$ENV{NETCDF}"
     "-D32BIT=ON"
-    "-DCCPP_32BIT=ON"
-    "-DMPI=ON"
+#    "-DCCPP_32BIT=ON"  # not work for AQM yet
+#    "-DMPI=ON"
     "-DINLINE_POST=ON"
     "-DAPP=${APP}"
   )
@@ -261,8 +261,8 @@ if (BUILD_UPP)
     "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
     "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
     "-Dexec_dir=${CMAKE_INSTALL_BINDIR}"
-    "-DINTERNAL_IFI=${BUILD_IFI}"
-    "-DBUILD_WITH_GTG=${BUILD_GTG}"
+#    "-DINTERNAL_IFI=${BUILD_IFI}"
+#    "-DBUILD_WITH_GTG=${BUILD_GTG}"
   )
 
   ExternalProject_Add(UPP
