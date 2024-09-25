@@ -17,16 +17,6 @@ user:
 
 platform:
   EXTRN_MDL_DATA_STORES: hpss
-
-workflow:
-  PREEXISTING_DIR_METHOD: rename
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
-  INCR_CYCL_FREQ: 96
-  DATE_FIRST_CYCL: '2024042912'
-  DATE_LAST_CYCL: '2024051112'
-  FCST_LEN_HRS: 48
-
-platform:
   # Base directories in which to look for obs.  If these do not exist and/or
   # do not contain the requied obs, create and populate them.
   # Note that when performing WE2E tests, the default behavior is not to
@@ -46,6 +36,14 @@ platform:
   REMOVE_RAW_OBS_NDAS: false
   REMOVE_RAW_OBS_NOHRSC: false
 
+workflow:
+  PREEXISTING_DIR_METHOD: rename
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  INCR_CYCL_FREQ: 96
+  DATE_FIRST_CYCL: '2024042912'
+  DATE_LAST_CYCL: '2024051112'
+  FCST_LEN_HRS: 48
+
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
@@ -59,7 +57,6 @@ task_run_post:
 verification:
   METPLUS_VERBOSITY_LEVEL: 5
   VX_FCST_MODEL_NAME: 'NSSL-MPAS-HN'
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests'
-  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{{VX_FCST_MODEL_NAME}}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}{% endif %}'
+  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.linked/{{- verification.VX_FCST_MODEL_NAME }}'
   FCST_FN_TEMPLATE: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%H?shift=${time_lag}}.grib2'
   FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${VAR}_a${ACCUM_HH}h.nc'
