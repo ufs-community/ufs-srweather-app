@@ -1,0 +1,61 @@
+metadata:
+  description: |-
+    SRW App configuration file to first pull CCPA, NOHRSC, MRMS, and NDAS
+    observations from HPSS for a single cycle with a relatively long forecast
+    (36 hours) cycle and then perform deterministic verification, including
+    first performing vx preprocessing with METplus tools such as PcpCombine
+    and Pb2Nc.
+
+    The staged forecast data are from the SRW itself.
+
+    This test uses a winter case to ensure that ASNOW is verified correctly
+    for both 6-hour and 24-hour accumulations.
+
+user:
+  RUN_ENVIR: community
+
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
+  # Base directories in which to look for obs.  If these do not exist and/or
+  # do not contain the requied obs, create and populate them.
+  # Note that when performing WE2E tests, the default behavior is not to
+  # get obs files from HPSS but to use staged obs files.  This is done by
+  # setting these variables to the (platform-specific) locations of these
+  # staged files.  To force the WE2E testing system to get the obs from
+  # HPSS, here we reset these variables to their default values in the SRW
+  # workflow configuration file config_defaults.yaml.
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
+  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
+  # Do not remove raw obs files to be able to verify that only the necessary
+  # raw files are fetched from HPSS.
+  REMOVE_RAW_OBS_CCPA: false
+  REMOVE_RAW_OBS_MRMS: false
+  REMOVE_RAW_OBS_NDAS: false
+  REMOVE_RAW_OBS_NOHRSC: false
+
+workflow:
+  PREEXISTING_DIR_METHOD: rename
+  # This is required in the experiment generation step, although it shouldn't
+  # since a forecast is not being run.
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  INCR_CYCL_FREQ: 24
+  DATE_FIRST_CYCL: '2023021700'
+  DATE_LAST_CYCL: '2023021700'
+  FCST_LEN_HRS: 36
+
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+
+task_get_extrn_lbcs:
+  LBC_SPEC_INTVL_HRS: 3
+
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: 'custom_ESGgrid_Michigan_Ontario'
+
+verification:
+  VX_FCST_MODEL_NAME: 'Michigan_Ontario_snow_8km'
+  VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
+  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.linked/SRW'
