@@ -47,7 +47,6 @@ task_get_obs_nohrsc:
     <<: *default_vars
     OBS_DIR: '&NOHRSC_OBS_DIR;'
     OBTYPE: 'NOHRSC'
-    OUTPUT_TIMES_ALL: *output_times_all_cumul
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -61,10 +60,6 @@ task_get_obs_mrms:
     OBS_DIR: '&MRMS_OBS_DIR;'
     OBTYPE: 'MRMS'
     MRMS_FIELDS: 'REFC RETOP'
-    OUTPUT_TIMES_ALL: &output_times_all_inst
-                      '{%- for i in range(0, (workflow.OUTPUT_TIMES_ALL_CYCLES_INST|length)) %}
-                         {{- " " ~ workflow.OUTPUT_TIMES_ALL_CYCLES_INST[i] }}
-                       {%- endfor %}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -77,7 +72,6 @@ task_get_obs_ndas:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'
     OBTYPE: 'NDAS'
-    OUTPUT_TIMES_ALL: *output_times_all_inst
   queue: "&QUEUE_HPSS;"
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -96,7 +90,6 @@ task_run_MET_Pb2nc_obs:
     FCST_OR_OBS: OBS
     OBTYPE: NDAS
     OBS_DIR: '&NDAS_OBS_DIR;'
-    OUTPUT_TIMES_ALL: *output_times_all_inst
     METPLUSTOOLNAME: 'PB2NC'
   dependency:
     and:
@@ -127,6 +120,7 @@ metatask_PcpCombine_obs:
       FCST_OR_OBS: OBS
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
+      OBS_AVAIL_INTVL_HRS: '{{- verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
       METPLUSTOOLNAME: 'PCPCOMBINE'
     dependency:
       and:

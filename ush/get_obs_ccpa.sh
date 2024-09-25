@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user platform ; do
+for sect in user platform verification ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
@@ -158,93 +158,71 @@ set -u
 #-----------------------------------------------------------------------
 #
 
-# CCPA accumulation period to consider.  Here, we only retrieve data for
-# 1-hour accumulations.  Other accumulations (03h, 06h, 24h) are obtained
-# by other tasks in the workflow that add up these hourly values.
-accum="01"
+# The time interval (in hours) at which the obs are available on HPSS
+# must divide evenly into 24.  Otherwise, different days would have obs
+# available at different hours-of-day.  Make sure this is the case.
+remainder=$(( 24 % CCPA_OBS_AVAIL_INTVL_HRS ))
+if [ ${remainder} -ne 0 ]; then
+  print_err_msg_exit "\
+The obs availability interval CCPA_OBS_AVAIL_INTVL_HRS must divide evenly
+into 24 but doesn't:
+  CCPA_OBS_AVAIL_INTVL_HRS = ${CCPA_OBS_AVAIL_INTVL_HRS}
+  mod(24, CCPA_OBS_AVAIL_INTVL_HRS) = ${remainder}"
+fi
+
+# Accumulation period to use when getting obs files.  This is simply (a
+# properly formatted version of) the obs availability interval.
+accum_obs_fmt=$( printf "%02d" "${CCPA_OBS_AVAIL_INTVL_HRS}" )
 
 # The day (in the form YYYMMDD) associated with the current task via the
 # task's cycledefs attribute in the ROCOTO xml.
 yyyymmdd_task=${PDY}
 
-# Base directory in which the daily subdirectories containing the CCPA
-# grib2 files will appear after this script is done.  We refer to this as
+# Base directory in which the daily subdirectories containing the grib2
+# obs files will appear after this script is done.  We refer to this as
 # the "processed" base directory because it contains the files after all
 # processing by this script is complete.
 basedir_proc=${OBS_DIR}
-
-# The environment variable FCST_OUTPUT_TIMES_ALL set in the ROCOTO XML is
-# a scalar string containing all relevant forecast output times (each in
-# the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
-# because in ROCOTO, there doesn't seem to be a way to pass a bash array
-# from the XML to the task's script.  To have an array-valued variable to
-# work with, here, we create the new variable fcst_output_times_all that
-# is the array-valued counterpart of FCST_OUTPUT_TIMES_ALL.
-fcst_output_times_all=($(printf "%s" "${FCST_OUTPUT_TIMES_ALL}"))
-
-# List of times (each of the form YYYYMMDDHH) for which there is forecast
-# APCP (accumulated precipitation) output for the current day.  We start
-# constructing this by extracting from the full list of all forecast APCP
-# output times (i.e. from all cycles) all elements that contain the current
-# task's day (in the form YYYYMMDD).
-fcst_output_times_crnt_day=()
-if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
-  fcst_output_times_crnt_day=( $(printf "%s\n" "${fcst_output_times_all[@]}" | grep "^${yyyymmdd_task}") )
-fi
-# If the 0th hour of the current day is in this list (and if it is, it
-# will be the first element), remove it because for APCP, that time is
-# considered part of the previous day (because it represents precipitation
-# that occurred during the last hour of the previous day).
-if [[ ${#fcst_output_times_crnt_day[@]} -gt 0 ]] && \
-   [[ ${fcst_output_times_crnt_day[0]} == "${yyyymmdd_task}00" ]]; then
-  fcst_output_times_crnt_day=(${fcst_output_times_crnt_day[@]:1})
-fi
-# If the 0th hour of the next day (i.e. the day after yyyymmdd_task) is
-# one of the output times in the list of all APCP output times, we include
-# it in the list for the current day because for APCP, that time is
-# considered part of the current day (because it represents precipitation 
-# that occured during the last hour of the current day).
-yyyymmdd00_task_p1d=$(${DATE_UTIL} --date "${yyyymmdd_task} 1 day" +%Y%m%d%H)
-if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd00_task_p1d} ]]; then
-  fcst_output_times_crnt_day+=(${yyyymmdd00_task_p1d})
-fi
-
-# If there are no forecast APCP output times on the day of the current
-# task, exit the script.
-num_fcst_output_times_crnt_day=${#fcst_output_times_crnt_day[@]}
-if [[ ${num_fcst_output_times_crnt_day} -eq 0 ]]; then
-  print_info_msg "
-None of the forecast APCP output times fall within the day (including the
-0th hour of the next day) associated with the current task (yyyymmdd_task):
-  yyyymmdd_task = \"${yyyymmdd_task}\"
-Thus, there is no need to retrieve any obs files."
-  exit
-fi
-
+#
+#-----------------------------------------------------------------------
+#
+# Get the list of all the times in the current day at which to retrieve
+# obs.  This is an array with elements having format "YYYYMMDDHH".
+#
+#-----------------------------------------------------------------------
+#
+array_name="OBS_RETRIEVE_TIMES_${OBTYPE}_${yyyymmdd_task}"
+eval obs_retrieve_times_crnt_day=\( \${${array_name}[@]} \)
+#
+#-----------------------------------------------------------------------
+#
 # Obs files will be obtained by extracting them from the relevant 6-hourly
 # archives.  Thus, we need the sequence of archive hours over which to
 # loop.  In the simplest case, this sequence will be "6 12 18 24".  This
-# will be the case if the forecast output times include all hours of the
-# task's day and if none of the obs files for this day already exist on
-# disk.  In other cases, the sequence we loop over will be a subset of
-# "6 12 18 24".
+# will be the case if the observation retrieval times include all hours
+# of the task's day and if none of the obs files for this day already
+# exist on disk.  In other cases, the sequence we loop over will be a
+# subset of "6 12 18 24".
 #
 # To generate this sequence, we first set its starting and ending values
 # as well as the interval.
+#
+#-----------------------------------------------------------------------
+#
 
 # Sequence interval must be 6 hours because the archives are 6-hourly.
 arcv_hr_incr=6
 
-# Initial guess for starting archive hour.  This is set to the archive 
-# hour containing obs at the first forecast output time of the day.
-hh_first=$(echo ${fcst_output_times_crnt_day[0]} | cut -c9-10)
+# Initial guess for starting archive hour.  This is set to the archive
+# hour containing obs at the first obs retrieval time of the day.
+hh_first=$(echo ${obs_retrieve_times_crnt_day[0]} | cut -c9-10)
 hr_first=$((10#${hh_first}))
 arcv_hr_start=$(ceil ${hr_first} ${arcv_hr_incr})
 arcv_hr_start=$(( arcv_hr_start*arcv_hr_incr ))
 
 # Ending archive hour.  This is set to the archive hour containing obs at
-# the last forecast output time of the day.
-hh_last=$(echo ${fcst_output_times_crnt_day[-1]} | cut -c9-10)
+# the last obs retrieval time of the day.
+hh_last=$(echo ${obs_retrieve_times_crnt_day[-1]} | cut -c9-10)
 hr_last=$((10#${hh_last}))
 if [[ ${hr_last} -eq 0 ]]; then
   arcv_hr_end=24
@@ -257,11 +235,11 @@ fi
 # starting archive hour.  In the process, keep a count of the number of
 # obs files that already exist on disk.
 num_existing_files=0
-for yyyymmddhh in ${fcst_output_times_crnt_day[@]}; do
+for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
   day_dir_proc="${basedir_proc}/${yyyymmdd}"
-  fn_proc="ccpa.t${hh}z.${accum}h.hrap.conus.gb2"
+  fn_proc="ccpa.t${hh}z.${accum_obs_fmt}h.hrap.conus.gb2"
   fp_proc="${day_dir_proc}/${fn_proc}"
   if [[ -f ${fp_proc} ]]; then
     num_existing_files=$((num_existing_files+1))
@@ -273,7 +251,7 @@ File already exists on disk:
     arcv_hr_start=$(ceil ${hr} ${arcv_hr_incr})
     arcv_hr_start=$(( arcv_hr_start*arcv_hr_incr ))
     print_info_msg "
-File does not exists on disk:
+File does not exist on disk:
   fp_proc = \"${fp_proc}\"
 Setting the hour (since 00) of the first archive to retrieve to:
   arcv_hr_start = \"${arcv_hr_start}\""
@@ -282,32 +260,39 @@ Setting the hour (since 00) of the first archive to retrieve to:
 done
 
 # If the number of obs files that already exist on disk is equal to the
-# number of files needed, then there is no need to retrieve any files.
-num_needed_files=$((num_fcst_output_times_crnt_day))
-if [[ ${num_existing_files} -eq ${num_needed_files} ]]; then
+# number of obs files needed, then there is no need to retrieve any files.
+num_obs_retrieve_times_crnt_day=${#obs_retrieve_times_crnt_day[@]}
+if [[ ${num_existing_files} -eq ${num_obs_retrieve_times_crnt_day} ]]; then
+
   print_info_msg "
 All obs files needed for the current day (yyyymmdd_task) already exist
 on disk:
   yyyymmdd_task = \"${yyyymmdd_task}\"
 Thus, there is no need to retrieve any files."
   exit
-# Otherwise, will need to retrieve files.  In this case, set the sequence
-# of hours corresponding to the archives from which files will be retrieved.
+
+# If the number of obs files that already exist on disk is not equal to
+# the number of obs files needed, then we will need to retrieve files.
+# In this case, set the sequence of hours corresponding to the archives
+# from which files will be retrieved.
 else
+
   arcv_hrs=($(seq ${arcv_hr_start} ${arcv_hr_incr} ${arcv_hr_end}))
   arcv_hrs_str="( "$( printf "%s " "${arcv_hrs[@]}" )")"
   print_info_msg "
 At least some obs files needed needed for the current day (yyyymmdd_task)
 do not exist on disk:
   yyyymmdd_task = \"${yyyymmdd_task}\"
-The number of obs files needed is:
-  num_needed_files = ${num_needed_files}
+The number of obs files needed for the current day (which is equal to the
+number of observation retrieval times for the current day) is:
+  num_obs_retrieve_times_crnt_day = ${num_obs_retrieve_times_crnt_day}
 The number of obs files that already exist on disk is:
   num_existing_files = ${num_existing_files}
 Will retrieve remaining files by looping over archives corresponding to
 the following hours (since 00 of this day):
   arcv_hrs = ${arcv_hrs_str}
 "
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -348,36 +333,48 @@ arcv_hr = ${arcv_hr}"
   yyyymmdd_arcv=$(echo ${yyyymmddhh_arcv} | cut -c1-8)
   hh_arcv=$(echo ${yyyymmddhh_arcv} | cut -c9-10)
 
-  # Directory that will contain the CCPA grib2 files retrieved from the
-  # current 6-hourly archive file.  We refer to this as the "raw" quarter-
-  # daily directory because it will contain the files as they are in the
-  # archive before any processing by this script.
-  qrtrday_dir_raw="${basedir_raw}/${yyyymmddhh_arcv}"
+  # Directory that will contain the grib2 files retrieved from the current
+  # archive file.  We refer to this as the "raw" archive directory because
+  # it will contain the files as they are in the archive before any processing
+  # by this script.
+  arcv_dir_raw="${basedir_raw}/${yyyymmddhh_arcv}"
 
-  # Check whether any of the forecast APCP output times for the day associated
-  # with this task fall in the time interval spanned by the current archive.
-  # If so, set the flag (do_retrieve) to retrieve the files in the current
+  # Check whether any of the obs retrieval times for the day associated with
+  # this task fall in the time interval spanned by the current archive.  If
+  # so, set the flag (do_retrieve) to retrieve the files in the current
   # archive.
-  yyyymmddhh_qrtrday_start=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} 5 hours ago" +%Y%m%d%H)
-  yyyymmddhh_qrtrday_end=${yyyymmddhh_arcv}
+  hrs_ago=$((arcv_hr_incr - 1))
+  arcv_contents_yyyymmddhh_start=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} ${hrs_ago} hours ago" +%Y%m%d%H)
+  arcv_contents_yyyymmddhh_end=${yyyymmddhh_arcv}
   do_retrieve="FALSE"
-  for (( i=0; i<${num_fcst_output_times_crnt_day}; i++ )); do
-    output_time=${fcst_output_times_crnt_day[i]}
-    if [[ "${output_time}" -ge "${yyyymmddhh_qrtrday_start}" ]] && \
-       [[ "${output_time}" -le "${yyyymmddhh_qrtrday_end}" ]]; then
+  for (( i=0; i<${num_obs_retrieve_times_crnt_day}; i++ )); do
+    obs_retrieve_time=${obs_retrieve_times_crnt_day[i]}
+    if [[ "${obs_retrieve_time}" -ge "${arcv_contents_yyyymmddhh_start}" ]] && \
+       [[ "${obs_retrieve_time}" -le "${arcv_contents_yyyymmddhh_end}" ]]; then
       do_retrieve="TRUE"
       break
     fi
   done
 
-  if [[ $(boolify "${do_retrieve}") == "TRUE" ]]; then
+  if [[ $(boolify "${do_retrieve}") != "TRUE" ]]; then
 
-    # Make sure the raw quarter-daily directory exists because it is used
-    # below as the output directory of the retrieve_data.py script (so if
-    # this directory doesn't already exist, that script will fail).  Creating
-    # this directory also ensures that the raw base directory (basedir_raw)
-    # exists before we change location to it below.
-    mkdir -p ${qrtrday_dir_raw}
+    print_info_msg "
+None of the times in the current day (or hour 00 of the next day) at which
+obs need to be retrieved fall in the range spanned by the current ${arcv_hr_incr}-hourly
+archive file.  The bounds of the data in the current archive file are:
+  arcv_contents_yyyymmddhh_start = \"${arcv_contents_yyyymmddhh_start}\"
+  arcv_contents_yyyymmddhh_end = \"${arcv_contents_yyyymmddhh_end}\"
+The times at which obs need to be retrieved are:
+  obs_retrieve_times_crnt_day = ($(printf "\"%s\" " ${obs_retrieve_times_crnt_day[@]}))"
+
+  else
+
+    # Make sure the raw archive directory exists because it is used below as
+    # the output directory of the retrieve_data.py script (so if this directory
+    # doesn't already exist, that script will fail).  Creating this directory
+    # also ensures that the raw base directory (basedir_raw) exists before we
+    # change location to it below.
+    mkdir -p ${arcv_dir_raw}
 
     # The retrieve_data.py script first extracts the contents of the archive
     # file into the directory it was called from and then moves them to the
@@ -389,8 +386,8 @@ arcv_hr = ${arcv_hr}"
     # same names are extracted into different directories.
     cd ${basedir_raw}
 
-    # Pull CCPA data from HPSS.  This will get all 6 obs files in the current
-    # archive and place them in the raw quarter-daily directory.
+    # Pull obs from HPSS.  This will get all the obs files in the current
+    # archive and place them in the raw archive directory.
     cmd="
     python3 -u ${USHdir}/retrieve_data.py \
       --debug \
@@ -399,7 +396,7 @@ arcv_hr = ${arcv_hr}"
       --cycle_date ${yyyymmddhh_arcv} \
       --data_stores hpss \
       --data_type CCPA_obs \
-      --output_path ${qrtrday_dir_raw} \
+      --output_path ${arcv_dir_raw} \
       --summary_file retrieve_data.log"
 
     print_info_msg "CALLING: ${cmd}"
@@ -415,9 +412,12 @@ arcv_hr = ${arcv_hr}"
       yyyymmddhh=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} ${hrs_ago} hours ago" +%Y%m%d%H)
       yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
       hh=$(echo ${yyyymmddhh} | cut -c9-10)
-      if [[ ${fcst_output_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
-        fn_raw="ccpa.t${hh}z.${accum}h.hrap.conus.gb2"
-        fp_raw="${qrtrday_dir_raw}/${fn_raw}"
+      # Create the processed grib2 obs file from the raw one (by moving, copying,
+      # or otherwise) only if the time of the current file in the current archive
+      # also exists in the list of obs retrieval times for the current day.
+      if [[ ${obs_retrieve_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
+        fn_raw="ccpa.t${hh}z.${accum_obs_fmt}h.hrap.conus.gb2"
+        fp_raw="${arcv_dir_raw}/${fn_raw}"
         day_dir_proc="${basedir_proc}/${yyyymmdd}"
         mkdir -p ${day_dir_proc}
         fn_proc="${fn_raw}"
@@ -434,17 +434,6 @@ arcv_hr = ${arcv_hr}"
         fi
       fi
     done
-
-  else
-
-    print_info_msg "
-None of the current day's forecast APCP output times fall in the range
-spanned by the current 6-hourly archive file.  The bounds of the current
-archive are:
-  yyyymmddhh_qrtrday_start = \"${yyyymmddhh_qrtrday_start}\"
-  yyyymmddhh_qrtrday_end = \"${yyyymmddhh_qrtrday_end}\"
-The forecast output times for APCP are:
-  fcst_output_times_crnt_day = ($(printf "\"%s\" " ${fcst_output_times_crnt_day[@]}))"
 
   fi
 

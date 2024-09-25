@@ -46,6 +46,22 @@ set -u
 #-----------------------------------------------------------------------
 #
 
+# The time interval (in hours) at which the obs are available on HPSS
+# must divide evenly into 24.  Otherwise, different days would have obs
+# available at different hours-of-day.  Make sure this is the case.
+remainder=$(( 24 % NOHRSC_OBS_AVAIL_INTVL_HRS ))
+if [ ${remainder} -ne 0 ]; then
+  print_err_msg_exit "\
+The obs availability interval NOHRSC_OBS_AVAIL_INTVL_HRS must divide evenly
+into 24 but doesn't:
+  NOHRSC_OBS_AVAIL_INTVL_HRS = ${NOHRSC_OBS_AVAIL_INTVL_HRS}
+  mod(24, NOHRSC_OBS_AVAIL_INTVL_HRS) = ${remainder}"
+fi
+
+# Accumulation period to use when getting obs files.  This is simply (a
+# properly formatted version of) the obs availability interval.
+accum_obs_fmt=$( printf "%d" "${NOHRSC_OBS_AVAIL_INTVL_HRS}" )
+
 # The day (in the form YYYMMDD) associated with the current task via the
 # task's cycledefs attribute in the ROCOTO xml.
 yyyymmdd_task=${PDY}
@@ -58,170 +74,20 @@ basedir_proc=${OBS_DIR}
 #
 #-----------------------------------------------------------------------
 #
-# Generate a list of forecast output times for the current day.  Note
-# that if the 0th hour of the next day (i.e. the day after the one
-# associated with this task) is one of the forecast output times, we
-# include it in the list for the current day because the accumulation
-# associated with that hour occurred during the current day.
-#
-#-----------------------------------------------------------------------
-#
-
-# The environment variable FCST_OUTPUT_TIMES_ALL set in the ROCOTO XML is
-# a scalar string containing all relevant forecast output times (each in
-# the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
-# because in ROCOTO, there doesn't seem to be a way to pass a bash array
-# from the XML to the task's script.  To have an array-valued variable to
-# work with, here, we create the new variable fcst_output_times_all that
-# is the array-valued counterpart of FCST_OUTPUT_TIMES_ALL.
-fcst_output_times_all=($(printf "%s" "${FCST_OUTPUT_TIMES_ALL}"))
-
-# List of times (each of the form YYYYMMDDHH) for which there is forecast
-# ASNOW (accumulated snow) output for the current day.  We start constructing
-# this by extracting from the full list of all forecast ASNOW output times
-# (i.e. from all cycles) all elements that contain the current task's day
-# (in the form YYYYMMDD).
-fcst_output_times_crnt_day=()
-if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
-  fcst_output_times_crnt_day=( $(printf "%s\n" "${fcst_output_times_all[@]}" | grep "^${yyyymmdd_task}") )
-fi
-# If the 0th hour of the current day is in this list (and if it is, it
-# will be the first element), remove it because for ASNOW, that time is
-# considered part of the previous day (because it represents snowfall
-# that occurred during the last hour of the previous day).
-if [[ ${#fcst_output_times_crnt_day[@]} -gt 0 ]] && \
-   [[ ${fcst_output_times_crnt_day[0]} == "${yyyymmdd_task}00" ]]; then
-  fcst_output_times_crnt_day=(${fcst_output_times_crnt_day[@]:1})
-fi
-# If the 0th hour of the next day (i.e. the day after yyyymmdd_task) is
-# one of the output times in the list of all ASNOW output times, we
-# include it in the list for the current day because for ASNOW, that time
-# is considered part of the current day (because it represents snowfall
-# that occured during the last hour of the current day).
-yyyymmdd00_task_p1d=$(${DATE_UTIL} --date "${yyyymmdd_task} 1 day" +%Y%m%d%H)
-if [[ ${fcst_output_times_all[@]} =~ ${yyyymmdd00_task_p1d} ]]; then
-  fcst_output_times_crnt_day+=(${yyyymmdd00_task_p1d})
-fi
-
-# If there are no forecast ASNOW output times on the day of the current
-# task, exit the script.
-num_fcst_output_times_crnt_day=${#fcst_output_times_crnt_day[@]}
-if [[ ${num_fcst_output_times_crnt_day} -eq 0 ]]; then
-  print_info_msg "
-None of the forecast ASNOW output times fall within the day (including the
-0th hour of the next day) associated with the current task (yyyymmdd_task):
-  yyyymmdd_task = \"${yyyymmdd_task}\"
-Thus, there is no need to retrieve any obs files."
-  exit
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Generate a list of all the times at which obs are available for the
-# current day, possibly including hour 00 of the next day.
-#
-#-----------------------------------------------------------------------
-#
-
-# The time interval (in hours) at which the obs are available on HPSS
-# must be evenly divisible into 24.  Otherwise, different days would
-# have obs available at different hours.  Make sure this is the case.
-remainder=$(( 24 % NOHRSC_OBS_AVAIL_INTVL_HRS ))
-if [ ${remainder} -ne 0 ]; then
-  print_err_msg_exit "\
-The obs availability interval NOHRSC_OBS_AVAIL_INTVL_HRS must divide evenly
-into 24 but doesn't:
-  NOHRSC_OBS_AVAIL_INTVL_HRS = ${NOHRSC_OBS_AVAIL_INTVL_HRS}
-  mod(24, NOHRSC_OBS_AVAIL_INTVL_HRS) = ${remainder}"
-fi
-
-# Construct the array of times during the current day (and possibly
-# during hour 00 of the next day) at which obs are available on HPSS.
-# Each element of this array is of the form "YYYYMMDDHH".
-num_obs_avail_times=$((24/NOHRSC_OBS_AVAIL_INTVL_HRS))
-obs_avail_times_crnt_day=()
-# Note: Start at i=1 because the output for hour 00 of the current day is
-# considered part of the previous day (because it represents accumulation
-# that occurred during the previous day).
-for (( i=1; i<$((num_obs_avail_times+1)); i++ )); do
-  hrs=$((i*NOHRSC_OBS_AVAIL_INTVL_HRS))
-  obs_avail_times_crnt_day+=( $(${DATE_UTIL} --date "${yyyymmdd_task} ${hrs} hours" +%Y%m%d%H) )
-done
-#
-#-----------------------------------------------------------------------
-#
-# Generate a list of all the times at which to retrieve obs.  This is
-# obtained from the intersection of the list of times at which there is
-# forecast output and the list of times at which there are obs available.
-# Note that if the forecast output is more frequent than the data is
-# available, then the forecast values must be accumulated together to
-# get values at the times at which the obs are available.  This is done
-# in another workflow task using the METplus tool PcpCombine.
-#
-#-----------------------------------------------------------------------
-#
-obs_retrieve_times_crnt_day=()
-for yyyymmddhh in ${fcst_output_times_crnt_day[@]}; do
-  if [[ ${obs_avail_times_crnt_day[@]} =~ ${yyyymmddhh} ]] ; then
-    obs_retrieve_times_crnt_day+=(${yyyymmddhh})
-  fi
-done
-#
-#-----------------------------------------------------------------------
-#
-#
+# Get the list of all the times in the current day at which to retrieve
+# obs.  This is an array with elements having format "YYYYMMDDHH".
 #
 #-----------------------------------------------------------------------
 #
 array_name="OBS_RETRIEVE_TIMES_${OBTYPE}_${yyyymmdd_task}"
-eval obs_retrieve_times=\( \${${array_name}[@]} \)
-echo
-echo "QQQQQQQQQQQQQQQQQQQ"
-#echo "obs_retrieve_times = |${obs_retrieve_times[@]}|"
-echo "obs_retrieve_times ="
-echo "|${obs_retrieve_times[@]}|"
-
-# For testing.
-#obs_retrieve_times+=('abcd')
-#obs_retrieve_times[4]='abcd'
-
-err_msg="
-The two methods of obtaining the array of obs retrieve times don't match:
-  obs_retrieve_times_crnt_day =
-    (${obs_retrieve_times_crnt_day[@]})
-  obs_retrieve_times =
-    (${obs_retrieve_times[@]})"
-
-n1=${#obs_retrieve_times_crnt_day[@]}
-n2=${#obs_retrieve_times[@]}
-if [ ${n1} -ne ${n2} ]; then
-  print_err_msg_exit "${err_msg}"
-fi
-
-for (( i=0; i<${n1}; i++ )); do
-  elem1=${obs_retrieve_times_crnt_day[$i]}
-  elem2=${obs_retrieve_times[$i]}
-  if [ ${elem1} != ${elem2} ]; then
-    print_err_msg_exit "${err_msg}"
-  fi
-done
-
-obs_retrieve_times_crnt_day=($( printf "%s " "${obs_retrieve_times[@]}" ))
-
-echo
-echo "RRRRRRRRRRRRRRRRR"
-#echo "obs_retrieve_times_crnt_day = |${obs_retrieve_times_crnt_day[@]}|"
-echo "obs_retrieve_times_crnt_day ="
-echo "|${obs_retrieve_times_crnt_day[@]}|"
-
-#exit 1
+eval obs_retrieve_times_crnt_day=\( \${${array_name}[@]} \)
 #
 #-----------------------------------------------------------------------
 #
 # Obs files will be obtained by extracting them from the relevant 24-hourly
 # archives.  Thus, we need the sequence of archive hours over which to
 # loop.  In the simplest case, this sequence will be "0 24".  This will
-# be the case if the forecast output times include all hours of the
+# be the case if the observation retrieval times include all hours of the
 # task's day and if none of the obs files for this day already exist on
 # disk.  In other cases, the sequence we loop over will be a subset of
 # "0 24", e.g. just "0" or just "24".
@@ -261,7 +127,7 @@ for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
   day_dir_proc="${basedir_proc}"
-  fn_proc="sfav2_CONUS_6h_${yyyymmddhh}_grid184.grb2"
+  fn_proc="sfav2_CONUS_${accum_obs_fmt}h_${yyyymmddhh}_grid184.grb2"
   fp_proc="${day_dir_proc}/${fn_proc}"
   if [[ -f ${fp_proc} ]]; then
     num_existing_files=$((num_existing_files+1))
@@ -447,12 +313,11 @@ The times at which obs need to be retrieved are:
       # or otherwise) only if the time of the current file in the current archive
       # also exists in the list of obs retrieval times for the current day.
       if [[ ${obs_retrieve_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
-        fn_raw="sfav2_CONUS_6h_${yyyymmddhh}_grid184.grb2"
+        fn_raw="sfav2_CONUS_${accum_obs_fmt}h_${yyyymmddhh}_grid184.grb2"
         fp_raw="${arcv_dir_raw}/${fn_raw}"
         day_dir_proc="${basedir_proc}"
         mkdir -p ${day_dir_proc}
         fn_proc="${fn_raw}"
-        #fn_proc="sfav2_CONUS_6h_${yyyymmddhh}_grid184.grb2"
         fp_proc="${day_dir_proc}/${fn_proc}"
         ${mv_or_cp} ${fp_raw} ${fp_proc}
       fi
