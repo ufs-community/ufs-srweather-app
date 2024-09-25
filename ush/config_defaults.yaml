@@ -2423,6 +2423,13 @@ verification:
   # 
   METPLUS_VERBOSITY_LEVEL: 2
   #
+  # Time interval (in hours) at which various types of obs are available on
+  # NOAA's HPSS.
+  CCPA_OBS_AVAIL_INTVL_HRS: 1
+  NOHRSC_OBS_AVAIL_INTVL_HRS: 6
+  MRMS_OBS_AVAIL_INTVL_HRS: 1
+  NDAS_OBS_AVAIL_INTVL_HRS: 1
+  #
   # Templates for CCPA, MRMS, and NDAS observation files.
   # 
   # OBS_CCPA_APCP_FN_TEMPLATE:
@@ -2448,8 +2455,10 @@ verification:
   # surface (ADPSFC) or ADP upper air (ADPUPA) fields and then generate
   # NetCDF versions of these files.
   #
-  OBS_CCPA_APCP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
-  OBS_NOHRSC_ASNOW_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'
+  OBS_CCPA_APCP_FN_TEMPLATE: '{%- set data_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
+                              {{- "{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z." ~ data_intvl_hrs ~ "h.hrap.conus.gb2" }}'
+  OBS_NOHRSC_ASNOW_FN_TEMPLATE: '{%- set data_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
+                                 {{- "sfav2_CONUS_" ~ data_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2" }}'
   OBS_MRMS_REFC_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_MRMS_RETOP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
@@ -2467,7 +2476,10 @@ verification:
   # METplus Pb2nc tool on NDAS observations.  (These files will contain
   # obs ADPSFC or ADPUPA fields in NetCDF format.)
   #
-  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 'ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2_a${ACCUM_HH}h.nc'
+  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{%- set data_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
+                                                {{- "ccpa.t{valid?fmt=%H}z." ~ data_intvl_hrs ~ "h.hrap.conus.gb2_a${ACCUM_HH}h.nc" }}'
+  OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{%- set data_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
+                                                   {{- "sfav2_CONUS_" ~ data_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc" }}'
   OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT: '${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE}.nc'
   #
   # VX_FCST_MODEL_NAME:
