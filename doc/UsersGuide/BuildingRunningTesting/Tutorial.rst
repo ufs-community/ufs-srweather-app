@@ -849,16 +849,13 @@ Experiment 3: Examining Forecast Plots at Peak Intensity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 In this experiment will be looking at plots from HRRR and RAP input files while the Halloween Storm is at or approaching peak intensity. 
 
-Analysis
-^^^^^^^^^^^
-
 .. _fcst4_250wind:
 
 250mb Wind
 ``````````
-Any good forecast starts with analyzing a 250mb wind chart. Using a 250mb wind plot, users will be able to point out key features such as jet placement, jet maxes, troughs, ridges and more. Analyzing this also allows us to see where the potential for the strongest severe weather is.
+An effective weather forecast begins with analyzing a 250mb wind chart. By using this wind plot, forecasters can identify key features such as jet stream placement, jet maxima, troughs, ridges, and more. This analysis also helps pinpoint areas with the potential for the strongest severe weather.
 
-In the 250mb Wind plots, the ``halloweenHRRR`` and ``halloweenRAP`` plots are nearly identical at forecast hour f036. This shows great model agreement. Analyzing this chart we can see multiple ingredients signaling a significant severe weather event over eastern CONUS. The first thing to notice is the placement of the jet streak along with troughing approaching the eastern US. Also notice an extreme 150KT jet max over southern Ohio further fueling severe weather. The last thing to notice is the divegence aloft present over Eastern Conus, seeing divergence present all the way up to 250mb indicates a strong system.
+In the 250mb wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` plots are nearly identical at forecast hour f036. This shows great model agreement. Analyzing this chart we can see multiple ingredients signaling a significant severe weather event over eastern CONUS. The first thing to notice is the placement of the jet streak along with troughing approaching the eastern US. Also notice an extreme 150KT jet max over southern Ohio further fueling severe weather. The last thing to notice is the divegence aloft present over Eastern Conus, seeing divergence present all the way up to 250mb indicates a strong system.
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/250wind_rap_conus_f036.png
       :align: center
@@ -871,6 +868,46 @@ In the 250mb Wind plots, the ``halloweenHRRR`` and ``halloweenRAP`` plots are ne
       :width: 75%
 
       *HRRR plot for 250mb wind*
+
+.. _fcst4_10mwind:
+
+10m Wind
+``````````
+The 10m wind plots allows forecasters to pick up on patterns closer to the surface. It shows things such as convergence and pressure areas.
+
+In the 10m wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` are once again very similar, which makes sense given that the 250mb wind plots are also so similar. We can see a few key feautres on this chart. The most important is the area of convergence taking place over the east coast which is driving the line of severe storms. 
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_rap_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *Rap plot for 10m winds*
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_hrrr_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *HRRR plot for 10m winds*
+
+.. _fcst4_refc:
+
+Composite Reflectivity 
+``````````
+Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.noaa.gov/jetstream/reflectivity for a more detailed explanation of composite reflectivity. 
+
+In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloweenrap`` are still very similar as expected. Utlizing the reflectivity plots is the last piece of the puzzle. Based on things we had identified using the previous plots we already had a good idea of where the storms should be. Composite reflecitvity is just another tool that allows us to see where these models are placing storms. We can see that the strongest storms appear to be in the NC/VA vicinity which is represented by a higher dBZ.
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_rap_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *Rap plot for Composite Reflectivity*
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_hrrr_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *HRRR plot for Composite Reflectivity*
 
 Tutorial Content
 -------------------
