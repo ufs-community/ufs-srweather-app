@@ -31,10 +31,6 @@ task_get_obs_ccpa:
     <<: *default_vars
     OBS_DIR: '&CCPA_OBS_DIR;'
     OBTYPE: 'CCPA'
-    OUTPUT_TIMES_ALL: &output_times_all_cumul
-                      '{%- for i in range(0, (workflow.OUTPUT_TIMES_ALL_CYCLES_CUMUL|length)) %}
-                         {{- " " ~ workflow.OUTPUT_TIMES_ALL_CYCLES_CUMUL[i] }}
-                       {%- endfor %}'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
