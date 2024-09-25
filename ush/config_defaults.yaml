@@ -2547,9 +2547,25 @@ verification:
   # both for 1 hour and for > 1 hour accumulation periods, in NetCDF
   # format.)
   #
-  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'
-  FCST_FN_TEMPLATE: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${NET_default}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc'
+  FCST_SUBDIR_TEMPLATE: '{%- if user.RUN_ENVIR == "nco" %}
+                           {{- "${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}" }}
+                         {%- else %}
+                           {{- "{init?fmt=%Y%m%d%H?shift=-${time_lag}}" }}
+                           {%- if global.DO_ENSEMBLE %}
+                             {{- "/${ensmem_name}" }}
+                           {%- endif %}
+                           {{- "/postprd" }}
+                         {%- endif %}'
+  FCST_FN_TEMPLATE: '{{- "${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z" }}
+                     {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
+                       {{- ".${ensmem_name}" }}
+                     {%- endif %}
+                     {{- ".prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2" }}'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- "${NET_default}.t{init?fmt=%H}z" }}
+                                       {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
+                                         {{- ".${ensmem_name}" }}
+                                       {%- endif %}
+                                       {{- ".prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc" }}'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more
