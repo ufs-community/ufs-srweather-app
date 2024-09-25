@@ -74,40 +74,22 @@ to convert NDAS prep buffer observation files to NetCDF format.
 #
 #-----------------------------------------------------------------------
 #
-#
+# The day (in the form YYYMMDD) associated with the current task via the
+# task's cycledefs attribute in the ROCOTO xml.
 #
 #-----------------------------------------------------------------------
 #
-# The day (in the form YYYMMDD) associated with the current task via the
-# task's cycledefs attribute in the ROCOTO xml.
 yyyymmdd_task=${PDY}
-
-# The environment variable OUTPUT_TIMES_ALL set in the ROCOTO XML is a
-# scalar string containing all relevant forecast output times (each) in
-# the form YYYYMMDDHH) separated by spaces.  It isn't an array of strings
-# because in ROCOTO, there doesn't seem to be a way to pass a bash array
-# from the XML to task's script.  To have an array-valued variable to
-# work with, here, we create the new variable output_times_all that is
-# the array-valued counterpart of OUTPUT_TIMES_ALL.
-output_times_all=($(printf "%s" "${OUTPUT_TIMES_ALL}"))
-
-# List of times (each of the form YYYYMMDDHH) for which there is forecast
-# output for the current day.  We extract this list from the full list of
-# all forecast output times (i.e. from all cycles).
-output_times_crnt_day=()
-if [[ ${output_times_all[@]} =~ ${yyyymmdd_task} ]]; then
-  output_times_crnt_day=( $(printf "%s\n" "${output_times_all[@]}" | grep "^${yyyymmdd_task}") )
-fi
-
-num_output_times_crnt_day=${#output_times_crnt_day[@]}
-if [[ ${num_output_times_crnt_day} -eq 0 ]]; then
-  print_info_msg "
-None of the forecast output times fall within the day associated with the
-current task (yyyymmdd_task):
-  yyyymmdd_task = \"${yyyymmdd_task}\"
-Thus, there is no need to run ${METPLUSTOOLNAME} on any prepbufr files."
-  exit
-fi
+#
+#-----------------------------------------------------------------------
+#
+# Get the list of all the times in the current day at which to retrieve
+# obs.  This is an array with elements having format "YYYYMMDDHH".
+#
+#-----------------------------------------------------------------------
+#
+array_name="OBS_RETRIEVE_TIMES_${OBTYPE}_${yyyymmdd_task}"
+eval obs_retrieve_times_crnt_day=\( \${${array_name}[@]} \)
 #
 #-----------------------------------------------------------------------
 #
@@ -159,31 +141,32 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
 #
 #-----------------------------------------------------------------------
 #
-# Set the array of forecast hours for which to run the MET/METplus tool.
+# Set the array of lead hours (relative to the date associated with this
+# task) for which to run the MET/METplus tool.
 #
 #-----------------------------------------------------------------------
 #
-FHR_LIST=""
+LEADHR_LIST=""
 num_missing_files=0
-for yyyymmddhh in ${output_times_crnt_day[@]}; do
+for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
   fn="prepbufr.ndas.${yyyymmddhh}"
   fp="${OBS_INPUT_DIR}/${fn}"
   if [[ -f "${fp}" ]]; then
     print_info_msg "
-Found ${OBTYPE} obs file corresponding to forecast output time (yyyymmddhh):
+Found ${OBTYPE} obs file corresponding to observation retrieval time
+(yyyymmddhh):
   yyyymmddhh = \"${yyyymmddhh}\"
   fp = \"${fp}\"
 "
     hh_noZero=$((10#${hh}))
-    #FHR_LIST+=("${yyyymmddhh}")
-    FHR_LIST="${FHR_LIST},${hh_noZero}"
+    LEADHR_LIST="${LEADHR_LIST},${hh_noZero}"
   else
     num_missing_files=$((num_missing_files+1))
     print_info_msg "
-${OBTYPE} obs file corresponding to forecast output time (yyyymmddhh) does
-not exist on disk:
+${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh)
+does not exist on disk:
   yyyymmddhh = \"${yyyymmddhh}\"
   fp = \"${fp}\"
 Removing this time from the list of times to be processed by ${METPLUSTOOLNAME}.
@@ -202,12 +185,12 @@ than the maximum allowed number (num_missing_files_max):
   num_missing_files_max = ${num_missing_files_max}"
 fi
 
-# Remove leading comma from FHR_LIST.
-FHR_LIST=$( echo "${FHR_LIST}" | $SED "s/^,//g" )
+# Remove leading comma from LEADHR_LIST.
+LEADHR_LIST=$( echo "${LEADHR_LIST}" | $SED "s/^,//g" )
 print_info_msg "$VERBOSE" "\
-Final (i.e. after filtering for missing files) set of forecast hours
+Final (i.e. after filtering for missing obs files) set of lead hours
 (saved in a scalar string variable) is:
-  FHR_LIST = \"${FHR_LIST}\"
+  LEADHR_LIST = \"${LEADHR_LIST}\"
 "
 #
 #-----------------------------------------------------------------------
@@ -242,15 +225,15 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-# Do not run METplus if there isn't at least one valid forecast hour for
-# which to run it.
+# Do not run METplus if there isn't at least one lead hour for which to
+# run it.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${FHR_LIST}" ]; then
+if [ -z "${LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of forecast hours for which to run METplus is empty:
-  FHR_LIST = [${FHR_LIST}]"
+The list of lead hours for which to run METplus is empty:
+  LEADHR_LIST = [${LEADHR_LIST}]"
 fi
 #
 #-----------------------------------------------------------------------
@@ -314,10 +297,10 @@ settings="\
   'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
   'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
 #
-# Date and forecast hour information.
+# Date and lead hour information.
 #
   'cdate': '$CDATE'
-  'fhr_list': '${FHR_LIST}'
+  'leadhr_list': '${LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #

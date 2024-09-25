@@ -190,13 +190,11 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
 
   OBS_INPUT_DIR="${OBS_DIR}"
-  fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE})
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${fn_template} )
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE} )
 
   OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-  fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE_PCPCOMBINE_OUTPUT})
-  OUTPUT_FN_TEMPLATE=$( eval echo ${fn_template} )
+  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
 fi
@@ -215,27 +213,22 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   base_dir="${FCST_INPUT_DIR}"
   fn_template="${FCST_INPUT_FN_TEMPLATE}"
   num_missing_files_max="${NUM_MISSING_FCST_FILES_MAX}"
-  subintvl_accum_hrs="${FCST_OUTPUT_INTVL_HRS}"
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   base_dir="${OBS_INPUT_DIR}"
   fn_template="${OBS_INPUT_FN_TEMPLATE}"
   num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}"
-  subintvl_accum_hrs="${OBS_AVAIL_INTVL_HRS}"
 fi
-input_accum_hh=$(printf "%02d" ${subintvl_accum_hrs})
-vx_output_intvl_hrs="$((10#${ACCUM_HH}))"
 
-set_vx_hrs_list \
-  yyyymmddhh_init="${CDATE}" \
+set_vx_fhr_list \
+  cdate="${CDATE}" \
   fcst_len_hrs="${FCST_LEN_HRS}" \
-  vx_output_intvl_hrs="${vx_output_intvl_hrs}" \
-  field_is_cumul="TRUE" \
-  check_subintvl_files="TRUE" \
-  subintvl_accum_hrs="${subintvl_accum_hrs}" \
+  field="$VAR" \
+  accum_hh="${ACCUM_HH}" \
   base_dir="${base_dir}" \
   fn_template="${fn_template}" \
+  check_accum_contrib_files="TRUE" \
   num_missing_files_max="${num_missing_files_max}" \
-  outvarname_hrs_list="FHR_LIST"
+  outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
 #
@@ -365,8 +358,7 @@ settings="\
   'fieldname_in_met_filedir_names': '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
   'obtype': '${OBTYPE}'
   'FCST_OR_OBS': '${FCST_OR_OBS}'
-  'input_accum_hh': '${input_accum_hh}'
-  'output_accum_hh': '${ACCUM_HH:-}'
+  'accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'metplus_templates_dir': '${METPLUS_CONF:-}'
   'input_field_group': '${VAR:-}'
