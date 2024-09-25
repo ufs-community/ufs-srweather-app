@@ -371,6 +371,6 @@ NOHRSC_obs:
       - "dcom_{yyyy}{mm}{dd}.tar"
     file_names:
       obs:
-        - "sfav2_CONUS_*h_{yyyy}{mm}{dd}{hh}_grid184.grb2"
+        - "sfav2_CONUS_6h_{yyyy}{mm}{dd}*_grid184.grb2"
     archive_internal_dir:
       - ./wgrbbul/nohrsc_snowfall/
