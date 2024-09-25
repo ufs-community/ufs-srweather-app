@@ -7,14 +7,18 @@
 #
 #  General settings
 #
-ae_matrix_nml: {{ fixaqm }}/epa/AE_cb6r3_ae6_aq.nml
-gc_matrix_nml: {{ fixaqm }}/epa/GC_cb6r3_ae6_aq.nml
-nr_matrix_nml: {{ fixaqm }}/epa/NR_cb6r3_ae6_aq.nml
+ae_matrix_nml: {{ fixaqm }}/epa/AE_cb6r5_ae7_aq.nml
+gc_matrix_nml: {{ fixaqm }}/epa/GC_cb6r5_ae7_aq.nml
+nr_matrix_nml: {{ fixaqm }}/epa/NR_cb6r5_ae7_aq.nml
 tr_matrix_nml: {{ fixaqm }}/epa/Species_Table_TR_0.nml
 
-csqy_data:   {{ fixaqm }}/epa/CSQY_DATA_cb6r3_ae6_aq
+csqy_data:   {{ fixaqm }}/epa/CSQY_DATA_cb6r5_ae7_aq
 optics_data: {{ fixaqm }}/epa/PHOT_OPTICS.dat
 omi_data:    {{ fixaqm }}/epa/omi_cmaq_2015_361X179.dat
+
+desid_chem_ctrl: {{ fixaqm }}/epa/CMAQ_Control_DESID_cb6r5_ae7_aq.nml
+desid_ctrl: {{ fixaqm }}/epa/CMAQ_Control_DESID.nml
+misc_ctrl:  {{ fixaqm }}/epa/CMAQ_Control_Misc.nml
 
 init_concentrations: {{ init_concentrations | lower }}
 
@@ -28,8 +32,10 @@ mp_tracer_map: thompson
 dy_tracer_map_start: 11
 {%- endif %}
 
-ctm_aod: true
-ctm_pmdiag: true
+ctm_aod: false
+ctm_pmdiag: false
+ctm_photdiag: false
+ctm_depvfile: false
 ctm_stdout: maintask
 
 #
@@ -87,6 +93,7 @@ anthro_species::
     ALD2          1.00000  ALD2          KG/M2/S
     ALD2_PRIMARY  1.00000  ALD2_PRIMARY  KG/M2/S
     ALDX          1.00000  ALDX          KG/M2/S
+    APIN          1.00000  APIN          KG/M2/S
     BENZ          1.00000  BENZ          KG/M2/S
     BUTADIENE13   1.00000  BUTADIENE13   KG/M2/S
     CH4           1.00000  CH4           KG/M2/S
