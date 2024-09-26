@@ -34,7 +34,7 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl):
     while cdate <= start_time_last_cycl:
         cyc = datetime.strftime(cdate, "%Y%m%d%H")
         all_cdates.append(cyc)
-        cdate += cycl_intvl 
+        cdate += cycl_intvl
     return all_cdates
 
 
@@ -69,7 +69,7 @@ def set_fcst_output_times_and_obs_days_all_cycles(
         Time interval between forecast output times; a timedelta object.
 
     Returns:
-        output_times_all_cycles_inst:
+        fcst_output_times_all_cycles_inst:
         List of forecast output times over all cycles of instantaneous fields.
         Each element is a string of the form 'YYYYMMDDHH'.
 
@@ -78,7 +78,7 @@ def set_fcst_output_times_and_obs_days_all_cycles(
         perform verification) over all cycles of instantaneous fields.  Each
         element is a string of the form 'YYYYMMDD'.
 
-        output_times_all_cycles_cumul:
+        fcst_output_times_all_cycles_cumul:
         List of forecast output times over all cycles of cumulative fields.  Each
         element is a string of the form 'YYYYMMDDHH'.
 
@@ -98,34 +98,34 @@ def set_fcst_output_times_and_obs_days_all_cycles(
     cycle_start_times = [datetime.strptime(yyyymmddhh, "%Y%m%d%H") for yyyymmddhh in cycle_start_times_str]
 
     # Get the number of forecast output times per cycle/forecast.
-    num_output_times_per_cycle = int(fcst_len/fcst_output_intvl + 1)
+    num_fcst_output_times_per_cycle = int(fcst_len/fcst_output_intvl + 1)
 
     # Initialize sets that will contain the various forecast output and obs
     # day information.
-    output_times_all_cycles_inst = set()
+    fcst_output_times_all_cycles_inst = set()
     obs_days_all_cycles_inst = set()
-    output_times_all_cycles_cumul = set()
+    fcst_output_times_all_cycles_cumul = set()
     obs_days_all_cycles_cumul = set()
 
     for i, start_time_crnt_cycle in enumerate(cycle_start_times):
         # Create a list of forecast output times of instantaneous fields for the
         # current cycle.
-        output_times_crnt_cycle_inst \
+        fcst_output_times_crnt_cycle_inst \
         = [start_time_crnt_cycle + i*fcst_output_intvl
-           for i in range(0,num_output_times_per_cycle)]
-        # Include the output times of instantaneous fields for the current cycle 
+           for i in range(0,num_fcst_output_times_per_cycle)]
+        # Include the output times of instantaneous fields for the current cycle
         # in the set of all such output times over all cycles.
-        output_times_all_cycles_inst \
-        = output_times_all_cycles_inst | set(output_times_crnt_cycle_inst)
+        fcst_output_times_all_cycles_inst \
+        = fcst_output_times_all_cycles_inst | set(fcst_output_times_crnt_cycle_inst)
 
         # Create a list of instantaneous field obs days (i.e. days on which
         # observations of instantaneous fields are needed for verification) for
         # the current cycle.  We do this by dropping the hour-of-day from each
         # element of the list of forecast output times and keeping only unique
         # elements.
-        tmp = [datetime_obj.date() for datetime_obj in output_times_crnt_cycle_inst]
+        tmp = [datetime_obj.date() for datetime_obj in fcst_output_times_crnt_cycle_inst]
         obs_days_crnt_cycl_inst = sorted(set(tmp))
-        # Include the obs days for instantaneous fields for the current cycle 
+        # Include the obs days for instantaneous fields for the current cycle
         # in the set of all such obs days over all cycles.
         obs_days_all_cycles_inst = obs_days_all_cycles_inst | set(obs_days_crnt_cycl_inst)
 
@@ -133,12 +133,12 @@ def set_fcst_output_times_and_obs_days_all_cycles(
         # current cycle.  This is simply the list of forecast output times for
         # instantaneous fields but with the first time dropped (because nothing
         # has yet accumulated at the starting time of the cycle).
-        output_times_crnt_cycle_cumul = output_times_crnt_cycle_inst
-        output_times_crnt_cycle_cumul.pop(0)
+        fcst_output_times_crnt_cycle_cumul = fcst_output_times_crnt_cycle_inst
+        fcst_output_times_crnt_cycle_cumul.pop(0)
         # Include the obs days for cumulative fields for the current cycle in the
         # set of all such obs days over all cycles.
-        output_times_all_cycles_cumul \
-        = output_times_all_cycles_cumul | set(output_times_crnt_cycle_cumul)
+        fcst_output_times_all_cycles_cumul \
+        = fcst_output_times_all_cycles_cumul | set(fcst_output_times_crnt_cycle_cumul)
 
         # Create a list of cumulative field obs days (i.e. days on which
         # observations of cumulative fields are needed for verification) for
@@ -150,8 +150,8 @@ def set_fcst_output_times_and_obs_days_all_cycles(
         # the scripts/tasks that get observations of cumulative fields, the
         # zeroth hour of a day is considered part of the previous day (because
         # it represents accumulation that occurred on the previous day).
-        tmp = output_times_crnt_cycle_cumul
-        last_output_time_cumul = output_times_crnt_cycle_cumul[-1]
+        tmp = fcst_output_times_crnt_cycle_cumul
+        last_output_time_cumul = fcst_output_times_crnt_cycle_cumul[-1]
         if last_output_time_cumul.hour == 0:
             tmp.pop()
         tmp = [datetime_obj.date() for datetime_obj in tmp]
@@ -162,9 +162,9 @@ def set_fcst_output_times_and_obs_days_all_cycles(
 
     # Convert the set of output times of instantaneous fields over all cycles
     # to a sorted list of strings of the form 'YYYYMMDDHH'.
-    output_times_all_cycles_inst = sorted(output_times_all_cycles_inst)
-    output_times_all_cycles_inst = [datetime.strftime(output_times_all_cycles_inst[i], "%Y%m%d%H")
-                                    for i in range(len(output_times_all_cycles_inst))]
+    fcst_output_times_all_cycles_inst = sorted(fcst_output_times_all_cycles_inst)
+    fcst_output_times_all_cycles_inst = [datetime.strftime(fcst_output_times_all_cycles_inst[i], "%Y%m%d%H")
+                                         for i in range(len(fcst_output_times_all_cycles_inst))]
 
     # Convert the set of obs days for instantaneous fields over all cycles
     # to a sorted list of strings of the form 'YYYYMMDD'.
@@ -174,9 +174,9 @@ def set_fcst_output_times_and_obs_days_all_cycles(
 
     # Convert the set of output times of cumulative fields over all cycles to
     # a sorted list of strings of the form 'YYYYMMDDHH'.
-    output_times_all_cycles_cumul = sorted(output_times_all_cycles_cumul)
-    output_times_all_cycles_cumul = [datetime.strftime(output_times_all_cycles_cumul[i], "%Y%m%d%H")
-                                     for i in range(len(output_times_all_cycles_cumul))]
+    fcst_output_times_all_cycles_cumul = sorted(fcst_output_times_all_cycles_cumul)
+    fcst_output_times_all_cycles_cumul = [datetime.strftime(fcst_output_times_all_cycles_cumul[i], "%Y%m%d%H")
+                                          for i in range(len(fcst_output_times_all_cycles_cumul))]
 
     # Convert the set of obs days for cumulative fields over all cycles to a
     # sorted list of strings of the form 'YYYYMMDD'.
@@ -184,8 +184,8 @@ def set_fcst_output_times_and_obs_days_all_cycles(
     obs_days_all_cycles_cumul = [datetime.strftime(obs_days_all_cycles_cumul[i], "%Y%m%d")
                                  for i in range(len(obs_days_all_cycles_cumul))]
 
-    return output_times_all_cycles_inst, obs_days_all_cycles_inst, \
-           output_times_all_cycles_cumul, obs_days_all_cycles_cumul
+    return fcst_output_times_all_cycles_inst, obs_days_all_cycles_inst, \
+           fcst_output_times_all_cycles_cumul, obs_days_all_cycles_cumul
 
 
 def set_cycledefs_for_obs_days(obs_days_all_cycles):
@@ -195,17 +195,17 @@ def set_cycledefs_for_obs_days(obs_days_all_cycles):
     list of days must be increasing in time, but the days do not have to be
     consecutive, i.e. there may be gaps between days that are greater than
     one day.
-    
+
     Each cycledef string in the output list represents a set of consecutive
     days in the input string (when used inside a <cycledef> tag in a ROCOTO
-    XML).  Thus, when the cycledef strings in the output string are all 
+    XML).  Thus, when the cycledef strings in the output string are all
     assigned to the same cycledef group in a ROCOTO XML, that group will
     represent all the days on which observations are needed.
 
     Args:
         obs_days_all_cycles:
         A list of strings of the form 'YYYYMMDD', with each string representing
-        a day on which observations are needed.  Note that the list must be 
+        a day on which observations are needed.  Note that the list must be
         sorted, i.e. the days must be increasing in time, but there may be
         gaps between days.
 
@@ -218,7 +218,7 @@ def set_cycledefs_for_obs_days(obs_days_all_cycles):
 
         where {yyyymmdd_start} is the starting day of the first cycle in the
         cycledef, and {yyyymmdd_end} is the starting day of the last cycle (note
-        that the minutes and hours in these cycledef stirngs are always set to 
+        that the minutes and hours in these cycledef stirngs are always set to
         '00').  Thus, one of the elements of the output list may be as follows:
 
           '202404290000 202405010000 24:00:00'
@@ -229,7 +229,7 @@ def set_cycledefs_for_obs_days(obs_days_all_cycles):
     # list of datetime objects.
     tmp = [datetime.strptime(yyyymmdd, "%Y%m%d") for yyyymmdd in obs_days_all_cycles]
 
-    # Initialize the variable that in the loop below contains the date of 
+    # Initialize the variable that in the loop below contains the date of
     # the previous day.  This is just the first element of the list of
     # datetime objects constructed above.  Then use it to initialize the
     # list (contin_obs_day_lists) that will contain lists of consecutive
