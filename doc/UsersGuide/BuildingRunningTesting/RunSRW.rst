@@ -62,7 +62,7 @@ The SRW App requires input files to run. These include static datasets, initial 
    * - Hercules
      - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
    * - Jet
-     - /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/|data|/input_model_data/
+     - /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/|data|/input_model_data/
    * - NOAA Cloud
      - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
    * - Orion
@@ -549,6 +549,7 @@ The ``data:`` section of the machine file can point to various data sources that
          netcdf: /Users/username/DATA/UFS/FV3GFS/netcdf
       RAP: /Users/username/DATA/UFS/RAP/grib2
       HRRR: /Users/username/DATA/UFS/HRRR/grib2
+      RRFS: /Users/username/DATA/UFS/RRFS/grib2
 
 This can be helpful when conducting multiple experiments with different types of data. 
 
