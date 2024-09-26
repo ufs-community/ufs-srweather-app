@@ -7,7 +7,8 @@ whatis([===[Loads libraries needed for running the UFS SRW App on Hera ]===])
 
 load("rocoto")
 
-prepend_path("MODULEPATH","/scratch1/NCEPDEV/nems/role.epic/miniconda3/modulefiles")
+prepend_path("MODULEPATH","/contrib/miniconda3/modulefiles")
+--load("miniconda3/4.12.0")
 load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
 
 if mode() == "load" then
