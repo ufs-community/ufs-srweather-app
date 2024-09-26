@@ -22,7 +22,7 @@ done
 #
 . $USHdir/get_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
-. $USHdir/set_vx_fhr_list.sh
+. $USHdir/set_leadhrs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -190,45 +190,76 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
 
   OBS_INPUT_DIR="${OBS_DIR}"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE} )
+  fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE})
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${fn_template} )
 
   OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
+  fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE_PCPCOMBINE_OUTPUT})
+  OUTPUT_FN_TEMPLATE=$( eval echo ${fn_template} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the array of forecast hours for which to run the MET/METplus tool.
-# This is done by starting with the full list of forecast hours for which
-# there is forecast output and then removing from that list any forecast
-# hours for which there is no corresponding observation data (if combining
-# observed APCP) or forecast data (if combining forecast APCP).
+# Set the array of lead hours for which to run the MET/METplus tool.
+#
+#-----------------------------------------------------------------------
+#
+vx_intvl="$((10#${ACCUM_HH}))"
+set_leadhrs_no_missing \
+  lhr_min="${vx_intvl}" \
+  lhr_max="${FCST_LEN_HRS}" \
+  lhr_intvl="${vx_intvl}" \
+  outvarname_lhrs_list_no_missing="VX_LEADHR_LIST"
+#
+#-----------------------------------------------------------------------
+#
+# Check for the presence of files (either from observations or forecasts) 
+# needed to create required accumulation given by ACCUM_HH.
 #
 #-----------------------------------------------------------------------
 #
 if [ "${FCST_OR_OBS}" = "FCST" ]; then
   base_dir="${FCST_INPUT_DIR}"
   fn_template="${FCST_INPUT_FN_TEMPLATE}"
-  num_missing_files_max="${NUM_MISSING_FCST_FILES_MAX}"
+  subintvl="${FCST_OUTPUT_INTVL_HRS}"
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   base_dir="${OBS_INPUT_DIR}"
   fn_template="${OBS_INPUT_FN_TEMPLATE}"
-  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}"
+  subintvl="${OBS_AVAIL_INTVL_HRS}"
 fi
+num_missing_files_max="0"
+input_accum_hh=$(printf "%02d" ${subintvl})
+#
+# Convert the list of hours at which the PcpCombine tool will be run to
+# an array.  This represents the hours at which each accumulation period
+# ends.  Then use it to check the presence of all files requied to build
+# the required accumulations from the sub-accumulations.
+#
+subintvl_end_hrs=($( echo ${VX_LEADHR_LIST} | $SED "s/,//g" ))
+for hr_end in ${subintvl_end_hrs[@]}; do
+  hr_start=$((hr_end - vx_intvl + subintvl))
+  print_info_msg "
+Checking for the presence of files that will contribute to the ${vx_intvl}-hour
+accumulation ending at lead hour ${hr_end} (relative to ${CDATE})...
+"
+  set_leadhrs \
+    yyyymmddhh_init="${CDATE}" \
+    lhr_min="${hr_start}" \
+    lhr_max="${hr_end}" \
+    lhr_intvl="${subintvl}" \
+    base_dir="${base_dir}" \
+    fn_template="${fn_template}" \
+    num_missing_files_max="${num_missing_files_max}" \
+    outvarname_lhrs_list="tmp"
+done
 
-set_vx_fhr_list \
-  cdate="${CDATE}" \
-  fcst_len_hrs="${FCST_LEN_HRS}" \
-  field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
-  base_dir="${base_dir}" \
-  fn_template="${fn_template}" \
-  check_accum_contrib_files="TRUE" \
-  num_missing_files_max="${num_missing_files_max}" \
-  outvarname_fhr_list="FHR_LIST"
+print_info_msg "
+${MetplusToolName} will be run for the following lead hours (relative to ${CDATE}):
+  VX_LEADHR_LIST = ${VX_LEADHR_LIST}
+"
 #
 #-----------------------------------------------------------------------
 #
@@ -262,15 +293,15 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-# Do not run METplus if there isn't at least one valid forecast hour for
-# which to run it.
+# Do not run METplus if there isn't at least one lead hour for which to
+# run it.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${FHR_LIST}" ]; then
+if [ -z "${VX_LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of forecast hours for which to run METplus is empty:
-  FHR_LIST = [${FHR_LIST}]"
+The list of lead hours for which to run METplus is empty:
+  VX_LEADHR_LIST = [${VX_LEADHR_LIST}]"
 fi
 #
 #-----------------------------------------------------------------------
@@ -330,7 +361,7 @@ settings="\
 # Date and forecast hour information.
 #
   'cdate': '$CDATE'
-  'fhr_list': '${FHR_LIST}'
+  'vx_leadhr_list': '${VX_LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #
@@ -358,7 +389,8 @@ settings="\
   'fieldname_in_met_filedir_names': '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
   'obtype': '${OBTYPE}'
   'FCST_OR_OBS': '${FCST_OR_OBS}'
-  'accum_hh': '${ACCUM_HH:-}'
+  'input_accum_hh': '${input_accum_hh}'
+  'output_accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'metplus_templates_dir': '${METPLUS_CONF:-}'
   'input_field_group': '${VAR:-}'

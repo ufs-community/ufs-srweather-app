@@ -22,7 +22,7 @@ done
 #
 . $USHdir/get_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
-. $USHdir/set_vx_fhr_list.sh
+. $USHdir/set_leadhrs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -220,23 +220,34 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #
 #-----------------------------------------------------------------------
 #
+case "$OBTYPE" in
+  "CCPA"|"NOHRSC")
+    vx_intvl="$((10#${ACCUM_HH}))"
+    vx_hr_start="${vx_intvl}"
+    ;;
+  *)
+    vx_intvl="$((${FCST_OUTPUT_INTVL_HRS}))"
+    vx_hr_start="0"
+    ;;
+esac
+vx_hr_end="${FCST_LEN_HRS}"
+
 if [ "${MetplusToolName}" = "GenEnsProd" ]; then
-  set_vx_fhr_list_no_missing \
-    fcst_len_hrs="${FCST_LEN_HRS}" \
-    field="$VAR" \
-    accum_hh="${ACCUM_HH}" \
-    outvarname_fhr_list_no_missing="FHR_LIST"
+  set_leadhrs_no_missing \
+    lhr_min="${vx_hr_start}" \
+    lhr_max="${vx_hr_end}" \
+    lhr_intvl="${vx_intvl}" \
+    outvarname_lhrs_list_no_missing="VX_LEADHR_LIST"
 elif [ "${MetplusToolName}" = "EnsembleStat" ]; then
-  set_vx_fhr_list \
-    cdate="${CDATE}" \
-    fcst_len_hrs="${FCST_LEN_HRS}" \
-    field="$VAR" \
-    accum_hh="${ACCUM_HH}" \
+  set_leadhrs \
+    yyyymmddhh_init="${CDATE}" \
+    lhr_min="${vx_hr_start}" \
+    lhr_max="${vx_hr_end}" \
+    lhr_intvl="${vx_intvl}" \
     base_dir="${OBS_INPUT_DIR}" \
     fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-    check_accum_contrib_files="FALSE" \
     num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
-    outvarname_fhr_list="FHR_LIST"
+    outvarname_lhrs_list="VX_LEADHR_LIST"
 fi
 #
 #-----------------------------------------------------------------------
@@ -271,15 +282,15 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-# Do not run METplus if there isn't at least one valid forecast hour for
-# which to run it.
+# Do not run METplus if there isn't at least one lead hour for which to
+# run it.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${FHR_LIST}" ]; then
+if [ -z "${VX_LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of forecast hours for which to run METplus is empty:
-  FHR_LIST = [${FHR_LIST}]"
+The list of lead hours for which to run METplus is empty:
+  VX_LEADHR_LIST = [${VX_LEADHR_LIST}]"
 fi
 #
 #-----------------------------------------------------------------------
@@ -342,7 +353,7 @@ settings="\
 # Date and forecast hour information.
 #
 'cdate': '$CDATE'
-'fhr_list': '${FHR_LIST}'
+'vx_leadhr_list': '${VX_LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #

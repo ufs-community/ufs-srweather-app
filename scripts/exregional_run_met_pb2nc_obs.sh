@@ -21,7 +21,6 @@ done
 #
 . $USHdir/get_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
-. $USHdir/set_vx_fhr_list.sh
 #
 #-----------------------------------------------------------------------
 #
