@@ -715,7 +715,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: RAP
-     USE_USER_STAGED_EXTRN_FILES: True
+     USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_ICS
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
@@ -775,7 +775,7 @@ Users should substitute ``/path/to/expt_dirs/Halloween`` with the actual path on
 
 Experiment 2: Changing the forecast input
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-In this experiment we will be changing the forecast input to use HRRR data. This will include edits to the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below
+In this experiment we will be changing the forecast input to use ``HRRR`` data. This will include edits to the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below
 
 In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
 
@@ -895,7 +895,7 @@ Composite Reflectivity
 ``````````
 Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.noaa.gov/jetstream/reflectivity for a more detailed explanation of composite reflectivity. 
 
-In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloweenrap`` are still very similar as expected. Utlizing the reflectivity plots is the last piece of the puzzle. Based on things we had identified using the previous plots we already had a good idea of where the storms should be. Composite reflecitvity is just another tool that allows us to see where these models are placing storms. We can see that the strongest storms appear to be in the NC/VA vicinity which is represented by a higher dBZ.
+In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloweenRAP`` models remain quite similar, as expected. Utilizing the reflectivity plots provides the final piece of the puzzle. From the previous analyses, we already had a good understanding of where the storms were likely to occur. Composite reflectivity serves as an additional tool, allowing us to visualize where the models predict storm placement. In this case, the strongest storms are indicated by higher dBZ values and appear to be concentrated in the NC/VA region.
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_rap_conus_f036.png
       :align: center
