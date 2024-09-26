@@ -681,7 +681,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
    Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
 
-``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``halloween`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different types of forecast data input --- halloween_rap could be a good alternative name.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "halloweenHRRR" to "a;skdfj". However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from two different types of forecast data input --- halloweenRAP and halloweenHRRR could be good names.
 
 ``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid provides a higher resolution forecast, more detailed forecast; however, it is more computationally expensive compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
 
