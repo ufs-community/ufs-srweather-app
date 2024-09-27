@@ -42,7 +42,9 @@ from python_utils import (
 
 from set_cycle_and_obs_timeinfo import \
      set_cycle_dates, set_fcst_output_times_and_obs_days_all_cycles, \
-     set_cycledefs_for_obs_days
+     set_rocoto_cycledefs_for_obs_days, \
+     check_temporal_consistency_cumul_fields, \
+     get_obs_retrieve_times_by_day
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
@@ -546,32 +548,106 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    # For vx fields that are accumulated, remove those accumulation hours
-    # that are longer than the forecast length.  If that leaves the array
-    # of accumulation hours for that field empty, then remove the field
-    # from the list of fields to be verified.
+    # Set some variables needed for running checks on and creating new
+    # (derived) configuration variables for the verification.
     #
     # -----------------------------------------------------------------------
     #
-    # Get the vx fields specified in the experiment configuration.
-    vx_fields_config = expt_config["verification"]["VX_FIELDS"]
-
+    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
-    vx_fields_accum = ["APCP", "ASNOW"]
-    for field in vx_fields_accum:
-        if field in vx_fields_config:
-            accum_periods_array_name = "".join(["VX_", field, "_ACCUMS_HRS"])
-            accum_periods = expt_config["verification"][accum_periods_array_name]
-            accum_periods = [accum for accum in accum_periods if (accum <= fcst_len_hrs)]
-            expt_config["verification"][accum_periods_array_name] = accum_periods
-            if not accum_periods:
-                vx_fields_config.remove(field)
 
-    expt_config["verification"]["VX_FIELDS"] = vx_fields_config 
+    # Set the forecast output interval.  Ideally, this should be obtained
+    # from the SRW App's configuration file, but such a variable doesn't
+    # yet exist in that file.
+    fcst_output_intvl_hrs = 1
+    workflow_config['FCST_OUTPUT_INTVL_HRS'] = fcst_output_intvl_hrs
+
+    # To enable arithmetic with dates and times, convert various time
+    # intervals from integer to datetime.timedelta objects.
+    cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
+    fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
+    fcst_output_intvl_dt = datetime.timedelta(hours=fcst_output_intvl_hrs)
     #
     # -----------------------------------------------------------------------
     #
-    # Remove all verification [meta]tasks for which no fields are specified.
+    # Ensure that the configuration parameters associated with cumulative
+    # fields (e.g. APCP) in the verification section of the experiment
+    # dicitonary are temporally consistent, e.g. that accumulation intervals
+    # are less than or equal to the forecast length.  Update the verification
+    # section of the dictionary to remove inconsistencies.
+    #
+    # -----------------------------------------------------------------------
+    #
+    vx_config = expt_config["verification"]
+    vx_config, fcst_obs_matched_times_all_cycles_cumul \
+    = check_temporal_consistency_cumul_fields(
+      vx_config,
+      date_first_cycl, date_last_cycl, cycl_intvl_dt,
+      fcst_len_dt, fcst_output_intvl_dt)
+    expt_config["verification"] = vx_config
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Generate a list of forecast output times and a list of obs days (i.e.
+    # days on which observations are needed to perform verification because
+    # there is forecast output on those days) over all cycles, both for
+    # instantaneous fields (e.g. T2m, REFC, RETOP) and for cumulative ones
+    # (e.g. APCP).  Then add these lists to the dictionary containing workflow
+    # configuration variables.  These will be needed in generating the ROCOTO
+    # XML.
+    #
+    # -----------------------------------------------------------------------
+    #
+    fcst_output_times_all_cycles, obs_days_all_cycles, \
+    = set_fcst_output_times_and_obs_days_all_cycles(
+      date_first_cycl, date_last_cycl, cycl_intvl_dt,
+      fcst_len_dt, fcst_output_intvl_dt)
+
+    workflow_config['OBS_DAYS_ALL_CYCLES_INST'] = obs_days_all_cycles['inst']
+    workflow_config['OBS_DAYS_ALL_CYCLES_CUMUL'] = obs_days_all_cycles['cumul']
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Generate lists of ROCOTO cycledef strings corresonding to the obs days
+    # for instantaneous fields and those for cumulative ones.  Then save the
+    # lists of cycledefs in the dictionary containing values needed to
+    # construct the ROCOTO XML.
+    #
+    # -----------------------------------------------------------------------
+    #
+    cycledefs_obs_days_inst = set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles['inst'])
+    cycledefs_obs_days_cumul = set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles['cumul'])
+
+    rocoto_config['cycledefs']['cycledefs_obs_days_inst'] = cycledefs_obs_days_inst
+    rocoto_config['cycledefs']['cycledefs_obs_days_cumul'] = cycledefs_obs_days_cumul
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Generate dictionary of dictionaries that, for each combination of obs
+    # type needed and obs day, contains a string list of the times at which
+    # that type of observation is needed on that day.  The elements of each
+    # list are formatted as 'YYYYMMDDHH'.  This information is used by the
+    # day-based get_obs tasks in the workflow to get obs only at those times
+    # at which they are needed (as opposed to for the whole day).
+    #
+    # -----------------------------------------------------------------------
+    #
+    vx_config = expt_config["verification"]
+    obs_retrieve_times_by_day \
+    = get_obs_retrieve_times_by_day(
+      vx_config, fcst_output_times_all_cycles, obs_days_all_cycles)
+
+    for obtype, obs_days_dict in obs_retrieve_times_by_day.items():
+        for obs_day, obs_retrieve_times in obs_days_dict.items():
+            array_name = '_'.join(["OBS_RETRIEVE_TIMES", obtype, obs_day])
+            vx_config[array_name] = obs_retrieve_times
+    expt_config["verification"] = vx_config
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Remove all verification (meta)tasks for which no fields are specified.
     #
     # -----------------------------------------------------------------------
     #
@@ -579,7 +655,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     vx_metatasks_all = {}
 
     vx_fields_all["CCPA"] = ["APCP"]
-    vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs",
+    vx_metatasks_all["CCPA"] = ["task_get_obs_ccpa",
+                                "metatask_PcpCombine_obs_CCPA_all_accums",
                                 "metatask_PcpCombine_fcst_APCP_all_accums_all_mems",
                                 "metatask_GridStat_CCPA_all_accums_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_CCPA",
@@ -587,33 +664,38 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     vx_fields_all["NOHRSC"] = ["ASNOW"]
     vx_metatasks_all["NOHRSC"] = ["task_get_obs_nohrsc",
+                                  "metatask_PcpCombine_obs_NOHRSC_all_accums",
                                   "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems",
                                   "metatask_GridStat_NOHRSC_all_accums_all_mems",
                                   "metatask_GenEnsProd_EnsembleStat_NOHRSC",
                                   "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
 
     vx_fields_all["MRMS"] = ["REFC", "RETOP"]
-    vx_metatasks_all["MRMS"] = ["metatask_GridStat_MRMS_all_mems",
+    vx_metatasks_all["MRMS"] = ["task_get_obs_mrms",
+                                "metatask_GridStat_MRMS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_MRMS",
                                 "metatask_GridStat_MRMS_ensprob"]
 
     vx_fields_all["NDAS"] = ["ADPSFC", "ADPUPA"]
-    vx_metatasks_all["NDAS"] = ["task_run_MET_Pb2nc_obs",
+    vx_metatasks_all["NDAS"] = ["task_get_obs_ndas",
+                                "task_run_MET_Pb2nc_obs_NDAS",
                                 "metatask_PointStat_NDAS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_NDAS",
                                 "metatask_PointStat_NDAS_ensmeanprob"]
 
     # If there are no vx fields specified, remove those tasks that are necessary
     # for all observation types.
-    if not vx_fields_config:
+    vx_config = expt_config["verification"]
+    vx_fields = vx_config["VX_FIELDS"]
+    if not vx_fields:
         metatask = "metatask_check_post_output_all_mems"
         rocoto_config['tasks'].pop(metatask)
 
     # If for a given obstype no fields are specified, remove all vx metatasks
     # for that obstype.
     for obstype in vx_fields_all:
-        vx_fields_obstype = [field for field in vx_fields_config if field in vx_fields_all[obstype]]
-        if not vx_fields_obstype:
+        vx_fields_by_obstype = [field for field in vx_fields if field in vx_fields_all[obstype]]
+        if not vx_fields_by_obstype:
             for metatask in vx_metatasks_all[obstype]:
                 if metatask in rocoto_config['tasks']:
                     logging.info(dedent(
@@ -624,6 +706,24 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                         are specified for verification."""
                     ))
                     rocoto_config['tasks'].pop(metatask)
+    #
+    # -----------------------------------------------------------------------
+    #
+    # The "cycled_from_second" cycledef in the default workflow configuration
+    # file (default_workflow.yaml) requires the starting date of the second
+    # cycle.  That is difficult to calculate in the yaml file itself because
+    # currently, there are no utilities to perform arithmetic with dates.
+    # Thus, we calculate it here and save it as a variable in the workflow
+    # configuration dictionary.  Note that correct functioning of the default
+    # workflow yaml file also requires that DATE_[FIRST|SECOND|LAST]_CYCL all
+    # be strings, not datetime objects.  We perform those conversions here.
+    #
+    # -----------------------------------------------------------------------
+    #
+    date_second_cycl = date_first_cycl + cycl_intvl_dt
+    workflow_config['DATE_FIRST_CYCL'] = datetime.datetime.strftime(date_first_cycl, "%Y%m%d%H")
+    workflow_config['DATE_SECOND_CYCL'] = datetime.datetime.strftime(date_second_cycl, "%Y%m%d%H")
+    workflow_config['DATE_LAST_CYCL'] = datetime.datetime.strftime(date_last_cycl, "%Y%m%d%H")
     #
     # -----------------------------------------------------------------------
     #
@@ -774,61 +874,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 grid_config[param] = value
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
-
-    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
-    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
-
-    # Set the forecast output interval.  Ideally, this should be obtained
-    # from the SRW App's configuration file, but such a variable doesn't
-    # yet exist in that file.
-    fcst_output_intvl_hrs = 1
-
-    # To enable arithmetic with dates and times, convert various time
-    # intervals from integer to datetime.timedelta objects.
-    cycl_intvl = datetime.timedelta(days=0, hours=incr_cycl_freq, minutes=0, seconds=0)
-    fcst_len = datetime.timedelta(days=0, hours=fcst_len_hrs, minutes=0, seconds=0)
-    fcst_output_intvl = datetime.timedelta(days=0, hours=fcst_output_intvl_hrs, minutes=0, seconds=0)
-
-    # Generate a list of forecast output times and a list of obs days (i.e.
-    # days on which observations are needed to perform verification) over all
-    # cycles, both for instantaneous fields (e.g. T2m, REFC, RETOP) and for
-    # cumulative ones (e.g. APCP).
-    output_times_all_cycles_inst, obs_days_all_cycles_inst, \
-    output_times_all_cycles_cumul, obs_days_all_cycles_cumul \
-    = set_fcst_output_times_and_obs_days_all_cycles( \
-      date_first_cycl, date_last_cycl, cycl_intvl, fcst_len, fcst_output_intvl)
-
-    # Add the list generated above to the dictionary containing workflow
-    # configuration variables.  These will be needed in generating the ROCOTO
-    # XML.
-    workflow_config['OUTPUT_TIMES_ALL_CYCLES_INST'] = output_times_all_cycles_inst
-    workflow_config['OBS_DAYS_ALL_CYCLES_INST'] = obs_days_all_cycles_inst
-    workflow_config['OUTPUT_TIMES_ALL_CYCLES_CUMUL'] = output_times_all_cycles_cumul
-    workflow_config['OBS_DAYS_ALL_CYCLES_CUMUL'] = obs_days_all_cycles_cumul
-
-    # Generate lists of ROCOTO cycledef strings corresonding to the obs days
-    # for instantaneous fields and those for cumulative ones.
-    cycledef_obs_days_inst = set_cycledefs_for_obs_days(obs_days_all_cycles_inst)
-    cycledef_obs_days_cumul = set_cycledefs_for_obs_days(obs_days_all_cycles_cumul)
-    # Save the lists of cycledefs in the dictionary containing values needed
-    # to construct the ROCOTO XML.
-    rocoto_config['cycledefs']['cycledef_obs_days_inst'] = cycledef_obs_days_inst
-    rocoto_config['cycledefs']['cycledef_obs_days_cumul'] = cycledef_obs_days_cumul
-
-    # The "cycled_from_second" cycledef in the default workflow configuration
-    # file (default_workflow.yaml) requires the starting date of the second
-    # cycle.  That is difficult to calculate in the yaml file itself because
-    # currently, there are no utilities to perform arithmetic with dates.
-    # Thus, we calculate it here and save it as a variable in the workflow
-    # configuration dictionary.  Note that correct functioning of the default
-    # workflow yaml file also requires that DATE_[FIRST|SECOND|LAST]_CYCL all
-    # be strings, not datetime objects.  We perform those conversions here.
-    date_second_cycl = date_first_cycl + cycl_intvl
-    workflow_config['DATE_FIRST_CYCL'] = datetime.datetime.strftime(date_first_cycl, "%Y%m%d%H")
-    workflow_config['DATE_SECOND_CYCL'] = datetime.datetime.strftime(date_second_cycl, "%Y%m%d%H")
-    workflow_config['DATE_LAST_CYCL'] = datetime.datetime.strftime(date_last_cycl, "%Y%m%d%H")
 
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
