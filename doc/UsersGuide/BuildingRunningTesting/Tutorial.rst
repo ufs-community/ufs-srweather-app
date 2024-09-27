@@ -570,7 +570,7 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
    * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`_
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HalloweenStorm.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HalloweenStorm.gif
    :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
 
    *Halloween Storm 2019*
