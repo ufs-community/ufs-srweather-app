@@ -83,12 +83,7 @@ Load the Workflow
 
 First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workflow environment:
 
-.. code-block:: console
-   
-   source /path/to/etc/lmod-setup.sh <platform>
-   module use /path/to/ufs-srweather-app/modulefiles
-   module load wflow_<platform>
-
+.. include:: ../../doc-snippets/load-env.rst
 Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. 

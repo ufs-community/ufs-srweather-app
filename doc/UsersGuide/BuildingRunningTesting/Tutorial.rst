@@ -11,7 +11,7 @@ Users can run through the entire set of tutorials or jump to the one that intere
    #. :ref:`Severe Weather Over Indianapolis <fcst1>`: Change physics suites and compare graphics plots. 
    #. :ref:`Cold Air Damming <fcst2>`: Coming soon!
    #. :ref:`Southern Plains Winter Weather Event <fcst3>`: Coming soon!
-   #. :ref:`Halloween Storm <fcst4>`: Coming soon!
+   #. :ref:`Halloween Storm <fcst4>`: Change :term:`IC/LBC <ics/lbcs>` sources and compare results. 
    #. :ref:`Hurricane Barry <fcst5>`: Coming soon!
 
 Each section provides a summary of the weather event and instructions for configuring an experiment. 
@@ -57,13 +57,7 @@ Load the Workflow
 
 To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
 
-.. code-block:: console
-   
-   source etc/lmod-setup.sh <platform>       # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
-   module use modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
+.. include:: ../../doc-snippets/load-env.rst
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
 
@@ -555,17 +549,19 @@ A polar vortex brought arctic air to much of the U.S. and Mexico. A series of co
 
    *Southern Plains Winter Weather Event Over Oklahoma City*
 
-.. COMMENT: Upload a png to the SRW wiki and change the hyperlink to point to that. 
-
 Tutorial Content
 -------------------
 
-Coming Soon!
+Coming Soon! 
 
 .. _fcst4:
 
 Sample Forecast #4: Halloween Storm
 =======================================
+
+**Objective:** 
+   * Compare forecast outputs for similar experiments that use different :term:`IC/LBC <ics/lbcs>` sources. 
+   * Coming soon: Option to use verification tools to assess forecast quality. 
 
 Weather Summary
 --------------------
@@ -675,11 +671,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
      VERBOSE: true
      COMPILER: intel
 
-.. _CronNote:
-
-.. note::
-
-   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
+.. include:: ../../doc-snippets/cron-note.rst
 
 ``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "halloweenHRRR" to "a;skdfj". However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from two different types of forecast data input --- halloweenRAP and halloweenHRRR could be good names.
 
@@ -846,7 +838,7 @@ Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and 
 
 
 Experiment 3: Examining Forecast Plots at Peak Intensity 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 In this experiment will be looking at plots from HRRR and RAP input files while the Halloween Storm is at or approaching peak intensity. 
 
 .. _fcst4_250wind:
@@ -892,7 +884,7 @@ In the 10m wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` are once
 .. _fcst4_refc:
 
 Composite Reflectivity 
-``````````
+````````````````````````
 Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.noaa.gov/jetstream/reflectivity for a more detailed explanation of composite reflectivity. 
 
 In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloweenRAP`` models remain quite similar, as expected. Utilizing the reflectivity plots provides the final piece of the puzzle. From the previous analyses, we already had a good understanding of where the storms were likely to occur. Composite reflectivity serves as an additional tool, allowing us to visualize where the models predict storm placement. In this case, the strongest storms are indicated by higher dBZ values and appear to be concentrated in the NC/VA region.

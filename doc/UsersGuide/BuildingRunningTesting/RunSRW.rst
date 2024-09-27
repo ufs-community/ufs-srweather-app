@@ -134,13 +134,8 @@ Loading the Workflow Environment
 
 The |wflow_env| conda/Python environment can be activated in the following way:
 
-.. code-block:: console
-
-   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
-   module use /path/to/ufs-srweather-app/modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
+.. include:: ../../doc-snippets/load-env.rst
+In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
 
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
@@ -155,7 +150,7 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 then the user should run |activate|. This activates the |wflow_env| conda environment, and the user typically sees |prompt| in front of the Terminal prompt at this point.
 
 .. note::
-   If users do not use the wflow module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
+   If users do not use the ``wflow_<platform>`` module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
 
 After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
