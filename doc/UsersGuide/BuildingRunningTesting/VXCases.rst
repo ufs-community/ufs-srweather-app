@@ -81,7 +81,7 @@ Save the path to this file in and ``INDYDATA`` environment variable:
 Load the Workflow
 ^^^^^^^^^^^^^^^^^^^^
 
-First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workflow environment:
+To load the workflow environment, run:
 
 .. include:: ../../doc-snippets/load-env.rst
 Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
