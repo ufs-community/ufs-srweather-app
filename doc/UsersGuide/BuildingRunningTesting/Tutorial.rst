@@ -78,15 +78,7 @@ Experiment 1: Control
 
 Edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
 
-.. Hint:: 
-   
-   To open the configuration file in the command line, users may run the command:
-
-   .. code-block:: console
-
-      vi config.yaml
-
-   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit/quit the file. Users may opt to use their preferred code editor instead.
+.. include:: ../../doc-snippets/file-edit-hint.rst
 
 Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
 
@@ -595,20 +587,12 @@ Configuration
 
 .. include:: ../../doc-snippets/expt-conf-intro.rst
 
-Experiment 1: Rap Data
+Experiment 1: RAP Data
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
 
-.. Hint:: 
-   
-   To open the configuration file in the command line, users may run the command:
-
-   .. code-block:: console
-
-      vi config.yaml
-
-   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit/quit the file. Users may opt to use their preferred code editor instead.
+.. include:: ../../doc-snippets/file-edit-hint.rst
 
 Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
 
