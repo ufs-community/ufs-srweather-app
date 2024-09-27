@@ -55,7 +55,7 @@ On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can fi
 Load the Workflow
 --------------------
 
-To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
+To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment by running:
 
 .. include:: ../../doc-snippets/load-env.rst
 
@@ -132,9 +132,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 .. _CronNote:
 
-.. note::
-
-   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
+.. include:: ../../doc-snippets/cron-note.rst
 
 ``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different forecasts --- one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite --- "gfsv16_physics_fcst" could be a good alternative directory name.
 
@@ -590,15 +588,9 @@ On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can fi
 Load the workflow
 ---------------------
 
-To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
+To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment by running:
 
-.. code-block:: console
-   
-   source etc/lmod-setup.sh <platform>
-   module use modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
+.. include:: ../../doc-snippets/load-env.rst
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
 
