@@ -574,12 +574,340 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
 **Weather Phenomena:** Flooding and high winds
 
-   * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`_
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HalloweenStorm.jpg
    :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
 
    *Halloween Storm 2019*
+
+Data
+-------
+
+On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Halloween Storm in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The RAP data can also be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
+
+.. code-block:: console
+
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
+   tar -xzf halloween_rap.tgz
+
+Load the workflow
+---------------------
+
+To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
+
+.. code-block:: console
+   
+   source etc/lmod-setup.sh <platform>
+   module use modulefiles
+   module load wflow_<platform>
+
+where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
+
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
+
+.. code-block:: console
+   
+   source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
+   module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
+   module load wflow_hera
+   conda activate srw_app
+
+Configuration
+-------------------------
+
+Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
+
+.. code-block:: console
+
+   cd /path/to/ufs-srweather-app/ush
+   
+
+Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export USH=/path/to/ufs-srweather-app/ush
+
+Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. The variable will need to be reset for each login session. 
+
+Experiment 1: Rap Data
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
+
+.. Hint:: 
+   
+   To open the configuration file in the command line, users may run the command:
+
+   .. code-block:: console
+
+      vi config.yaml
+
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit/quit the file. Users may opt to use their preferred code editor instead.
+
+Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
+
+.. code-block:: console
+
+   user:
+      RUN_ENVIR: community
+      MACHINE: macos
+      ACCOUNT: none
+
+For a detailed description of these variables, see :numref:`Section %s <user>`.
+
+Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in the ``platform:`` section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Section %s <VXCases>`.
+
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
+
+.. code-block:: console
+
+   workflow:
+     USE_CRON_TO_RELAUNCH: false
+     EXPT_SUBDIR: halloweenRAP
+     CCPP_PHYS_SUITE: FV3_RAP
+     PREDEF_GRID_NAME: RRFS_CONUS_13km
+     DATE_FIRST_CYCL: '2019103012'
+     DATE_LAST_CYCL: '2019103012'
+     FCST_LEN_HRS: 36
+     PREEXISTING_DIR_METHOD: rename
+     VERBOSE: true
+     COMPILER: intel
+
+.. _CronNote:
+
+.. note::
+
+   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
+
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "halloweenHRRR" to "a;skdfj". However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from two different types of forecast data input --- halloweenRAP and halloweenHRRR could be good names.
+
+``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid provides a higher resolution forecast, more detailed forecast; however, it is more computationally expensive compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
+
+For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
+
+To turn on the plotting for the experiment, the YAML configuration file
+should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
+
+.. code-block:: console
+
+ rocoto:
+    tasks:
+      task_get_extrn_ics:
+        walltime: 06:00:00
+      task_get_extrn_lbcs:
+        walltime: 06:00:00
+      metatask_run_ensemble:
+        task_make_lbcs_mem#mem#:
+          walltime: 06:00:00
+        task_run_fcst_mem#mem#:
+          walltime: 06:00:00
+      taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+
+
+For more information on how to turn on/off tasks in the workflow, please
+see :numref:`Section %s <ConfigTasks>`.
+
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems). 
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: RAP
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_ICS
+
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
+
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
+
+.. code-block:: console
+
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: RAP
+     LBC_SPEC_INTVL_HRS: 3
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_LBCS
+
+For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
+
+Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
+
+
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
+
+.. code-block:: console
+
+   task_plot_allvars:
+     COMOUT_REF: ""
+     PLOT_FCST_INC: 6
+
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z). 
+
+After configuring the forecast, users can generate the forecast by running:
+
+.. code-block:: console
+
+   ./generate_FV3LAM_wflow.py
+
+To see experiment progress, users should navigate to their experiment directory. Then, use the ``rocotorun`` command to launch new workflow tasks and ``rocotostat`` to check on experiment progress. 
+
+.. code-block:: console
+
+   cd /path/to/expt_dirs/control
+   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+Users will need to rerun the ``rocotorun`` and ``rocotostat`` commands above regularly and repeatedly to continue submitting workflow tasks and receiving progress updates. 
+
+.. note::
+
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
+
+Users can save the location of the ``Halloween`` directory in an environment variable (``$CONTROL``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export CONTROL=/path/to/expt_dirs/control
+
+Users should substitute ``/path/to/expt_dirs/Halloween`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $Halloween``, and it will take them to the ``halloween`` experiment directory. The variable will need to be reset for each login session. 
+
+Experiment 2: Changing the forecast input
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In this experiment we will be changing the forecast input to use ``HRRR`` data. This will include edits to the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below
+
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
+
+.. code-block:: console
+
+   workflow:
+     USE_CRON_TO_RELAUNCH: false
+     EXPT_SUBDIR: halloweenHRRR
+     CCPP_PHYS_SUITE: FV3_RAP
+     PREDEF_GRID_NAME: RRFS_CONUScompact_13km
+     DATE_FIRST_CYCL: '2019103012'
+     DATE_LAST_CYCL: '2019103012'
+     FCST_LEN_HRS: 36
+     PREEXISTING_DIR_METHOD: rename
+     VERBOSE: true
+     COMPILER: intel
+
+.. note::
+
+   Since HRRR is a high-resolution model than RAP, we will need to utilize the ``RRFS_CONUScompact_13km`` grid in order for the experiment to run successfully.
+
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_FILES_ICS``. 
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: HRRR
+     USE_USER_STAGED_EXTRN_FILES: false
+     EXTRN_MDL_FILES_ICS:
+     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
+
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_FILES_LBCS``. 
+
+.. code-block:: console
+
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: HRRR
+     LBC_SPEC_INTVL_HRS: 3
+     USE_USER_STAGED_EXTRN_FILES: false
+     EXTRN_MDL_FILES_LBCS:
+     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+
+
+For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
+
+Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
+
+How to Analyze Results
+-----------------------
+Navigate to ``halloweenHRRR/2019103012/postprd`` or ``halloweenRAP/2019203012/postprd``. This directory contains the post-processed data generated by the :term:`UPP` from the ``halloween`` forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables. 
+
+Copy ``.png`` Files onto Local System
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users who are working on the cloud or on an HPC cluster may want to copy the ``.png`` files onto their local system to view in their preferred image viewer. Detailed instructions are available in the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>`.
+
+In summary, users can run the ``scp`` command in a new terminal/command prompt window to securely copy files from a remote system to their local system if an SSH tunnel is already established between the local system and the remote system. Users can adjust one of the following commands for their system:
+
+.. code-block:: console
+
+   scp username@your-IP-address:/path/to/source_file_or_directory /path/to/destination_file_or_directory
+   # OR
+   scp -P 12345 username@localhost:/path/to/source_file_or_directory /path/to/destination_file_or_directory
+
+Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems' information. See the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>` for example commands. 
+
+
+Experiment 3: Examining Forecast Plots at Peak Intensity 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In this experiment will be looking at plots from HRRR and RAP input files while the Halloween Storm is at or approaching peak intensity. 
+
+.. _fcst4_250wind:
+
+250mb Wind
+``````````
+An effective weather forecast begins with analyzing a 250mb wind chart. By using this wind plot, forecasters can identify key features such as jet stream placement, jet maxima, troughs, ridges, and more. This analysis also helps pinpoint areas with the potential for the strongest severe weather.
+
+In the 250mb wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` plots are nearly identical at forecast hour f036. This shows great model agreement. Analyzing this chart we can see multiple ingredients signaling a significant severe weather event over eastern CONUS. The first thing to notice is the placement of the jet streak along with troughing approaching the eastern US. Also notice an extreme 150KT jet max over southern Ohio further fueling severe weather. The last thing to notice is the divegence aloft present over Eastern Conus, seeing divergence present all the way up to 250mb indicates a strong system.
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/250wind_rap_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *Rap plot for 250mb wind*
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/250wind_hrrr_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *HRRR plot for 250mb wind*
+
+.. _fcst4_10mwind:
+
+10m Wind
+``````````
+The 10m wind plots allows forecasters to pick up on patterns closer to the surface. It shows things such as convergence and pressure areas.
+
+In the 10m wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` are once again very similar, which makes sense given that the 250mb wind plots are also so similar. We can see a few key feautres on this chart. The most important is the area of convergence taking place over the east coast which is driving the line of severe storms. 
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_rap_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *Rap plot for 10m winds*
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_hrrr_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *HRRR plot for 10m winds*
+
+.. _fcst4_refc:
+
+Composite Reflectivity 
+``````````
+Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.noaa.gov/jetstream/reflectivity for a more detailed explanation of composite reflectivity. 
+
+In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloweenRAP`` models remain quite similar, as expected. Utilizing the reflectivity plots provides the final piece of the puzzle. From the previous analyses, we already had a good understanding of where the storms were likely to occur. Composite reflectivity serves as an additional tool, allowing us to visualize where the models predict storm placement. In this case, the strongest storms are indicated by higher dBZ values and appear to be concentrated in the NC/VA region.
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_rap_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *Rap plot for Composite Reflectivity*
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_hrrr_conus_f036.png
+      :align: center
+      :width: 75%
+
+      *HRRR plot for Composite Reflectivity*
 
 Tutorial Content
 -------------------
