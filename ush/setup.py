@@ -374,9 +374,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Create a dictionary of config options from defaults, machine, and
     # user config files.
+    build_config_fp = os.path.join(USHdir, os.pardir, "exec", "build_settings.yaml")
     default_config_fp = os.path.join(USHdir, "config_defaults.yaml")
     user_config_fp = os.path.join(USHdir, user_config_fn)
     expt_config = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
+
+    # Load build settings as a dictionary; will be used later to make sure the build is consistent with the user settings
+    build_config = load_config_file(build_config_fp)
 
     # Set up some paths relative to the SRW clone
     expt_config["user"].update(set_srw_paths(USHdir, expt_config))
@@ -1481,8 +1485,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # Check that UFS FIRE settings are correct and consistent
     #
     # -----------------------------------------------------------------------
+    print(build_config)
     fire_conf = expt_config["fire"]
     if fire_conf["UFS_FIRE"]:
+        if build_config["Application"]!="ATMF":
+            raise Exception("UFS_FIRE == True but UFS SRW has not been built for fire coupling; see users guide for details")
         fire_input_file=os.path.join(fire_conf["FIRE_INPUT_DIR"],"geo_em.d01.nc")
         if not os.path.isfile(fire_input_file):
             raise FileNotFoundError(
