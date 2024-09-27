@@ -71,20 +71,7 @@ After loading the workflow, users should follow the instructions printed to the 
 Configuration
 -------------------------
 
-Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
-
-.. code-block:: console
-
-   cd /path/to/ufs-srweather-app/ush
-   cp config.community.yaml config.yaml
-
-Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
-
-.. code-block:: console
-
-   export USH=/path/to/ufs-srweather-app/ush
-
-Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. The variable will need to be reset for each login session. 
+.. include:: ../../doc-snippets/expt-conf-intro.rst
 
 Experiment 1: Control
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -580,6 +567,8 @@ Data
 
 On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Halloween Storm in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The RAP data can also be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
 
+.. COMMENT: Revisit data - it's getting pulled from a bucket! 
+
 .. code-block:: console
 
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
@@ -604,20 +593,7 @@ After loading the workflow, users should follow the instructions printed to the 
 Configuration
 -------------------------
 
-Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
-
-.. code-block:: console
-
-   cd /path/to/ufs-srweather-app/ush
-   
-
-Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
-
-.. code-block:: console
-
-   export USH=/path/to/ufs-srweather-app/ush
-
-Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. The variable will need to be reset for each login session. 
+.. include:: ../../doc-snippets/expt-conf-intro.rst
 
 Experiment 1: Rap Data
 ^^^^^^^^^^^^^^^^^^^^^^^^
