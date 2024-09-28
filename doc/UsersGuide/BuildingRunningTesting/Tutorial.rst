@@ -557,14 +557,15 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 Data
 -------
 
-On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Halloween Storm in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The RAP data can also be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
+Data for the Halloween Storm is publicly in S3 data buckets. The Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) data can be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
 
 .. COMMENT: Revisit data - it's getting pulled from a bucket! 
 
 .. code-block:: console
 
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
-   tar -xzf halloween_rap.tgz
+   
+This will untar the ``halloween_rap.tgz`` data into a directory named ``RAP``.
 
 Load the workflow
 ---------------------
@@ -605,9 +606,9 @@ Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variab
 
 For a detailed description of these variables, see :numref:`Section %s <user>`.
 
-Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in the ``platform:`` section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Section %s <VXCases>`.
+Users do not need to change the ``platform:`` section of the configuration file for this tutorial. 
 
-In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``CCPP_PHYS_SUITE``, ``PREDEF_GRID_NAME``, ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``FCST_LEN_HRS``.
 
 .. code-block:: console
 
@@ -625,14 +626,44 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 .. include:: ../../doc-snippets/cron-note.rst
 
-``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "halloweenHRRR" to "a;skdfj". However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from two different types of forecast data input --- halloweenRAP and halloweenHRRR could be good names.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "HalloweenStorm1" to "a;skdfj". However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from RAP and HRRR forecast input data, this tutorial will use ``halloweenRAP`` for the Halloween Storm experiment that uses RAP forecast data.
 
-``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. Using the RRFS_CONUS_13km grid provides a higher resolution forecast, more detailed forecast; however, it is more computationally expensive compared to the 25km grid.  For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
+``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. This 13-km resolution is used in the NOAA operational Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) model and is the resolution envisioned for the initial operational implementation of the Rapid Refresh Forecast System (:term:`RRFS`). For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
+
+``CCPP_PHYS_SUITE:`` The FV3_RAP physics suite contains the evolving :term:`parameterizations` used operationally in the NOAA Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) model; the suite is also a prime candidate under consideration for initial RRFS implementation and has been well-tested at the 13-km resolution. It is therefore an appropriate physics choice when using the RRFS_CONUS_13km grid. 
+
+``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``FCST_LEN_HRS`` set parameters related to the date and duration of the forecast. Because this is a one-cycle experiment that does not use cycling or :term:`data assimilation`, the date of the first :term:`cycle` and last cycle are the same. 
 
 For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
-To turn on the plotting for the experiment, the YAML configuration file
-should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to point to the location of the data on their system. 
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: RAP
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/RAP/for_ICS
+
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
+
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to point to the location of the data on their system. 
+
+.. code-block:: console
+
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: RAP
+     LBC_SPEC_INTVL_HRS: 3
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/RAP/for_LBCS
+
+For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
+
+Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
+
+.. COMMENT: Do we need to set QUILTING to true?
+
+In the ``rocoto:tasks:`` section, increase the walltime for the data-related tasks and metatasks. Then include the YAML configuration file containing the plotting task in the ``rocoto:tasks:taskgroups:`` section, like this:
 
 .. code-block:: console
 
@@ -649,37 +680,13 @@ should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
           walltime: 06:00:00
       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
+.. note::
 
-For more information on how to turn on/off tasks in the workflow, please
-see :numref:`Section %s <ConfigTasks>`.
+   Tasks are run once each. A :ref:`Rocoto <RocotoInfo>` metatask expands into one or more similar tasks by replacing the values between ``#`` symbols with the values under the ``var:`` key. See the `Rocoto documentation <https://christopherwharrop.github.io/rocoto/>`_ for more information. 
 
-In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems). 
+For more information on how to turn on/off tasks in the workflow, please see :numref:`Section %s <ConfigTasks>`.
 
-.. code-block:: console
-
-   task_get_extrn_ics:
-     EXTRN_MDL_NAME_ICS: RAP
-     USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_ICS
-
-For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
-
-Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
-
-.. code-block:: console
-
-   task_get_extrn_lbcs:
-     EXTRN_MDL_NAME_LBCS: RAP
-     LBC_SPEC_INTVL_HRS: 3
-     USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/for_LBCS
-
-For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
-
-Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
-
-
-Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
+Then, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 36`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
 
 .. code-block:: console
 
@@ -687,7 +694,7 @@ Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users m
      COMOUT_REF: ""
      PLOT_FCST_INC: 6
 
-``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z). 
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 12z on October 30, 2019 (the 0th forecast hour) through the 36th forecast hour (November 2, 2019 at 12z). 
 
 After configuring the forecast, users can generate the forecast by running:
 
