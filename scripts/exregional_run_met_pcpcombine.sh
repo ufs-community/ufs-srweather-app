@@ -320,18 +320,13 @@ fi
 # First, set the base file names.
 #
 metplus_config_tmpl_fn="${MetplusToolName}"
-metplus_config_fn="${metplus_config_tmpl_fn}_$(echo_lowercase ${FCST_OR_OBS})_${FIELDNAME_IN_MET_FILEDIR_NAMES}${ENSMEM_INDX:+_${ensmem_name}}"
-metplus_log_fn="${metplus_config_fn}_$CDATE"
-#
-# If operating on observation files, append the cycle date to the name
-# of the configuration file because in this case, the output files from
-# METplus are not placed under cycle directories (so another method is
-# necessary to associate the configuration file with the cycle for which
-# it is used).
-#
-if [ "${FCST_OR_OBS}" = "OBS" ]; then
-  metplus_config_fn="${metplus_log_fn}"
+if [ "${FCST_OR_OBS}" = "FCST" ]; then
+  suffix="${ENSMEM_INDX:+_${ensmem_name}}"
+elif [ "${FCST_OR_OBS}" = "OBS" ]; then
+  suffix="_${OBTYPE}"
 fi
+metplus_config_fn="${metplus_config_tmpl_fn}_$(echo_lowercase ${FCST_OR_OBS})_${FIELDNAME_IN_MET_FILEDIR_NAMES}${suffix}"
+metplus_log_fn="${metplus_config_fn}_$CDATE"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #

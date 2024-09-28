@@ -73,12 +73,12 @@ task_get_obs_ndas:
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   walltime: 02:00:00
 
-task_run_MET_Pb2nc_obs:
+task_run_MET_Pb2nc_obs_NDAS:
   <<: *default_task_verify_pre
   attrs:
     cycledefs: cycledefs_obs_days_inst
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS_NDAS"'
   envars:
     <<: *default_vars
     VAR: ADPSFC
@@ -100,10 +100,10 @@ task_run_MET_Pb2nc_obs:
           attrs:
             task: get_obs_ndas
 
-metatask_PcpCombine_obs:
+metatask_PcpCombine_obs_APCP_all_accums_CCPA:
   var:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h:
+  task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h_CCPA:
     <<: *default_task_verify_pre
     attrs:
       cycledefs: forecast
@@ -138,6 +138,48 @@ metatask_PcpCombine_obs:
                      {{- indent ~ "</datadep>\n" }}
                      {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
                      {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_ccpa_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- endif %}
+                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                 {%- endfor %}'
+
+metatask_PcpCombine_obs_ASNOW_all_accums_NOHRSC:
+  var:
+    ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  task_run_MET_PcpCombine_obs_ASNOW#ACCUM_HH#h_NOHRSC:
+    <<: *default_task_verify_pre
+    attrs:
+      cycledefs: forecast
+      maxtries: '2'
+    command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+    envars:
+      <<: *default_vars
+      VAR: ASNOW
+      ACCUM_HH: '#ACCUM_HH#'
+      FCST_OR_OBS: OBS
+      OBTYPE: NOHRSC
+      OBS_DIR: '&NOHRSC_OBS_DIR;'
+      OBS_AVAIL_INTVL_HRS: '{{- verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
+      METPLUSTOOLNAME: 'PCPCOMBINE'
+    dependency:
+      and:
+        datadep:
+          text: "&NOHRSC_OBS_DIR;"
+        datadep_all_get_obs_nohrsc_complete:
+          attrs:
+            age: 00:00:00:30
+          # Check that the flag files that indicate that the get_obs_nohrsc tasks
+          # are complete are all present before launching any PcpCombine task.
+          text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length %}
+                 {%- set indent = "      " %}
+                 {%- set indent_p2 = indent + "  " %}
+                 {%- for n in range(0, num_obs_days) %}
+                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_CUMUL[n] %}
+                   {%- if n == 0 %}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_nohrsc_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- else %}
+                     {{- indent ~ "</datadep>\n" }}
+                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_nohrsc_" ~ yyyymmdd ~ "_complete.txt" }}
                    {%- endif %}
                    {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
                  {%- endfor %}'

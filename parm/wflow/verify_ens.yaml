@@ -48,9 +48,9 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       FCST_THRESH: 'none'
     dependency:
       and:
-        taskdep_pcpcombine_obs: &taskdep_pcpcombine_obs
+        taskdep_pcpcombine_obs_ccpa: &taskdep_pcpcombine_obs_ccpa
           attrs:
-            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h_CCPA
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
@@ -83,9 +83,9 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       FCST_THRESH: 'none'
     dependency:
       and:
-        taskdep:
+        taskdep_pcpcombine_obs_nohrsc: &taskdep_pcpcombine_obs_nohrsc
           attrs:
-            task: get_obs_nohrsc
+            task: run_MET_PcpCombine_obs_ASNOW#ACCUM_HH#h_NOHRSC
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
@@ -169,7 +169,7 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
     walltime: 01:00:00
     dependency:
       and:
-        datadep_all_pb2nc_obs_complete: &all_pb2nc_obs_complete
+        datadep_all_pb2nc_obs_ndas_complete: &all_pb2nc_obs_ndas_complete
           attrs:
             age: 00:00:00:30
           # Check that the flag files that indicate that the Pb2NC tasks are
@@ -180,11 +180,11 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
                  {%- for n in range(0, num_obs_days) %}
                    {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
                    {%- if n == 0 %}
-                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
                    {%- else %}
                      {{- indent ~ "</datadep>\n" }}
                      {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
-                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
                    {%- endif %}
                    {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
                  {%- endfor %}'
@@ -213,8 +213,8 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
         FCST_THRESH: 'all'
       dependency:
         and:
-          taskdep_pcpcombine_obs:
-            <<: *taskdep_pcpcombine_obs
+          taskdep_pcpcombine_obs_ccpa:
+            <<: *taskdep_pcpcombine_obs_ccpa
           taskdep_genensprod:
             attrs:
               task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
@@ -240,9 +240,8 @@ metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
         FCST_THRESH: 'all'
       dependency:
         and:
-          taskdep:
-            attrs:
-              task: get_obs_nohrsc
+          taskdep_pcpcombine_obs_nohrsc:
+            <<: *taskdep_pcpcombine_obs_nohrsc
           taskdep_genensprod:
             attrs:
               task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
@@ -291,8 +290,8 @@ metatask_PointStat_NDAS_ensmeanprob:
         FCST_THRESH: 'all'
       dependency:
         and:
-          datadep_all_pb2nc_obs_complete:
-            <<: *all_pb2nc_obs_complete
+          datadep_all_pb2nc_obs_ndas_complete:
+            <<: *all_pb2nc_obs_ndas_complete
           taskdep_genensprod:
             attrs:
               task: run_MET_GenEnsProd_vx_#VAR#

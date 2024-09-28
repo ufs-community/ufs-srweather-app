@@ -154,8 +154,7 @@ for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   fp="${OBS_INPUT_DIR}/${fn}"
   if [[ -f "${fp}" ]]; then
     print_info_msg "
-Found ${OBTYPE} obs file corresponding to observation retrieval time
-(yyyymmddhh):
+Found ${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh):
   yyyymmddhh = \"${yyyymmddhh}\"
   fp = \"${fp}\"
 "
@@ -263,8 +262,8 @@ metplus_config_tmpl_fn="${MetplusToolName}_obs"
 # information, but we still include that info in the file name so that
 # the behavior in the two modes is as similar as possible.
 #
-metplus_config_fn="${metplus_config_tmpl_fn}_${CDATE}"
-metplus_log_fn="${metplus_config_fn}"
+metplus_config_fn="${metplus_config_tmpl_fn}_NDAS_${CDATE}"
+metplus_log_fn="${metplus_config_fn}_NDAS"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
@@ -379,7 +378,7 @@ METplus configuration file used is:
 #-----------------------------------------------------------------------
 #
 mkdir -p ${WFLOW_FLAG_FILES_DIR}
-touch "${WFLOW_FLAG_FILES_DIR}/run_met_pb2nc_obs_${PDY}_complete.txt"
+touch "${WFLOW_FLAG_FILES_DIR}/run_met_pb2nc_obs_ndas_${PDY}_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
