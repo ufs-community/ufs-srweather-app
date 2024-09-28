@@ -147,6 +147,7 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
     slash_cdate_or_null=""
     slash_ensmem_subdir_or_null=""
+    slash_obs_or_null=""
   else
     slash_cdate_or_null="/${CDATE}"
   #
@@ -169,7 +170,11 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   fi
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   slash_cdate_or_null="/${CDATE}"
-  slash_ensmem_subdir_or_null="/obs"
+  if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]; then
+    slash_obs_or_null="/obs"
+  else
+    slash_obs_or_null=""
+  fi
 fi
 
 OBS_INPUT_DIR=""
@@ -193,7 +198,7 @@ elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE})
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${fn_template} )
 
-  OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}"
+  OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_obs_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
   fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE_PCPCOMBINE_OUTPUT})
   OUTPUT_FN_TEMPLATE=$( eval echo ${fn_template} )

@@ -144,6 +144,7 @@ ensmem_name="mem${ensmem_indx}"
 if [ "${RUN_ENVIR}" = "nco" ]; then
   slash_cdate_or_null=""
   slash_ensmem_subdir_or_null=""
+  slash_obs_or_null=""
 else
   slash_cdate_or_null="/${CDATE}"
 #
@@ -160,8 +161,10 @@ else
 #
   if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]; then
     slash_ensmem_subdir_or_null="/${ensmem_name}"
+    slash_obs_or_null="/obs"
   else
     slash_ensmem_subdir_or_null=""
+    slash_obs_or_null=""
   fi
 fi
 
@@ -169,13 +172,13 @@ if [ "${grid_or_point}" = "grid" ]; then
 
   case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
     "APCP"*)
-      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_obs_or_null}/metprd/PcpCombine_obs"
       OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
       FCST_INPUT_FN_TEMPLATE="${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       ;;
     "ASNOW"*)
-      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_obs_or_null}/metprd/PcpCombine_obs"
       OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
       FCST_INPUT_FN_TEMPLATE="${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
