@@ -1,7 +1,7 @@
 default_task_verify_pre: &default_task_verify_pre
   account: '&ACCOUNT;'
   attrs:
-    cycledefs: cycledef_obs_days_inst
+    cycledefs: cycledefs_obs_days_inst
     maxtries: '1'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
@@ -24,7 +24,7 @@ default_task_verify_pre: &default_task_verify_pre
 task_get_obs_ccpa:
   <<: *default_task_verify_pre
   attrs:
-    cycledefs: cycledef_obs_days_cumul
+    cycledefs: cycledefs_obs_days_cumul
     maxtries: '1'
   command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
@@ -76,7 +76,7 @@ task_get_obs_ndas:
 task_run_MET_Pb2nc_obs:
   <<: *default_task_verify_pre
   attrs:
-    cycledefs: cycledef_obs_days_inst
+    cycledefs: cycledefs_obs_days_inst
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
