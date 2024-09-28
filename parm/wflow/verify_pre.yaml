@@ -154,7 +154,6 @@ metatask_check_post_output_all_mems:
     envars:
       <<: *default_vars
       VAR: APCP
-      ACCUM_HH: '01'
       ENSMEM_INDX: '#mem#'
     dependency:
       # This "or" checks that the necessary stand-alone post tasks or forecast

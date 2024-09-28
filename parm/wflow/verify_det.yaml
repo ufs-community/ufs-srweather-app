@@ -102,7 +102,6 @@ metatask_GridStat_MRMS_all_mems:
         <<: *default_vars
         OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
-        ACCUM_HH: '01'
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
@@ -152,7 +151,6 @@ metatask_PointStat_NDAS_all_mems:
         VAR: '#VAR#'
         METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
-        ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
         OBS_AVAIL_INTVL_HRS: '{{- verification.NDAS_OBS_AVAIL_INTVL_HRS }}'
