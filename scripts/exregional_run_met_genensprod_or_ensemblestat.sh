@@ -140,8 +140,8 @@ if [ "${grid_or_point}" = "grid" ]; then
       FCST_INPUT_DIR="${vx_output_basedir}"
       ;;
     "ASNOW"*)
-      OBS_INPUT_DIR="${OBS_DIR}"
-      OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
+      OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       FCST_INPUT_DIR="${vx_output_basedir}"
       ;;
     "REFC")
