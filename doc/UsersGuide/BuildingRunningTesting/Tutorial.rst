@@ -222,8 +222,6 @@ Once the control case is running, users can return to the ``config.yaml`` file (
    
    Later, users may want to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. 
 
-.. COMMENT: Maybe also FV3_RAP?
-
 Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data. Users will need to change the following lines in each section:
 
 .. code-block:: console
