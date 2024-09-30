@@ -711,7 +711,7 @@ Users can save the location of the ``halloweenRAP`` directory in an environment 
 
    export HRAP=/path/to/expt_dirs/halloweenRAP
 
-Users should substitute ``/path/to/expt_dirs/HRAP`` with the actual path to the experiment directory on their system. As long as a user remains logged into their system, they can run ``cd $HRAP``, and it will take them to the ``halloweenRAP`` experiment directory. The variable will need to be reset for each login session. 
+Users should substitute ``/path/to/expt_dirs/halloweenRAP`` with the actual path to the experiment directory on their system. As long as a user remains logged into their system, they can run ``cd $HRAP``, and it will take them to the ``halloweenRAP`` experiment directory. The variable will need to be reset for each login session. 
 
 Experiment 2: Changing the Forecast Input
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -755,7 +755,36 @@ Update the same values in the ``task_get_extrn_lbcs:`` section:
 
 For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
-Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
+After configuring the forecast, users can generate the second forecast by running:
+
+.. code-block:: console
+
+   ./generate_FV3LAM_wflow.py
+
+To see experiment progress, users should navigate to their experiment directory. As in the first forecast, the following commands allow users to launch new workflow tasks and check on experiment progress. 
+
+.. code-block:: console
+
+   cd /path/to/expt_dirs/test_expt
+   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+.. note::
+
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
+
+.. note::
+   
+   If users have not automated their workflow using cron, they will need to ensure that they continue issuing ``rocotorun`` commands to launch all of the tasks in each experiment. While switching between experiment directories to run ``rocotorun`` and ``rocotostat`` commands in both directories is possible, it may be easier to finish the ``halloweenRAP`` experiment's tasks before starting on ``halloweenHRRR``. 
+
+As with the ``halloweenRAP`` experiment, users can save the location of the ``halloweenHRRR`` directory in an environment variable (e.g., ``$HHRRR``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export HHRRR=/path/to/expt_dirs/halloweenHRRR
+
+Users should substitute ``/path/to/expt_dirs/halloweenHRRR`` with the actual path on their system. 
+
 
 How to Analyze Results
 -----------------------
