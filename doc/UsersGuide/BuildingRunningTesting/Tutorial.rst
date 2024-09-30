@@ -302,17 +302,7 @@ Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-p
 Copy ``.png`` Files onto Local System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who are working on the cloud or on an HPC cluster may want to copy the ``.png`` files onto their local system to view in their preferred image viewer. Detailed instructions are available in the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>`.
-
-In summary, users can run the ``scp`` command in a new terminal/command prompt window to securely copy files from a remote system to their local system if an SSH tunnel is already established between the local system and the remote system. Users can adjust one of the following commands for their system:
-
-.. code-block:: console
-
-   scp username@your-IP-address:/path/to/source_file_or_directory /path/to/destination_file_or_directory
-   # OR
-   scp -P 12345 username@localhost:/path/to/source_file_or_directory /path/to/destination_file_or_directory
-
-Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems' information. See the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>` for example commands. 
+.. include:: ../../doc-snippets/scp-files.rst
 
 .. _ComparePlots:
 
@@ -682,11 +672,11 @@ In the ``rocoto:tasks:`` section, increase the walltime for the data-related tas
 
 .. note::
 
-   Tasks are run once each. A :ref:`Rocoto <RocotoInfo>` metatask expands into one or more similar tasks by replacing the values between ``#`` symbols with the values under the ``var:`` key. See the `Rocoto documentation <https://christopherwharrop.github.io/rocoto/>`_ for more information. 
+   Rocoto tasks are run once each. A :ref:`Rocoto <RocotoInfo>` metatask expands into one or more similar tasks by replacing the values between ``#`` symbols with the values under the ``var:`` key. See the `Rocoto documentation <https://christopherwharrop.github.io/rocoto/>`_ for more information. 
 
 For more information on how to turn on/off tasks in the workflow, please see :numref:`Section %s <ConfigTasks>`.
 
-Then, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 36`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
+In the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 36`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
 
 .. code-block:: console
 
@@ -694,7 +684,7 @@ Then, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6``. Users may
      COMOUT_REF: ""
      PLOT_FCST_INC: 6
 
-``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 12z on October 30, 2019 (the 0th forecast hour) through the 36th forecast hour (November 2, 2019 at 12z). 
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 12z on October 30, 2019 (the 0th forecast hour) through the 36th forecast hour (November 1, 2019 at 0z). 
 
 After configuring the forecast, users can generate the forecast by running:
 
@@ -706,7 +696,7 @@ To see experiment progress, users should navigate to their experiment directory.
 
 .. code-block:: console
 
-   cd /path/to/expt_dirs/control
+   cd /path/to/expt_dirs/halloweenRAP
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
@@ -716,39 +706,31 @@ Users will need to rerun the ``rocotorun`` and ``rocotostat`` commands above reg
 
    When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
 
-Users can save the location of the ``Halloween`` directory in an environment variable (``$CONTROL``). This makes it easier to navigate between directories later. For example:
+Users can save the location of the ``halloweenRAP`` directory in an environment variable (e.g., ``$HRAP``). This makes it easier to navigate between directories later. For example:
 
 .. code-block:: console
 
-   export CONTROL=/path/to/expt_dirs/control
+   export CONTROL=/path/to/expt_dirs/HRAP
 
-Users should substitute ``/path/to/expt_dirs/Halloween`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $Halloween``, and it will take them to the ``halloween`` experiment directory. The variable will need to be reset for each login session. 
+Users should substitute ``/path/to/expt_dirs/HRAP`` with the actual path to the experiment directory on their system. As long as a user remains logged into their system, they can run ``cd $HRAP``, and it will take them to the ``halloweenRAP`` experiment directory. The variable will need to be reset for each login session. 
 
-Experiment 2: Changing the forecast input
+Experiment 2: Changing the Forecast Input
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-In this experiment we will be changing the forecast input to use ``HRRR`` data. This will include edits to the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below
+Once the ``halloweenRAP`` case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. In this forecast, users will change the forecast input to use ``HRRR`` data and alter a few associated parameters. 
 
-In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``. Other parameters should remain the same.
 
 .. code-block:: console
 
    workflow:
-     USE_CRON_TO_RELAUNCH: false
      EXPT_SUBDIR: halloweenHRRR
-     CCPP_PHYS_SUITE: FV3_RAP
      PREDEF_GRID_NAME: RRFS_CONUScompact_13km
-     DATE_FIRST_CYCL: '2019103012'
-     DATE_LAST_CYCL: '2019103012'
-     FCST_LEN_HRS: 36
-     PREEXISTING_DIR_METHOD: rename
-     VERBOSE: true
-     COMPILER: intel
 
 .. note::
 
-   Since HRRR is a high-resolution model than RAP, we will need to utilize the ``RRFS_CONUScompact_13km`` grid in order for the experiment to run successfully.
+   Relative to the original CONUS domain, the "compact" CONUS domains are slightly smaller. The original CONUS domains were a bit too large to run with :term:`LBCs` from HRRR, so the "compact" domains were created to be just small enough to work with HRRR data. 
 
-In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_FILES_ICS``. 
+In the ``task_get_extrn_ics:`` section, update the values for ``EXTRN_MDL_NAME_ICS`` and ``USE_USER_STAGED_EXTRN_FILES`` and add ``EXTRN_MDL_FILES_ICS``. Users may choose to comment out or remove ``EXTRN_MDL_SOURCE_BASEDIR_ICS``, but this is not necessary. 
 
 .. code-block:: console
 
@@ -760,7 +742,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
-Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_FILES_LBCS``. 
+Update the same values in the ``task_get_extrn_lbcs:`` section: 
 
 .. code-block:: console
 
@@ -783,18 +765,7 @@ Navigate to ``halloweenHRRR/2019103012/postprd`` or ``halloweenRAP/2019203012/po
 Copy ``.png`` Files onto Local System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who are working on the cloud or on an HPC cluster may want to copy the ``.png`` files onto their local system to view in their preferred image viewer. Detailed instructions are available in the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>`.
-
-In summary, users can run the ``scp`` command in a new terminal/command prompt window to securely copy files from a remote system to their local system if an SSH tunnel is already established between the local system and the remote system. Users can adjust one of the following commands for their system:
-
-.. code-block:: console
-
-   scp username@your-IP-address:/path/to/source_file_or_directory /path/to/destination_file_or_directory
-   # OR
-   scp -P 12345 username@localhost:/path/to/source_file_or_directory /path/to/destination_file_or_directory
-
-Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems' information. See the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>` for example commands. 
-
+.. include:: ../../doc-snippets/scp-files.rst
 
 Experiment 3: Examining Forecast Plots at Peak Intensity 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -859,11 +830,6 @@ In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloween
       :width: 75%
 
       *HRRR plot for Composite Reflectivity*
-
-Tutorial Content
--------------------
-
-Coming Soon!
 
 .. _fcst5:
 
