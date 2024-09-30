@@ -545,7 +545,7 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 Data
 -------
 
-Data for the Halloween Storm is publicly available in S3 data buckets. The Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) data can be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
+Data for the Halloween Storm is publicly available in S3 data buckets. The Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) data can be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``. Make sure to issue the command from the folder where you want to place the data.
 
 .. code-block:: console
 
@@ -656,7 +656,7 @@ In the ``rocoto:tasks:`` section, increase the walltime for the data-related tas
 
 .. code-block:: console
 
- rocoto:
+  rocoto:
     tasks:
       task_get_extrn_ics:
         walltime: 06:00:00
@@ -709,7 +709,7 @@ Users can save the location of the ``halloweenRAP`` directory in an environment 
 
 .. code-block:: console
 
-   export CONTROL=/path/to/expt_dirs/HRAP
+   export HRAP=/path/to/expt_dirs/halloweenRAP
 
 Users should substitute ``/path/to/expt_dirs/HRAP`` with the actual path to the experiment directory on their system. As long as a user remains logged into their system, they can run ``cd $HRAP``, and it will take them to the ``halloweenRAP`` experiment directory. The variable will need to be reset for each login session. 
 
