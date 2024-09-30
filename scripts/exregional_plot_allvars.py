@@ -429,7 +429,7 @@ if __name__ == "__main__":
         t1a = time.perf_counter()
     
         # Sea level pressure
-        slp = data1.select(name="Pressure reduced to MSL")[0].values * 0.01
+        slp = data1.select(name="MSLP (Eta model reduction)")[0].values * 0.01
         slpsmooth = ndimage.gaussian_filter(slp, 13.78)
     
         # 2-m temperature
@@ -484,7 +484,7 @@ if __name__ == "__main__":
         )
     
         # Composite reflectivity
-        refc = data1.select(name="Maximum/Composite radar reflectivity")[0].values
+        # refc = data1.select(name="Maximum/Composite radar reflectivity")[0].values
     
         if fhr > 0:
             # Max/Min Hourly 2-5 km Updraft Helicity
@@ -1256,73 +1256,73 @@ if __name__ == "__main__":
             #################################
             # Plot composite reflectivity
             #################################
-            t1 = time.perf_counter()
-            logging.info(("Working on composite reflectivity for " + dom))
+            #t1 = time.perf_counter()
+            #logging.info(("Working on composite reflectivity for " + dom))
     
             # Clear off old plottables but keep all the map info
-            cbar1.remove()
-            clear_plotables(ax, keep_ax_lst, fig)
+            #cbar1.remove()
+            #clear_plotables(ax, keep_ax_lst, fig)
     
-            units = "dBZ"
-            clevs = np.linspace(5, 70, 14)
-            clevsdif = [20, 1000]
-            colorlist = [
-                "turquoise",
-                "dodgerblue",
-                "mediumblue",
-                "lime",
-                "limegreen",
-                "green",
-                "#EEEE00",
-                "#EEC900",
-                "darkorange",
-                "red",
-                "firebrick",
-                "darkred",
-                "fuchsia",
-            ]
-            cm = matplotlib.colors.ListedColormap(colorlist)
-            norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
+            #units = "dBZ"
+            #clevs = np.linspace(5, 70, 14)
+            #clevsdif = [20, 1000]
+            #colorlist = [
+            #    "turquoise",
+            #    "dodgerblue",
+            #    "mediumblue",
+            #    "lime",
+            #    "limegreen",
+            #    "green",
+            #    "#EEEE00",
+            #    "#EEC900",
+            #    "darkorange",
+            #    "red",
+            #    "firebrick",
+            #    "darkred",
+            #    "fuchsia",
+            #]
+            #cm = matplotlib.colors.ListedColormap(colorlist)
+            #norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
     
-            cs_1 = plt.pcolormesh(
-                lon_shift, lat_shift, refc, transform=transform, cmap=cm, vmin=5, norm=norm
-            )
-            cs_1.cmap.set_under("white", alpha=0.0)
-            cs_1.cmap.set_over("black")
-            cbar1 = plt.colorbar(
-                cs_1,
-                orientation="horizontal",
-                pad=0.05,
-                shrink=0.6,
-                ticks=clevs,
-                extend="max",
-            )
-            cbar1.set_label(units, fontsize=8)
-            cbar1.ax.tick_params(labelsize=8)
-            ax.text(
-                0.5,
-                1.03,
-                "FV3-LAM Composite Reflectivity ("
-                + units
-                + ") \n initialized: "
-                + itime
-                + " valid: "
-                + vtime
-                + " (f"
-                + fhour
-                + ")",
-                horizontalalignment="center",
-                fontsize=8,
-                transform=ax.transAxes,
-                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-            )
+            #cs_1 = plt.pcolormesh(
+            #    lon_shift, lat_shift, refc, transform=transform, cmap=cm, vmin=5, norm=norm
+            #)
+            #cs_1.cmap.set_under("white", alpha=0.0)
+            #cs_1.cmap.set_over("black")
+            #cbar1 = plt.colorbar(
+            #    cs_1,
+            #    orientation="horizontal",
+            #    pad=0.05,
+            #    shrink=0.6,
+            #    ticks=clevs,
+            #    extend="max",
+            #)
+            #cbar1.set_label(units, fontsize=8)
+            #cbar1.ax.tick_params(labelsize=8)
+            #ax.text(
+            #    0.5,
+            #    1.03,
+            #    "FV3-LAM Composite Reflectivity ("
+            #    + units
+            #    + ") \n initialized: "
+            #    + itime
+            #    + " valid: "
+            #    + vtime
+            #    + " (f"
+            #    + fhour
+            #    + ")",
+            #    horizontalalignment="center",
+            #    fontsize=8,
+            #    transform=ax.transAxes,
+            #    bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            #)
     
-            compress_and_save(
-                COMOUT + "/refc_" + dom + "_f" + fhour + ".png"
-            )
-            t2 = time.perf_counter()
-            t3 = round(t2 - t1, 3)
-            logging.info(("%.3f seconds to plot composite reflectivity for: " + dom) % t3)
+            #compress_and_save(
+            #    COMOUT + "/refc_" + dom + "_f" + fhour + ".png"
+            #)
+            #t2 = time.perf_counter()
+            #t3 = round(t2 - t1, 3)
+            #logging.info(("%.3f seconds to plot composite reflectivity for: " + dom) % t3)
     
             #################################
             # Plot Max/Min Hourly 2-5 km UH
