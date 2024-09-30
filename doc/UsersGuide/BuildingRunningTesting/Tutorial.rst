@@ -41,7 +41,7 @@ A surface boundary associated with a vorticity maximum over the northern Great P
 Data
 -------
 
-On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
+On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`_. 
 
    * FV3GFS data for the first forecast (``control``) is located at: 
    
@@ -547,15 +547,16 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 Data
 -------
 
-Data for the Halloween Storm is publicly in S3 data buckets. The Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) data can be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
-
-.. COMMENT: Revisit data - it's getting pulled from a bucket! 
+Data for the Halloween Storm is publicly available in S3 data buckets. The Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) data can be downloaded from the `SRW App data bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ using ``wget``:
 
 .. code-block:: console
 
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/halloween_rap.tgz
+   tar -xzf halloween_rap.tgz
    
 This will untar the ``halloween_rap.tgz`` data into a directory named ``RAP``.
+
+The SRW App can pull HRRR data directly from the `HRRR data bucket <https://registry.opendata.aws/noaa-hrrr-pds/>`_. Users do not need to download the data separately. 
 
 Load the workflow
 ---------------------
