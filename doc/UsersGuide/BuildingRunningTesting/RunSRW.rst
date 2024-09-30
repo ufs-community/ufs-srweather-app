@@ -685,7 +685,7 @@ More information about configuring the ``rocoto:`` section can be found in :numr
 
 If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify_pre.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
-Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`_. 
+Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data. 
 
 Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data in ``config.yaml``. 
 
