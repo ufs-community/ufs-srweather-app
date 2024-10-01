@@ -43,7 +43,7 @@ def main():
     valid = datetime.datetime(YYYY, MM, DD, HH, 0, 0)
     valid_str = valid.strftime("%Y%m%d")
 
-    print(f"Pulling {args.valid_time} MRMS data")
+    print(f"Pulling MRMS product {args.product} for valid time: {args.valid_time}")
 
     # Set up working directory
 
