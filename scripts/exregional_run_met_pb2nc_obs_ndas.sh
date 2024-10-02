@@ -79,6 +79,11 @@ to convert NDAS prep buffer observation files to NetCDF format.
 #-----------------------------------------------------------------------
 #
 yyyymmdd_task=${PDY}
+
+# Seconds since some reference time that the DATE_UTIL utility uses of
+# the day of the current task.  This will be used below to find hours
+# since the start of this day.
+sec_since_ref_task=$(${DATE_UTIL} --date "${yyyymmdd_task} 0 hours" +%s)
 #
 #-----------------------------------------------------------------------
 #
@@ -150,8 +155,17 @@ num_missing_files=0
 for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
-  fn="prepbufr.ndas.${yyyymmddhh}"
-  fp="${OBS_INPUT_DIR}/${fn}"
+
+  # Set the full path to the final processed obs file (fp_proc) we want to
+  # create.
+  sec_since_ref=$(${DATE_UTIL} --date "${yyyymmdd} ${hh} hours" +%s)
+  lhr=$(( (sec_since_ref - sec_since_ref_task)/3600 ))
+  eval_METplus_timestr_tmpl \
+    init_time="${yyyymmdd_task}00" \
+    fhr="${lhr}" \
+    METplus_timestr_tmpl="${OBS_DIR}/${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE}" \
+    outvarname_evaluated_timestr="fp"
+
   if [[ -f "${fp}" ]]; then
     print_info_msg "
 Found ${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh):
