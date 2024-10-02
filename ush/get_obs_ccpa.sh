@@ -167,7 +167,7 @@ if [ ${remainder} -ne 0 ]; then
 The obs availability interval CCPA_OBS_AVAIL_INTVL_HRS must divide evenly
 into 24 but doesn't:
   CCPA_OBS_AVAIL_INTVL_HRS = ${CCPA_OBS_AVAIL_INTVL_HRS}
-  mod(24, CCPA_OBS_AVAIL_INTVL_HRS) = ${remainder}"
+  24 % CCPA_OBS_AVAIL_INTVL_HRS = ${remainder}"
 fi
 
 # Accumulation period to use when getting obs files.  This is simply (a
@@ -178,11 +178,10 @@ accum_obs_fmt=$( printf "%02d" "${CCPA_OBS_AVAIL_INTVL_HRS}" )
 # task's cycledefs attribute in the ROCOTO xml.
 yyyymmdd_task=${PDY}
 
-# Base directory in which the daily subdirectories containing the grib2
-# obs files will appear after this script is done.  We refer to this as
-# the "processed" base directory because it contains the files after all
-# processing by this script is complete.
-basedir_proc=${OBS_DIR}
+# Seconds since some reference time that the DATE_UTIL utility uses of
+# the day of the current task.  This will be used below to find hours
+# since the start of this day.
+sec_since_ref_task=$(${DATE_UTIL} --date "${yyyymmdd_task} 0 hours" +%s)
 #
 #-----------------------------------------------------------------------
 #
@@ -231,16 +230,26 @@ else
   arcv_hr_end=$(( arcv_hr_end*arcv_hr_incr ))
 fi
 
-# Check whether any obs files already exist on disk.  If so, adjust the
-# starting archive hour.  In the process, keep a count of the number of
-# obs files that already exist on disk.
+# Check whether any obs files already exist on disk in their processed
+# (i.e. final) locations.  Here, by "processed" we mean after any renaming
+# and rearrangement of files that this script may do to the "raw" files,
+# i.e. the files as they are named and arranged within the archive (tar)
+# files on HPSS.  If so, adjust the starting archive hour.  In the process,
+# keep a count of the number of obs files that already exist on disk.
 num_existing_files=0
 for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
   hh=$(echo ${yyyymmddhh} | cut -c9-10)
-  day_dir_proc="${basedir_proc}/${yyyymmdd}"
-  fn_proc="ccpa.t${hh}z.${accum_obs_fmt}h.hrap.conus.gb2"
-  fp_proc="${day_dir_proc}/${fn_proc}"
+
+  # Set the full path to the final processed obs file (fp_proc).
+  sec_since_ref=$(${DATE_UTIL} --date "${yyyymmdd} ${hh} hours" +%s)
+  lhr=$(( (sec_since_ref - sec_since_ref_task)/3600 ))
+  eval_METplus_timestr_tmpl \
+    init_time="${yyyymmdd_task}00" \
+    fhr="${lhr}" \
+    METplus_timestr_tmpl="${OBS_DIR}/${OBS_CCPA_APCP_FN_TEMPLATE}" \
+    outvarname_evaluated_timestr="fp_proc"
+
   if [[ -f ${fp_proc} ]]; then
     num_existing_files=$((num_existing_files+1))
     print_info_msg "
@@ -304,7 +313,8 @@ fi
 #-----------------------------------------------------------------------
 #
 
-# Whether to move or copy files from raw to processed directories.
+# Whether to move the files or copy them from their raw to their processed
+# locations.
 #mv_or_cp="mv"
 mv_or_cp="cp"
 # Whether to remove raw observations after processed directories have
@@ -317,11 +327,11 @@ if [[ $(boolify "${remove_raw_obs}") == "TRUE" ]]; then
   mv_or_cp="mv"
 fi
 
-# Base directory that will contain the daily subdirectories in which the
-# CCPA grib2 files retrieved from archive (tar) files will be placed.
-# We refer to this as the "raw" base directory because it contains files
+# Base directory that will contain the archive subdirectories in which
+# the files extracted from each archive (tar) file will be placed.  We
+# refer to this as the "raw" base directory because it contains files
 # as they are found in the archives before any processing by this script.
-basedir_raw="${basedir_proc}/${yyyymmdd_task}/raw"
+basedir_raw="${OBS_DIR}/raw_${yyyymmdd_task}"
 
 for arcv_hr in ${arcv_hrs[@]}; do
 
@@ -333,10 +343,10 @@ arcv_hr = ${arcv_hr}"
   yyyymmdd_arcv=$(echo ${yyyymmddhh_arcv} | cut -c1-8)
   hh_arcv=$(echo ${yyyymmddhh_arcv} | cut -c9-10)
 
-  # Directory that will contain the grib2 files retrieved from the current
-  # archive file.  We refer to this as the "raw" archive directory because
-  # it will contain the files as they are in the archive before any processing
-  # by this script.
+  # Directory that will contain the files retrieved from the current archive
+  # file.  We refer to this as the "raw" archive directory because it will
+  # contain the files as they are in the archive before any processing by
+  # this script.
   arcv_dir_raw="${basedir_raw}/${yyyymmddhh_arcv}"
 
   # Check whether any of the obs retrieval times for the day associated with
@@ -378,12 +388,14 @@ The times at which obs need to be retrieved are:
 
     # The retrieve_data.py script first extracts the contents of the archive
     # file into the directory it was called from and then moves them to the
-    # specified output location (via the --output_path option).  In order to
-    # avoid other get_obs_ccpa tasks (i.e. those associated with other days)
-    # from interfering with (clobbering) these files (because extracted files
-    # from different get_obs_ccpa tasks to have the same names or relative
-    # paths), we change location to the base raw directory so that files with
-    # same names are extracted into different directories.
+    # specified output location (via the --output_path option).  Note that
+    # the relative paths of obs files within archives associted with different
+    # days may be the same.  Thus, if files with the same archive-relative
+    # paths are being simultaneously extracted from multiple archive files
+    # (by multiple get_obs tasks), they will likely clobber each other if the
+    # extracton is being carried out into the same location on disk.  To avoid
+    # this, we first change location to the raw base directory (whose name is
+    # obs-day dependent) and then call the retrieve_data.py script.
     cd ${basedir_raw}
 
     # Pull obs from HPSS.  This will get all the obs files in the current
@@ -402,36 +414,56 @@ The times at which obs need to be retrieved are:
     print_info_msg "CALLING: ${cmd}"
     $cmd || print_err_msg_exit "Could not retrieve obs from HPSS."
 
-    # Create the processed CCPA grib2 files.  This usually consists of just
-    # moving or copying the raw files to their processed location, but for
-    # times between 20180718 and 20210504 and hours-of-day 19 through the
-    # end of the day (i.e. hour 0 of the next day), it involves using wgrib2
-    # to correct an error in the metadata of the raw file and writing the
-    # corrected data to a new grib2 file in the processed location.
-    for hrs_ago in $(seq 5 -1 0); do
+    # Loop over the raw obs files extracted from the current archive and
+    # generate from them the processed obs files.  
+    #
+    # For CCPA obs, for most dates this consists of simply copying or moving
+    # the files from the raw archive directory to the processed directory,
+    # possibly renaming them in the process.  However, for dates between
+    # 20180718 and 20210504 and hours-of-day 19 through the end of the day
+    # (i.e. hour 0 of the next day), it involves using wgrib2 to correct an
+    # error in the metadata of the raw file and writing the corrected data
+    # to a new grib2 file in the processed location.
+    for hrs_ago in $(seq 5 -${CCPA_OBS_AVAIL_INTVL_HRS} 0); do
       yyyymmddhh=$(${DATE_UTIL} --date "${yyyymmdd_arcv} ${hh_arcv} ${hrs_ago} hours ago" +%Y%m%d%H)
       yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
       hh=$(echo ${yyyymmddhh} | cut -c9-10)
-      # Create the processed grib2 obs file from the raw one (by moving, copying,
-      # or otherwise) only if the time of the current file in the current archive
+      # Create the processed obs file from the raw one (by moving, copying, or
+      # otherwise) only if the time of the current file in the current archive
       # also exists in the list of obs retrieval times for the current day.
       if [[ ${obs_retrieve_times_crnt_day[@]} =~ ${yyyymmddhh} ]]; then
+
+        # The raw file name needs to be the same as what the retrieve_data.py
+        # script called above ends up retrieving.  The list of possibile templates
+        # for this name is given in parm/data_locations.yml, but which of those
+        # is actually used is not known until retrieve_data.py completes.  Thus,
+        # that information needs to be passed back by the script and used here. 
+        # For now, we hard-code the file name here.
         fn_raw="ccpa.t${hh}z.${accum_obs_fmt}h.hrap.conus.gb2"
         fp_raw="${arcv_dir_raw}/${fn_raw}"
-        day_dir_proc="${basedir_proc}/${yyyymmdd}"
-        mkdir -p ${day_dir_proc}
-        fn_proc="${fn_raw}"
-        fp_proc="${day_dir_proc}/${fn_proc}"
-        hh_noZero=$((10#${hh}))
+
+        # Set the full path to the final processed obs file (fp_proc) we want to
+        # create.
+        sec_since_ref=$(${DATE_UTIL} --date "${yyyymmdd} ${hh} hours" +%s)
+        lhr=$(( (sec_since_ref - sec_since_ref_task)/3600 ))
+        eval_METplus_timestr_tmpl \
+          init_time="${yyyymmdd_task}00" \
+          fhr="${lhr}" \
+          METplus_timestr_tmpl="${OBS_DIR}/${OBS_CCPA_APCP_FN_TEMPLATE}" \
+          outvarname_evaluated_timestr="fp_proc"
+        mkdir -p $( dirname "${fp_proc}" )
+
         # CCPA files for 1-hour accumulation have incorrect metadata in the files
         # under the "00" directory from 20180718 to 20210504.  After the data is
         # pulled, reorganize into correct yyyymmdd structure.
+        hh_noZero=$((10#${hh}))
         if [[ ${yyyymmdd} -ge 20180718 && ${yyyymmdd} -le 20210504 ]] && \
            [[ (${hh_noZero} -ge 19 && ${hh_noZero} -le 23) || (${hh_noZero} -eq 0) ]]; then
           wgrib2 ${fp_raw} -set_date -24hr -grib ${fp_proc} -s
         else
           ${mv_or_cp} ${fp_raw} ${fp_proc}
         fi
+
       fi
     done
 
