@@ -38,15 +38,16 @@ NEEDED_VARS = [
 
 def set_fv3nml_sfc_climo_filenames(config, debug=False):
     """
-    This function sets the values of the variables in
-    the forecast model's namelist file that specify the paths to the surface
-    climatology files on the FV3LAM native grid (which are either pregenerated
-    or created by the TN_MAKE_SFC_CLIMO task).  Note that the workflow
+    Sets the values of the variables in the forecast model's namelist file that specify the paths 
+    to the surface climatology files on the FV3LAM native grid (which are either pregenerated
+    or created by the ``make_sfc_climo`` task).  Note that the workflow
     generation scripts create symlinks to these surface climatology files
-    in the FIXlam directory, and the values in the namelist file that get
+    in the ``FIXlam`` directory, and the values in the namelist file that get
     set by this function are relative or full paths to these links.
 
     Args:
+        config  (dict): Section of configuration file specifying surface climatology fields 
+                        (as a flattened dictionary)
         debug   (bool): Enable extra output for debugging
     Returns:
         None
@@ -108,7 +109,7 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
         update_config=get_nml_config(settings),
         )
 
-def parse_args(argv):
+def _parse_args(argv):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Set surface climatology fields.")
 
@@ -126,7 +127,7 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     set_fv3nml_sfc_climo_filenames(cfg, args.debug)

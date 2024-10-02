@@ -1,9 +1,9 @@
-UFS Short-Range Weather App Documentation (|version|)
-=====================================================
-   
+UFS Short-Range Weather (SRW) App Documentation (|version|)
+============================================================
+
 .. toctree::
-   :numbered:
    :maxdepth: 3
    
    UsersGuide/index
+   TechDocs/index
    ContribGuide/index
