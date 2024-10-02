@@ -20,6 +20,8 @@ def main():
                         help='Name of MRMS product')
     parser.add_argument('-l', '--level', type=str, help='MRMS product level',
                         choices=['_00.50_','_18_00.50_'])
+    parser.add_argument('--add_vdate_subdir', default=True, required=False, action=argparse.BooleanOptionalAction,
+                        help='Flag to add valid-date subdirectory to source and destination directories')
     parser.add_argument('-d', '--debug', action='store_true', help='Add additional debug output')
     args = parser.parse_args()
 
@@ -47,14 +49,18 @@ def main():
 
     # Set up working directory
 
-    dest_dir = os.path.join(args.outdir, valid_str)
+    valid_str_or_empty = ''
+    if args.add_vdate_subdir:
+        valid_str_or_empty = valid_str
+
+    dest_dir = os.path.join(args.outdir, valid_str_or_empty)
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
     # Sort list of files for each MRMS product
     if args.debug:
         print(f"Valid date: {valid_str}")
-    search_path = f"{args.source}/{valid_str}/{args.product}*.gz"
+    search_path = os.path.join(args.source, valid_str_or_empty, args.product + "*.gz")
     file_list = [f for f in glob.glob(search_path)]
     if args.debug:
         print(f"Files found: \n{file_list}")
@@ -78,7 +84,7 @@ def main():
     if difference.total_seconds() <= 900:
         filename1 = f"{args.product}{args.level}{closest_timestamp.strftime('%Y%m%d-%H%M%S')}.grib2.gz"
         filename2 = f"{args.product}{args.level}{valid.strftime('%Y%m%d-%H')}0000.grib2"
-        origfile = os.path.join(args.source, valid_str, filename1)
+        origfile = os.path.join(args.source, valid_str_or_empty, filename1)
         target = os.path.join(dest_dir, filename2)
 
         if args.debug:
