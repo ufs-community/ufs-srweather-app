@@ -46,16 +46,24 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
 
 def load_config_for_setup(ushdir, default_config, user_config):
-    """Load in the default, machine, and user configuration files into
-    Python dictionaries. Return the combined experiment dictionary.
+    """Updates a Python dictionary in place with experiment configuration settings from the 
+    default, machine, and user configuration files. 
 
     Args:
-      ushdir             (str): Path to the ush directory for SRW
-      default_config     (str): Path to the default config YAML
-      user_config        (str): Path to the user-provided config YAML
+      ushdir             (str): Path to the ``ush`` directory for the SRW App
+      default_config     (str): Path to ``config_defaults.yaml``
+      user_config        (str): Path to the user-provided config YAML (usually named 
+                                ``config.yaml``)
 
     Returns:
-      Python dict of configuration settings from YAML files.
+        None
+    
+    Raises:
+        FileNotFoundError: If the user-provided configuration file or the machine file does not 
+                           exist.
+        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains 
+                   invalid sections/keys or (3) it does not contain mandatory information or (4) 
+                   an invalid datetime format is used. 
     """
 
     # Load the default config.
@@ -170,8 +178,8 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # the "null" settings are removed, i.e., tasks turned off.
     update_dict(cfg_u.get('rocoto', {}), cfg_wflow["rocoto"])
 
-    def add_jobname(tasks):
-        """ Add the jobname entry for all the tasks in the workflow """
+    def _add_jobname(tasks):
+        """ Adds the jobname entry for all the tasks in the workflow """
 
         if not isinstance(tasks, dict):
             return
@@ -184,11 +192,11 @@ def load_config_for_setup(ushdir, default_config, user_config):
                     task_settings.get("attrs", {}).get("name") or \
                     task.split("_", maxsplit=1)[1]
             elif task_type == "metatask":
-                add_jobname(task_settings)
+                _add_jobname(task_settings)
 
 
     # Add jobname entry to each remaining task
-    add_jobname(cfg_wflow["rocoto"]["tasks"])
+    _add_jobname(cfg_wflow["rocoto"]["tasks"])
 
     # Update default config with the constants, the machine config, and
     # then the user_config
@@ -267,10 +275,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
+                        Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
-                            For examples of valid formats, see the Users' Guide.
-                            """
+                        For examples of valid formats, see the Users' Guide.
+                        """
                 )
             )
 
@@ -280,20 +288,25 @@ def load_config_for_setup(ushdir, default_config, user_config):
 def set_srw_paths(ushdir, expt_config):
 
     """
-    Generate a dictionary of directories that describe the SRW
-    structure, i.e., where SRW is installed, and the paths to
-    external repositories managed via the manage_externals tool.
+    Generates a dictionary of directories that describe the SRW App
+    structure, i.e., where the SRW App is installed and the paths to
+    external repositories managed via the ``manage_externals`` tool.
 
-    Other paths for SRW are set as defaults in config_defaults.yaml
+    Other paths for the SRW App are set as defaults in ``config_defaults.yaml``.
 
     Args:
-       ushdir:      (str) path to the system location of the ush/ directory
-                     under the SRW clone
-       expt_config: (dict) contains the configuration settings for the
-                     user-defined experiment
+        ushdir      (str) : Path to the system location of the ``ush`` directory under the 
+                            SRW App clone
+        expt_config (dict): Contains the configuration settings for the user-defined experiment
 
     Returns:
-       dictionary of config settings and system paths as keys/values
+        Dictionary of configuration settings and system paths as keys/values
+    
+    Raises:
+        KeyError: If the external repository required is not listed in the externals 
+                  configuration file (e.g., ``Externals.cfg``)
+        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has 
+                           not been cloned properly
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
@@ -342,24 +355,36 @@ def set_srw_paths(ushdir, expt_config):
 
 
 def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
-    """Function that validates user-provided configuration, and derives
-    a secondary set of parameters needed to configure a Rocoto-based SRW
-    workflow. The derived parameters use a set of required user-defined
-    parameters defined by either config_defaults.yaml, a user-provided
-    configuration file (config.yaml), or a YAML machine file.
+    """Validates user-provided configuration settings and derives
+    a secondary set of parameters needed to configure a Rocoto-based SRW App
+    workflow. The secondary parameters are derived from a set of required
+    parameters defined in ``config_defaults.yaml``, a user-provided
+    configuration file (e.g., ``config.yaml``), or a YAML machine file.
 
     A set of global variable definitions is saved to the experiment
     directory as a bash configure file that is sourced by scripts at run
     time.
 
     Args:
-      USHdir          (str): The full path of the ush/ directory where
-                             this script is located
-      user_config_fn  (str): The name of a user-provided config YAML
-      debug          (bool): Enable extra output for debugging
+        USHdir          (str): The full path of the ``ush/`` directory where this script 
+                               (``setup.py``) is located
+        user_config_fn  (str): The name of a user-provided configuration YAML (usually 
+                               ``config.yaml``)
+        debug          (bool): Enable extra output for debugging
 
     Returns:
-      None
+        None
+    
+    Raises: 
+        ValueError: If checked configuration values are invalid (e.g., forecast length, 
+                    ``EXPTDIR`` path)
+        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not 
+                         set to a compatible handling method
+        FileNotFoundError: If the path to a particular file does not exist or if the file itself 
+                           does not exist at the expected path
+        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no 
+                   corresponding custom configuration file or CRTM fix file directory is set
+        KeyError: If an invalid value is provided (i.e., for ``GRID_GEN_METHOD``)
     """
 
     logger = logging.getLogger(__name__)
@@ -513,7 +538,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
             )
 
-    def remove_tag(tasks, tag):
+    def _remove_tag(tasks, tag):
         """ Remove the tag for all the tasks in the workflow """
 
         if not isinstance(tasks, dict):
@@ -523,17 +548,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             if task_type == "task":
                 task_settings.pop(tag, None)
             elif task_type == "metatask":
-                remove_tag(task_settings, tag)
+                _remove_tag(task_settings, tag)
 
     # Remove all memory tags for platforms that do not support them
     remove_memory = expt_config["platform"].get("REMOVE_MEMORY")
     if remove_memory:
-        remove_tag(rocoto_tasks, "memory")
+        _remove_tag(rocoto_tasks, "memory")
 
     for part in ['PARTITION_HPSS', 'PARTITION_DEFAULT', 'PARTITION_FCST']:
         partition = expt_config["platform"].get(part)
         if not partition:
-            remove_tag(rocoto_tasks, 'partition')
+            _remove_tag(rocoto_tasks, 'partition')
 
     # When not running subhourly post, remove those tasks, if they exist
     if not expt_config.get("task_run_post", {}).get("SUB_HOURLY_POST"):
@@ -607,7 +632,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    def get_location(xcs, fmt, expt_cfg):
+    def _get_location(xcs, fmt, expt_cfg):
         ics_lbcs = expt_cfg.get("data", {}).get("ics_lbcs")
         if ics_lbcs is not None:
             v = ics_lbcs.get(xcs)
@@ -620,7 +645,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Get the paths to any platform-supported data streams
     get_extrn_ics = expt_config.get("task_get_extrn_ics", {})
-    extrn_mdl_sysbasedir_ics = get_location(
+    extrn_mdl_sysbasedir_ics = _get_location(
         get_extrn_ics.get("EXTRN_MDL_NAME_ICS"),
         get_extrn_ics.get("FV3GFS_FILE_FMT_ICS"),
         expt_config,
@@ -628,7 +653,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     get_extrn_ics["EXTRN_MDL_SYSBASEDIR_ICS"] = extrn_mdl_sysbasedir_ics
 
     get_extrn_lbcs = expt_config.get("task_get_extrn_lbcs", {})
-    extrn_mdl_sysbasedir_lbcs = get_location(
+    extrn_mdl_sysbasedir_lbcs = _get_location(
         get_extrn_lbcs.get("EXTRN_MDL_NAME_LBCS"),
         get_extrn_lbcs.get("FV3GFS_FILE_FMT_LBCS"),
         expt_config,
@@ -1287,7 +1312,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # the same resolution input.
     #
 
-    def dict_find(user_dict, substring):
+    def _dict_find(user_dict, substring):
 
         if not isinstance(user_dict, dict):
             return False
@@ -1296,14 +1321,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             if substring in key:
                 return True
             if isinstance(value, dict):
-                if dict_find(value, substring):
+                if _dict_find(value, substring):
                     return True
 
         return False
 
-    run_make_ics = dict_find(rocoto_tasks, "task_make_ics")
-    run_make_lbcs = dict_find(rocoto_tasks, "task_make_lbcs")
-    run_run_fcst = dict_find(rocoto_tasks, "task_run_fcst")
+    run_make_ics = _dict_find(rocoto_tasks, "task_make_ics")
+    run_make_lbcs = _dict_find(rocoto_tasks, "task_make_lbcs")
+    run_run_fcst = _dict_find(rocoto_tasks, "task_run_fcst")
     run_any_coldstart_task = run_make_ics or \
                              run_make_lbcs or \
                              run_run_fcst
@@ -1547,10 +1572,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     return expt_config
 
 def clean_rocoto_dict(rocotodict):
-    """Removes any invalid entries from rocotodict. Examples of invalid entries are:
+    """Removes any invalid entries from ``rocotodict``. Examples of invalid entries are:
 
     1. A task dictionary containing no "command" key
-    2. A metatask dictionary containing no task dictionaries"""
+    2. A metatask dictionary containing no task dictionaries
+    
+    Args: 
+        rocotodict (dict): A dictionary containing Rocoto workflow settings
+    """
 
     # Loop 1: search for tasks with no command key, iterating over metatasks
     for key in list(rocotodict.keys()):

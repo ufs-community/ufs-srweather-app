@@ -78,7 +78,7 @@ Glossary
       The radar-indicated top of an area of precipitation. Specifically, it contains the height of the 18 dBZ reflectivity value.
 
    EMC
-      The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
+      The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc.php>`__. 
 
    EPIC
       The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 

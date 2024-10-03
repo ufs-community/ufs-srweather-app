@@ -1,28 +1,19 @@
 #!/usr/bin/env python3
 # pylint: disable=logging-fstring-interpolation
 """
-This script helps users pull data from known data streams, including
-URLS and HPSS (only on supported NOAA platforms), or from user-supplied
-data locations on disk.
+This script helps users pull data from known data streams, including URLs and HPSS (only on supported NOAA platforms), or from user-supplied data locations on disk.
 
-Several supported data streams are included in
-parm/data_locations.yml, which provides locations and naming
-conventions for files commonly used with the SRW App. Provide the file
-to this tool via the --config flag. Users are welcome to provide their
-own file with alternative locations and naming conventions.
+Several supported data streams are included in ``parm/data_locations.yml``, which provides locations and naming conventions for files commonly used with the SRW App. Provide the file to this tool via the ``--config`` flag. Users are welcome to provide their own file with alternative locations and naming conventions.
 
-When using this script to pull from disk, the user is required to
-provide the path to the data location, which can include Python
-templates. The file names follow those included in the --config file by
-default, or can be user-supplied via the --file_name flag. That flag
-takes a YAML-formatted string that follows the same conventions outlined
-in the parm/data_locations.yml file for naming files.
+When using this script to pull from disk, the user is required to provide the path to the data location, which can include Python templates. The file names follow those included in the ``--config`` file by default or can be user-supplied via the ``--file_name`` flag. That flag
+takes a YAML-formatted string that follows the same conventions outlined in the ``parm/data_locations.yml`` file for naming files.
 
 To see usage for this script:
 
+  .. code-block::
+  
     python retrieve_data.py -h
 
-Also see the parse_args function below.
 """
 
 import argparse
@@ -44,9 +35,17 @@ import yaml
 
 def clean_up_output_dir(expected_subdir, local_archive, output_path, source_paths):
 
-    """Remove expected sub-directories and existing_archive files on
-    disk once all files have been extracted and put into the specified
-    output location."""
+    """Removes expected subdirectories and ``existing_archive`` files on disk once all files have been extracted and put into the specified output location.
+    
+    Args: 
+        expected_subdir      : Expected subdirectories
+        local_archive   (str): File name
+        output_path     (str): Path to a location on disk. Path is expected to exist.
+        source_paths    (str): 
+    
+    Returns: 
+        unavailable (dict): A dictionary of unavailable files
+    """
 
     unavailable = {}
     expand_source_paths = []
@@ -82,10 +81,16 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
 def copy_file(source, destination, copy_cmd):
 
     """
-    Copy a file from a source and place it in the destination location.
-    Return a boolean value reflecting the state of the copy.
-
+    Copies a file from a source and places it in the destination location.
     Assumes destination exists.
+
+    Args: 
+        source      (str): Directory where file currently resides
+        destination (str): Directory that the file should be moved to
+        copy_cmd    (str): Copy command (e.g., ``cp``, ``ln -sf``)
+
+    Returns: 
+        A boolean value reflecting whether the copy was successful (True) or unsuccessful (False)
     """
 
     if not os.path.exists(source):
@@ -110,8 +115,13 @@ def copy_file(source, destination, copy_cmd):
 def check_file(url):
 
     """
-    Check that a file exists at the expected URL. Return boolean value
-    based on the response.
+    Checks that a file exists at the expected URL. 
+
+    Args:
+        url: URL for file to be downloaded
+
+    Return:
+        Boolean value (True if ``status_code == 200`` or False otherwise)
     """
     status_code = urllib.request.urlopen(url).getcode()
     return status_code == 200
@@ -119,14 +129,13 @@ def check_file(url):
 def download_file(url):
 
     """
-    Download a file from a url source, and place it in a target location
-    on disk.
+    Download a file from a URL source, and place it in a target location on disk.
 
-    Arguments:
-      url          url to file to be downloaded
+    Args:
+      url: URL for file to be downloaded
 
-    Return:
-      boolean value reflecting state of download.
+    Returns:
+      Boolean value reflecting whether the copy was successful (True) or unsuccessful (False)
     """
 
     # wget flags:
@@ -154,18 +163,24 @@ def download_file(url):
 def arg_list_to_range(args):
 
     """
-    Given an argparse list argument, return the sequence to process.
+    Returns the sequence to process, given an ``argparse`` list.
 
     The length of the list will determine what sequence items are returned:
 
-      Length = 1:   A single item is to be processed
-      Length = 2:   A sequence of start, stop with increment 1
-      Length = 3:   A sequence of start, stop, increment
-      Length > 3:   List as is
+       * Length = 1:   A single item is to be processed
+       * Length = 2:   A sequence of start, stop with increment 1
+       * Length = 3:   A sequence of start, stop, increment
+       * Length > 3:   List as is
 
-    argparse should provide a list of at least one item (nargs='+').
+    ``argparse`` should provide a list of at least one item (``nargs='+'``).
 
     Must ensure that the list contains integers.
+
+    Args:
+        args (list): An ``argparse`` list argument
+
+    Returns: 
+        args: An ``argparse`` list
     """
 
     args = args if isinstance(args, list) else list(args)
@@ -179,25 +194,25 @@ def arg_list_to_range(args):
 
 def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
 
-    """Fill in the provided template string with date time information,
-    and return the resulting string.
+    """Fills in the provided template string with date time information, and returns the 
+    resulting string.
 
-    Arguments:
-      template_str    a string containing Python templates
-      cycle_date      a datetime object that will be used to fill in
-                      date and time information
-      templates_only  boolean value. When True, this function will only
-                      return the templates available.
+    Args:
+      template_str         : A string containing Python templates
+      cycle_date           : A datetime object that will be used to fill in date and time 
+                             information
+      templates_only (bool): When ``True``, this function will only return the templates 
+                             available.
 
     Keyword Args:
-      ens_group       a number associated with a bin where ensemble
-                      members are stored in archive files
-      fcst_hr         an integer forecast hour. string formatting should
-                      be included in the template_str
-      mem             a single ensemble member. should be a positive integer value
+      ens_group (int): A number associated with a bin where ensemble members are stored in 
+                       archive files.
+      fcst_hr   (int): An integer forecast hour. String formatting should be included in the 
+                       ``template_str``.
+      mem       (int): A single ensemble member. Should be a positive integer value.
 
-    Return:
-      filled template string
+    Returns:
+      Filled template string
     """
  
     # Parse keyword args
@@ -246,7 +261,13 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
 def create_target_path(target_path):
 
     """
-    Append target path and create directory for ensemble members
+    Appends target path and creates directory for ensemble members
+
+    Args:
+        target_path (str): Target path
+
+    Returns:
+        target_path: 
     """
     if not os.path.exists(target_path):
         os.makedirs(target_path)
@@ -258,7 +279,18 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
     """Given an equal-length set of archive paths and archive file
     names, and a cycle date, check HPSS via hsi to make sure at least
     one set exists. Return a dict of the paths of the existing archive, along with
-    the item in set of paths that was found."""
+    the item in set of paths that was found.
+    
+    Args:
+        paths       (list): Archive paths
+        file_names  (list): Archive file names
+        cycle_date   (int): Cycle date (YYYYMMDDHH or YYYYMMDDHHmm format)
+        ens_group    (int): A number associated with a bin where ensemble members are stored 
+                            in archive files
+
+    Returns:
+        A tuple containing (existing_archives, list_item) or ("", 0)
+    """
 
     zipped_archive_file_paths = zip(paths, file_names)
 
@@ -291,19 +323,18 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
 
 def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
 
-    """Returns the file templates requested by user input, either from
-    the command line, or from the known data information dict.
+    """Returns the file templates requested by user input, either from the command line, 
+    or from the known data information dictionary.
 
-    Arguments:
+    Args:
 
-       cla              command line arguments Namespace object
-       known_data_info  dict from data_locations yaml file
-       data_store       string corresponding to a key in the
-                        known_data_info dict
-       use_cla_tmpl     boolean on whether to check cla for templates
+       cla              (str) : Command line arguments (Namespace object)
+       known_data_info  (dict): Dictionary from ``data_locations.yml`` file
+       data_store       (str) : String corresponding to a key in the ``known_data_info`` dictionary
+       use_cla_tmpl     (bool): Whether to check command line arguments for templates
 
     Returns:
-       file_templates   a list of file templates
+       file_templates: A list of file templates
     """
 
     file_templates = known_data_info.get(data_store, {}).get("file_names")
@@ -326,7 +357,7 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
         file_templates = file_templates[cla.file_set]
     if not file_templates:
         msg = "No file naming convention found. They must be provided \
-                either on the command line or on in a config file."
+                either on the command line or in a config file."
         raise argparse.ArgumentTypeError(msg)
     return file_templates
 
@@ -335,29 +366,25 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     # pylint: disable=too-many-locals
 
-    """This function copies files from disk locations
-    or downloads files from a url, depending on the option specified for
-    user.
+    """Copies files from disk locations or downloads files from a URL, depending on the option 
+    specified by the user.
 
-    This function expects that the output directory exists and is
-    writeable.
+    This function expects that the output directory exists and is writeable.
 
-    Arguments:
+    Args:
+      cla            (str) : Command line arguments (Namespace object)
+      file_templates (list): A list of file templates
+      input_locs     (str) : A string containing a single data location, either a URL or disk 
+                             path, or a list of paths/URLs.
+      method         (str) : Choice of ``"disk"`` or ``"download"`` to indicate protocol for 
+                             retrieval
 
-    cla            Namespace object containing command line arguments
-    file_templates a list of file templates
-    input_locs      A string containing a single data location, either a url
-                   or disk path, or a list of paths/urls.
-    method         Choice of disk or download to indicate protocol for
-                   retrieval
-
-    Keyword args:
-    members        a list integers corresponding to the ensemble members
-    check_all      boolean flag that indicates all urls should be
-                   checked for all files
+    Keyword Args:
+      members     (list): A list of integers corresponding to the ensemble members
+      check_all   (bool): Flag that indicates whether all URLs should be checked for all files
 
     Returns:
-    unavailable  a list of locations/files that were unretrievable
+      unavailable (list): A list of locations/files that were unretrievable
     """
 
     members = kwargs.get("members", "")
@@ -444,14 +471,13 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
 def hsi_single_file(file_path, mode="ls"):
 
-    """Call hsi as a subprocess for Python and return information about
-    whether the file_path was found.
+    """Calls ``hsi`` as a subprocess for Python and returns information about whether the 
+    ``file_path`` was found.
 
-    Arguments:
-        file_path    path on HPSS
-        mode         the hsi command to run. ls is default. may also
-                     pass "get" to retrieve the file path
-
+    Args:
+        file_path   (str): File path on HPSS
+        mode        (str): The ``hsi`` command to run. ``ls`` is default. May also pass ``get`` 
+                           to retrieve the file path.
     """
     cmd = f"hsi {mode} {file_path}"
 
@@ -473,17 +499,29 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
     # pylint: disable=too-many-locals
 
-    """This function interacts with the "hpss" protocol in a provided
-    data store specs file to download a set of files requested by the
-    user. Depending on the type of archive file (zip or tar), it will
-    either pull the entire file and unzip it, or attempt to pull
-    individual files from a tar file.
+    """This function interacts with the "hpss" protocol in a provided data store specs file to 
+    download a set of files requested by the user. Depending on the type of archive file (``zip`` 
+    or ``tar``), it will either pull the entire file and unzip it or attempt to pull individual 
+    files from a tar file.
 
-    It cleans up local disk after files are deemed available to remove
-    any empty subdirectories that may still be present.
+    It cleans up the local disk after files are deemed available in order to remove any empty 
+    subdirectories that may still be present.
 
-    This function exepcts that the output directory exists and is
-    writable.
+    This function exepcts that the output directory exists and is writable.
+
+    Args:
+        cla          (str): Command line arguments (Namespace object)
+        file_names  (list): List of file names
+        store_specs (dict): Data-store specifications (specs) file
+        members     (list): A list of integers corresponding to the ensemble members
+        ens_group    (int): A number associated with a bin where ensemble members are stored in 
+                            archive files
+
+    Returns:
+        A Python set of unavailable files
+
+    Raises:
+        Exception: If there is an error running the archive extraction command
     """
     members = [-1] if members == -1 else members
 
@@ -629,15 +667,28 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
 def load_str(arg):
 
-    """Load a dict string safely using YAML. Return the resulting dict."""
+    """Loads a dictionary string safely using YAML.
+
+    Args: 
+        arg (str): A string representation of a dictionary
+
+    Returns:
+        A resulting dictionary
+    """
     return yaml.load(arg, Loader=yaml.SafeLoader)
 
 
 def config_exists(arg):
 
     """
-    Check to ensure that the provided config file exists. If it does,
-    load it with YAML's safe loader and return the resulting dict.
+    Checks to ensure that the provided config file exists. If it does, load it with YAML's safe 
+    loader and return the resulting dictionary.
+
+    Args: 
+        arg (str): Path to a configuration file
+
+    Returns:
+        cfg: A dictionary representation of the configuration file contents
     """
 
     # Check for existence of file
@@ -657,19 +708,24 @@ def pair_locs_with_files(input_locs, file_templates, check_all):
     contains the multiple locations and file templates for files that
     should be searched in those locations.
 
-    check_all indicates that all locations should be paired with all
-    avaiable file templates.
-
     The different possibilities:
-    1. Get one or more files from a single path/url
-    2. Get multiple files from multiple corresponding
-       paths/urls
-    3. Check all paths for all file templates until files are
-       found
 
-    The default will be to handle #1 and #2. #3 will be
-    indicated by a flag in the yaml: "check_all: True"
+        #. Get one or more files from a single path/URL
+        #. Get multiple files from multiple corresponding paths/URLs
+        #. Check all paths for all file templates until files are found
 
+    The default will be to handle #1 and #2. #3 will be indicated by a flag in the YAML: 
+    ``check_all: True``
+
+    Args:
+        input_locs     (list): Input locations
+        file_templates (list): File templates
+        check_all      (bool): Flag that indicates whether all input locations should be checked 
+                               for all available file templates
+    
+    Returns:
+        locs_files (list): Iterable containing multiple locations and file templates for files 
+                           that should be searched in those locations
     """
 
     if not check_all:
@@ -697,7 +753,16 @@ def pair_locs_with_files(input_locs, file_templates, check_all):
 
 def path_exists(arg):
 
-    """Check whether the supplied path exists and is writeable"""
+    """
+    Check whether the supplied path exists and is writeable
+    
+    Args:
+        arg (str): File path
+    Returns:
+        File path or error message
+    Raises:
+        argparse.ArgumentTypeError: If the path does not exist or is not writable 
+    """
 
     if not os.path.exists(arg):
         msg = f"{arg} does not exist!"
@@ -710,10 +775,10 @@ def path_exists(arg):
     return arg
 
 
-def setup_logging(debug=False):
+def _setup_logging(debug=False):
 
-    """Calls initialization functions for logging package, and sets the
-    user-defined level for logging in the script."""
+    """Calls initialization functions for logging package, and sets the user-defined level for 
+    logging in the script."""
 
     level = logging.INFO
     if debug:
@@ -724,11 +789,11 @@ def setup_logging(debug=False):
         logging.info("Logging level set to DEBUG")
 
 
-def write_summary_file(cla, data_store, file_templates):
+def _write_summary_file(cla, data_store, file_templates) -> None:
 
-    """Given the command line arguments and the data store from which
-    the data was retrieved, write a bash summary file that is needed by
-    the workflow elements downstream."""
+    """Given the command line arguments and the data store from which the data was retrieved, 
+    write a bash summary file that is needed by the workflow elements downstream.
+    """
 
     members =  cla.members if isinstance(cla.members, list) else [-1]
     for mem in members:
@@ -757,8 +822,13 @@ def write_summary_file(cla, data_store, file_templates):
 
 
 def to_datetime(arg):
-    """Return a datetime object give a string like YYYYMMDDHH or
-    YYYYMMDDHHmm."""
+    """Converts a string to a datetime object
+    
+    Args:
+        arg (str): String like ``YYYYMMDDHH`` or ``YYYYMMDDHHmm``
+    Returns:
+        A datetime object
+    """
     if len(arg) == 10:
         fmt_str = "%Y%m%d%H"
     elif len(arg) == 12:
@@ -771,20 +841,28 @@ def to_datetime(arg):
 
 
 def to_lower(arg):
-    """Return a string provided by arg into all lower case."""
+    """Converts a string to lowercase
+    
+    Args:
+        arg (str): Any string
+    Returns: 
+        An all-lowercase string
+    """
     return arg.lower()
 
 
 def main(argv):
     # pylint: disable=too-many-branches, too-many-statements
     """
-    Uses known location information to try the known locations and file
-    paths in priority order.
+    Uses known location information to try the known locations and file paths in priority order.
+
+    Args:
+        argv (list): List of command line arguments
     """
 
     cla = parse_args(argv)
 
-    setup_logging(cla.debug)
+    _setup_logging(cla.debug)
     print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
     for name, val in cla.__dict__.items():
         if name not in ["config"]:
@@ -885,7 +963,7 @@ def main(argv):
             # All files are found. Stop looking!
             # Write a variable definitions file for the data, if requested
             if cla.summary_file and not cla.check_file:
-                write_summary_file(cla, data_store, file_templates)
+                _write_summary_file(cla, data_store, file_templates)
             break
 
         logging.debug(f"Some unavailable files: {unavailable}")
@@ -898,9 +976,14 @@ def main(argv):
 
 def get_ens_groups(members):
 
-    """Given a list of ensemble members, return a dict with keys for
-    the ensemble group, and values are lists of ensemble members
-    requested in that group."""
+    """Gets ensemble groups with the corresponding list of ensemble members in that group.
+    
+    Args:
+        members (list): List of ensemble members.
+    Returns:
+        ens_groups: A dictionary where keys are the ensemble group and values are lists of 
+                    ensemble members requested in that group
+    """
 
     if members is None:
         return {-1: [-1]}
@@ -918,9 +1001,15 @@ def get_ens_groups(members):
 def parse_args(argv):
 
     """
-    Function maintains the arguments accepted by this script. Please see
-    Python's argparse documenation for more information about settings of each
-    argument.
+    Maintains the arguments accepted by this script. Please see Python's 
+    `argparse <https://docs.python.org/3/library/argparse.html>`_ documentation for more 
+    information about settings of each argument.
+    
+    Args:
+        argv (list): Command line arguments to parse
+
+    Returns:
+        args: An argparse.Namespace object (``parser.parse_args(argv)``)
     """
 
     description = (

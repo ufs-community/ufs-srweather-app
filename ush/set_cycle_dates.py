@@ -6,18 +6,17 @@ from python_utils import print_input_args, print_err_msg_exit
 
 
 def set_cycle_dates(date_start, date_end, incr_cycl_freq):
-    """This file defines a function that, given the start and end dates
-    as date time objects, and a cycling frequency, returns an array of
-    cycle date-hours whose elements have the form YYYYMMDDHH.  Here,
-    YYYY is a four-digit year, MM is a two- digit month, DD is a
-    two-digit day of the month, and HH is a two-digit hour of the day.
+    """
+    Sets the cycle date(s). 
 
     Args:
-        date_start: start date, datetime object
-        date_end: end date, datetime object
-        incr_cycl_freq: cycle frequency increment in hours, an int
+        date_start (datetime.datetime): Start date
+        date_end   (datetime.datetime): End date
+        incr_cycl_freq           (int): Cycle frequency increment in hours
     Returns:
-        A list of dates in a format YYYYMMDDHH
+        all_cdates: An array of cycle date-hours whose elements have the form ``YYYYMMDDHH``, 
+                    where ``YYYY`` is a four-digit year, ``MM`` is a two- digit month, ``DD`` 
+                    is a two-digit day of the month, and ``HH`` is a two-digit hour of the day
     """
 
     print_input_args(locals())

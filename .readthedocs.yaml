@@ -28,8 +28,4 @@ python:
    install:
    - requirements: doc/requirements.txt
 
-submodules:
-   include:
-   - hpc-stack-mod
-   recursive: true
 
