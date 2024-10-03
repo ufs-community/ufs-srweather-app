@@ -116,6 +116,7 @@ num_existing_files=0
 num_mrms_fields=${#mrms_fields[@]}
 for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   for (( i=0; i<${num_mrms_fields}; i++ )); do
+
     yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
     hh=$(echo ${yyyymmddhh} | cut -c9-10)
 
@@ -139,13 +140,16 @@ File does not exist on disk:
 Will attempt to retrieve all obs files."
       break 2
     fi
+
   done
 done
 
 # If the number of obs files that already exist on disk is equal to the
-# number of obs files needed, then there is no need to retrieve any files.
+# number of obs files needed (which is num_mrms_fields times the number
+# of obs retrieval times in the current day), then there is no need to
+# retrieve any files.
 num_obs_retrieve_times_crnt_day=${#obs_retrieve_times_crnt_day[@]}
-if [[ ${num_existing_files} -eq ${num_obs_retrieve_times_crnt_day} ]]; then
+if [[ ${num_existing_files} -eq $((num_mrms_fields*num_obs_retrieve_times_crnt_day)) ]]; then
 
   print_info_msg "
 All obs files needed for the current day (yyyymmdd_task) already exist
