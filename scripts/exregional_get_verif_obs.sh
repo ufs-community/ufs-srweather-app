@@ -46,92 +46,8 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# This script performs several important tasks for preparing data for
-# verification tasks. Depending on the value of the environment variable
-# OBTYPE=(CCPA|MRMS|NDAS|NOHRSC), the script will prepare that particular data
-# set.
-#
-# If data is not available on disk (in the location specified by
-# CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR, or NOHRSC_OBS_DIR respectively),
-# the script attempts to retrieve the data from HPSS using the retrieve_data.py
-# script. Depending on the data set, there are a few strange quirks and/or
-# bugs in the way data is organized; see in-line comments for details.
-#
-#
-# CCPA (Climatology-Calibrated Precipitation Analysis) precipitation accumulation obs
-# ----------
-# If data is available on disk, it must be in the following
-# directory structure and file name conventions expected by verification
-# tasks:
-#
-# {CCPA_OBS_DIR}/{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2
-#
-# If data is retrieved from HPSS, it will be automatically staged by this
-# script.
-#
-# Notes about the data and how it's used for verification:
-#
-# 1. Accumulation is currently hardcoded to 01h. The verification will
-# use MET/pcp-combine to sum 01h files into desired accumulations.
-#
-# 2. There is a problem with the valid time in the metadata for files
-# valid from 19 - 00 UTC (or files under the '00' directory). This is
-# accounted for in this script for data retrieved from HPSS, but if you
-# have manually staged data on disk you should be sure this is accounted
-# for. See in-line comments below for details.
-#
-#
-# MRMS (Multi-Radar Multi-Sensor) radar observations
-# ----------
-# If data is available on disk, it must be in the following
-# directory structure and file name conventions expected by verification
-# tasks:
-#
-# {MRMS_OBS_DIR}/{YYYYMMDD}/[PREFIX]{YYYYMMDD}-{HH}0000.grib2,
-#
-# Where [PREFIX] is MergedReflectivityQCComposite_00.50_ for reflectivity
-# data and EchoTop_18_00.50_ for echo top data. If data is not available
-# at the top of the hour, you should rename the file closest in time to
-# your hour(s) of interest to the above naming format. A script
-# "ush/mrms_pull_topofhour.py" is provided for this purpose.
-#
-# If data is retrieved from HPSS, it will automatically staged by this
-# this script.
-#
-#
-# NDAS (NAM Data Assimilation System) conventional observations
-# ----------
-# If data is available on disk, it must be in the following
-# directory structure and file name conventions expected by verification
-# tasks:
-#
-# {NDAS_OBS_DIR}/{YYYYMMDD}/prepbufr.ndas.{YYYYMMDDHH}
-#
-# Note that data retrieved from HPSS and other sources may be in a
-# different format: nam.t{hh}z.prepbufr.tm{prevhour}.nr, where hh is
-# either 00, 06, 12, or 18, and prevhour is the number of hours prior to
-# hh (00 through 05). If using custom staged data, you will have to
-# rename the files accordingly.
-#
-# If data is retrieved from HPSS, it will be automatically staged by this
-# this script.
-#
-#
-# NOHRSC  snow accumulation observations
-# ----------
-# If data is available on disk, it must be in the following
-# directory structure and file name conventions expected by verification
-# tasks:
-#
-# {NOHRSC_OBS_DIR}/{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2
-#
-# where AA is the 2-digit accumulation duration in hours: 06 or 24
-#
-# METplus is configured to verify snowfall using 06- and 24-h accumulated
-# snowfall from 6- and 12-hourly NOHRSC files, respectively.
-#
-# If data is retrieved from HPSS, it will automatically staged by this
-# this script.
+# Make sure the obs type is valid.  Then call the python script get_obs.py
+# to get the obs files.
 #
 #-----------------------------------------------------------------------
 #
@@ -144,8 +60,15 @@ Valid observation types are:
   $(printf "\"%s\" " ${valid_obtypes[@]})
 "
 fi
-script_bn="get_obs_$(echo_lowercase ${OBTYPE})"
-$USHdir/${script_bn}.sh
+
+script_bn="get_obs"
+cmd="\
+python3 -u ${USHdir}/${script_bn}.py \
+--var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
+--obtype ${OBTYPE} \
+--obs_day ${PDY}"
+print_info_msg "CALLING: ${cmd}"
+${cmd} || print_err_msg_exit "Error calling ${script_bn}.py."
 #
 #-----------------------------------------------------------------------
 #
@@ -155,7 +78,8 @@ $USHdir/${script_bn}.sh
 #-----------------------------------------------------------------------
 #
 mkdir -p ${WFLOW_FLAG_FILES_DIR}
-touch "${WFLOW_FLAG_FILES_DIR}/${script_bn}_${PDY}_complete.txt"
+file_bn="get_obs_$(echo_lowercase ${OBTYPE})"
+touch "${WFLOW_FLAG_FILES_DIR}/${file_bn}_${PDY}_complete.txt"
 #
 #-----------------------------------------------------------------------
 #
