@@ -144,7 +144,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
+  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
 
 fi
