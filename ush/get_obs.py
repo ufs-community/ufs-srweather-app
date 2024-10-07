@@ -229,7 +229,7 @@ this script.
 
     # Get the base directory for the observations.
     key = obtype + '_OBS_DIR'
-    obs_dir = config['platform'][key]
+    obs_dir = vx_config[key]
 
     # For each observation type, set the group of fields contained in those
     # observation files that we need for verification.  Each group of fields
@@ -603,7 +603,7 @@ this script.
     # Whether to remove raw observations after processed directories have
     # been created from them.
     key = 'REMOVE_RAW_OBS_' + obtype
-    remove_raw_obs = config['platform'][key]
+    remove_raw_obs = vx_config[key]
     # If the raw directories and files are to be removed at the end of this
     # script, no need to copy the files since the raw directories are going
     # to be removed anyway.

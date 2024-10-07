@@ -276,72 +276,6 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  # Set METplus parameters.  Definitions:
-  #
-  # CCPA_OBS_DIR:
-  # User-specified location of the directory where CCPA hourly
-  # precipitation files used by METplus are located (or, if
-  # retrieved by the workflow, where they will be placed). See comments
-  # in file scripts/exregional_get_verif_obs.sh for more details about
-  # files and directory structure, as well as important caveats about
-  # errors in the metadata and file names.
-  # NOTE: Do not set this to the same path as other *_OBS_DIR variables;
-  # otherwise unexpected results and data loss may occur.
-  #
-  # NOHRSC_OBS_DIR:
-  # User-specified location of top-level directory where NOHRSC 6- and
-  # 24-hour snowfall accumulation files used by METplus are located (or,
-  # if retrieved by the workflow, where they will be placed). See comments
-  # in file scripts/exregional_get_verif_obs.sh for more details about
-  # files and directory structure
-  # NOTE: Do not set this to the same path as other *_OBS_DIR variables;
-  # otherwise unexpected results and data loss may occur.
-  #
-  # MRMS_OBS_DIR:
-  # User-specified location of the directory where MRMS composite
-  # reflectivity and echo top files used by METplus are located (or, if
-  # retrieved by the workflow, where they will be placed). See comments
-  # in the scripts/exregional_get_verif_obs.sh for more details about
-  # files and directory structure.
-  # NOTE: Do not set this to the same path as other *_OBS_DIR variables;
-  # otherwise unexpected results and data loss may occur.
-  #
-  # NDAS_OBS_DIR:
-  # User-specified location of top-level directory where NDAS prepbufr 
-  # files used by METplus are located (or, if retrieved by the workflow,
-  # where they will be placed). See comments in file
-  # scripts/exregional_get_verif_obs.sh for more details about files
-  # and directory structure.
-  # NOTE: Do not set this to the same path as other *_OBS_DIR variables;
-  # otherwise unexpected results and data loss may occur.
-  #
-  #-----------------------------------------------------------------------
-  #
-  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
-  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
-  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
-  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # REMOVE_RAW_OBS_DIRS_[CCPA|MRMS|NDAS|NOHRSC]:
-  # Boolean flag specifying whether to remove the "raw" observation
-  # directories after pulling the specified type of obs (CCPA, MRMS,
-  # NDAS, or NOHRSC).  The raw directories are the ones in which the
-  # observation files are placed immediately after pulling them from
-  # a data store (e.g. NOAA's HPSS) but before performing any processing
-  # on them (e.g. renaming the files or reorganizing their directory
-  # structure).
-  #
-  #-----------------------------------------------------------------------
-  #
-  REMOVE_RAW_OBS_CCPA: true
-  REMOVE_RAW_OBS_MRMS: true
-  REMOVE_RAW_OBS_NDAS: true
-  REMOVE_RAW_OBS_NOHRSC: true
-  #
-  #-----------------------------------------------------------------------
-  #
   # DOMAIN_PREGEN_BASEDIR:
   # The base directory containing pregenerated grid, orography, and surface 
   # climatology files. This is an alternative for setting GRID_DIR,
@@ -2423,37 +2357,66 @@ verification:
   # 
   METPLUS_VERBOSITY_LEVEL: 2
   #
-  # Time interval (in hours) at which various types of obs are available on
-  # NOAA's HPSS.
-  CCPA_OBS_AVAIL_INTVL_HRS: 1
-  NOHRSC_OBS_AVAIL_INTVL_HRS: 6
-  MRMS_OBS_AVAIL_INTVL_HRS: 1
-  NDAS_OBS_AVAIL_INTVL_HRS: 1
+  # [CCPA|NOHRSC|MRMS|NDAS]_OBS_DIR:
+  # Base directory in which CCPA, NOHRSC, MRMS, or NDAS obs files needed by
+  # the verification tasks are located.  If the files do not exist, they
+  # will be retrieved and placed under this directory.
   #
-  # Templates for CCPA, MRMS, and NDAS observation files.
-  # 
-  # OBS_CCPA_APCP_FN_TEMPLATE:
-  # File name template for CCPA accumulated precipitation (APCP) observations.
-  # This template is used by the workflow tasks that call the METplus PcpCombine
-  # tool on CCPA obs to find the input observation files containing 1-hour
-  # APCP and then generate NetCDF files containing either 1-hour or greater
-  # than 1-hour APCP.
-  # 
-  # OBS_NOHRSC_ASNOW_FN_TEMPLATE: 
-  # File name template for NOHRSC snow observations.
-  # 
-  # OBS_MRMS_REFC_FN_TEMPLATE: 
-  # File name template for MRMS reflectivity observations.
-  # 
-  # OBS_MRMS_RETOP_FN_TEMPLATE: 
-  # File name template for MRMS echo top observations.
+  # Notes:
   #
-  # OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE: 
-  # File name template for NDAS surface and upper air observations.
-  # This template is used by the workflow tasks that call the METplus Pb2nc
-  # tool on NDAS obs to find the input observation files containing ADP
-  # surface (ADPSFC) or ADP upper air (ADPUPA) fields and then generate
-  # NetCDF versions of these files.
+  # * If the obs files need to be retrieved (e.g. from NOAA's HPSS), then
+  #   the user must have write permission to this directory.  Otherwise,
+  #   the get_obs tasks that attempt to create these files will fail.
+  #
+  # * Do not set two or more of these directories to the same location.
+  #   Otherwise, unexpected results and data loss may occur.
+  #
+  # * The script ush/get_obs.py contains further details on the files and
+  #   directory structure of each obs type.
+  #
+  # * CCPA obs contain errors in the metadata for a certain range of dates
+  #   that need to be corrected during obs retrieval.  This is described
+  #   in more detail in ush/get_obs.py.
+  #
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
+  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
+  #
+  # OBS_[CCPA_APCP|NOHRSC_ASNOW|MRMS_[REFC|RETOP]|NDAS_ADPSFCandADPUPA]_FN_TEMPLATE:
+  # File name templates for various obs type and vx field group combinations.
+  #
+  # Notes:
+  #
+  # * These are relative to the obs base directories
+  #       [CCPA|NOHRSC|MRMS|NDAS]_OBS_DIR
+  #   defined above.  Thus, the full template to the obs files is given, e.g.
+  #   for CCPA obs, by {CCPA_OBS_DIR}/{OBS_CCPA_APCP_FN_TEMPLATE}.
+  #
+  # * These may represent file names only, or they may include relative paths
+  #   before the file names.
+  #
+  # * These templates must contain full information about the year, month,
+  #   day, and hour by including METplus time strings that serve as templates
+  #   for this information.  Some of this information may be in the relative
+  #   directory portion and the rest in the file name, or there may be no
+  #   relative directory portion and all of it may be in the file name, but
+  #   all four pieces of timing information must be present somewhere in
+  #   this template as METplus time strings.  Otherwise, obs files created 
+  #   by the get_obs tasks for different days might overwrite each other.
+  #
+  # * If one or more of the obs files specified by this full path do not
+  #   exist on disk, all the files will be created by first retrieving "raw"
+  #   versions of them from a data store (e.g. NOAA's HPSS) and then placing
+  #   these raw files in the locations specified by this full path template.
+  #
+  # * The raw obs files, i.e. the obs files as they are named and arranged
+  #   in the data stores, may be different than the file path/name specified
+  #   in these variables.  The list of templates for raw files to search
+  #   for in the data stores is given in the data retrieval configuration
+  #   file at parm/data_locations.yml.  Once retrieved, these raw files are
+  #   renamed and relocated on disk to the locations specified by
+  #   {..._OBS_DIR}/{..._FN_TEMPLATE}.
   #
   OBS_CCPA_APCP_FN_TEMPLATE: '{%- set data_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
                               {{- "{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z." ~ data_intvl_hrs ~ "h.hrap.conus.gb2" }}'
@@ -2462,11 +2425,44 @@ verification:
   OBS_MRMS_REFC_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_MRMS_RETOP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
+  #
+  # Time interval (in hours) at which various types of obs are available on
+  # NOAA's HPSS.
+  #
+  # Note that MRMS files are in fact available every few minutes, but here
+  # we set the obs availability interval to 1 hour because the forecast
+  # cannot (yet) support sub-hourly output.
+  #
+  CCPA_OBS_AVAIL_INTVL_HRS: 1
+  NOHRSC_OBS_AVAIL_INTVL_HRS: 6
+  MRMS_OBS_AVAIL_INTVL_HRS: 1
+  NDAS_OBS_AVAIL_INTVL_HRS: 1
+  #
+  # REMOVE_RAW_OBS_DIRS_[CCPA|MRMS|NDAS|NOHRSC]:
+  # Boolean flag specifying whether to remove the "raw" observation
+  # directories after pulling the specified type of obs (CCPA, NOHRSC,
+  # MRMS, or NOHRSC).  The raw directories are the ones in which the
+  # observation files are placed immediately after pulling them from
+  # a data store (e.g. NOAA's HPSS) but before performing any processing
+  # on them (e.g. renaming the files or reorganizing their directory
+  # structure).
+  #
+  REMOVE_RAW_OBS_CCPA: true
+  REMOVE_RAW_OBS_MRMS: true
+  REMOVE_RAW_OBS_NDAS: true
+  REMOVE_RAW_OBS_NOHRSC: true
   # 
   # OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
   # Template used to specify the names of the output NetCDF observation
   # files generated by the worfklow verification tasks that call the METplus
   # PcpCombine tool on CCPA observations.  (These files will contain obs
+  # APCP, both for 1 hour and for > 1 hour accumulation periods, in NetCDF
+  # format.)
+  #
+  # OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
+  # Template used to specify the names of the output NetCDF observation
+  # files generated by the worfklow verification tasks that call the METplus
+  # PcpCombine tool on NOHRSC observations.  (These files will contain obs
   # APCP, both for 1 hour and for > 1 hour accumulation periods, in NetCDF
   # format.)
   #

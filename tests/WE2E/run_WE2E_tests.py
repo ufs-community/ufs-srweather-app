@@ -207,13 +207,11 @@ def run_we2e_tests(homedir, args) -> None:
             # obs. If so, and if the config file does not explicitly set the observation locations,
             # fill these in with defaults from the machine files
             obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR','NOHRSC_OBS_DIR']
-            if 'platform' not in test_cfg:
-                test_cfg['platform'] = {}
             for obvar in obs_vars:
                 mach_path = machine_defaults['platform'].get('TEST_'+obvar)
-                if not test_cfg['platform'].get(obvar) and mach_path:
+                if not test_cfg['verification'].get(obvar) and mach_path:
                     logging.debug(f'Setting {obvar} = {mach_path} from machine file')
-                    test_cfg['platform'][obvar] = mach_path
+                    test_cfg['verification'][obvar] = mach_path
 
         if args.compiler == "gnu":
             # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
