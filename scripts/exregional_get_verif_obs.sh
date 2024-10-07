@@ -46,8 +46,8 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# Make sure the obs type is valid.  Then call the python script get_obs.py
-# to get the obs files.
+# Make sure the obs type is valid.  Then call a python script to check
+# for the presence of obs files on disk and get them if needed.
 #
 #-----------------------------------------------------------------------
 #
@@ -67,7 +67,8 @@ python3 -u ${USHdir}/${script_bn}.py \
 --var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
 --obtype ${OBTYPE} \
 --obs_day ${PDY}"
-print_info_msg "CALLING: ${cmd}"
+print_info_msg "
+CALLING: ${cmd}"
 ${cmd} || print_err_msg_exit "Error calling ${script_bn}.py."
 #
 #-----------------------------------------------------------------------
