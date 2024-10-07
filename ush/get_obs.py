@@ -19,8 +19,8 @@ from python_utils import (
 def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     """
     This file defines a function that, for the given observation type, obs
-    archive interval, and hour of day, returns the hour (counting from the
-    start of the day) corresponding to the archive file in which the obs file
+    archive interval, and hour of day, returns the hour (counting from hour
+    zero of the day) corresponding to the archive file in which the obs file
     for the given hour of day is included.
 
     Note that for cumulative fields (like CCPA and NOHRSC, as opposed to
@@ -38,8 +38,7 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
         arcv_intvl_hrs:
         Time interval (in hours) between archive files.  An integer.  For example,
         if the obs files are bundled into 6-hourly archives, then this will be
-        set to 6.  This must be between 1 and 24 and must divide evenly into 24
-        (this is checked for elsewhere).
+        set to 6.  This must be between 1 and 24 and must divide evenly into 24.
 
         hod:
         The hour of the day.  An integer.  This must be between 0 and 23.  For
@@ -52,26 +51,45 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
         the obs file for the given hour of day.  An integer.
     """
 
-    valid_obtypes = ['CCPA', 'ccpa', 'NOHRSC', 'nohrsc', 'MRMS', 'mrms', 'NDAS', 'ndas']
-    if obtype not in valid_obtypes:
+    valid_obtypes = ['CCPA', 'NOHRSC', 'MRMS', 'NDAS']
+    obtype_upper = obtype.upper()
+    if obtype_upper not in valid_obtypes:
         msg = dedent(f"""
-            The specified observation type is not supported:
-              obtype = {obtype}
+            The specified observation type (after converting to upper case) is not
+            supported:
+                obtype_upper = {obtype_upper}
             Valid observation types are:
-              {valid_obtypes}
+                {valid_obtypes}
         """)
+        logging.error(msg)
+        raise Exception(msg)
+
+    # Ensure that the archive inerval divides evenly into 24 hours.
+    remainder = 24 % arcv_intvl_hrs
+    if remainder != 0:
+        msg = dedent(f"""
+            The archive interval for obs of type {obtype} must divide evenly into 24
+            but doesn't:
+                arcv_intvl_hrs = {arcv_intvl_hrs}
+                24 % arcv_intvl_hrs = {remainder}
+            """)
         logging.error(msg)
         raise Exception(msg)
 
     if (hod < 0) or (hod > 23):
         msg = dedent(f"""
-            The specified hour-of-day must be between 0 and 23, inclusive but isn't:
-              hod = {hod}
+            The specified hour-of-day must be between 0 and 23, inclusive, but isn't:
+                hod = {hod}
         """)
         logging.error(msg)
         raise Exception(msg)
 
-    obtype_upper = obtype.upper()
+    # Set the archive hour.  This depends on the obs type because each obs
+    # type can organize its observation files into archives in a different
+    # way, e.g. a cumulative obs type may put the obs files for hours 1
+    # through 6 of the day in the archive labeled with hour 6 while an
+    # instantaneous obs type may put the obs files for hours 0 through 5 of
+    # the day in the archive labeled with hour 6.
     if obtype_upper in ['CCPA']:
         if hod == 0:
             arcv_hr = 24
@@ -199,20 +217,48 @@ this script.
         msg = dedent(f"""
             The obs availability interval for obs of type {obtype} must divide evenly
             into 24 but doesn't:
-              obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
-              24 % obs_avail_intvl_hrs = {remainder}
+                obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
+                24 % obs_avail_intvl_hrs = {remainder}
             """)
+        logging.error(msg)
         raise Exception(msg)
 
-    # For convenience, get obs availability interval as a datetime object.
+    # For convenience, convert the obs availability interval to a datetime
+    # object.
     obs_avail_intvl = dt.timedelta(hours=obs_avail_intvl_hrs)
 
     # Get the base directory for the observations.
     key = obtype + '_OBS_DIR'
     obs_dir = config['platform'][key]
 
-    # Set the group of fields for each observation type.  We assume there is
-    # a separate obs file type for each such field group in the observations.
+    # For each observation type, set the group of fields contained in those
+    # observation files that we need for verification.  Each group of fields
+    # is one that is verified together in the workflow.  We assume there is
+    # a separate set of obs files for each such field group in the observations,
+    # and in the code below we loop over these sets of files as necessary.  
+    # There are several scenarios to consider:
+    #
+    # * An obs type consists of only one set of files containing only one
+    #   field.
+    #   This is the case for CCPA and NOHRSC obs.  CCPA obs consist only one
+    #   set of files that contain APCP data, and NOHRSC obs consist of only
+    #   one set of files that contain ASNOW data.
+    #
+    # * An obs type consists of more than one set of files, with each file 
+    #   containing a different field.
+    #   This is the case for MRMS obs.  These consist of two sets of files.
+    #   The first set contains REFC data, and the second contains RETOP data.
+    #
+    # * An obs type consists of only one set of files, but each file contains
+    #   multiple groups of fields needed for verification.
+    #   This is the case for NDAS obs.  These consist of a single set of files,
+    #   but each file contains both the ADPSFC fields (like 2-m temperature) 
+    #   and ADPUPA fields (like 500-mb temperature) that are verified separately
+    #   in the workflow tasks and thus are considered separate field groups.
+    #
+    # Other obs type and field group scenarios are also possible, but we do
+    # not describe them since they are not applicable to any of the obs types
+    # considered here. 
     if obtype == 'CCPA':
         field_groups_in_obs = ['APCP']
     elif obtype == 'NOHRSC':
@@ -225,8 +271,9 @@ this script.
 
     # For each field group in the observations, get the METplus file name
     # template for the observation files.  Then combine these with the base
-    # directory to get the METplus template for the full path to the processed
-    # obs files.
+    # directory to get the METplus template for the full path on disk to
+    # the processed obs files.  If obs files do not already exist at these
+    # locations, they will be retrieved from HPSS and placed at these locations.
     fp_proc_templates = []
     for fg in field_groups_in_obs:
         key = 'OBS_' + obtype + '_' + fg + '_FN_TEMPLATE'
@@ -241,8 +288,8 @@ this script.
     #
 
     # For cumulative obs, set the accumulation period to use when getting obs
-    # files.  This is simply (a properly formatted version of) the obs
-    # availability interval.
+    # files.  This is simply a properly formatted version of the obs availability
+    # interval.
     accum_obs_formatted = None
     if obtype == 'CCPA':
         accum_obs_formatted = f'{obs_avail_intvl_hrs:02d}'
@@ -264,8 +311,8 @@ this script.
             else:
                 msg = dedent(f"""
                     Invalid field specified for obs type:
-                      obtype = {obtype}
-                      field = {field}
+                        obtype = {obtype}
+                        field = {field}
                     """)
                 logging.error(msg)
                 raise Exception(msg)
@@ -433,19 +480,23 @@ this script.
     one_hour = dt.timedelta(hours=1)
     ushdir = config['user']['USHdir']
 
-    # Check whether any obs files already exist on disk in their processed
-    # (i.e. final) locations.  Here, by "processed" we mean after any renaming
-    # and rearrangement of files that this script may do to the "raw" files,
-    # i.e. the files as they are named and arranged within the archive (tar)
-    # files on HPSS.  If so, adjust the starting archive hour.  In the process,
-    # keep a count of the number of obs files that already exist on disk.
-    num_existing_files = 0
-    do_break = False
-    for yyyymmddhh in obs_retrieve_times_crnt_day:
-
-        for fp_proc_templ in fp_proc_templates:
-            # Set the full path to the final processed obs file (fp_proc).
+    # Create dictionary containing the paths to all the processed obs files
+    # that should exist once this script successfully completes.  In this
+    # dictionary, the keys are the field groups, and the values are lists of
+    # paths.  Here, by "paths to processed files" we mean the paths after any
+    # renaming and rearrangement of files that this script may do to the "raw"
+    # files, i.e. the files as they are named and arranged within the archive
+    # (tar) files on HPSS.
+    all_fp_proc_dict = {}
+    for fg, fp_proc_templ in zip(field_groups_in_obs, fp_proc_templates):
+        all_fp_proc_dict[fg] = []
+        for yyyymmddhh in obs_retrieve_times_crnt_day:
+            # Set the lead hour, i.e. the number of hours from the beginning of the
+            # day at which the file is valid.
             lhr = int((yyyymmddhh - yyyymmdd_task)/one_hour)
+            # Call a bash script to evaluate the template for the full path to the
+            # file containing METplus timestrings at the current time.  This should
+            # be upgraded to a python script at some point.
             cmd = '; '.join(['export USHdir=' + ushdir,
                              'export yyyymmdd_task=' + yyyymmdd_task_str,
                              'export lhr=' + str(lhr),
@@ -453,13 +504,22 @@ this script.
                               os.path.join(ushdir, 'run_eval_METplus_timestr_tmpl.sh')])
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
             fp_proc = result.stdout.strip()
+            all_fp_proc_dict[fg].append(fp_proc)
 
-            # Check whether file already exists.
+    # Check whether any obs files already exist on disk in their processed
+    # (i.e. final) locations.  If so, adjust the starting archive hour.  In
+    # the process, keep a count of the number of obs files that already exist
+    # on disk.
+    num_existing_files = 0
+    do_break = False
+    for fg in field_groups_in_obs:
+        for yyyymmddhh, fp_proc in zip(obs_retrieve_times_crnt_day, all_fp_proc_dict[fg]):
+            # Check whether the processed file already exists.
             if os.path.isfile(fp_proc):
                 num_existing_files += 1
                 msg = dedent(f"""
                     File already exists on disk:
-                      fp_proc = {fp_proc}
+                        fp_proc = {fp_proc}
                     """)
                 logging.info(msg)
             else:
@@ -467,15 +527,14 @@ this script.
                 arcv_hr_start = get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod)
                 msg = dedent(f"""
                     File does not exist on disk:
-                      fp_proc = {fp_proc}
+                        fp_proc = {fp_proc}
                     Setting the hour (since hour 0 of the current task day) of the first
                     archive to retrieve to:
-                      arcv_hr_start = {arcv_hr_start}
+                        arcv_hr_start = {arcv_hr_start}
                     """)
                 logging.info(msg)
                 do_break = True
                 break
-
         if do_break: break
 
     # If the number of obs files that already exist on disk is equal to the
@@ -487,7 +546,7 @@ this script.
         msg = dedent(f"""
             All obs files needed for the current day (yyyymmdd_task) already exist
             on disk:
-              yyyymmdd_task = {yyyymmdd_task}
+                yyyymmdd_task = {yyyymmdd_task}
             Thus, there is no need to retrieve any files.
             """)
         logging.info(msg)
@@ -503,14 +562,14 @@ this script.
         msg = dedent(f"""
             At least some obs files needed needed for the current day (yyyymmdd_task)
             do not exist on disk:
-              yyyymmdd_task = {yyyymmdd_task}
+                yyyymmdd_task = {yyyymmdd_task}
             The number of obs files needed for the current day is:
-              num_files_needed = {num_files_needed}
+                num_files_needed = {num_files_needed}
             The number of obs files that already exist on disk is:
-              num_existing_files = {num_existing_files}
+                num_existing_files = {num_existing_files}
             Will retrieve remaining files by looping over archives corresponding to
             the following hours (since hour 0 of the current day):
-              arcv_hrs = {arcv_hrs}
+                arcv_hrs = {arcv_hrs}
             """)
         logging.info(msg)
     #
@@ -617,10 +676,10 @@ this script.
                 hour 0 of the next day if considering a cumulative obs type) fall in the
                 range spanned by the current {arcv_intvl_hrs}-hourly archive file.  The
                 bounds of the data in the current archive are:
-                  arcv_contents_start = {arcv_contents_start}
-                  arcv_contents_end = {arcv_contents_end}
+                    arcv_contents_start = {arcv_contents_start}
+                    arcv_contents_end = {arcv_contents_end}
                 The times at which obs need to be retrieved are:
-                  obs_retrieve_times_crnt_day = {obs_retrieve_times_crnt_day}
+                    obs_retrieve_times_crnt_day = {obs_retrieve_times_crnt_day}
                 """)
             logging.info(msg)
 
@@ -665,6 +724,18 @@ this script.
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
             rc = result.returncode
 
+            # Get the list of times corresponding to the obs files in the current
+            # archive.  This is a list of datetime objects.
+            if obtype == 'CCPA':
+                obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+            elif obtype == 'NOHRSC':
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+            elif obtype == 'MRMS':
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+            elif obtype == 'NDAS':
+                obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+            obs_times_in_arcv.sort()
+
             # Loop over the raw obs files extracted from the current archive and
             # generate from them the processed obs files.
             #
@@ -685,24 +756,21 @@ this script.
             # them in the process.  Note that the tm06 file in a given archive contain
             # more/better observations than the tm00 file in the next archive (their
             # valid times are equivalent), so we use the tm06 files.
-            if obtype == 'CCPA':
-                in_arcv_times = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
-            elif obtype == 'NOHRSC':
-                in_arcv_times = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
-            elif obtype == 'MRMS':
-                in_arcv_times = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
-            elif obtype == 'NDAS':
-                in_arcv_times = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
-            in_arcv_times.sort()
-
-            for yyyymmddhh in in_arcv_times:
+            for yyyymmddhh in obs_times_in_arcv:
 
                 # Create the processed obs file from the raw one (by moving, copying, or
                 # otherwise) only if the time of the current file in the current archive
-                # also exists in the list of obs retrieval times for the current day.
+                # also exists in the list of obs retrieval times for the current day.  We
+                # need to check this because it is possible that some of the obs retrieval
+                # times come before the range of times spanned by the current archive while
+                # the others come after, but none fall within that range.  This can happen
+                # because the set of archive hours over which we are looping were constructed
+                # above without considering whether there are obs retrieve time gaps that
+                # make it unnecessary to retrieve some of the archives between the first
+                # and last ones that must be retrieved.
                 if yyyymmddhh in obs_retrieve_times_crnt_day:
 
-                    for i, fp_proc_templ in enumerate(fp_proc_templates):
+                    for i, fg in enumerate(field_groups_in_obs):
 
                         # For MRMS obs, first select from the set of raw files for the current day
                         # those that are nearest in time to the current hour.  Unzip these in a
@@ -752,16 +820,10 @@ this script.
                             fn_raw = 'nam.t' + hh_arcv_str + 'z.prepbufr.tm' + f'{hrs_ago:02d}' + '.nr'
                         fp_raw = os.path.join(arcv_dir_raw, fn_raw)
 
-                        # Set the full path to the final processed obs file (fp_proc) we want to
+                        # Get the full path to the final processed obs file (fp_proc) we want to
                         # create.
-                        lhr = int((yyyymmddhh - yyyymmdd_task)/one_hour)
-                        cmd = '; '.join(['export USHdir=' + ushdir,
-                                         'export yyyymmdd_task=' + yyyymmdd_task_str,
-                                         'export lhr=' + str(lhr),
-                                         'export METplus_timestr_tmpl=' + fp_proc_templ,
-                                          os.path.join(ushdir, 'run_eval_METplus_timestr_tmpl.sh')])
-                        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                        fp_proc = result.stdout.strip()
+                        indx = obs_retrieve_times_crnt_day.index(yyyymmddhh)
+                        fp_proc = all_fp_proc_dict[fg][indx]
 
                         # Make sure the directory in which the processed file will be created exists.
                         dir_proc = os.path.dirname(fp_proc)
