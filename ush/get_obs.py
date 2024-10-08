@@ -42,7 +42,7 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
 
         hod:
         The hour of the day.  An integer.  This must be between 0 and 23.  For
-        cumulative fields (CCPA and NOHRSC), hour 0 is treated as that of the 
+        cumulative fields (CCPA and NOHRSC), hour 0 is treated as that of the
         next day, i.e. as the 24th hour of the current day.
 
     Returns:
@@ -132,7 +132,7 @@ def get_obs(config, obtype, yyyymmdd_task):
 
     Detailed Description:
 
-    In this script, the main (outer) loop to obtain obs files is over a 
+    In this script, the main (outer) loop to obtain obs files is over a
     sequence of archive hours, where each archive hour in the sequence
     represents one archive (tar) file in the data store, and archive hours
     are with respect to hour 0 of the day.  The number of archive hours in
@@ -143,22 +143,22 @@ def get_obs(config, obtype, yyyymmdd_task):
     iterate over a sequence of 4 hours, either [0, 6, 12, 18] or [6, 12,
     18, 24] (which of these it will be depends on how the obs files are
     arranged into the archives).
-    
+
     Below, we give a description of archive layout for each obs type and
     give the archive hours to loop over for the case in which we need to
     obtain all available obs for the current day.
-    
-    
+
+
     CCPA (Climatology-Calibrated Precipitation Analysis) precipitation
     accumulation obs:
     ----------
     For CCPA, the archive interval is 6 hours, i.e. the obs files are bundled
     into 6-hourly archives.  The archives are organized such that each one
     contains 6 files, so that the obs availability interval is
-    
+
       obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
                           = 1 hr/file
-    
+
     i.e. there is one obs file for each hour of the day containing the
     accumulation over that one hour.  The archive corresponding to hour 0
     of the current day contains 6 files representing accumulations during
@@ -176,23 +176,23 @@ def get_obs(config, obtype, yyyymmdd_task):
     obs files are available and none of the obs files for this day already
     exist on disk, this sequence will be [6, 12, 18, 24].  In other cases,
     the sequence we loop over will be a subset of [6, 12, 18, 24].
-    
+
     Note that CCPA files for 1-hour accumulation have incorrect metadata in
     the files under the "00" directory (i.e. for hours-of-day 19 to 00 of
     the next day) from 20180718 to 20210504.  This script corrects these
     errors if getting CCPA obs at these times.
-    
-    
+
+
     NOHRSC (National Operational Hydrologic Remote Sensing Center) snow
     accumulation observations:
     ----------
     For NOHRSC, the archive interval is 24 hours, i.e. the obs files are
     bundled into 24-hourly archives.  The archives are organized such that
-    each one contains 4 files, so that the obs availability interval is 
-    
+    each one contains 4 files, so that the obs availability interval is
+
       obs_avail_intvl_hrs = (24 hrs)/[(1 archive)*(4 files/archive)]
                           = 6 hr/file
-    
+
     i.e. there is one obs file for each 6-hour interval of the day containing
     the accumulation over those 6 hours.  The 4 obs files within each archive
     correspond to hours 0, 6, 12, and 18 of the current day.  The obs file
@@ -201,14 +201,14 @@ def get_obs(config, obtype, yyyymmdd_task):
     first, second, and third 6-hour chunks of the current day.  Thus, to
     obtain all the 6-hour accumulations for the current day, we must extract
     from the archive for the current day the obs files for hours 6, 12, and
-    18 and from the archive for the next day the obs file for hour 0.  This 
+    18 and from the archive for the next day the obs file for hour 0.  This
     corresponds to an archive hour sequence of [0, 24].  Thus, in the simplest
     case in which the observation retrieval times include all hours of the
     current task's day at which obs files are available and none of the obs
     files for this day already exist on disk, this sequence will be [0, 24].
     In other cases, the sequence we loop over will be a subset of [0, 24].
-    
-    
+
+
     MRMS (Multi-Radar Multi-Sensor) radar observations:
     ----------
     For MRMS, the archive interval is 24 hours, i.e. the obs files are
@@ -219,9 +219,9 @@ def get_obs(config, obtype, yyyymmdd_task):
     files that are closest to each hour of the day for which obs are needed.
     This effectively sets the obs availability interval for MRMS to one
     hour, i.e.
-    
+
       obs_avail_intvl_hrs = 1 hr/file
-    
+
     i.e. there is one obs file for each hour of the day containing values
     at that hour (but only after filtering in time; also see notes for
     MRMS_OBS_AVAIL_INTVL_HRS in config_defaults.yaml).  Thus, to obtain the
@@ -231,33 +231,33 @@ def get_obs(config, obtype, yyyymmdd_task):
     are available and none of the obs files for this day already exist on
     disk, the sequence of archive hours over which we loop will be just
     [0].  Note that:
-    
+
     * For cases in which MRMS data are not needed for all hours of the day,
       we still need to retrieve and extract from this single daily archive.
       Thus, the archive hour sequence over which we loop over will always
       be just [0] for MRMS obs.
-    
+
     * Because MRMS obs are split into two sets of archives -- one for
       composite reflectivity (REFC) and another for echo top (RETOP) --
       on any given day (and with an archive hour of 0) we actually retrive
       and extract two different archive files (one per field).
-    
-    
+
+
     NDAS (NAM Data Assimilation System) conventional observations:
     ----------
     For NDAS, the archive interval is 6 hours, i.e. the obs files are
     bundled into 6-hourly archives.  The archives are organized such that
     each one contains 7 files (not say 6).  The archive associated with
-    time yyyymmddhh_arcv contains the hourly files at 
-    
+    time yyyymmddhh_arcv contains the hourly files at
+
       yyyymmddhh_arcv - 6 hours
       yyyymmddhh_arcv - 5 hours
       ...
       yyyymmddhh_arcv - 2 hours
       yyyymmddhh_arcv - 1 hours
       yyyymmddhh_arcv - 0 hours
-    
-    These are known as the tm06, tm05, ..., tm02, tm01, and tm00 files, 
+
+    These are known as the tm06, tm05, ..., tm02, tm01, and tm00 files,
     respectively.  Thus, the tm06 file from the current archive, say the
     one associated with time yyyymmddhh_arcv, has the same valid time as
     the tm00 file from the previous archive, i.e. the one associated with
@@ -267,10 +267,10 @@ def get_obs(config, obtype, yyyymmdd_task):
     yyyymmddhh_arcv, we use 6 of the 7 files at tm06, ..., tm01 but not
     the one at tm00, effectively resulting in 6 files per archive for NDAS
     obs.  The obs availability interval is then
-    
+
       obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
                           = 1 hr/file
-    
+
     i.e. there is one obs file for each hour of the day containing values
     at that hour.  The archive corresponding to hour 0 of the current day
     contains 6 files valid at hours 18 through 23 of the previous day.  The
@@ -327,7 +327,7 @@ def get_obs(config, obtype, yyyymmdd_task):
     # observation files that we need for verification.  Each group of fields
     # is one that is verified together in the workflow.  We assume there is
     # a separate set of obs files for each such field group in the observations,
-    # and in the code below we loop over these sets of files as necessary.  
+    # and in the code below we loop over these sets of files as necessary.
     # There are several scenarios to consider:
     #
     # * An obs type consists of only one set of files containing only one
@@ -336,7 +336,7 @@ def get_obs(config, obtype, yyyymmdd_task):
     #   set of files that contain APCP data, and NOHRSC obs consist of only
     #   one set of files that contain ASNOW data.
     #
-    # * An obs type consists of more than one set of files, with each file 
+    # * An obs type consists of more than one set of files, with each file
     #   containing a different field.
     #   This is the case for MRMS obs.  These consist of two sets of files.
     #   The first set contains REFC data, and the second contains RETOP data.
@@ -344,13 +344,13 @@ def get_obs(config, obtype, yyyymmdd_task):
     # * An obs type consists of only one set of files, but each file contains
     #   multiple groups of fields needed for verification.
     #   This is the case for NDAS obs.  These consist of a single set of files,
-    #   but each file contains both the ADPSFC fields (like 2-m temperature) 
+    #   but each file contains both the ADPSFC fields (like 2-m temperature)
     #   and ADPUPA fields (like 500-mb temperature) that are verified separately
     #   in the workflow tasks and thus are considered separate field groups.
     #
     # Other obs type and field group scenarios are also possible, but we do
     # not describe them since they are not applicable to any of the obs types
-    # considered here. 
+    # considered here.
     if obtype == 'CCPA':
         field_groups_in_obs = ['APCP']
     elif obtype == 'NOHRSC':
@@ -659,7 +659,7 @@ def get_obs(config, obtype, yyyymmdd_task):
         # There is only one archive per day, and it contains all the raw obs
         # files needed to generate processed obs files for all hours of the
         # current day.  Thus, we will only ever need this one archive, so there
-        # is no need to include the archive's hour information (there really 
+        # is no need to include the archive's hour information (there really
         # isn't any) in the raw subdirectory name.  In addition, the archive's
         # year, month, and day is the same as that of the obs day's, so it is
         # already included in the name of the raw base directory.  Sine this is
@@ -785,12 +785,12 @@ def get_obs(config, obtype, yyyymmdd_task):
             # day (i.e. hour 0 of the next day), it involves using wgrib2 to correct an
             # error in the metadata of the raw file and writing the corrected data
             # to a new grib2 file in the processed location.
-            # 
+            #
             # NOHRSC:
             # Generating the processed obs files consists of simply copying or moving
             # the files from the raw archive directory to the processed directory,
             # possibly renaming them in the process.
-            # 
+            #
             # MRMS:
             # The MRMS obs are in fact available every few minutes, but the smallest
             # value we allow the obs availability interval to be set to is 1 hour
@@ -800,12 +800,12 @@ def get_obs(config, obtype, yyyymmdd_task):
             # creating the processed files).  In this step, at each obs retrieval time
             # we first generate an intermediate grib2 file from the set of all raw (and
             # gzipped) grib2 files for the current day (the latter usually being only a
-            # few minutes apart) the file that is nearest in time to the obs retrieval 
+            # few minutes apart) the file that is nearest in time to the obs retrieval
             # time.  After selecting this gzipped grib2 file, we unzip it and place it
             # in a temporary subdirectory under the raw base directory.  Only after this
             # step do we then generate the processed file by moving this intermediate
             # file to the processed directory, possibly renaming it in the process.
-            # 
+            #
             # NDAS:
             # Generating the processed obs files consists of simply copying or moving
             # the files from the raw archive directory to the processed directory,
@@ -832,7 +832,7 @@ def get_obs(config, obtype, yyyymmdd_task):
                         # For MRMS obs, first select from the set of raw files for the current day
                         # those that are nearest in time to the current hour.  Unzip these in a
                         # temporary subdirectory under the raw base directory.
-                        # 
+                        #
                         # Note that the script we call to do this (mrms_pull_topofhour.py) assumes
                         # a certain file naming convention.  That convention must match the names
                         # of the files that the retrieve_data.py script called above ends up
