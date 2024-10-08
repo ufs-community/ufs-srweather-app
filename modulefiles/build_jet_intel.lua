@@ -17,6 +17,8 @@ load("srw_common")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
 
+setenv("FC", "mpiifort")
+
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")

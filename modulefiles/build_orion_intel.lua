@@ -21,6 +21,8 @@ load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
 setenv("CFLAGS","-diag-disable=10441")
 setenv("FFLAGS","-diag-disable=10441")
 
+setenv("FC", "mpiifort")
+
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")
