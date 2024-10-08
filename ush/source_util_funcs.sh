@@ -96,15 +96,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing the function that returns the ceiling of
-# the quotient of two positive integers.
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/ceil.sh
-#
-#-----------------------------------------------------------------------
-#
 # Source the file containing the functions that will echo given strings
 # as uppercase or lowercase
 #
