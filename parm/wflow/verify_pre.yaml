@@ -52,7 +52,6 @@ task_get_obs_mrms:
   envars:
     <<: *default_vars
     OBTYPE: 'MRMS'
-    MRMS_FIELDS: 'REFC RETOP'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
