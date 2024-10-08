@@ -224,7 +224,7 @@ def _parse_args(argv):
     )
 
     # Check that inputs are correct and consistent
-    args = parser._parse_args(argv)
+    args = parser.parse_args(argv)
 
     if args.remove:
         if args.line is None:
