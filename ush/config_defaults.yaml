@@ -2419,7 +2419,8 @@ verification:
   # NOAA's HPSS.
   #
   # Note that MRMS files are in fact available every few minutes, but here
-  # we set the obs availability interval to 1 hour because the forecast
+  # we set the obs availability interval to 1 hour because currently that
+  # is the shortest output interval for the forecast, i.e. the forecast
   # cannot (yet) support sub-hourly output.
   #
   CCPA_OBS_AVAIL_INTVL_HRS: 1

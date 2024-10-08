@@ -110,92 +110,184 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
 
 def get_obs(config, obtype, yyyymmdd_task):
     """
-This script performs several important tasks for preparing data for
-verification tasks. Depending on the value of the environment variable
-OBTYPE=(CCPA|MRMS|NDAS|NOHRSC), the script will prepare that particular data
-set.
+    This script checks for the existence of obs files of the specified type
+    at the locations specified by variables in the SRW App's configuration
+    file.  If one or more of these files do not exist, it retrieves them from
+    a data store and places them in the locations specified by the configuration
+    variables, renaming them if necessary.
 
-If data is not available on disk (in the location specified by
-CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR, or NOHRSC_OBS_DIR respectively),
-the script attempts to retrieve the data from HPSS using the retrieve_data.py
-script. Depending on the data set, there are a few strange quirks and/or
-bugs in the way data is organized; see in-line comments for details.
+    Args:
+        config:
+        The final configuration dictionary (obtained from var_defns.yaml).
 
+        obtype:
+        The observation type.  A string.
 
-CCPA (Climatology-Calibrated Precipitation Analysis) precipitation accumulation obs
-----------
-If data is available on disk, it must be in the following
-directory structure and file name conventions expected by verification
-tasks:
+        yyyymmdd_task:
+        The date for which obs may be needed.  A datetime object.
 
-{CCPA_OBS_DIR}/{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2
-
-If data is retrieved from HPSS, it will be automatically staged by this
-script.
-
-Notes about the data and how it's used for verification:
-
-1. Accumulation is currently hardcoded to 01h. The verification will
-use MET/pcp-combine to sum 01h files into desired accumulations.
-
-2. There is a problem with the valid time in the metadata for files
-valid from 19 - 00 UTC (or files under the '00' directory). This is
-accounted for in this script for data retrieved from HPSS, but if you
-have manually staged data on disk you should be sure this is accounted
-for. See in-line comments below for details.
+    Returns:
+        True if all goes well.
 
 
-MRMS (Multi-Radar Multi-Sensor) radar observations
-----------
-If data is available on disk, it must be in the following
-directory structure and file name conventions expected by verification
-tasks:
+    Detailed Description:
 
-{MRMS_OBS_DIR}/{YYYYMMDD}/[PREFIX]{YYYYMMDD}-{HH}0000.grib2,
-
-Where [PREFIX] is MergedReflectivityQCComposite_00.50_ for reflectivity
-data and EchoTop_18_00.50_ for echo top data. If data is not available
-at the top of the hour, you should rename the file closest in time to
-your hour(s) of interest to the above naming format. A script
-"ush/mrms_pull_topofhour.py" is provided for this purpose.
-
-If data is retrieved from HPSS, it will automatically staged by this
-this script.
-
-
-NDAS (NAM Data Assimilation System) conventional observations
-----------
-If data is available on disk, it must be in the following
-directory structure and file name conventions expected by verification
-tasks:
-
-{NDAS_OBS_DIR}/{YYYYMMDD}/prepbufr.ndas.{YYYYMMDDHH}
-
-Note that data retrieved from HPSS and other sources may be in a
-different format: nam.t{hh}z.prepbufr.tm{prevhour}.nr, where hh is
-either 00, 06, 12, or 18, and prevhour is the number of hours prior to
-hh (00 through 05). If using custom staged data, you will have to
-rename the files accordingly.
-
-If data is retrieved from HPSS, it will be automatically staged by this
-this script.
-
-
-NOHRSC  snow accumulation observations
-----------
-If data is available on disk, it must be in the following
-directory structure and file name conventions expected by verification
-tasks:
-
-{NOHRSC_OBS_DIR}/{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2
-
-where AA is the 2-digit accumulation duration in hours: 06 or 24
-
-METplus is configured to verify snowfall using 06- and 24-h accumulated
-snowfall from 6- and 12-hourly NOHRSC files, respectively.
-
-If data is retrieved from HPSS, it will automatically staged by this
-this script.
+    In this script, the main (outer) loop to obtain obs files is over a 
+    sequence of archive hours, where each archive hour in the sequence
+    represents one archive (tar) file in the data store, and archive hours
+    are with respect to hour 0 of the day.  The number of archive hours in
+    this sequence depends on how the obs files are arranged into archives
+    for the given obs type.  For example, if the obs files for a given day
+    are arranged into four archives, then the archive interval is 6 hours,
+    and in order to get all the obs files for that day, the loop must
+    iterate over a sequence of 4 hours, either [0, 6, 12, 18] or [6, 12,
+    18, 24] (which of these it will be depends on how the obs files are
+    arranged into the archives).
+    
+    Below, we give a description of archive layout for each obs type and
+    give the archive hours to loop over for the case in which we need to
+    obtain all available obs for the current day.
+    
+    
+    CCPA (Climatology-Calibrated Precipitation Analysis) precipitation
+    accumulation obs:
+    ----------
+    For CCPA, the archive interval is 6 hours, i.e. the obs files are bundled
+    into 6-hourly archives.  The archives are organized such that each one
+    contains 6 files, so that the obs availability interval is
+    
+      obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
+                          = 1 hr/file
+    
+    i.e. there is one obs file for each hour of the day containing the
+    accumulation over that one hour.  The archive corresponding to hour 0
+    of the current day contains 6 files representing accumulations during
+    the 6 hours of the previous day.  The archive corresponding to hour 6
+    of the current day contains 6 files for the accumulations during the
+    first 6 hours of the current day, and the archives corresponding to
+    hours 12 and 18 of the current day each contain 6 files for accumulations
+    during hours 6-12 and 12-18, respectively, of the current day.  Thus,
+    to obtain all the one-hour accumulations for the current day, we must
+    extract all the obs files from the three archives corresponding to hours
+    6, 12, and 18 of the current day and from the archive corresponding to
+    hour 0 of the next day.  This corresponds to an archive hour sequence
+    of [6, 12, 18, 24].  Thus, in the simplest case in which the observation
+    retrieval times include all hours of the current task's day at which
+    obs files are available and none of the obs files for this day already
+    exist on disk, this sequence will be [6, 12, 18, 24].  In other cases,
+    the sequence we loop over will be a subset of [6, 12, 18, 24].
+    
+    Note that CCPA files for 1-hour accumulation have incorrect metadata in
+    the files under the "00" directory (i.e. for hours-of-day 19 to 00 of
+    the next day) from 20180718 to 20210504.  This script corrects these
+    errors if getting CCPA obs at these times.
+    
+    
+    NOHRSC (National Operational Hydrologic Remote Sensing Center) snow
+    accumulation observations:
+    ----------
+    For NOHRSC, the archive interval is 24 hours, i.e. the obs files are
+    bundled into 24-hourly archives.  The archives are organized such that
+    each one contains 4 files, so that the obs availability interval is 
+    
+      obs_avail_intvl_hrs = (24 hrs)/[(1 archive)*(4 files/archive)]
+                          = 6 hr/file
+    
+    i.e. there is one obs file for each 6-hour interval of the day containing
+    the accumulation over those 6 hours.  The 4 obs files within each archive
+    correspond to hours 0, 6, 12, and 18 of the current day.  The obs file
+    for hour 0 contains accumulations during the last 6 hours of the previous
+    day, while those for hours 6, 12, and 18 contain accumulations for the
+    first, second, and third 6-hour chunks of the current day.  Thus, to
+    obtain all the 6-hour accumulations for the current day, we must extract
+    from the archive for the current day the obs files for hours 6, 12, and
+    18 and from the archive for the next day the obs file for hour 0.  This 
+    corresponds to an archive hour sequence of [0, 24].  Thus, in the simplest
+    case in which the observation retrieval times include all hours of the
+    current task's day at which obs files are available and none of the obs
+    files for this day already exist on disk, this sequence will be [0, 24].
+    In other cases, the sequence we loop over will be a subset of [0, 24].
+    
+    
+    MRMS (Multi-Radar Multi-Sensor) radar observations:
+    ----------
+    For MRMS, the archive interval is 24 hours, i.e. the obs files are
+    bundled into 24-hourly archives.  The archives are organized such that
+    each contains gzipped grib2 files for that day that are usually only a
+    few minutes apart.  However, since the forecasts cannot (yet) perform
+    sub-hourly output, we filter this data in time by using only those obs
+    files that are closest to each hour of the day for which obs are needed.
+    This effectively sets the obs availability interval for MRMS to one
+    hour, i.e.
+    
+      obs_avail_intvl_hrs = 1 hr/file
+    
+    i.e. there is one obs file for each hour of the day containing values
+    at that hour (but only after filtering in time; also see notes for
+    MRMS_OBS_AVAIL_INTVL_HRS in config_defaults.yaml).  Thus, to obtain the
+    obs at all hours of the day, we only need to extract files from one
+    archive.  Thus, in the simplest case in which the observation retrieval
+    times include all hours of the current task's day at which obs files
+    are available and none of the obs files for this day already exist on
+    disk, the sequence of archive hours over which we loop will be just
+    [0].  Note that:
+    
+    * For cases in which MRMS data are not needed for all hours of the day,
+      we still need to retrieve and extract from this single daily archive.
+      Thus, the archive hour sequence over which we loop over will always
+      be just [0] for MRMS obs.
+    
+    * Because MRMS obs are split into two sets of archives -- one for
+      composite reflectivity (REFC) and another for echo top (RETOP) --
+      on any given day (and with an archive hour of 0) we actually retrive
+      and extract two different archive files (one per field).
+    
+    
+    NDAS (NAM Data Assimilation System) conventional observations:
+    ----------
+    For NDAS, the archive interval is 6 hours, i.e. the obs files are
+    bundled into 6-hourly archives.  The archives are organized such that
+    each one contains 7 files (not say 6).  The archive associated with
+    time yyyymmddhh_arcv contains the hourly files at 
+    
+      yyyymmddhh_arcv - 6 hours
+      yyyymmddhh_arcv - 5 hours
+      ...
+      yyyymmddhh_arcv - 2 hours
+      yyyymmddhh_arcv - 1 hours
+      yyyymmddhh_arcv - 0 hours
+    
+    These are known as the tm06, tm05, ..., tm02, tm01, and tm00 files, 
+    respectively.  Thus, the tm06 file from the current archive, say the
+    one associated with time yyyymmddhh_arcv, has the same valid time as
+    the tm00 file from the previous archive, i.e. the one associated with
+    time (yyyymmddhh_arcv - 6 hours).  It turns out that the tm06 file from
+    the current archive contains more/better observations than the tm00
+    file from the previous archive.  Thus, for a given archive time
+    yyyymmddhh_arcv, we use 6 of the 7 files at tm06, ..., tm01 but not
+    the one at tm00, effectively resulting in 6 files per archive for NDAS
+    obs.  The obs availability interval is then
+    
+      obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
+                          = 1 hr/file
+    
+    i.e. there is one obs file for each hour of the day containing values
+    at that hour.  The archive corresponding to hour 0 of the current day
+    contains 6 files valid at hours 18 through 23 of the previous day.  The
+    archive corresponding to hour 6 of the current day contains 6 files
+    valid at hours 0 through 5 of the current day, and the archives
+    corresponding to hours 12 and 18 of the current day each contain 6
+    files valid at hours 6 through 11 and 12 through 17 of the current day.
+    Thus, to obtain all the hourly values for the current day (from hour
+    0 to hour 23), we must extract the 6 obs files (excluding the tm00
+    ones) from the three archives corresponding to hours 6, 12, and 18 of
+    the current day and the archive corresponding to hour 0 of the next
+    day.  This corresponds to an archive hour sequence set below of [6, 12,
+    18, 24].  Thus, in the simplest case in which the observation retrieval
+    times include all hours of the current task's day at which obs files
+    are available and none of the obs files for this day already exist on
+    disk, this sequence will be [6, 12, 18, 24].  In other cases, the
+    sequence we loop over will be a subset of [6, 12, 18, 24].
     """
 
     # Convert obtype to upper case to simplify code below.
@@ -355,100 +447,6 @@ this script.
     # To generate this sequence, we first set the archive interval and then
     # set the starting and ending archive hour values.
     #
-    # For CCPA, the archive interval is 6 hours, i.e. the obs files are
-    # bundled into 6-hourly archives.  This implies 4 archives per day.  The
-    # archives are organized such that each one contains 6 files, so that the
-    # obs availability interval is
-    #
-    #   obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
-    #                       = 1 hr/file
-    #
-    # i.e. there is one obs file for each hour of the day containing the
-    # accumulation over that one hour.  The archive corresponding to hour 0
-    # of the current day contains 6 files representing accumulations during
-    # the 6 hours of the previous day.  The archive corresponding to hour 6
-    # of the current day corresponds to accumulations during the first 6
-    # hours of the current day, and the archives corresponding to hours 12
-    # and 18 of the current day correspond to accumulations during the 2nd
-    # and 3rd 6-hourly intervals of the current day.  Thus, to obtain all the
-    # one-hour accumulations for the current day, we must extract all the obs
-    # files from the archives corresponding to hours 6, 12, and 18 of the
-    # current day and hour 0 of the next day.  This corresponds to an archive
-    # hour sequence set below of [6, 12, 18, 24].  Thus, in the simplest case
-    # in which the observation retrieval times include all hours of the
-    # current task's day at which obs files are available and none of the obs
-    # files for this day already exist on disk, this sequence will be [6, 12,
-    # 18, 24].  In other cases, the sequence we loop over will be a subset of
-    # [6, 12, 18, 24].
-    #
-    # For NOHRSC, the archive interval is 24 hours, i.e. the obs files are
-    # bundled into 24-hourly archives.  This implies just 1 archive per day.
-    # The archives are organized such that each one contains 4 files, so that
-    # the obs availability interval is 
-    #
-    #   obs_avail_intvl_hrs = (24 hrs)/[(1 archive)*(4 files/archive)]
-    #                       = 6 hr/file
-    #
-    # i.e. there is one obs file for each 6-hour interval of the day containing
-    # the accumulation over those 6 hours.  The 4 obs files within each archive
-    # correspond to hours 0, 6, 12, and 18 of the current day.  The obs file
-    # for hour 0 contains accumulations during the last 6 hours of the previous
-    # day, while those for hours 6, 12, and 18 contain accumulations for the
-    # first, second, and third 6-hour chunks of the current day.  Thus, to
-    # obtain all the 6-hour accumulations for the current day, we must extract
-    # from the archive for the current day the obs files for hours 6, 12, and
-    # 18 and from the archive for the next day the obs file for hour 0.  This 
-    # corresponds to an archive hour sequence set below of [0, 24].  Thus, in
-    # the simplest case in which the observation retrieval times include all
-    # hours of the current task's day at which obs files are available and
-    # none of the obs files for this day already exist on disk, this sequence
-    # will be [0, 24].  In other cases, the sequence we loop over will be a
-    # subset of [0, 24].
-    #
-    # For NDAS, the archive interval is 6 hours, i.e. the obs files are
-    # bundled into 6-hourly archives.  This implies 4 archives per day.  The
-    # archives are organized such that each one contains 7 files (not say 6).
-    # The archive associated with time yyyymmddhh_arcv contains the hourly
-    # files at 
-    #
-    #   yyyymmddhh_arcv - 6 hours
-    #   yyyymmddhh_arcv - 5 hours
-    #   ...
-    #   yyyymmddhh_arcv - 2 hours
-    #   yyyymmddhh_arcv - 1 hours
-    #   yyyymmddhh_arcv - 0 hours
-    #
-    # These are known as the tm06, tm05, ..., tm02, tm01, and tm00 files, 
-    # respectively.  Thus, the tm06 file from the current archive, say the
-    # one associated with time yyyymmddhh_arcv, has the same valid time as
-    # the tm00 file from the previous archive, i.e. the one associated with
-    # time (yyyymmddhh_arcv - 6 hours).  It turns out the tm06 file from the
-    # current archive contains more/better observations than the tm00 file
-    # from the previous archive.  Thus, for a given archive time yyyymmddhh_arcv,
-    # we use 6 of the 7 files at tm06, ..., tm01 but not the one at tm00, 
-    # effectively resulting in an 6 files per archive for NDAS obs.  The obs
-    # availability interval is then
-    #
-    #   obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
-    #                       = 1 hr/file
-    #
-    # i.e. there is one obs file for each hour of the day containing values
-    # at that hour.  The archive corresponding to hour 0 of the current day
-    # contains 6 files valid at hours 18 through 23 of the previous day.  The
-    # archive corresponding to hour 6 of the current day contains 6 files
-    # valid at hours 0 through 5 of the current day, and the archives
-    # corresponding to hours 12 and 18 of the current day each contain 6
-    # files valid at hours 6 through 11 and 12 through 17 of the current day.
-    # Thus, to obtain all the hourly values for the current day (from hour
-    # 0 to hour 23), we must extract the 6 obs files (excluding the tm00
-    # ones) from the archives corresponding to hours 6, 12, and 18 of the
-    # current day and the archive corresponding to hour 0 of the next day.
-    # This corresponds to an archive hour sequence set below of [6, 12, 18,
-    # 24].  Thus, in the simplest case in which the observation retrieval
-    # times include all hours of the current task's day at which obs files
-    # are available and none of the obs files for this day already exist on
-    # disk, this sequence will be [6, 12, 18, 24].  In other cases, the
-    # sequence we loop over will be a subset of [6, 12, 18, 24].
     #
     #-----------------------------------------------------------------------
     #
@@ -628,23 +626,61 @@ this script.
         yyyymmddhh_arcv_str = dt.datetime.strftime(yyyymmddhh_arcv, '%Y%m%d%H')
         yyyymmdd_arcv_str = dt.datetime.strftime(yyyymmddhh_arcv, '%Y%m%d')
 
-        # Directory that will contain the files retrieved from the current archive
-        # file.  We refer to this as the "raw" archive directory because it will
-        # contain the files as they are in the archive before any processing by
-        # this script.
+        # Set the subdirectory under the raw base directory that will contain the
+        # files retrieved from the current archive.  We refer to this as the "raw"
+        # archive sudirectory because it will contain the files as they are in
+        # the archive before any processing by this script.  Later below, this
+        # will be combined with the raw base directory (whose name depends on the
+        # year, month, and day of the current obs day) to obtain the full path to
+        # the raw archive directory (arcv_dir_raw).
+        #
+        # Notes on each obs type:
+        #
+        # CCPA:
+        # The raw subdirectory name must include the year, month, day, and hour
+        # in order to avoid get_obs tasks for different days clobbering each
+        # others' obs files.
+        #
+        # NOHRSC:
+        # The hour-of-day of the archive is irrelevant because there is only one
+        # archive per day, so we don't include it in the raw archive subdirectory's
+        # name.  However, we still need a subdirectory that contains the year,
+        # month, and day information of the archive because in the simplest case
+        # of having to get the NOHRSC obs for all hours of the current obs day,
+        # we need to extract obs files from two archives -- one for the current
+        # day (which includes the files for accumulations over hours 0-6, 6-12,
+        # and 12-18 of the current day) and another for the next day (which
+        # includes the file for accumulations over hours 18-24 of the current
+        # day).  To distinguish between the raw obs files from these two archives,
+        # we create an archive-time dependent raw subdirectory for each possible
+        # archive.
+        #
+        # MRMS:
+        # There is only one archive per day, and it contains all the raw obs
+        # files needed to generate processed obs files for all hours of the
+        # current day.  Thus, we will only ever need this one archive, so there
+        # is no need to include the archive's hour information (there really 
+        # isn't any) in the raw subdirectory name.  In addition, the archive's
+        # year, month, and day is the same as that of the obs day's, so it is
+        # already included in the name of the raw base directory.  Sine this is
+        # the only info we need to avoid differnt get_obs tasks clobbering each
+        # other's output obs files, for simplicity we simply do not create a raw
+        # archive subdirectory.
+        #
+        # NDAS:
+        # Same as for CCPA.
         if obtype == 'CCPA':
-            arcv_dir_raw = os.path.join(basedir_raw, yyyymmddhh_arcv_str)
-        # For NOHRSC, the hour-of-day for the archive is irrelevant since there
-        # is only one archive per day, so don't include it in the raw archive 
-        # directory's name.
+            arcv_subdir_raw = yyyymmddhh_arcv_str
         elif obtype == 'NOHRSC':
-            arcv_dir_raw = os.path.join(basedir_raw, yyyymmdd_arcv_str)
-        # Since for MRMS data there is only one archive per day, that directory
-        # is redundant, so for simplicity we set arcv_dir_raw to just basedir_raw.
+            arcv_subdir_raw = yyyymmdd_arcv_str
         elif obtype == 'MRMS':
-            arcv_dir_raw = basedir_raw
+            arcv_subdir_raw = ''
         elif obtype == 'NDAS':
             arcv_dir_raw = os.path.join(basedir_raw, yyyymmddhh_arcv_str)
+
+        # Combine the raw archive base directory with the raw archive subdirectory
+        # name to obtain the full path to the raw archive directory.
+        arcv_dir_raw = os.path.join(basedir_raw, arcv_subdir_raw)
 
         # Check whether any of the obs retrieval times for the day associated with
         # this task fall in the time interval spanned by the current archive.  If
@@ -739,23 +775,44 @@ this script.
             # Loop over the raw obs files extracted from the current archive and
             # generate from them the processed obs files.
             #
-            # For CCPA obs, for most dates this consists of simply copying or moving
-            # the files from the raw archive directory to the processed directory,
-            # possibly renaming them in the process.  However, for dates between
-            # 20180718 and 20210504 and hours-of-day 19 through the end of the day
-            # (i.e. hour 0 of the next day), it involves using wgrib2 to correct an
+            # Notes on each obs type:
+            #
+            # CCPA:
+            # For most dates, generating the processed obs files consists of simply
+            # copying or moving the files from the raw archive directory to the processed
+            # directory, possibly renaming them in the process.  However, for dates
+            # between 20180718 and 20210504 and hours-of-day 19 through the end of the
+            # day (i.e. hour 0 of the next day), it involves using wgrib2 to correct an
             # error in the metadata of the raw file and writing the corrected data
             # to a new grib2 file in the processed location.
-            #
-            # For NOHRSC obs, this consists of simply copying or moving the files from
-            # the raw archive directory to the processed directory, possibly renaming
-            # them in the process.
-            #
-            # For NDAS obs, this consists of simply copying or moving the files from
-            # the raw archive directory to the processed directory, possibly renaming
-            # them in the process.  Note that the tm06 file in a given archive contain
-            # more/better observations than the tm00 file in the next archive (their
-            # valid times are equivalent), so we use the tm06 files.
+            # 
+            # NOHRSC:
+            # Generating the processed obs files consists of simply copying or moving
+            # the files from the raw archive directory to the processed directory,
+            # possibly renaming them in the process.
+            # 
+            # MRMS:
+            # The MRMS obs are in fact available every few minutes, but the smallest
+            # value we allow the obs availability interval to be set to is 1 hour
+            # because the forecasts cannot (yet) perform sub-hourly output (also see
+            # notes for MRMS_OBS_AVAIL_INTVL_HRS in config_defaults.yaml).  For this
+            # reason, MRMS obs require an extra processing step on the raw files (before
+            # creating the processed files).  In this step, at each obs retrieval time
+            # we first generate an intermediate grib2 file from the set of all raw (and
+            # gzipped) grib2 files for the current day (the latter usually being only a
+            # few minutes apart) the file that is nearest in time to the obs retrieval 
+            # time.  After selecting this gzipped grib2 file, we unzip it and place it
+            # in a temporary subdirectory under the raw base directory.  Only after this
+            # step do we then generate the processed file by moving this intermediate
+            # file to the processed directory, possibly renaming it in the process.
+            # 
+            # NDAS:
+            # Generating the processed obs files consists of simply copying or moving
+            # the files from the raw archive directory to the processed directory,
+            # possibly renaming them in the process.  Note that for a given NDAS archive,
+            # the tm06 file in a contains more/better observations than the tm00 file
+            # in the previous archive (their valid times being equivalent), so we always
+            # use the tm06 files.
             for yyyymmddhh in obs_times_in_arcv:
 
                 # Create the processed obs file from the raw one (by moving, copying, or
@@ -870,7 +927,7 @@ this script.
 
 
 def parse_args(argv):
-    """Parse command line arguments"""
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="Get observations."
     )
