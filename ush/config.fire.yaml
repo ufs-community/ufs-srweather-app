@@ -5,8 +5,6 @@ user:
   RUN_ENVIR: community
   MACHINE: derecho
   ACCOUNT: ACCOUNT_NUMBER
-platform:
-  DOMAIN_PREGEN_BASEDIR: "/glade/work/frediani/Projects/UFS-fire/UFS/pregen_dir"
 workflow:
   USE_CRON_TO_RELAUNCH: true
   EXPT_SUBDIR: fire_test_case
