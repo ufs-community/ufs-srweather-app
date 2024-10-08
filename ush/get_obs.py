@@ -676,7 +676,7 @@ def get_obs(config, obtype, yyyymmdd_task):
         elif obtype == 'MRMS':
             arcv_subdir_raw = ''
         elif obtype == 'NDAS':
-            arcv_dir_raw = os.path.join(basedir_raw, yyyymmddhh_arcv_str)
+            arcv_subdir_raw = yyyymmddhh_arcv_str
 
         # Combine the raw archive base directory with the raw archive subdirectory
         # name to obtain the full path to the raw archive directory.
