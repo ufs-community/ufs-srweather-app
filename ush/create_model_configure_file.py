@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Create a model_configure file for the FV3 forecast model from a
-template.
+Creates a ``model_configure`` file for the FV3 forecast model from a template.
 """
 import argparse
 import os
@@ -24,19 +23,20 @@ from python_utils import (
 def create_model_configure_file(
     cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
     ): #pylint: disable=too-many-arguments
-    """Creates a model configuration file in the specified
-    run directory
+    """Creates a model configuration file in the specified run directory
 
     Args:
-        cdate: cycle date
-        fcst_len_hrs: forecast length in hours
-        fhrot: forecast hour at restart
-        run_dir: run directory
-        sub_hourly_post
-        dt_subhourly_post_mnts
-        dt_atmos
+        cdate (int): Cycle date in ``YYYYMMDD`` format
+        fcst_len_hrs (int): Forecast length in hours
+        fhrot (int): Forecast hour at restart
+        run_dir (str): Run directory
+        sub_hourly_post (bool): Sets subhourly post to either ``True`` or ``False``
+        dt_subhourly_post_mnts (int): Subhourly forecast model output and post-processing 
+                                      frequency in minutes
+        dt_atmos (int): Atmospheric forecast model's main timestep in seconds
+
     Returns:
-        Boolean
+        True
     """
 
     print_input_args(locals())
@@ -87,7 +87,7 @@ def create_model_configure_file(
     }
     #
     # If the write-component is to be used, then specify a set of computational
-    # parameters and a set of grid parameters.  The latter depends on the type
+    # parameters and a set of grid parameters. The latter depends on the type
     # (coordinate system) of the grid that the write-component will be using.
     #
     if QUILTING:
@@ -161,22 +161,22 @@ def create_model_configure_file(
         )
     #
     # If sub_hourly_post is set to "TRUE", then the forecast model must be
-    # directed to generate output files on a sub-hourly interval.  Do this
+    # directed to generate output files on a sub-hourly interval. Do this
     # by specifying the output interval in the model configuration file
     # (MODEL_CONFIG_FN) in units of number of forecat model time steps (nsout).
     # nsout is calculated using the user-specified output time interval
     # dt_subhourly_post_mnts (in units of minutes) and the forecast model's
-    # main time step dt_atmos (in units of seconds).  Note that nsout is
+    # main time step dt_atmos (in units of seconds). Note that nsout is
     # guaranteed to be an integer because the experiment generation scripts
     # require that dt_subhourly_post_mnts (after conversion to seconds) be
-    # evenly divisible by dt_atmos.  Also, in this case, the variable output_fh
+    # evenly divisible by dt_atmos. Also, in this case, the variable output_fh
     # [which specifies the output interval in hours;
     # see the jinja model_config template file] is set to 0, although this
-    # doesn't matter because any positive of nsout will override output_fh.
+    # doesn't matter because any positive value of nsout will override output_fh.
     #
     # If sub_hourly_post is set to "FALSE", then the workflow is hard-coded
     # (in the jinja model_config template file) to direct the forecast model
-    # to output files every hour.  This is done by setting (1) output_fh to 1
+    # to output files every hour. This is done by setting (1) output_fh to 1
     # here, and (2) nsout to -1 here which turns off output by time step interval.
     #
     # Note that the approach used here of separating how hourly and subhourly
@@ -227,7 +227,7 @@ def create_model_configure_file(
     return True
 
 
-def parse_args(argv):
+def _parse_args(argv):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Creates model configuration file.")
 
@@ -295,7 +295,7 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)

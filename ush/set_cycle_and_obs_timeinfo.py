@@ -33,7 +33,9 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
     Returns:
         all_cdates:
         Either a list of strings in the format 'YYYYMMDDHH' or a list of datetime
-        objects containing the cycle starting times.
+        objects containing the cycle starting times, where 'YYYY' is the four-
+        digit year, 'MM is the two-digit month, 'DD'' is the two-digit day-of-
+        month, and 'HH' is the two-digit hour-of-day.
     """
 
     print_input_args(locals())

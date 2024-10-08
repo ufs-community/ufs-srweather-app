@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Update the model namelist for a variety of different settings.
+Updates the model namelist for a variety of different settings.
 """
 
 import argparse
@@ -20,15 +20,16 @@ from python_utils import (
 VERBOSE = os.environ.get("VERBOSE", "true")
 
 def update_input_nml(namelist, restart, aqm_na_13km):
-    """Update the FV3 input.nml file in the specified run directory
+    """
+    Updates the FV3 ``input.nml`` file in the specified run directory
 
     Args:
-        namelist:    path to the namelist
-        restart:     should forecast start from restart?
-        aqm_na_13km: should the 13km AQM config be used?
+        namelist    (str) : Path to the namelist
+        restart     (bool): Whether the forecast should start from restart?
+        aqm_na_13km (bool): Whether the 13km AQM configuration should be used?
 
     Returns:
-        Boolean
+        None: Updates ``input.nml`` with the settings provided
     """
 
     print_input_args(locals())
@@ -80,7 +81,7 @@ def update_input_nml(namelist, restart, aqm_na_13km):
         update_config=get_nml_config(settings),
         )
 
-def parse_args(argv):
+def _parse_args(argv):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Update FV3 input.nml file for restart.")
 
@@ -107,7 +108,7 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     update_input_nml(
         namelist=args.namelist,
         restart=args.restart,
