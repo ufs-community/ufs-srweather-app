@@ -578,22 +578,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+    vx_config = expt_config["verification"]
+
     date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
     date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
     incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
-
-    # Set the forecast output interval.  Ideally, this should be obtained
-    # from the SRW App's configuration file, but such a variable doesn't
-    # yet exist in that file.
-    fcst_output_intvl_hrs = 1
-    workflow_config['FCST_OUTPUT_INTVL_HRS'] = fcst_output_intvl_hrs
+    vx_fcst_output_intvl_hrs = vx_config.get("VX_FCST_OUTPUT_INTVL_HRS")
 
     # To enable arithmetic with dates and times, convert various time
     # intervals from integer to datetime.timedelta objects.
     cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
     fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
-    fcst_output_intvl_dt = datetime.timedelta(hours=fcst_output_intvl_hrs)
+    vx_fcst_output_intvl_dt = datetime.timedelta(hours=vx_fcst_output_intvl_hrs)
     #
     # -----------------------------------------------------------------------
     #
@@ -605,12 +602,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    vx_config = expt_config["verification"]
     vx_config, fcst_obs_matched_times_all_cycles_cumul \
     = check_temporal_consistency_cumul_fields(
       vx_config,
       date_first_cycl, date_last_cycl, cycl_intvl_dt,
-      fcst_len_dt, fcst_output_intvl_dt)
+      fcst_len_dt, vx_fcst_output_intvl_dt)
     expt_config["verification"] = vx_config
     #
     # -----------------------------------------------------------------------
@@ -628,7 +624,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     fcst_output_times_all_cycles, obs_days_all_cycles, \
     = set_fcst_output_times_and_obs_days_all_cycles(
       date_first_cycl, date_last_cycl, cycl_intvl_dt,
-      fcst_len_dt, fcst_output_intvl_dt)
+      fcst_len_dt, vx_fcst_output_intvl_dt)
 
     workflow_config['OBS_DAYS_ALL_CYCLES_INST'] = obs_days_all_cycles['inst']
     workflow_config['OBS_DAYS_ALL_CYCLES_CUMUL'] = obs_days_all_cycles['cumul']

@@ -2498,6 +2498,15 @@ verification:
   VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
   VX_ASNOW_ACCUMS_HRS: [ 6, 24 ]
   #
+  # Set the forecast output interval to use for verification purposes.
+  # If the forecasts to be verified are being run in the SRW (i.e. they
+  # are not staged from another forecast model), then this should be set
+  # set to the SRW's forecast output interval, but such a variable is
+  # currently not available in this configuration file.  Instead, for
+  # now we set it to a default value of 1 hour.
+  #
+  VX_FCST_OUTPUT_INTVL_HRS: 1
+  #
   # VX_FCST_INPUT_BASEDIR:
   # Template for top-level directory containing forecast (but not obs)
   # files that will be used as input into METplus for verification.

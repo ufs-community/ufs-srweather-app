@@ -229,7 +229,7 @@ set_leadhrs_no_missing \
 if [ "${FCST_OR_OBS}" = "FCST" ]; then
   base_dir="${FCST_INPUT_DIR}"
   fn_template="${FCST_INPUT_FN_TEMPLATE}"
-  subintvl="${FCST_OUTPUT_INTVL_HRS}"
+  subintvl="${VX_FCST_OUTPUT_INTVL_HRS}"
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
   base_dir="${OBS_INPUT_DIR}"
   fn_template="${OBS_INPUT_FN_TEMPLATE}"

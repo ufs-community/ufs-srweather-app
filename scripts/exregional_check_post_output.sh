@@ -126,7 +126,7 @@ set_leadhrs \
   yyyymmddhh_init="${CDATE}" \
   lhr_min="0" \
   lhr_max="${FCST_LEN_HRS}" \
-  lhr_intvl="${FCST_OUTPUT_INTVL_HRS}" \
+  lhr_intvl="${VX_FCST_OUTPUT_INTVL_HRS}" \
   base_dir="${VX_FCST_INPUT_BASEDIR}" \
   fn_template="${FCST_INPUT_FN_TEMPLATE}" \
   num_missing_files_max="${NUM_MISSING_FCST_FILES_MAX}" \

@@ -169,7 +169,7 @@ case "$OBTYPE" in
     vx_hr_start="${vx_intvl}"
     ;;
   *)
-    vx_intvl="$((${FCST_OUTPUT_INTVL_HRS}))"
+    vx_intvl="$((${VX_FCST_OUTPUT_INTVL_HRS}))"
     vx_hr_start="0"
     ;;
 esac
