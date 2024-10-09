@@ -72,7 +72,7 @@ def check_temporal_consistency_cumul_fields(
     This function reads in a subset of the parameters in the verification
     configuration dictionary and ensures that certain temporal constraints on
     these parameters are satisfied.  It then returns an updated version of
-    the verification configuration dictionary that satisfies these constranints.
+    the verification configuration dictionary that satisfies these constraints.
     
     The constraints are on the accumulation intervals associated with the
     cumulative forecast fields and corresponding observation type pairs that
