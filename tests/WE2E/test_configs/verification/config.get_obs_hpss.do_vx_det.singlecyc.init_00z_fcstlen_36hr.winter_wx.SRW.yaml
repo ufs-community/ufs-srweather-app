@@ -39,7 +39,7 @@ task_run_post:
 
 verification:
   # Base directories in which to look for obs.  If these do not exist and/or
-  # do not contain the requied obs, create and populate them.
+  # do not contain the required obs, create and populate them.
   # Note that when performing WE2E tests, the default behavior is not to
   # get obs files from HPSS but to use staged obs files.  This is done by
   # setting these variables to the (platform-specific) locations of these
