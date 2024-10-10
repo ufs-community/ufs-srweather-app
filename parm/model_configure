@@ -17,8 +17,10 @@ atmos_nthreads:          {{ atmos_nthreads }}
 restart_interval:        {{ restart_interval }}
 output_1st_tstep_rst:    .false.
 write_dopost:            {{ write_dopost }}
+zstandard_level:         0
 ideflate:                0
-nbits:                   0
+quantize_mode:           quantize_bitround
+quantize_nsd:            0
 ichunk2d:                -1
 jchunk2d:                -1
 ichunk3d:                -1
@@ -26,6 +28,7 @@ jchunk3d:                -1
 kchunk3d:                -1
 itasks:                  {{ itasks }}
 quilting:                {{ quilting }}
+quilting_restart:        {{ quilting }}
 {% if quilting  %}
 #
 # Write-component (quilting) computational parameters.
@@ -34,7 +37,7 @@ write_groups:            {{ write_groups }}
 write_tasks_per_group:   {{ write_tasks_per_group }}
 num_files:               2
 filename_base:           'dyn' 'phy'
-output_file:             'netcdf' 'netcdf'
+output_file:             'netcdf_parallel'
 #
 # Write-component output frequency parameter definitions:
 #

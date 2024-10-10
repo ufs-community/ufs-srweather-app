@@ -173,7 +173,6 @@ def run_we2e_tests(homedir, args) -> None:
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
-        test_cfg['platform'].update({"BUILD_MOD_FN": args.modulefile})
         test_cfg['workflow'].update({"COMPILER": args.compiler})
         if args.expt_basedir:
             test_cfg['workflow'].update({"EXPT_BASEDIR": args.expt_basedir})
@@ -509,8 +508,6 @@ if __name__ == "__main__":
                          ' none:   Do not launch experiments; only create experiment directories',
                          default="python")
 
-
-    ap.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
     ap.add_argument('--run_envir', type=str,
                     help='Overrides RUN_ENVIR variable to a new value ("nco" or "community") '\
                          'for all experiments', default='')
@@ -540,8 +537,6 @@ if __name__ == "__main__":
                         "--launch=cron\nPlease update your workflow accordingly")
 
     #Set defaults that need other argument values
-    if args.modulefile is None:
-        args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
     if args.procs < 1:
         raise argparse.ArgumentTypeError('You can not have less than one parallel process; select a valid value '\
                          'for --procs')

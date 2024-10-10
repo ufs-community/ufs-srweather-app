@@ -28,7 +28,7 @@
 /
 
 &diag_manager_nml
-    max_output_fields = 450
+    max_output_fields = 500
     prepend_date = .false.
 /
 

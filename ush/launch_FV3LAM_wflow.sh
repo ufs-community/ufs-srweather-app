@@ -222,7 +222,7 @@ Output of rocotostat_cmd is:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ${rocotostat_output}
-" >> "${WFLOW_LAUNCH_LOG_FN}" 2>&1
+" > "${WFLOW_LAUNCH_LOG_FN}" 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -353,9 +353,9 @@ script for this experiment:
 # Remove CRONTAB_LINE from cron table
 #
     if [ "${called_from_cron}" = "TRUE" ]; then
-       python3 $USHdir/get_crontab_contents.py --remove -m=${machine} -l="${CRONTAB_LINE}" -c -d
+       $USHdir/get_crontab_contents.py --remove -m=${machine} -l='${CRONTAB_LINE}' -c -d
     else
-       python3 $USHdir/get_crontab_contents.py --remove -m=${machine} -l="${CRONTAB_LINE}" -d
+       $USHdir/get_crontab_contents.py --remove -m=${machine} -l='${CRONTAB_LINE}' -d
     fi
   fi
 #

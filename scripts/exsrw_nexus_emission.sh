@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+for sect in user nco platform workflow global verification cpl_aqm_parm \
   constants fixed_files grid_params \
   task_nexus_emission ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
@@ -315,7 +315,7 @@ fi
 export pgm="nexus"
 . prep_step
 
-eval ${RUN_CMD_NEXUS} ${EXECdir}/$pgm -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc >>$pgmout 2>${DATA}/errfile
+eval ${RUN_CMD_NEXUS} ${EXECsrw}/$pgm -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc >>$pgmout 2>${DATA}/errfile
 export err=$?; err_chk
 if [ $err -ne 0 ]; then
   print_err_msg_exit "Call to execute nexus failed."
