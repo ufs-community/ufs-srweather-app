@@ -79,7 +79,7 @@ Glossary
 
    EMC
       The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc.php>`_. 
-
+  
    EPIC
       The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`_ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
 

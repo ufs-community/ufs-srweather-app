@@ -13,7 +13,7 @@ from python_utils import (
 )
 
 
-def prime_factors(n):
+def _prime_factors(n):
     i = 2
     factors = []
     while i * i <= n:
@@ -41,24 +41,35 @@ def set_gridparams_GFDLgrid(
     nh4,
     run_envir,
 ):
-    """Sets the parameters for a grid that is to be generated using the "GFDLgrid"
-    grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
+    """Sets the parameters for a grid that is to be generated using the legacy "GFDLgrid"
+    grid generation method (i.e., when ``GRID_GEN_METHOD: "ESGgrid"``).
 
     Args:
-         lon_of_t6_ctr
-         lat_of_t6_ctr
-         res_of_t6g
-         stretch_factor
-         refine_ratio_t6g_to_t7g
-         istart_of_t7_on_t6g
-         iend_of_t7_on_t6g
-         jstart_of_t7_on_t6g
-         jend_of_t7_on_t6g
-         verbose
-         nh4
-         run_envir
+         lon_of_t6_ctr         (float): Longitude of the center of tile 6 (in degrees).
+         lat_of_t6_ctr         (float): Latitude of the center of tile 6 (in degrees).
+         res_of_t6g              (int): Number of grid cells in either of the two horizontal 
+                                        directions (x and y) on each of the six tiles of the 
+                                        parent global cubed-sphere grid (e.g., 48, 96, 192, 384, 
+                                        768, 1152, 3072). 
+         stretch_factor        (float): Stretching factor used in the Schmidt transformation 
+                                        applied to the parent cubed-sphere grid. Setting the 
+                                        Schmidt stretching factor to a value greater than 1 
+                                        shrinks tile 6, while setting it to a value less than 1 
+                                        (but still greater than 0) expands it. 
+         refine_ratio_t6g_to_t7g (int): Cell refinement ratio for the regional grid. It refers to 
+                                        the number of cells in either the x or y direction on the 
+                                        regional grid (tile 7) that abut one cell on its parent 
+                                        tile (tile 6).
+         istart_of_t7_on_t6g     (int): i-index on tile 6 at which the regional grid (tile 7) starts.
+         iend_of_t7_on_t6g       (int): i-index on tile 6 at which the regional grid (tile 7) ends.
+         jstart_of_t7_on_t6g     (int): j-index on tile 6 at which the regional grid (tile 7) starts.
+         jend_of_t7_on_t6g       (int): j-index on tile 6 at which the regional grid (tile 7) ends.
+         verbose                (bool): Flag to print out additional informational messages
+         nh4                     (int): The width (in number of cells) of the 4-cell-wide halo on 
+                                        tile 7, i.e. NH4 = 4.
+         run_envir               (str): Workflow mode (*community* or *nco*)
     Returns:
-        Tuple of inputs and outputs (see return statement)
+        Dictionary of inputs and outputs (see return statement in code for more detail)
     """
 
     print_input_args(locals())
@@ -67,7 +78,7 @@ def set_gridparams_GFDLgrid(
     # -----------------------------------------------------------------------
     #
     # To simplify the grid setup, we require that tile 7 be centered on tile
-    # 6.  Note that this is not really a restriction because tile 6 can al-
+    # 6. Note that this is not really a restriction because tile 6 can al-
     # ways be moved so that it is centered on tile 7 [the location of tile 6
     # doesn't really matter because for a regional setup, the forecast model
     # will only run on tile 7 (not on tiles 1-6)].
@@ -369,8 +380,8 @@ def set_gridparams_GFDLgrid(
     nx_of_t6_on_t6sg = 2 * nx_of_t6_on_t6g
     ny_of_t6_on_t6sg = 2 * ny_of_t6_on_t6g
 
-    prime_factors_nx_of_t7_on_t7g = prime_factors(nx_of_t7_on_t7g)
-    prime_factors_ny_of_t7_on_t7g = prime_factors(ny_of_t7_on_t7g)
+    prime_factors_nx_of_t7_on_t7g = _prime_factors(nx_of_t7_on_t7g)
+    prime_factors_ny_of_t7_on_t7g = _prime_factors(ny_of_t7_on_t7g)
 
     logging.debug(
         f"""
