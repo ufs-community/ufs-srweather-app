@@ -55,7 +55,7 @@ On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can fi
 Load the Workflow
 --------------------
 
-To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment by running:
+To load the workflow environment, source the lmod-setup file and load the workflow conda environment by running:
 
 .. include:: ../../doc-snippets/load-env.rst
 
