@@ -559,7 +559,7 @@ The SRW App can pull HRRR data directly from the `HRRR data bucket <https://regi
 Load the workflow
 ---------------------
 
-To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment by running:
+To load the workflow environment, source the lmod-setup file and load the workflow conda environment by running:
 
 .. include:: ../../doc-snippets/load-env.rst
 
