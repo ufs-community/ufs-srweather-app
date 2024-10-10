@@ -831,7 +831,7 @@ In the 10m wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` are once
       :align: center
       :width: 75%
 
-      *Rap Plot for 10m Winds*
+      *RAP Plot for 10m Winds*
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_hrrr_conus_f036.png
       :align: center
