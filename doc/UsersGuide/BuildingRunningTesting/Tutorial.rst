@@ -765,7 +765,7 @@ To see experiment progress, users should navigate to their experiment directory.
 
 .. code-block:: console
 
-   cd /path/to/expt_dirs/test_expt
+   cd /path/to/expt_dirs/halloweenHRRR
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
