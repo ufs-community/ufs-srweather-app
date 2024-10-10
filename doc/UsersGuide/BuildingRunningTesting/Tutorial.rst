@@ -615,7 +615,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``CCPP_
 
 .. include:: ../../doc-snippets/cron-note.rst
 
-``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "HalloweenStorm1" to "a;skdfj". However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from RAP and HRRR forecast input data, this tutorial will use ``halloweenRAP`` for the Halloween Storm experiment that uses RAP forecast data.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "halloweenRAP" to "HalloweenStorm1" to "askdfj" (but note that whitespace and some punctuation characters are not allowed). However, the best names will indicate useful information about the experiment. Since this tutorial helps users to compare the output from RAP and HRRR forecast input data, this tutorial will use ``halloweenRAP`` for the Halloween Storm experiment that uses RAP forecast data.
 
 ``PREDEF_GRID_NAME:`` This experiment uses the RRFS_CONUS_13km, rather than the default RRFS_CONUS_25km grid. This 13-km resolution is used in the NOAA operational Rapid Refresh (`RAP <https://rapidrefresh.noaa.gov/>`_) model and is the resolution envisioned for the initial operational implementation of the Rapid Refresh Forecast System (:term:`RRFS`). For more information on this grid, see :numref:`Section %s <RRFS_CONUS_13km>`.
 
