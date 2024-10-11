@@ -139,7 +139,7 @@ Download the Data from a Remote System to a Local System
 
 .. note:: 
 
-   Users should transfer data to or from non-:srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. On Level 1 systems, users may find it helpful to refer to the `RDHPCS CommonDocs Wiki <https://rdhpcs-common-docs.rdhpcs.noaa.gov/wiki/index.php/Transferring_Data>`__.
+   Users should transfer data to or from non-:srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. On Level 1 systems, users may find it helpful to refer to the `RDHPCS Data Transfer Documentation <https://docs.rdhpcs.noaa.gov/data/data_transfer_overview.html>`_.
 
 To download data using ``scp``, users can typically adjust one of the following commands for use on their system:
 
