@@ -2155,7 +2155,7 @@ task_nexus_emission:
   NNODES_NEXUS_EMISSION: 4
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
-  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+  OMP_STACKSIZE_NEXUS_EMISSION: "4096m"
 
 #-----------------------------
 # POINT_SOURCE config parameters
