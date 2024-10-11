@@ -75,7 +75,7 @@ def check_temporal_consistency_cumul_fields(
     the verification configuration dictionary that satisfies these constraints.
     
     The constraints are on the accumulation intervals associated with the
-    cumulative forecast fields and corresponding observation type pairs that
+    cumulative forecast fields (and corresponding observation type pairs) that
     are to be verified.  The constraints on each such accumulation interval
     are as follows:
 
@@ -85,14 +85,18 @@ def check_temporal_consistency_cumul_fields(
 
     2) The obs availability interval evenly divides the accumulation interval.
        This ensures that the obs can be added together to obtain accumulated
-       values of the obs field, e.g. the 6-hourly NOHRSC obs can be added
-       to obtain 24-hour observed snowfall accumulations.
+       values of the obs field, e.g. the 6-hourly NOHRSC obs can be added to
+       obtain 24-hour observed snowfall accumulations.  Note that this also
+       ensures that the accumulation interval is greater than or equal to the
+       obs availability interval.
 
     3) The forecast output interval evenly divides the accumulation interval.
        This ensures that the forecast output can be added together to obtain
        accumulated values of the forecast field, e.g. if the forecast output
-       interval is 3 hours, the resulting 3-hourly APCP outputs from the
-       forecast can be added to obtain 6-hourly forecast APCP.
+       interval is 3 hours, the resulting 3-hourly APCP outputs from the forecast
+       can be added to obtain 6-hourly forecast APCP.  Note that this also ensures
+       that the accumulation interval is greater than or equal to the forecast
+       output interval.
 
     4) The hour-of-day at which the accumulated forecast values will be
        available are a subset of the ones at which the accumulated obs
@@ -207,7 +211,8 @@ def check_temporal_consistency_cumul_fields(
             # Initialize a sub-sub-dictionary in one of the dictionaries to be returned.
             fcst_obs_matched_times_all_cycles_cumul[field_fcst][accum_hh] = []
             #
-            # Check that accumulation inervals are shorter than the forecast length.
+            # Make sure that the accumulation interval is less than or equal to the 
+            # forecast length.
             #
             if accum_hrs > fcst_len_hrs:
                 msg = dedent(f"""
@@ -225,7 +230,7 @@ def check_temporal_consistency_cumul_fields(
                 logging.info(msg)
                 accum_intvls_hrs.remove(accum_hrs)
             #
-            # Check that accumulation inervals are evenly divisible by the observation
+            # Make sure that accumulation interval is evenly divisible by the observation
             # availability interval.
             #
             if accum_hrs in accum_intvls_hrs:
@@ -248,7 +253,7 @@ def check_temporal_consistency_cumul_fields(
                     logging.info(msg)
                     accum_intvls_hrs.remove(accum_hrs)
             #
-            # Check that accumulation inervals are evenly divisible by the forecast
+            # Make sure that accumulation interval is evenly divisible by the forecast
             # output interval.
             #
             if accum_hrs in accum_intvls_hrs:
@@ -270,9 +275,9 @@ def check_temporal_consistency_cumul_fields(
                     logging.info(msg)
                     accum_intvls_hrs.remove(accum_hrs)
             #
-            # Check that the hours-of-day at which the current cumulative field will
-            # be output are a subset of the hours-of-day at which the corresponding
-            # obs type is output.
+            # Make sure that the hours-of-day at which the current cumulative field
+            # will be output are a subset of the hours-of-day at which the corresponding
+            # obs type is available.
             #
             if accum_hrs in accum_intvls_hrs:
 
