@@ -261,7 +261,7 @@ def check_temporal_consistency_cumul_fields(
                           field_fcst = {field_fcst}
                           obtype = {obtype}
                           accum_hrs = {accum_hrs} hr
-                          fcst_output_intvl_hrs = {forecast_output_intvl} hr
+                          fcst_output_intvl_hrs = {fcst_output_intvl} hr
                           accum_hrs % fcst_output_intvl_hrs = {rem_fcst}
                         Thus, this forecast field cannot be accumulated over this interval.
                         Will remove this accumulation interval from the list of accumulation
