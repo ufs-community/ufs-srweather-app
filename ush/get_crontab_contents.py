@@ -168,7 +168,7 @@ def delete_crontab_line(called_from_cron, machine, crontab_line, debug) -> None:
         crontab_contents = crontab_contents.replace(crontab_line + "\n", "")
         crontab_contents = crontab_contents.replace(crontab_line, "")
     else:
-        print(f"\nWARNING: line not found in crontab, nothing to remove:\n {crontab_line}\n")
+        print(f"\nWARNING: line not found in crontab, nothing to remove:\n{crontab_line}\n")
 
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
 
@@ -224,7 +224,7 @@ def _parse_args(argv):
     )
 
     # Check that inputs are correct and consistent
-    args = parser._parse_args(argv)
+    args = parser.parse_args(argv)
 
     if args.remove:
         if args.line is None:

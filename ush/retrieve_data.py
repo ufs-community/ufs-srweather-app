@@ -50,6 +50,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     unavailable = {}
     expand_source_paths = []
     logging.debug(f"Cleaning up local paths: {source_paths}")
+    logging.debug(f"Looking for these local paths under directory: {os.getcwd()}")
     for p in source_paths:
         expand_source_paths.extend(glob.glob(p.lstrip("/")))
 
