@@ -544,8 +544,13 @@ if __name__ == "__main__":
         qpf_diff = qpf_2 - qpf_1
     
         # Composite reflectivity
-        #refc_1 = data1.select(name="Maximum/Composite radar reflectivity")[0].values
-        #refc_2 = data2.select(name="Maximum/Composite radar reflectivity")[0].values
+        # refc is the 37th entry in the GRIB2 post output file
+        data1.rewind()
+        data1.seek(36) 
+        refc_1 = data1.select(name="Maximum/Composite radar reflectivity")[0].values
+        data2.rewind()
+        data2.seek(36)
+        refc_2 = data2.select(name="Maximum/Composite radar reflectivity")[0].values
     
         if fhr > 0:
             # Max/Min Hourly 2-5 km Updraft Helicity
@@ -2236,158 +2241,158 @@ if __name__ == "__main__":
             #################################
             # Plot composite reflectivity
             #################################
-            #t1 = time.perf_counter()
-            #logging.info(("Working on composite reflectivity for " + dom))
+            t1 = time.perf_counter()
+            logging.info(("Working on composite reflectivity for " + dom))
     
             # Clear off old plottables but keep all the map info
-            #cbar1.remove()
-            #cbar2.remove()
-            #cbar3.remove()
-            #clear_plotables(ax1, keep_ax_lst_1, fig)
-            #clear_plotables(ax2, keep_ax_lst_2, fig)
-            #clear_plotables(ax3, keep_ax_lst_3, fig)
+            cbar1.remove()
+            cbar2.remove()
+            cbar3.remove()
+            clear_plotables(ax1, keep_ax_lst_1, fig)
+            clear_plotables(ax2, keep_ax_lst_2, fig)
+            clear_plotables(ax3, keep_ax_lst_3, fig)
     
-            #units = "dBZ"
-            #clevs = np.linspace(5, 70, 14)
-            #clevsdiff = [20, 1000]
-            #colorlist = [
-            #    "turquoise",
-            #    "dodgerblue",
-            #    "mediumblue",
-            #    "lime",
-            #    "limegreen",
-            #    "green",
-            #    "#EEEE00",
-            #    "#EEC900",
-            #    "darkorange",
-            #    "red",
-            #    "firebrick",
-            #    "darkred",
-            #    "fuchsia",
-            #]
-            #cm = matplotlib.colors.ListedColormap(colorlist)
-            #norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
+            units = "dBZ"
+            clevs = np.linspace(5, 70, 14)
+            clevsdiff = [20, 1000]
+            colorlist = [
+                "turquoise",
+                "dodgerblue",
+                "mediumblue",
+                "lime",
+                "limegreen",
+                "green",
+                "#EEEE00",
+                "#EEC900",
+                "darkorange",
+                "red",
+                "firebrick",
+                "darkred",
+                "fuchsia",
+            ]
+            cm = matplotlib.colors.ListedColormap(colorlist)
+            norm = matplotlib.colors.BoundaryNorm(clevs, cm.N)
     
-            #cs_1 = ax1.pcolormesh(
-            #    lon_shift,
-            #    lat_shift,
-            #    refc_1,
-            #    transform=transform,
-            #    cmap=cm,
-            #    vmin=5,
-            #    norm=norm,
-            #)
-            #cs_1.cmap.set_under("white", alpha=0.0)
-            #cs_1.cmap.set_over("black")
-            #cbar1 = plt.colorbar(
-            #    cs_1,
-            #    ax=ax1,
-            #    orientation="horizontal",
-            #    pad=0.05,
-            #    shrink=0.6,
-            #    ticks=clevs,
-            #    extend="max",
-            #)
-            #cbar1.set_label(units, fontsize=6)
-            #cbar1.ax.tick_params(labelsize=6)
-            #ax1.text(
-            #    0.5,
-            #    1.03,
-            #    "FV3-LAM Composite Reflectivity ("
-            #    + units
-            #    + ") \n initialized: "
-            #    + itime
-            #    + " valid: "
-            #    + vtime
-            #    + " (f"
-            #    + fhour
-            #    + ")",
-            #    horizontalalignment="center",
-            #    fontsize=6,
-            #    transform=ax1.transAxes,
-            #    bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-            #)
+            cs_1 = ax1.pcolormesh(
+                lon_shift,
+                lat_shift,
+                refc_1,
+                transform=transform,
+                cmap=cm,
+                vmin=5,
+                norm=norm,
+            )
+            cs_1.cmap.set_under("white", alpha=0.0)
+            cs_1.cmap.set_over("black")
+            cbar1 = plt.colorbar(
+                cs_1,
+                ax=ax1,
+                orientation="horizontal",
+                pad=0.05,
+                shrink=0.6,
+                ticks=clevs,
+                extend="max",
+            )
+            cbar1.set_label(units, fontsize=6)
+            cbar1.ax.tick_params(labelsize=6)
+            ax1.text(
+                0.5,
+                1.03,
+                "FV3-LAM Composite Reflectivity ("
+                + units
+                + ") \n initialized: "
+                + itime
+                + " valid: "
+                + vtime
+                + " (f"
+                + fhour
+                + ")",
+                horizontalalignment="center",
+                fontsize=6,
+                transform=ax1.transAxes,
+                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            )
     
-            #cs_2 = ax2.pcolormesh(
-            #    lon2_shift,
-            #    lat2_shift,
-            #    refc_2,
-            #    transform=transform,
-            #    cmap=cm,
-            #    vmin=5,
-            #    norm=norm,
-            #)
-            #cs_2.cmap.set_under("white", alpha=0.0)
-            #cs_2.cmap.set_over("black")
-            #cbar2 = plt.colorbar(
-            #    cs_2,
-            #    ax=ax2,
-            #    orientation="horizontal",
-            #    pad=0.05,
-            #    shrink=0.6,
-            #    ticks=clevs,
-            #    extend="max",
-            #)
-            #cbar2.set_label(units, fontsize=6)
-            #cbar2.ax.tick_params(labelsize=6)
-            #ax2.text(
-            #    0.5,
-            #    1.03,
-            #    "FV3-LAM-2 Composite Reflectivity ("
-            #    + units
-            #    + ") \n initialized: "
-            #    + itime
-            #    + " valid: "
-            #    + vtime
-            #    + " (f"
-            #    + fhour
-            #    + ")",
-            #    horizontalalignment="center",
-            #    fontsize=6,
-            #    transform=ax2.transAxes,
-            #    bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-            #)
+            cs_2 = ax2.pcolormesh(
+                lon2_shift,
+                lat2_shift,
+                refc_2,
+                transform=transform,
+                cmap=cm,
+                vmin=5,
+                norm=norm,
+            )
+            cs_2.cmap.set_under("white", alpha=0.0)
+            cs_2.cmap.set_over("black")
+            cbar2 = plt.colorbar(
+                cs_2,
+                ax=ax2,
+                orientation="horizontal",
+                pad=0.05,
+                shrink=0.6,
+                ticks=clevs,
+                extend="max",
+            )
+            cbar2.set_label(units, fontsize=6)
+            cbar2.ax.tick_params(labelsize=6)
+            ax2.text(
+                0.5,
+                1.03,
+                "FV3-LAM-2 Composite Reflectivity ("
+                + units
+                + ") \n initialized: "
+                + itime
+                + " valid: "
+                + vtime
+                + " (f"
+                + fhour
+                + ")",
+                horizontalalignment="center",
+                fontsize=6,
+                transform=ax2.transAxes,
+                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            )
     
-            #csdiff = ax3.contourf(
-            #    lon_shift, lat_shift, refc_1, clevsdiff, colors="red", transform=transform
-            #)
-            #csdiff2 = ax3.contourf(
-            #    lon2_shift,
-            #    lat2_shift,
-            #    refc_2,
-            #    clevsdiff,
-            #    colors="dodgerblue",
-            #    transform=transform,
-            #)
-            #ax3.text(
-            #    0.5,
-            #    1.03,
-            #    "FV3-LAM (red) and FV3-LAM-2 (blue) Composite Reflectivity > 20 ("
-            #    + units
-            #    + ") \n initialized: "
-            #    + itime
-            #    + " valid: "
-            #    + vtime
-            #    + " (f"
-            #    + fhour
-            #    + ")",
-            #    horizontalalignment="center",
-            #    fontsize=6,
-            #    transform=ax3.transAxes,
-            #    bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-            #)
+            csdiff = ax3.contourf(
+                lon_shift, lat_shift, refc_1, clevsdiff, colors="red", transform=transform
+            )
+            csdiff2 = ax3.contourf(
+                lon2_shift,
+                lat2_shift,
+                refc_2,
+                clevsdiff,
+                colors="dodgerblue",
+                transform=transform,
+            )
+            ax3.text(
+                0.5,
+                1.03,
+                "FV3-LAM (red) and FV3-LAM-2 (blue) Composite Reflectivity > 20 ("
+                + units
+                + ") \n initialized: "
+                + itime
+                + " valid: "
+                + vtime
+                + " (f"
+                + fhour
+                + ")",
+                horizontalalignment="center",
+                fontsize=6,
+                transform=ax3.transAxes,
+                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            )
     
-            #compress_and_save(
-            #    COMOUT_1
-            #    + "/refc_diff_"
-            #    + dom
-            #    + "_f"
-            #    + fhour
-            #    + ".png"
-            #)
-            #t2 = time.perf_counter()
-            #t3 = round(t2 - t1, 3)
-            #logging.info(("%.3f seconds to plot composite reflectivity for: " + dom) % t3)
+            compress_and_save(
+                COMOUT_1
+                + "/refc_diff_"
+                + dom
+                + "_f"
+                + fhour
+                + ".png"
+            )
+            t2 = time.perf_counter()
+            t3 = round(t2 - t1, 3)
+            logging.info(("%.3f seconds to plot composite reflectivity for: " + dom) % t3)
     
             ######################################################
     
