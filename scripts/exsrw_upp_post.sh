@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -8,9 +9,13 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm \
-  task_run_fcst task_run_post ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_RUN_POST" "OMP_NUM_THREADS_RUN_POST" \
+  "OMP_STACKSIZE_RUN_POST" "CPL_AQM" "CUSTOM_POST_CONFIG_FP" \
+  "DO_SMOKE_DUST" "DT_ATMOS" "FIXcrtm" "FIXupp" "NUMX" \
+  "POST_OUTPUT_DOMAIN_NAME" "PRE_TASK_CMDS" "PREDEF_GRID_NAME" \
+  "RUN_CMD_POST" "SUB_HOURLY_POST" "USE_CRTM" "USE_CUSTOM_POST_CONFIG_FILE" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -20,7 +25,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -72,8 +77,7 @@ if [ -z "${RUN_CMD_POST:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_POST for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_POST}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_POST}\'."
 fi
 #
 #-----------------------------------------------------------------------
@@ -99,7 +103,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp ${PARMsrw}/upp_parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp -p ${PARMsrw}/upp_parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -119,8 +123,8 @@ Copying the default post flat file specified by post_config_fp:
   post_config_fp = \"${post_config_fp}\"
 ===================================================================="
 fi
-cp ${post_config_fp} ./postxconfig-NT.txt
-cp ${PARMsrw}/upp_parm/params_grib2_tbl_new .
+cp -p ${post_config_fp} ./postxconfig-NT.txt
+cp -p ${PARMsrw}/upp_parm/params_grib2_tbl_new .
 
 if [ $(boolify ${DO_SMOKE_DUST}) = "TRUE" ] || [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
   ln -nsf ${FIXcrtm}/Nalli.IRwater.EmisCoeff.bin .
@@ -372,4 +376,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

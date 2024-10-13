@@ -7,9 +7,8 @@ Update the model namelist for a variety of different settings.
 import argparse
 import os
 import sys
+import logging
 from textwrap import dedent
-
-from uwtools.api.config import get_nml_config, realize
 
 dirpath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(dirpath, '../parm'))
@@ -19,6 +18,8 @@ from python_utils import (
     print_info_msg,
     cfg_to_yaml_str,
 )
+
+from set_namelist import set_namelist
 
 VERBOSE = os.environ.get("VERBOSE", "true")
 
@@ -59,29 +60,40 @@ def update_input_nml(namelist, restart, aqm_na_13km):
             "n_split": 8,
         }
 
+    settings_str = cfg_to_yaml_str(settings)
 
     print_info_msg(
         dedent(
             f"""
             Updating {namelist}
-
             The updated values are:
-
-            {cfg_to_yaml_str(settings)}
-
+            {settings_str}
             """
         ),
         verbose=VERBOSE,
     )
 
-    # Update the experiment's FV3 INPUT.NML file
-    realize(
-        input_config=namelist,
-        input_format="nml",
-        output_file=namelist,
-        output_format="nml",
-        update_config=get_nml_config(settings),
+    try:
+        set_namelist(
+            [
+                "-q",
+                "-n", namelist,
+                "-u", settings_str,
+                "-o", namelist,
+            ]
         )
+    except:
+        logging.exception(
+            dedent(
+                f"""
+                Call to python script set_namelist.py to update the FV3 
+                namelist file failed. Full path to base namelist file:
+                namelist = '{namelist}'"""
+            )
+        )
+        return False
+    return True
+
 
 def parse_args(argv):
     """Parse command line arguments"""

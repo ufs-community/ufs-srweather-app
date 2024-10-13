@@ -7,7 +7,6 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 dirpath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(dirpath, '../parm'))
@@ -21,6 +20,9 @@ from python_utils import (
     print_input_args,
     str_to_type,
 )
+
+from fill_jinja_template import fill_jinja_template
+
 
 def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     """ Creates an aqm.rc file in the specified run directory
@@ -64,24 +66,15 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     # Set parameters in the aqm.rc file.
     #
     aqm_rc_bio_file_fp=os.path.join(FIXaqm,"bio", AQM_BIO_FILE)
-
     # Fire config
-    aqm_rc_fire_file_fp=os.path.join(
-        COMIN,
-        f"{AQM_FIRE_FILE_PREFIX}_{yyyymmdd}_t{hh}z{AQM_FIRE_FILE_SUFFIX}"
-        )
-
+    aqm_rc_fire_file_fp=os.path.join(COMIN,
+        f"{AQM_FIRE_FILE_PREFIX}_{yyyymmdd}_t{hh}z{AQM_FIRE_FILE_SUFFIX}")
     # Dust config
-    aqm_rc_dust_file_fp=os.path.join(
-            FIXaqm,"dust",
-            f"{AQM_DUST_FILE_PREFIX}_{PREDEF_GRID_NAME}{AQM_DUST_FILE_SUFFIX}",
-            )
-
+    aqm_rc_dust_file_fp=os.path.join(FIXaqm,"dust",
+            f"{AQM_DUST_FILE_PREFIX}_{PREDEF_GRID_NAME}{AQM_DUST_FILE_SUFFIX}")
     # Canopy config
-    aqm_rc_canopy_file_fp=os.path.join(
-        FIXaqm,"canopy",PREDEF_GRID_NAME,
-        f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}",
-        )
+    aqm_rc_canopy_file_fp=os.path.join(FIXaqm,"canopy",PREDEF_GRID_NAME,
+        f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}")
     #
     #-----------------------------------------------------------------------
     #
@@ -126,12 +119,27 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     #-----------------------------------------------------------------------
     #
-    render(
-        input_file = AQM_RC_TMPL_FP,
-        output_file = aqm_rc_fp,
-        values_src = settings,
-    )
+    try:
+        fill_jinja_template([
+            "-q", 
+            "-u", settings_str, 
+            "-t", AQM_RC_TMPL_FP, 
+            "-o", aqm_rc_fp ])
+    except:
+        print_err_msg_exit(
+            dedent(
+                f"""
+            Call to python script fill_jinja_template.py to create a \"{AQM_RC_FN}\"
+            file from a jinja2 template failed. Full path to template aqm.rc file:
+                AQM_RC_TMPL_FP = \"{AQM_RC_TMPL_FP}\"
+            Full path to output aqm.rc file:
+                aqm_rc_fp = \"{aqm_rc_fp}\" """
+            )
+        )
+        return False
+
     return True
+
 
 def parse_args(argv):
     """ Parse command line arguments"""
@@ -158,6 +166,7 @@ def parse_args(argv):
                         help="Path to var_defns file.")
 
     return parser.parse_args(argv)
+
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])

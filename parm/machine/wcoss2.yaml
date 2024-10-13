@@ -18,7 +18,7 @@ platform:
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -n ${nprocs}
   RUN_CMD_NEXUS: mpiexec -n ${nprocs} -ppn ${PPN_NEXUS_EMISSION} --cpu-bind core -depth ${OMP_NUM_THREADS_NEXUS_EMISSION}
-  RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}
+  RUN_CMD_AQMLBC: mpiexec
   SCHED_NATIVE_CMD: -l place=excl
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data

@@ -119,7 +119,7 @@ VERBOSE=false
 
 # Turn off all apps to build and choose default later
 DEFAULT_BUILD=true
-BUILD_CONDA="on"
+BUILD_CONDA="off"
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
@@ -215,7 +215,7 @@ if [ -z $PLATFORM ] ; then
   # Automatically detect NOAA HPC Tier-1 platforms
   source ${HOME_DIR}/parm/detect_platform.sh
   if [[ "$PLATFORM" == "unknown" ]]; then
-    printf "\nERROR: Please set PLATFORM.\n\n"
+    printf "\nERROR: Please set PLATFORM with --platform or -p.\n\n"
     usage
     exit 0
   fi
@@ -271,11 +271,6 @@ if [ "${REMOVE}" = true ]; then
   exit 0  
 fi
 
-# Conda is not used on WCOSS2
-if [ "${PLATFORM}" = "wcoss2" ]; then
-  BUILD_CONDA="off"
-fi
-
 # build conda and conda environments, if requested.
 if [ "${BUILD_CONDA}" = "on" ] ; then
   if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
@@ -305,16 +300,9 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
       mamba env create -n srw_aqm --file ${HOME_DIR}/parm/aqm_environment.yml
     fi
   fi
-
-else
-  if [ -d "${CONDA_BUILD_DIR}" ] ; then
-    source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
-    conda activate
-  fi
+  CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
+  echo ${CONDA_BUILD_DIR} > ${HOME_DIR}/parm/conda_loc
 fi
-
-CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
-echo ${CONDA_BUILD_DIR} > ${HOME_DIR}/parm/conda_loc
 
 # choose default apps to build
 if [ "${DEFAULT_BUILD}" = true ]; then
@@ -362,13 +350,9 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # source version file only if it is specified in versions directory
-BUILD_VERSION_FILE="${HOME_DIR}/versions/build.ver.${PLATFORM}"
+BUILD_VERSION_FILE="${HOME_DIR}/versions/build.ver_${PLATFORM}"
 if [ -f ${BUILD_VERSION_FILE} ]; then
   . ${BUILD_VERSION_FILE}
-fi
-RUN_VERSION_FILE="${HOME_DIR}/versions/run.ver.${PLATFORM}"
-if [ -f ${RUN_VERSION_FILE} ]; then
-  . ${RUN_VERSION_FILE}
 fi
 
 # set MODULE_FILE for this platform/compiler combination

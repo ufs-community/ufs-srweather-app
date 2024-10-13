@@ -41,7 +41,7 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 HOMEdir=$( dirname "${scrfunc_dir}" )
 
 # source version file (run) only if it is specified in versions directory
-RUN_VER_FN="run.ver.${machine}"
+RUN_VER_FN="run.ver_${machine}"
 VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
 if [ -f ${VERSION_FILE} ]; then
   . ${VERSION_FILE}
@@ -57,15 +57,15 @@ task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""; exit 1; }
 
 # Activate conda
-[[ ${SHELLOPTS} =~ nounset ]] && has_mu=true || has_mu=false
-
-$has_mu && set +u
-
-if [ ! -z $(command -v conda) ]; then
-  conda activate srw_app
-fi
-
-$has_mu && set -u
+#[[ ${SHELLOPTS} =~ nounset ]] && has_mu=true || has_mu=false
+#
+#$has_mu && set +u
+#
+#if [ ! -z $(command -v conda) ]; then
+#  conda activate srw_app
+#fi
+#
+#$has_mu && set -u
 
 # List loaded modulefiles
 module --version

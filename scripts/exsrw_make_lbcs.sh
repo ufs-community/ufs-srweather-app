@@ -6,74 +6,9 @@
 # The ex-scrtipt that sets up and runs chgres_cube for preparing lateral
 # boundary conditions for the FV3 forecast
 #
-# Run-time environment variables:
-#
-#    COMIN
-#    COMOUT
-#    COMROOT
-#    DATA
-#    DATAROOT
-#    DATA_SHARE
-#    EXTRN_MDL_CDATE
-#    INPUT_DATA
-#    GLOBAL_VAR_DEFNS_FP
-#    NET
-#    PDY
-#    REDIRECT_OUT_ERR
-#    SLASH_ENSMEM_SUBDIR
-#
-# Experiment variables
-#
-#  user:
-#    MACHINE
-#
-#  platform:
-#    FIXgsm
-#    PRE_TASK_CMDS
-#    RUN_CMD_UTILS
-#
-#  workflow:
-#    CCPP_PHYS_SUITE
-#    COLDSTART
-#    CRES
-#    DATE_FIRST_CYCL
-#    DOT_OR_USCORE
-#    EXTRN_MDL_VAR_DEFNS_FN
-#    FIXlam
-#    SDF_USES_RUC_LSM
-#    SDF_USES_THOMPSON_MP
-#    THOMPSON_MP_CLIMO_FP
-#    VERBOSE
-#
-#  task_get_extrn_lbcs:
-#    EXTRN_MDL_NAME_LBCS
-#    FV3GFS_FILE_FMT_LBCS
-#
-#  task_make_lbcs:
-#    FVCOM_DIR
-#    FVCOM_FILE
-#    FVCOM_WCSTART
-#    KMP_AFFINITY_MAKE_LBCS
-#    OMP_NUM_THREADS_MAKE_LBCS
-#    OMP_STACKSIZE_MAKE_LBCS
-#    USE_FVCOM
-#    VCOORD_FILE
-#
-#  global:
-#    HALO_BLEND
-#
-#  cpl_aqm_parm:
-#    CPL_AQM
-#
-#  constants:
-#    NH0
-#    NH4
-#    TILE_RGNL
-#
 #-----------------------------------------------------------------------
 #
-
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -82,9 +17,14 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform  workflow global cpl_aqm_parm \
-  smoke_dust_parm constants task_get_extrn_lbcs task_make_lbcs ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_MAKE_LBCS" "OMP_NUM_THREADS_MAKE_LBCS" \
+  "OMP_STACKSIZE_MAKE_LBCS" "CCPP_PHYS_SUITE" "CPL_AQM" "CRES" "DO_SMOKE_DUST" \
+  "DOT_OR_USCORE" "EXTRN_MDL_LBCS_OFFSET_HRS" "EXTRN_MDL_NAME_LBCS" \
+  "EXTRN_MDL_VAR_DEFNS_FN" "FIXlam" "FV3GFS_FILE_FMT_LBCS" "HALO_BLEND" \
+  "NH4" "PRE_TASK_CMDS" "RUN_CMD_UTILS" "SDF_USES_THOMPSON_MP" \
+  "THOMPSON_MP_CLIMO_FP" "TILE_RGNL" "VCOORD_FILE" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -94,7 +34,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -147,8 +87,7 @@ if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_UTILS for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_UTILS}\'."
 fi
 #
 #-----------------------------------------------------------------------
@@ -521,7 +460,6 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
     #
     settings="
 'config':
- 'atm_files_input_grid': ${fn_atm}
  'convert_atm': True
  'cycle_mon': $((10#${mm}))
  'cycle_day': $((10#${dd}))
@@ -537,6 +475,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
  'orog_dir_target_grid': ${FIXlam}
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
  'regional': 2
+ 'atm_files_input_grid': ${fn_atm}
  'thomp_mp_climo_file': ${thomp_mp_climo_file}
  'tracers_input': ${tracers_input}
  'tracers': ${tracers}
@@ -545,16 +484,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
 "
 
     nml_fn="fort.41"
-    # UW takes input from stdin when no -i/--input-config flag is provided
-    (cat << EOF
-$settings
-EOF
-) | uw config realize \
-    --input-format yaml \
-    -o ${nml_fn} \
-     --output-format nml \
-    -v \
-
+    ${USHsrw}/set_namelist.py -u "$settings" -o ${nml_fn}
     export err=$?
     if [ $err -ne 0 ]; then
       message_txt="Error creating namelist read by ${exec_fn} failed.
@@ -614,4 +544,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

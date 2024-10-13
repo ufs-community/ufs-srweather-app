@@ -29,57 +29,9 @@
 #   - Run the shave executable for the 0- and 4-cell halo orography
 #     files
 #
-# Run-time environment variables:
-#
-#   DATA
-#   GLOBAL_VAR_DEFNS_FP
-#   REDIRECT_OUT_ERR
-#
-# Experiment variables
-#
-#  platform:
-#    FIXorg
-#    PRE_TASK_CMDS
-#    RUN_CMD_SERIAL
-#
-#  workflow:
-#    CCPP_PHYS_SUITE
-#    CRES
-#    DOT_OR_USCORE
-#    FIXam
-#    FIXlam
-#    GRID_GEN_METHOD
-#    PREEXISTING_DIR_METHOD
-#    VERBOSE
-#
-#  task_make_orog:
-#    KMP_AFFINITY_MAKE_OROG
-#    OMP_NUM_THREADS_MAKE_OROG
-#    OMP_STACKSIZE_MAKE_OROG
-#    OROG_DIR
-#
-#  task_make_grid:
-#    GFDLgrid_NUM_CELLS
-#    GFDLgrid_STRETCH_FAC
-#    GFDLgrid_REFINE_RATIO
-#
-#  constants:
-#    NH0
-#    NH4
-#    TILE_RGNL
-#
-#  grid_params:
-#    NHW
-#    NX
-#    NY
-#    STRETCH_FAC
-#
-#  smoke_dust_parm:
-#    DO_SMOKE_DUST
-#
 #-----------------------------------------------------------------------
 #
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -88,11 +40,14 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow constants grid_params \
-  task_make_grid task_make_orog task_make_grid smoke_dust_parm ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_MAKE_OROG" "OMP_NUM_THREADS_MAKE_OROG" \
+  "OMP_STACKSIZE_MAKE_OROG" "CRES" "CCPP_PHYS_SUITE" "DOT_OR_USCORE" \
+  "DO_SMOKE_DUST" "FIXam" "FIXlam" "FIXorg" "GRID_GEN_METHOD" "NHW" \
+  "NH0" "NH4" "NX" "NY" "OROG_DIR" "PRE_TASK_CMDS" "RUN_CMD_SERIAL" \
+  "STRETCH_FAC" "TILE_RGNL" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
-
 #
 #-----------------------------------------------------------------------
 #
@@ -101,7 +56,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -140,8 +95,7 @@ if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_SERIAL for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_SERIAL}\'."
 fi
 #
 #-----------------------------------------------------------------------
@@ -246,7 +200,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "Starting orography file generation..."
+print_info_msg "Starting orography file generation..."
 
 export pgm="orog"
 . prep_step
@@ -301,7 +255,7 @@ ${CRES:1}
 ${NH4}
 EOF
 
-  print_info_msg "$VERBOSE" "Starting orography file generation..."
+  print_info_msg "Starting orography file generation..."
 
   export pgm="orog_gsl"
   . prep_step
@@ -415,7 +369,7 @@ cd "${filter_dir}"
 #
 # Run the orography filtering executable.
 #
-print_info_msg "$VERBOSE" "Starting filtering of orography..."
+print_info_msg "Starting filtering of orography..."
 
 export pgm="filter_topo"
 . prep_step
@@ -438,7 +392,7 @@ cp "${filtered_orog_fp}" "${OROG_DIR}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE
 #
 cd ${DATA}
 
-print_info_msg "$VERBOSE" "Filtering of orography complete."
+print_info_msg "Filtering of orography complete."
 #
 #-----------------------------------------------------------------------
 #
@@ -468,7 +422,6 @@ export pgm="shave"
 halo_num_list=('0' '4')
 halo_num_list[${#halo_num_list[@]}]="${NHW}"
 for halo_num in "${halo_num_list[@]}"; do
-
   print_info_msg "Shaving filtered orography file with ${halo_num}-cell-wide halo..."
   nml_fn="input.shave.orog.halo${halo_num}"
   shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${halo_num}.nc"
@@ -518,5 +471,5 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1
 

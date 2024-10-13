@@ -10,7 +10,6 @@ import logging
 from textwrap import dedent
 
 import yaml
-from uwtools.api.config import get_yaml_config
 
 from python_utils import (
     log_info,
@@ -732,6 +731,9 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
     date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
     incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
 
+    print("DATE_FIRST_CYCL:",date_first_cycl)
+    print("DATE_LAST_CYCL:",date_last_cycl)
+
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
         fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
@@ -1422,6 +1424,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
     log_info(all_lines, verbose=debug)
 
     global_var_defns_fp = workflow_config["GLOBAL_VAR_DEFNS_FP"]
+
     # print info message
     log_info(
         f"""
@@ -1440,17 +1443,21 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
         yaml.Dumper.ignore_aliases = lambda *args : True
         yaml.dump(expt_config.get("rocoto"), f, sort_keys=False)
 
-    var_defns_cfg = get_yaml_config(config=expt_config)
-    del var_defns_cfg["rocoto"]
+    var_defns_cfg = copy.deepcopy(expt_config)
 
     # Fixup a couple of data types:
     for dates in ("DATE_FIRST_CYCL", "DATE_LAST_CYCL"):
         var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
-    var_defns_cfg.dump(global_var_defns_fp)
+
+    del var_defns_cfg["rocoto"]
+   
+    # global variable file
+    with open(global_var_defns_fp, "a") as f:
+        f.write(yaml.safe_dump(var_defns_cfg, sort_keys=False, default_flow_style=False))
 
     # Generate a flag file for cold start
     if expt_config["workflow"].get("COLDSTART"):
-        coldstart_date=workflow_config["DATE_FIRST_CYCL"]
+        coldstart_date=date_to_str(workflow_config["DATE_FIRST_CYCL"])
         fn_pass=f"task_skip_coldstart_{coldstart_date}.txt"
         open(os.path.join(exptdir,fn_pass), 'a').close()
     #

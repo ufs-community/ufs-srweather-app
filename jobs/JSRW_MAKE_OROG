@@ -6,27 +6,6 @@
 # The J-Job that generates input NetCDF orography files for running the
 # regional configuration of FV3
 #
-# Run-time environment variables:
-#
-#    GLOBAL_VAR_DEFNS_FP
-#
-# Experiment variables
-#
-#  user:
-#    MACHINE
-#
-#  platform:
-#    WORKFLOW_MANAGER
-#
-#  nco:
-#    NCO variables
-#
-#  global:
-#    DO_ENSEMBLE
-#
-#  task_make_orog:
-#    OROG_DIR
-#
 #-----------------------------------------------------------------------
 #
 date
@@ -51,8 +30,10 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user platform nco global task_make_orog ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "MACHINE" "WORKFLOW_MANAGER" "SCHED" "NET_default" \
+  "RUN_default" "OROG_DIR" "PREEXISTING_DIR_METHOD" "DO_ENSEMBLE" "VERBOSE" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------

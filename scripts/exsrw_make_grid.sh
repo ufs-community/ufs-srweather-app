@@ -39,56 +39,9 @@
 #   - Use the shave executable to reduce the halo to 3 and 4 cells
 #   - Call an ush script that runs the make_solo_mosaic executable
 #
-# Run-time environment variables:
-#
-#    DATA
-#    GLOBAL_VAR_DEFNS_FP
-#    REDIRECT_OUT_ERR
-#
-# Experiment variables
-#
-#  platform:
-#    PRE_TASK_CMDS
-#    RUN_CMD_SERIAL
-
-#  workflow:
-#    DOT_OR_USCORE
-#    GRID_GEN_METHOD
-#    RES_IN_FIXLAM_FILENAMES
-#    RGNL_GRID_NML_FN
-#    VERBOSE
-#
-#  task_make_grid:
-#    GFDLgrid_NUM_CELLS
-#    GFDLgrid_USE_NUM_CELLS_IN_FILENAMES
-#    GRID_DIR
-#
-#  constants:
-#    NH3
-#    NH4
-#    TILE_RGNL
-#
-#  grid_params:
-#    DEL_ANGLE_X_SG
-#    DEL_ANGLE_Y_SG
-#    GFDLgrid_REFINE_RATIO
-#    IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    LAT_CTR
-#    LON_CTR
-#    NEG_NX_OF_DOM_WITH_WIDE_HALO
-#    NEG_NY_OF_DOM_WITH_WIDE_HALO
-#    NHW
-#    NX
-#    NY
-#    PAZI
-#    STRETCH_FAC
-#
 #-----------------------------------------------------------------------
 #
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -97,8 +50,14 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow constants grid_params task_make_grid ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "PRE_TASK_CMDS" "RUN_CMD_SERIAL" \
+  "GRID_GEN_METHOD" "GFDLgrid_NUM_CELLS" "RGNL_GRID_NML_FN" \
+  "LON_CTR" "LAT_CTR" "DEL_ANGLE_X_SG" "DEL_ANGLE_Y_SG" \
+  "NEG_NX_OF_DOM_WITH_WIDE_HALO" "NEG_NY_OF_DOM_WITH_WIDE_HALO" \
+  "PAZI" "DOT_OR_USCORE" "TILE_RGNL" "NHW" "GRID_DIR" "NX" "NY" \
+  "RES_IN_FIXLAM_FILENAMES" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -108,7 +67,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -150,8 +109,7 @@ if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_SERIAL for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_SERIAL}\'."
 fi
 
 #
@@ -260,7 +218,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "Starting grid file generation..."
+print_info_msg "Starting grid file generation..."
 #
 # Generate a GFDLgrid-type of grid.
 #
@@ -321,25 +279,18 @@ elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
   # namelist file.
   #
   settings="
-'regional_grid_nml':
-  'plon': ${LON_CTR}
-  'plat': ${LAT_CTR}
-  'delx': ${DEL_ANGLE_X_SG}
-  'dely': ${DEL_ANGLE_Y_SG}
-  'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO}
-  'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO}
-  'pazi': ${PAZI}
+'regional_grid_nml': {
+    'plon': ${LON_CTR},
+    'plat': ${LAT_CTR},
+    'delx': ${DEL_ANGLE_X_SG},
+    'dely': ${DEL_ANGLE_Y_SG},
+    'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
+    'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
+    'pazi': ${PAZI},
+}
 "
 
-  # UW takes input from stdin when no -i/--input-config flag is provided
-  (cat << EOF
-$settings
-EOF
-) | uw config realize \
-    --input-format yaml \
-    -o ${rgnl_grid_nml_fp} \
-    -v \
-
+  ${USHsrw}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp}
   err=$?
   if [ $err -ne 0 ]; then
       print_err_msg_exit "\
@@ -368,7 +319,7 @@ fi
 #
 grid_fp="$DATA/${grid_fn}"
 
-print_info_msg "$VERBOSE" "Grid file generation completed successfully."
+print_info_msg "Grid file generation completed successfully."
 #
 #-----------------------------------------------------------------------
 #
@@ -420,15 +371,7 @@ if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
 elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
   CRES="C${res_equiv}"
 fi
-
-# UW takes the update values from stdin when no --update-file flag is
-# provided. It needs --update-format to do it correctly, though.
-echo "workflow: {CRES: ${CRES}}" | uw config realize \
-  --input-file $GLOBAL_VAR_DEFNS_FP \
-  --update-format yaml \
-  --output-file $GLOBAL_VAR_DEFNS_FP \
-  --verbose
-
+${USHsrw}/set_file_param.py -i "CRES" -n "${CRES}" -f "${GLOBAL_VAR_DEFNS_FP}"
 #
 #-----------------------------------------------------------------------
 #
@@ -581,5 +524,5 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1
 

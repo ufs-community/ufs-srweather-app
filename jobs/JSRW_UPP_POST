@@ -5,23 +5,6 @@
 #
 # This script processes Post
 #
-#  user:
-#    MACHINE
-#
-#  platform:
-#    WORKFLOW_MANAGER
-#
-#  workflow:
-#    FCST_LEN_CYCL
-#    INCR_CYCL_FREQ
-#    DATE_FIRST_CYCL
-#
-#  nco:
-#    NCO variables
-#
-#  global:
-#    DO_ENSEMBLE
-#
 #-----------------------------------------------------------------------
 #
 date
@@ -46,8 +29,11 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user platform workflow nco global ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "MACHINE" "WORKFLOW_MANAGER" "SCHED" "NET_default" \
+  "RUN_default" "DO_ENSEMBLE" "FCST_LEN_CYCL" "DATE_FIRST_CYCL" \
+  "INCR_CYCL_FREQ" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------

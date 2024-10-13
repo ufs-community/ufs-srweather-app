@@ -6,74 +6,9 @@
 # The ex-scrtipt that sets up and runs chgres_cube for preparing initial
 # conditions for the FV3 forecast
 #
-# Run-time environment variables:
-#
-#    COMIN
-#    COMOUT
-#    COMROOT
-#    DATA
-#    DATAROOT
-#    DATA_SHARE
-#    EXTRN_MDL_CDATE
-#    GLOBAL_VAR_DEFNS_FP
-#    INPUT_DATA
-#    NET
-#    PDY
-#    REDIRECT_OUT_ERR
-#    SLASH_ENSMEM_SUBDIR
-#
-# Experiment variables
-#
-#  user:
-#    MACHINE
-#
-#  platform:
-#    FIXgsm
-#    PRE_TASK_CMDS
-#    RUN_CMD_UTILS
-#
-#  workflow:
-#    CCPP_PHYS_SUITE
-#    COLDSTART
-#    CRES
-#    DATE_FIRST_CYCL
-#    DOT_OR_USCORE
-#    EXTRN_MDL_VAR_DEFNS_FN
-#    FIXlam
-#    SDF_USES_RUC_LSM
-#    SDF_USES_THOMPSON_MP
-#    THOMPSON_MP_CLIMO_FP
-#    VERBOSE
-#
-#  task_make_ics:
-#    FVCOM_DIR
-#    FVCOM_FILE
-#    FVCOM_WCSTART
-#    KMP_AFFINITY_MAKE_ICS
-#    OMP_NUM_THREADS_MAKE_ICS
-#    OMP_STACKSIZE_MAKE_ICS
-#    USE_FVCOM
-#    VCOORD_FILE
-#
-#  task_get_extrn_ics:
-#    EXTRN_MDL_NAME_ICS
-#    FV3GFS_FILE_FMT_ICS
-#
-#  global:
-#    HALO_BLEND
-#
-#  cpl_aqm_parm:
-#    CPL_AQM
-#
-#  constants:
-#    NH0
-#    NH4
-#    TILE_RGNL
-#
 #-----------------------------------------------------------------------
 #
-
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -82,9 +17,16 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm \
-   smoke_dust_parm constants task_get_extrn_ics task_make_ics ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_MAKE_ICS" "OMP_NUM_THREADS_MAKE_ICS" \
+  "OMP_STACKSIZE_MAKE_ICS" "CCPP_PHYS_SUITE" "COLDSTART" "CPL_AQM" \
+  "CRES" "DATE_FIRST_CYCL" "DO_SMOKE_DUST" "DOT_OR_USCORE" \
+  "EXTRN_MDL_NAME_ICS" "EXTRN_MDL_VAR_DEFNS_FN" "FIXgsm" "FIXlam" \
+  "FV3GFS_FILE_FMT_ICS" "FVCOM_DIR" "FVCOM_FILE" "FVCOM_WCSTART" \
+  "HALO_BLEND" "NH0" "NH4" "PRE_TASK_CMDS" "RUN_CMD_UTILS" \
+  "SDF_USES_RUC_LSM" "SDF_USES_THOMPSON_MP" "THOMPSON_MP_CLIMO_FP" \
+  "TILE_RGNL" "VCOORD_FILE" "USE_FVCOM" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -94,7 +36,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -147,8 +89,7 @@ if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_UTILS for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_UTILS}\'."
 fi
 #
 #-----------------------------------------------------------------------
@@ -325,7 +266,7 @@ varmap_file_fp="${PARMsrw}/ufs_utils_parm/varmap_tables/${varmap_file}"
 #
 # Not sure if tracers(:) should include "cld_amt" since that is also in
 # the field_table for CDATE=2017100700 but is a non-prognostic variable.
-
+#
 external_model=""
 fn_atm=""
 fn_sfc=""
@@ -596,7 +537,6 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #
 settings="
 'config':
- 'atm_files_input_grid': ${fn_atm}
  'convert_atm': True
  'convert_nst': ${convert_nst}
  'convert_sfc': True
@@ -618,6 +558,7 @@ settings="
  'orog_dir_target_grid': ${FIXlam}
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
  'regional': 1
+ 'atm_files_input_grid': ${fn_atm}
  'sfc_files_input_grid': ${fn_sfc}
  'sotyp_from_climo': ${sotyp_from_climo}
  'tg3_from_soil': ${tg3_from_soil}
@@ -631,16 +572,7 @@ settings="
 "
 
 nml_fn="fort.41"
-
-(cat << EOF
-$settings
-EOF
-) |  uw config realize \
- --input-format yaml \
- -o ${nml_fn} \
- --output-format nml\
- -v \
-
+${USHsrw}/set_namelist.py -u "$settings" -o ${nml_fn}
 err=$?
 if [ $err -ne 0 ]; then
   message_txt="Error creating namelist read by ${exec_fn} failed.
@@ -744,4 +676,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

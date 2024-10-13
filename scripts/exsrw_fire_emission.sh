@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -8,9 +9,9 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global verification cpl_aqm_parm \
-  constants fixed_files grid_params ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "AQM_FIRE_FILE_PREFIX" "AQM_FIRE_FILE_SUFFIX" "FIXaqm" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -20,7 +21,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -93,7 +94,7 @@ else
     else
       message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
-  DCOMINfire = \"${DCOMINfire}\""
+  COMINfire = \"${COMINfire}\""
 
       cp -p ${FIXaqm}/fire/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
       print_info_msg "WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
@@ -167,4 +168,4 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

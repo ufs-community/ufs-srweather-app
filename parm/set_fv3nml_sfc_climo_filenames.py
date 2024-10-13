@@ -10,14 +10,19 @@ import re
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import get_nml_config, get_yaml_config, realize
+dirpath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dirpath, '../ush'))
 
+from set_namelist import set_namelist
 from python_utils import (
     cfg_to_yaml_str,
     check_var_valid_value,
     flatten_dict,
     import_vars,
+    load_config_file,
     load_yaml_config,
+    mv_vrfy,
+    rm_vrfy,
     print_info_msg,
 )
 
@@ -53,7 +58,12 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
 
     import_vars(dictionary=config, env_vars=NEEDED_VARS)
 
-    fixed_cfg = get_yaml_config(os.path.join(HOMEdir, "parm/fixed_files_mapping.yaml"))["fixed_files"]
+    # fixed file mapping variables
+    fixed_cfg_all = load_config_file(os.path.join(HOMEdir,"parm","fixed_files_mapping.yaml"))
+    fixed_cfg = fixed_cfg_all["fixed_files"]
+    print("fixed_cfg=",fixed_cfg)
+    IMPORTS = ["SFC_CLIMO_FIELDS", "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]
+    import_vars(dictionary=flatten_dict(fixed_cfg), env_vars=IMPORTS)
 
     # The regular expression regex_search set below will be used to extract
     # from the elements of the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING
@@ -71,8 +81,10 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
     if DO_ENSEMBLE == "TRUE":
         dummy_run_dir += os.sep + "any_ensmem"
 
+    print("FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:",fixed_cfg["FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"])
     namsfc_dict = {}
     for mapping in fixed_cfg["FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]:
+        print("mapping:",mapping)
         nml_var_name, sfc_climo_field_name = re.search(regex_search, mapping).groups()
 
         check_var_valid_value(sfc_climo_field_name, fixed_cfg["SFC_CLIMO_FIELDS"])
@@ -97,13 +109,32 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
         verbose=debug,
     )
 
-    realize(
-        input_config=FV3_NML_FP,
-        input_format="nml",
-        output_file=FV3_NML_FP,
-        output_format="nml",
-        update_config=get_nml_config(settings),
+    # Rename the FV3 namelist and call set_namelist
+    fv3_nml_base_fp = f"{FV3_NML_FP}.base"
+    mv_vrfy(f"{FV3_NML_FP} {fv3_nml_base_fp}")
+    try:
+        set_namelist(
+            ["-q", "-n", fv3_nml_base_fp, "-u", settings_str, "-o", FV3_NML_FP]
         )
+    except:
+        print_err_msg_exit(
+            dedent(
+                f"""
+                Call to python script set_namelist.py to set the variables in the FV3
+                namelist file that specify the paths to the surface climatology files
+                failed.  Parameters passed to this script are:
+                  Full path to base namelist file:
+                    fv3_nml_base_fp = '{fv3_nml_base_fp}'
+                  Full path to output namelist file:
+                    FV3_NML_FP = '{FV3_NML_FP}'
+                  Namelist settings specified on command line (these have highest precedence):\n
+                    settings =\n\n"""
+            )
+            + settings_str
+        )
+
+    rm_vrfy(f"{fv3_nml_base_fp}")
+
 
 def parse_args(argv):
     """Parse command line arguments"""

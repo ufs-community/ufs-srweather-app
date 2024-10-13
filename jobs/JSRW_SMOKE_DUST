@@ -5,21 +5,6 @@
 #
 # This script processes smoke and dust
 #
-#  user:
-#    MACHINE
-#
-#  platform:
-#    WORKFLOW_MANAGER
-#
-#  nco:
-#    NCO variables
-#
-#  global:
-#    DO_ENSEMBLE
-#
-#  smoke_dust_parm:
-#    COMINsmoke_default
-#
 #-----------------------------------------------------------------------
 #
 date
@@ -44,8 +29,10 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user platform nco global smoke_dust_parm ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "MACHINE" "WORKFLOW_MANAGER" "SCHED" "NET_default" \
+  "RUN_default" "DO_ENSEMBLE" "COMINsmoke_default" "COMINrave_default" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -127,7 +114,7 @@ fi
 mkdir -p ${COMOUT}
 
 export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
-export COMINfire="${COMINfire:-${COMINfire_default}}"
+export COMINrave="${COMINrave:-${COMINrave_default}}"
 
 # Create a teomporary share directory for RAVE interpolated data files
 export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"

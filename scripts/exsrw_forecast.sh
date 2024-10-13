@@ -1,108 +1,13 @@
 #!/usr/bin/env bash
 
-
 #
 #-----------------------------------------------------------------------
 #
 # This ex-script is responsible for running the FV3 regional forecast.
 #
-# Run-time environment variables:
-#
-#    CDATE
-#    COMIN
-#    COMOUT
-#    COMROOT
-#    DATA
-#    DBNROOT
-#    GLOBAL_VAR_DEFNS_FP
-#    NET
-#    PDY
-#    RUN
-#    SENDDBN
-#    SLASH_ENSMEM_SUBDIR
-#
-# Experiment variables
-#
-#  user:
-#    MACHINE
-#
-#  platform:
-#    PRE_TASK_CMDS
-#    RUN_CMD_FCST
-#
-#  workflow:
-#    CCPP_PHYS_DIR
-#    CCPP_PHYS_SUITE
-#    COLDSTART
-#    CRES
-#    DATA_TABLE_FN
-#    DATA_TABLE_FP
-#    DATE_FIRST_CYCL
-#    DOT_OR_USCORE
-#    EXPTDIR
-#    FCST_LEN_CYCL
-#    FCST_LEN_HRS
-#    FIELD_DICT_FP
-#    FIELD_DICT_FN
-#    FIELD_TABLE_FN
-#    FIELD_TABLE_FP
-#    FIXam
-#    FIXclim
-#    FIXlam
-#    FV3_NML_FN
-#    FV3_NML_FP
-#    FV3_NML_STOCH_FP
-#    INCR_CYCL_FREQ
-#    PREDEF_GRID_NAME
-#    SYMLINK_FIX_FILES
-#    VERBOSE
-#
-#  task_get_extrn_lbcs:
-#    LBC_SPEC_INTVL_HRS
-#
-#  task_run_fcst:
-#    DO_FCST_RESTART
-#    DT_ATMOS
-#    FV3_EXEC_FP
-#    KMP_AFFINITY_RUN_FCST
-#    OMP_NUM_THREADS_RUN_FCST
-#    OMP_STACKSIZE_RUN_FCST
-#    PRINT_ESMF
-#    RESTART_INTERVAL
-#    USE_MERRA_CLIMO
-#    WRITE_DOPOST
-#
-#  task_run_post:
-#    CUSTOM_POST_CONFIG_FP
-#    DT_SUBHOURLY_POST_MNTS
-#    POST_OUTPUT_DOMAIN_NAME
-#    SUB_HOURLY_POST
-#    USE_CUSTOM_POST_CONFIG_FILE
-#
-#  global:
-#    DO_ENSEMBLE
-#    DO_LSM_SPP
-#    DO_SHUM
-#    DO_SKEB
-#    DO_SPP
-#    DO_SPPT
-#
-#  cpl_aqm_parm:
-#    AQM_RC_PRODUCT_FN
-#    CPL_AQM
-#
-#  constants:
-#    NH0
-#    NH3
-#    NH4
-#    TILE_RGNL
-#
-#  fixed_files:
-#    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
-#
 #-----------------------------------------------------------------------
 #
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -111,10 +16,22 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm \
-  smoke_dust_parm constants fixed_files \
-  task_get_extrn_lbcs task_run_fcst task_run_post ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_RUN_FCST" "OMP_NUM_THREADS_RUN_FCST" \
+  "OMP_STACKSIZE_RUN_FCST" "AQM_RC_PRODUCT_FN" "CCPP_PHYS_DIR" \
+  "CCPP_PHYS_SUITE" "COLDSTART" "CPL_AQM" "CRES" "CUSTOM_POST_CONFIG_FP" \
+  "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING" "DATE_FIRST_CYCL" "DATA_TABLE_FN" \
+  "DATA_TABLE_FP" "DOT_OR_USCORE" "DO_ENSEMBLE" "DO_FCST_RESTART" \
+  "DO_LSM_SPP" "DO_SHUM" "DO_SKEB" "DO_SMOKE_DUST" "DO_SPP" "DO_SPPT" \
+  "DT_ATMOS" "DT_SUBHOURLY_POST_MNTS" "FCST_LEN_CYCL" "FCST_LEN_HRS" \
+  "FHROT" "FIELD_DICT_FN" "FIELD_DICT_FP" "FIELD_TABLE_FN" "FIELD_TABLE_FP" \
+  "FIXam" "FIXclim" "FIXlam" "FIXsmoke" "FV3_EXEC_FN" "FV3_NML_FN" \
+  "FV3_NML_FP" "FV3_NML_STOCH_FP" "INCR_CYCL_FREQ" "LBC_SPEC_INTVL_HRS" \
+  "NH0" "NH3" "NH4" "PRINT_ESMF" "PREDEF_GRID_NAME" "PRE_TASK_CMDS" \
+  "POST_OUTPUT_DOMAIN_NAME" "RESTART_INTERVAL" "RUN_CMD_FCST" \
+  "SMOKE_DUST_FILE_PREFIX" "SUB_HOURLY_POST" "TILE_RGNL" \
+  "USE_CUSTOM_POST_CONFIG_FILE" "USE_MERRA_CLIMO" "WRITE_DOPOST" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -124,7 +41,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -182,8 +99,7 @@ if [ -z "${RUN_CMD_FCST:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_FCST for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_FCST}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_FCST}\'."
 fi
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
@@ -203,7 +119,7 @@ mkdir -p ${DATA}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
+print_info_msg "
 Creating links with names that FV3 looks for in the INPUT subdirectory
 of the current working directory (DATA), where
   DATA = \"${DATA}\"
@@ -313,7 +229,7 @@ fi
 #
 cd ${DATA}
 
-print_info_msg "$VERBOSE" "
+print_info_msg "
 Creating links in the current run directory (DATA) to fixed (i.e.
 static) files in the FIXam directory:
   FIXam = \"${FIXam}\"
@@ -366,7 +282,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "
+print_info_msg "
 Creating links in the current run directory to cycle-independent model
 input files in the main experiment directory..."
 
@@ -440,8 +356,8 @@ if ([ $(boolify "${DO_SPP}") = "TRUE" ] || \
 fi
 if [ "${STOCH}" = "TRUE" ]; then
   cp -p ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
- else
-  ln -nsf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+else
+  cp -p ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
 fi
 #
 #-----------------------------------------------------------------------
@@ -767,5 +683,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
-
+#{ restore_shell_opts; } > /dev/null 2>&1

@@ -9,40 +9,9 @@
 # The script runs the sfc_climo_gen UFS Utils program, and links the
 # output to the SFC_CLIMO_GEN directory
 #
-# Run-time environment variables:
-#
-#    DATA
-#    GLOBAL_VAR_DEFNS_FP
-#    REDIRECT_OUT_ERR
-#
-# Experiment variables
-#
-#   platform:
-#     FIXsfc
-#     PRE_TASK_CMDS
-#     RUN_CMD_UTILS
-#
-#   workflow:
-#     CRES
-#     DOT_OR_USCORE
-#     FIXlam
-#     VERBOSE
-#
-#   task_make_sfc_climo:
-#     KMP_AFFINITY_MAKE_SFC_CLIMO
-#     OMP_NUM_THREADS_MAKE_SFC_CLIMO
-#     OMP_STACKSIZE_MAKE_SFC_CLIMO
-#     SFC_CLIMO_DIR
-#
-#   constants:
-#     GTYPE
-#     NH0
-#     NH4
-#     TILE_RGNL
-#
 #-----------------------------------------------------------------------
 #
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -51,8 +20,13 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow constants task_make_sfc_climo ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_MAKE_SFC_CLIMO" \
+  "OMP_NUM_THREADS_MAKE_SFC_CLIMO" "OMP_STACKSIZE_MAKE_SFC_CLIMO" \
+  "PREDEF_GRID_NAME" "FIXsfc" "FIXlam" "CRES" "DOT_OR_USCORE" "NH4" \
+  "TILE_RGNL" "PRE_TASK_CMDS" "RUN_CMD_UTILS" "GTYPE" "SFC_CLIMO_DIR" \
+  "NH0" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -62,7 +36,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -153,8 +127,7 @@ if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   Run command was not set in machine file. \
   Please set RUN_CMD_UTILS for your platform"
 else
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_UTILS}\'."
 fi
 #
 #-----------------------------------------------------------------------
@@ -262,4 +235,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

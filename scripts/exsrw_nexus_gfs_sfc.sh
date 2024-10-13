@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -8,9 +9,11 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global verification cpl_aqm_parm \
-  constants fixed_files grid_params ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "FCST_LEN_CYCL" "FCST_LEN_HRS" "DATE_FIRST_CYCL" \
+  "INCR_CYCL_FREQ" "NEXUS_GFS_SFC_ARCHV_DIR" "DO_REAL_TIME" \
+  "NEXUS_GFS_SFC_DIR" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -20,7 +23,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -169,4 +172,4 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

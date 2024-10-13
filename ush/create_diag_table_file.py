@@ -8,7 +8,6 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 dirpath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(dirpath, '../parm'))
@@ -21,6 +20,8 @@ from python_utils import (
     print_info_msg,
     print_input_args,
 )
+
+from fill_jinja_template import fill_jinja_template
 
 
 def create_diag_table_file(run_dir):
@@ -76,11 +77,26 @@ def create_diag_table_file(run_dir):
         verbose=VERBOSE,
     )
 
-    render(
-        input_file = DIAG_TABLE_TMPL_FP,
-        output_file = diag_table_fp,
-        values_src = settings,
+    # call fill jinja
+    try:
+        fill_jinja_template([
+            "-q", 
+            "-u", settings_str, 
+            "-t", DIAG_TABLE_TMPL_FP,
+            "-o", diag_table_fp])
+    except:
+        print_err_msg_exit(
+            dedent(
+                f"""
+                Call to python script fill_jinja_template.py to create a '{DIAG_TABLE_FN}'
+                file from a jinja2 template failed. Full path to template diag table file:
+                    DIAG_TABLE_TMPL_FP = '{DIAG_TABLE_TMPL_FP}'
+                Full path to output diag table file:
+                    diag_table_fp = '{diag_table_fp}' """
+            )
         )
+        return False
+
     return True
 
 

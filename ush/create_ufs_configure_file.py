@@ -9,7 +9,6 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 dirpath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(dirpath, '../parm'))
@@ -20,8 +19,12 @@ from python_utils import (
     import_vars,
     load_yaml_config,
     print_info_msg,
+    print_err_msg_exit,
     print_input_args,
 )
+
+from fill_jinja_template import fill_jinja_template
+
 
 def create_ufs_configure_file(run_dir):
     """ Creates a ufs configuration file in the specified
@@ -89,12 +92,27 @@ def create_ufs_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    render(
-        input_file = UFS_CONFIG_TMPL_FP,
-        output_file = ufs_config_fp,
-        values_src = settings,
+    try:
+        fill_jinja_template([
+            "-q", 
+            "-u", settings_str,
+            "-t", UFS_CONFIG_TMPL_FP,
+            "-o", ufs_config_fp ])
+    except:
+        print_err_msg_exit(
+            dedent(
+                f"""
+            Call to python script fill_jinja_template.py to create the ufs.configure
+            file from a jinja2 template failed. Full path to template ufs.configure file:
+                UFS_CONFIG_TMPL_FP = \"{UFS_CONFIG_TMPL_FP}\"
+            Full path to output ufs.configure file:
+                ufs_config_fp = \"{ufs_config_fp}\" """
+            )
         )
+        return False
+
     return True
+
 
 def parse_args(argv):
     """ Parse command line arguments"""
@@ -113,6 +131,7 @@ def parse_args(argv):
                         help="Path to var_defns file.")
 
     return parser.parse_args(argv)
+
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])

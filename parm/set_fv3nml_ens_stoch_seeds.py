@@ -10,8 +10,10 @@ import os
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import get_nml_config, realize
+dirpath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dirpath, '../ush'))
 
+from set_namelist import set_namelist
 from python_utils import (
     cfg_to_yaml_str,
     import_vars,
@@ -95,24 +97,37 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
 
         settings["nam_sfcperts"] = {"iseed_lndp": [iseed_lsm_spp]}
 
+    settings_str = cfg_to_yaml_str(settings)
+
     print_info_msg(
         dedent(
             f"""
             The variable 'settings' specifying seeds in '{fv3_nml_ensmem_fp}'
             has been set as follows:
-
-            settings =\n\n
-
-            {cfg_to_yaml_str(settings)}"""
-        ),
-        verbose=verbose,
+            settings =\n\n"""
+        )
+        + settings_str,
+        verbose=VERBOSE,
     )
-    realize(
-        input_config=fv3_nml_ensmem_fp,
-        input_format="nml",
-        output_file=fv3_nml_ensmem_fp,
-        output_format="nml",
-        update_config=get_nml_config(settings),
+    try:
+        set_namelist(
+            ["-q", "-n", fv3_nml_ensmem_fp, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
+        )
+    except:
+        print_err_msg_exit(
+            dedent(
+                f"""
+                Call to python script set_namelist.py to set the variables in the FV3
+                namelist file that specify the paths to the surface climatology files
+                failed.  Parameters passed to this script are:
+                  Full path to base namelist file:
+                    FV3_NML_FP = '{FV3_NML_FP}'
+                  Full path to output namelist file:
+                    fv3_nml_ensmem_fp = '{fv3_nml_ensmem_fp}'
+                  Namelist settings specified on command line (these have highest precedence):\n
+                    settings =\n\n"""
+            )
+            + settings_str
         )
 
 def parse_args(argv):

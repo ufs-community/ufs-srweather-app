@@ -69,16 +69,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing the function that replaces variable values
-# (or value placeholders) in several types of files (e.g. Fortran name-
-# list files) with actual values.
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/set_file_param.sh
-#
-#-----------------------------------------------------------------------
-#
 #
 #
 #-----------------------------------------------------------------------
@@ -205,21 +195,11 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing the function that evaluates a METplus time
-# string template.
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/eval_METplus_timestr_tmpl.sh
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the file that sources YAML files as if they were bash
 #
 #-----------------------------------------------------------------------
 #
-  . ${bashutils_dir}/source_yaml.sh
+  . ${bashutils_dir}/source_config.sh
 }
 source_util_funcs
 

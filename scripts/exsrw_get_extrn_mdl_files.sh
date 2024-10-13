@@ -1,62 +1,14 @@
 #!/usr/bin/env bash
 
-
 #
 #-----------------------------------------------------------------------
 #
 # The ex-script for getting the model files that will be used for either
 # initial conditions or lateral boundary conditions for the experiment.
 #
-# Run-time environment variables:
-#
-#    CDATE
-#    COMIN
-#    cyc
-#    DATA
-#    EXTRN_MDL_CDATE
-#    EXTRN_MDL_NAME
-#    EXTRN_MDL_STAGING_DIR
-#    GLOBAL_VAR_DEFNS_FP
-#    ICS_OR_LBCS
-#    NET
-#    PDY
-#    TIME_OFFSET_HRS
-#
-# Experiment variables
-#
-#  user:
-#    MACHINE
-#
-#  platform:
-#    EXTRN_MDL_DATA_STORES
-#
-#  workflow:
-#    DATE_FIRST_CYCL
-#    EXTRN_MDL_VAR_DEFNS_FN
-#    FCST_LEN_CYCL
-#    INCR_CYCL_FREQ
-#    SYMLINK_FIX_FILES
-#
-#  task_get_extrn_lbcs:
-#    EXTRN_MDL_FILES_LBCS
-#    EXTRN_MDL_SOURCE_BASEDIR_LBCS
-#    EXTRN_MDL_SYSBASEDIR_LBCS
-#    FV3GFS_FILE_FMT_LBCS
-#    LBC_SPEC_INTVL_HRS
-#
-#  task_get_extrn_ics:
-#    EXTRN_MDL_FILES_ICS
-#    EXTRN_MDL_SOURCE_BASEDIR_ICS
-#    EXTRN_MDL_SYSBASEDIR_ICS
-#    FV3GFS_FILE_FMT_ICS
-#
-#  global:
-#    DO_ENSEMBLE
-#    NUM_ENS_MEMBERS
-#
 #-----------------------------------------------------------------------
 #
-
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -64,10 +16,18 @@
 #
 #-----------------------------------------------------------------------
 #
+yyyymmddhh=${EXTRN_MDL_CDATE:0:10}
+#
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global task_get_extrn_lbcs \
-  task_get_extrn_ics ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "EXTRN_MDL_FILES_ICS" "FV3GFS_FILE_FMT_ICS" \
+  "EXTRN_MDL_SOURCE_BASEDIR_ICS" "EXTRN_MDL_SYSBASEDIR_ICS" \
+  "FCST_LEN_CYCL" "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" "FCST_LEN_HRS" \
+  "LBC_SPEC_INTVL_HRS" "EXTRN_MDL_FILES_LBCS" "FV3GFS_FILE_FMT_LBCS" \
+  "EXTRN_MDL_SOURCE_BASEDIR_LBCS" "EXTRN_MDL_SYSBASEDIR_LBCS" \
+  "EXTRN_MDL_DATA_STORES" "SYMLINK_FIX_FILES" "DO_ENSEMBLE" \
+  "NUM_ENS_MEMBERS" "EXTRN_MDL_VAR_DEFNS_FN" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -77,7 +37,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -153,7 +113,6 @@ fi
 
 data_stores="${EXTRN_MDL_DATA_STORES}"
 
-yyyymmddhh=${EXTRN_MDL_CDATE:0:10}
 yyyy=${yyyymmddhh:0:4}
 yyyymm=${yyyymmddhh:0:6}
 yyyymmdd=${yyyymmddhh:0:8}
@@ -359,5 +318,5 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1
 

@@ -2648,7 +2648,7 @@ smoke_dust_parm:
   # COMINsmoke_default:
   # Path to the directory containing smoke and dust files
   #
-  # COMINfire_default:
+  # COMINrave_default:
   # Path to the directory containing RAVE fire files
   #
   # SMOKE_DUST_FILE_PREFIX:
@@ -2659,7 +2659,7 @@ smoke_dust_parm:
   DO_SMOKE_DUST: false
   EBB_DCYCLE: 1
   COMINsmoke_default: ""
-  COMINfire_default: ""
+  COMINrave_default: ""
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
 
 rocoto:

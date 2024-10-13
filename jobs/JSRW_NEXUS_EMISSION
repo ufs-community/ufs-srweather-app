@@ -5,18 +5,6 @@
 #
 # This script generate individual NEXUS emission netcdf file.
 #
-#  user:
-#    MACHINE
-#
-#  platform:
-#    WORKFLOW_MANAGER
-#
-#  nco:
-#    NCO variables
-#
-#  global:
-#    DO_ENSEMBLE
-#
 #-----------------------------------------------------------------------
 #
 date
@@ -41,8 +29,10 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user platform nco global ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "MACHINE" "WORKFLOW_MANAGER" "SCHED" "NET_default" \
+  "RUN_default" "DO_ENSEMBLE" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------

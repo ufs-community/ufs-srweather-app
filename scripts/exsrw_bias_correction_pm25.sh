@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -8,10 +9,12 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_bias_correction_pm25 ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_BIAS_CORRECTION_O3" \
+  "OMP_NUM_THREADS_BIAS_CORRECTION_O3" "OMP_STACKSIZE_BIAS_CORRECTION_O3" \
+  "PRE_TASK_CMDS" "RUN_CMD_SERIAL" "PREDEF_GRID_NAME" "FCST_LEN_CYCL" \
+  "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" "DCOMINairnow" "FCST_LEN_HRS" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -21,7 +24,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -73,8 +76,7 @@ if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
   Please set RUN_CMD_SERIAL for your platform"
 else
   RUN_CMD_SERIAL=$(eval echo ${RUN_CMD_SERIAL})
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_SERIAL}\'."
 fi
 
 yyyy=${PDY:0:4}
@@ -453,4 +455,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

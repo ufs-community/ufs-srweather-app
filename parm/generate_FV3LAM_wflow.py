@@ -15,8 +15,8 @@ from stat import S_IXUSR
 from string import Template
 from textwrap import dedent
 
-from uwtools.api.config import get_nml_config, get_yaml_config, realize
-from uwtools.api.template import render
+dirpath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dirpath, '../ush'))
 
 from python_utils import (
     list_to_str,
@@ -36,6 +36,8 @@ from python_utils import (
 from setup import setup
 from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
+from set_namelist import set_namelist
+from fill_jinja_template import fill_jinja_template
 from check_python_version import check_python_version
 
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
@@ -137,10 +139,20 @@ def generate_FV3LAM_wflow(
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        render(
-            input_file = template_xml_fp,
-            output_file = wflow_xml_fp,
-            values_src = rocoto_yaml_fp,
+        args = ["-o", wflow_xml_fp,
+                "-t", template_xml_fp,
+                "-c", rocoto_yaml_fp ]
+        if not debug:
+            args.append("-q")
+        try:
+            fill_jinja_template(args)
+        except:
+            raise Exception(
+                dedent(
+                    f"""
+                    Call to fill_jinja_template failed.
+                    """
+                )
             )
     #
     # -----------------------------------------------------------------------
@@ -529,19 +541,14 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-
-    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
-    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
-    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
-    base_namelist.update_values(settings)
-    for sect, values in base_namelist.copy().items():
-        if not values:
-            del base_namelist[sect]
-            continue
-        for k, v in values.copy().items():
-            if v is None:
-                del base_namelist[sect][k]
-    base_namelist.dump(FV3_NML_FP)
+    args=[ "-n", FV3_NML_BASE_SUITE_FP,
+           "-c", FV3_NML_YAML_CONFIG_FP, CCPP_PHYS_SUITE,
+           "-u", settings_str,
+           "-o", FV3_NML_FP,
+          ]
+    if not debug:
+        args.append("-q")
+    set_namelist(args)
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -555,9 +562,7 @@ def generate_FV3LAM_wflow(
     # configurations is not known until the grid is created.
     #
     if not expt_config['rocoto']['tasks'].get('task_make_grid'):
-
         set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
-
     #
     # -----------------------------------------------------------------------
     #
@@ -670,14 +675,13 @@ def generate_FV3LAM_wflow(
     #-----------------------------------------------------------------------
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
-        realize(
-            input_config=FV3_NML_FP,
-            input_format="nml",
-            output_file=FV3_NML_STOCH_FP,
-            output_format="nml",
-            update_config=get_nml_config(settings),
-            )
-
+        args=[ "-n", FV3_NML_FP,
+               "-u", settings_str,
+               "-o", FV3_NML_STOCH_FP,
+              ]
+        if not debug:
+            args.append("-q")
+        set_namelist(args)
     #
     # -----------------------------------------------------------------------
     #

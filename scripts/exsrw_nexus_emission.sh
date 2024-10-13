@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -8,10 +9,13 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_nexus_emission ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "KMP_AFFINITY_NEXUS_EMISSION" \
+  "OMP_NUM_THREADS_NEXUS_EMISSION" "OMP_STACKSIZE_NEXUS_EMISSION" \
+  "PRE_TASK_CMDS" "RUN_CMD_NEXUS" "FIXaqm" "NEXUS_GRID_FN" \
+  "NUM_SPLIT_NEXUS" "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" "FCST_LEN_CYCL" \
+  "FCST_LEN_HRS" "FIXemis" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -21,7 +25,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -73,8 +77,7 @@ if [ -z "${RUN_CMD_NEXUS:-}" ] ; then
   Please set RUN_CMD_NEXUS for your platform"
 else
   RUN_CMD_NEXUS=$(eval echo ${RUN_CMD_NEXUS})
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_NEXUS}\'."
+  print_info_msg "All executables will be submitted with \'${RUN_CMD_NEXUS}\'."
 fi
 #
 #-----------------------------------------------------------------------
@@ -351,4 +354,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1

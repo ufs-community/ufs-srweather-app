@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xue
 #
 #-----------------------------------------------------------------------
 #
@@ -8,9 +9,10 @@
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-for sect in user nco platform workflow global smoke_dust_parm \
-  constants fixed_files grid_params task_run_fcst ; do
-  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+task_global_vars=( "SMOKE_DUST_FILE_PREFIX" "PRE_TASK_CMDS" "FIXsmoke" \
+  "INCR_CYCL_FREQ" "EBB_DCYCLE" "PREDEF_GRID_NAME" "RESTART_INTERVAL" )
+for var in ${task_global_vars[@]}; do
+  source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
 #
 #-----------------------------------------------------------------------
@@ -20,7 +22,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
+#{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -78,20 +80,20 @@ else
     fire_hr_cdate=$($NDATE +${hour} ${ddhh_to_use})
     fire_hr_pdy="${fire_hr_cdate:0:8}"
     fire_hr_fn="Hourly_Emissions_3km_${fire_hr_cdate}00_${fire_hr_cdate}00.nc"
-    if [ -f "${COMINfire}/${fire_hr_fn}" ]; then
+    if [ -f "${COMINrave}/${fire_hr_fn}" ]; then
       echo "Hourly emission file for $hour was found: ${fire_hr_fn}"
-      ln -nsf ${COMINfire}/${fire_hr_fn} .
+      ln -nsf ${COMINrave}/${fire_hr_fn} .
     else
       # Check various version of RAVE raw data files (new and old)
       rave_raw_fn1="RAVE-HrlyEmiss-3km_v2r0_blend_s${fire_hr_cdate}00000_e${fire_hr_pdy}23*"
       rave_raw_fn2="Hourly_Emissions_3km_${fire_hr_cdate}00_${fire_hr_pdy}23*"
       # Find files matching the specified patterns
-      files_found=$(find "${COMINfire}" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
+      files_found=$(find "${COMINrave}" -type f \( -name "${rave_raw_fn1##*/}" -o -name "${rave_raw_fn2##*/}" \))
       # Splitting 24-hour RAVE raw data into houly data
       for file_to_use in $files_found; do
         echo "Using file: $file_to_use"
         echo "Splitting data for hour $hour..."
-        ncks -d time,$hour,$hour "${COMINfire}/${file_to_use}" "${DATA}/${fire_hr_fn}"
+        ncks -d time,$hour,$hour "${COMINrave}/${file_to_use}" "${DATA}/${fire_hr_fn}"
         if [ -f "${DATA}/${fire_hr_fn}" ]; then
           break
         else
@@ -141,4 +143,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+#{ restore_shell_opts; } > /dev/null 2>&1
