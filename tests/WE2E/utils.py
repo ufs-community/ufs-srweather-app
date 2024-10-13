@@ -176,8 +176,8 @@ def calculate_core_hours(expts_dict: dict) -> dict:
             # Cycle is last 12 characters, task name is rest (minus separating underscore)
             taskname = task[:-13]
             # Handle task names that have ensemble and/or fhr info appended with regex
-            taskname = re.sub('_mem\d{3}', '', taskname)
-            taskname = re.sub('_f\d{3}', '', taskname)
+            taskname = re.sub(r'_mem\d{3}', '', taskname)
+            taskname = re.sub(r'_f\d{3}', '', taskname)
             nnodes_var = f'NNODES_{taskname.upper()}'
             if nnodes_var in vdf:
                 nnodes = vdf[nnodes_var]
