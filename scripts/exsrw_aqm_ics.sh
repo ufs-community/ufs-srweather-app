@@ -9,8 +9,8 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "COLDSTART" "DATE_FIRST_CYCL" "WARMSTART_CYCLE_DIR" \ 
-  "INCR_CYCL_FREQ" "TILE_RGNL" "NH0" )
+task_global_vars=( "COLDSTART" "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" \
+  "WARMSTART_CYCLE_DIR" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -135,7 +135,7 @@ Checking available restart date:
   #
   #-----------------------------------------------------------------------
   #
-  gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile7.halo0.nc"
   gfs_ic_fp="${DATA_SHARE}/${gfs_ic_fn}"
   wrk_ic_fp="${DATA}/gfs.nc"
 

@@ -9,8 +9,7 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_BIAS_CORRECTION_O3" \
-  "OMP_NUM_THREADS_BIAS_CORRECTION_O3" "OMP_STACKSIZE_BIAS_CORRECTION_O3" \
+task_global_vars=( "OMP_NUM_THREADS_BIAS_CORRECTION_PM25" \
   "PRE_TASK_CMDS" "RUN_CMD_SERIAL" "PREDEF_GRID_NAME" "FCST_LEN_CYCL" \
   "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" "DCOMINairnow" "FCST_LEN_HRS" )
 for var in ${task_global_vars[@]}; do
@@ -57,9 +56,9 @@ This is the ex-script for the task that runs BIAS-CORRECTION-PM25.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_BIAS_CORRECTION_PM25}
+export KMP_AFFINITY="scatter"
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_BIAS_CORRECTION_PM25}
-export OMP_STACKSIZE=${OMP_STACKSIZE_BIAS_CORRECTION_PM25}
+export OMP_STACKSIZE="2048m"
 export OMP_PLACES=cores
 #
 #-----------------------------------------------------------------------

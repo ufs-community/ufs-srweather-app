@@ -32,7 +32,7 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/upp_post.yaml"]|include }}'
     metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         walltime: 02:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: RAP
@@ -49,7 +49,7 @@ task_make_ics:
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
 task_make_lbcs:
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 36
   LAYOUT_X: 15
   LAYOUT_Y: 20
@@ -59,7 +59,7 @@ task_run_fcst:
   QUILTING: true
   PRINT_ESMF: false
   DO_FCST_RESTART: false
-task_run_post:
+task_upp_post:
   POST_OUTPUT_DOMAIN_NAME: conus3km
   USE_CUSTOM_POST_CONFIG_FILE: false
 global:

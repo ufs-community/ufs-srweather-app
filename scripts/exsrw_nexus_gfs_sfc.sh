@@ -9,8 +9,8 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "FCST_LEN_CYCL" "FCST_LEN_HRS" "DATE_FIRST_CYCL" \
-  "INCR_CYCL_FREQ" "NEXUS_GFS_SFC_ARCHV_DIR" "DO_REAL_TIME" \
+task_global_vars=( "DATE_FIRST_CYCL" "DO_REAL_TIME" "FCST_LEN_CYCL" \
+  "FCST_LEN_HRS" "INCR_CYCL_FREQ" "NEXUS_GFS_SFC_ARCHV_DIR" \
   "NEXUS_GFS_SFC_DIR" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}

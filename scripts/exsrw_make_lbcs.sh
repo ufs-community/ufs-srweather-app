@@ -17,12 +17,11 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_MAKE_LBCS" "OMP_NUM_THREADS_MAKE_LBCS" \
-  "OMP_STACKSIZE_MAKE_LBCS" "CCPP_PHYS_SUITE" "CPL_AQM" "CRES" "DO_SMOKE_DUST" \
-  "DOT_OR_USCORE" "EXTRN_MDL_LBCS_OFFSET_HRS" "EXTRN_MDL_NAME_LBCS" \
+task_global_vars=( "CCPP_PHYS_SUITE" "CPL_AQM" "CRES" "DO_SMOKE_DUST" \
+  "EXTRN_MDL_LBCS_OFFSET_HRS" "EXTRN_MDL_NAME_LBCS" \
   "EXTRN_MDL_VAR_DEFNS_FN" "FIXlam" "FV3GFS_FILE_FMT_LBCS" "HALO_BLEND" \
-  "NH4" "PRE_TASK_CMDS" "RUN_CMD_UTILS" "SDF_USES_THOMPSON_MP" \
-  "THOMPSON_MP_CLIMO_FP" "TILE_RGNL" "VCOORD_FILE" )
+  "OMP_NUM_THREADS_MAKE_LBCS" "PRE_TASK_CMDS" "RUN_CMD_UTILS" \
+  "SDF_USES_THOMPSON_MP" "THOMPSON_MP_CLIMO_FP" "VCOORD_FILE" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -70,9 +69,9 @@ hour zero).
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_MAKE_LBCS}
+export KMP_AFFINITY="scatter"
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_LBCS}
-export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
+export OMP_STACKSIZE="1024m"
 #
 #-----------------------------------------------------------------------
 #
@@ -197,49 +196,6 @@ varmap_file_fp="${PARMsrw}/ufs_utils_parm/varmap_tables/${varmap_file}"
 #
 #-----------------------------------------------------------------------
 #
-
-# GSK comments about chgres_cube:
-#
-# The following are the three atmsopheric tracers that are in the atmo-
-# spheric analysis (atmanl) nemsio file for CDATE=2017100700:
-#
-#   "spfh","o3mr","clwmr"
-#
-# Note also that these are hardcoded in the code (file input_data.F90,
-# subroutine read_input_atm_gfs_spectral_file), so that subroutine will
-# break if tracers_input(:) is not specified as above.
-#
-# Note that there are other fields too ["hgt" (surface height (togography?)),
-# pres (surface pressure), ugrd, vgrd, and tmp (temperature)] in the atmanl file, but those
-# are not considered tracers (they're categorized as dynamics variables,
-# I guess).
-#
-# Another note:  The way things are set up now, tracers_input(:) and
-# tracers(:) are assumed to have the same number of elements (just the
-# atmospheric tracer names in the input and output files may be differ-
-# ent).  There needs to be a check for this in the chgres_cube code!!
-# If there was a varmap table that specifies how to handle missing
-# fields, that would solve this problem.
-#
-# Also, it seems like the order of tracers in tracers_input(:) and
-# tracers(:) must match, e.g. if ozone mixing ratio is 3rd in
-# tracers_input(:), it must also be 3rd in tracers(:).  How can this be checked?
-#
-# NOTE: Really should use a varmap table for GFS, just like we do for
-# RAP/HRRR/RRFS.
-#
-
-# A non-prognostic variable that appears in the field_table for GSD physics
-# is cld_amt.  Why is that in the field_table at all (since it is a non-
-# prognostic field), and how should we handle it here??
-
-# I guess this works for FV3GFS but not for the spectral GFS since these
-# variables won't exist in the spectral GFS atmanl files.
-#  tracers_input="\"sphum\",\"liq_wat\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\",\"o3mr\""
-#
-# Not sure if tracers(:) should include "cld_amt" since that is also in
-# the field_table for CDATE=2017100700 but is a non-prognostic variable.
-
 external_model=""
 fn_atm=""
 fn_grib2=""
@@ -468,12 +424,12 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
  'external_model': ${external_model}
  'fix_dir_target_grid': ${FIXlam}
  'grib2_file_input_grid': \"${fn_grib2}\"
- 'halo_bndy': $((10#${NH4}))
+ 'halo_bndy': 4
  'halo_blend': $((10#${HALO_BLEND}))
  'input_type': ${input_type}
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}_mosaic.halo4.nc
  'orog_dir_target_grid': ${FIXlam}
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'orog_files_target_grid': ${CRES}_oro_data.tile7.halo4.nc
  'regional': 2
  'atm_files_input_grid': ${fn_atm}
  'thomp_mp_climo_file': ${thomp_mp_climo_file}

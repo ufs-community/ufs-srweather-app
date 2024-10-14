@@ -486,19 +486,6 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # Set the separator character(s) to use in the names of the grid, mosaic,
-  # and orography fixed files.
-  #
-  # Ideally, the same separator should be used in the names of these fixed
-  # files as in the surface climatology fixed files (which always use a "."
-  # as the separator), i.e. ideally, DOT_OR_USCORE should be set to "."
-  #
-  #-----------------------------------------------------------------------
-  #
-  DOT_OR_USCORE: "_"
-  #
-  #-----------------------------------------------------------------------
-  #
   # Set file names.  Definitions:
   #
   # EXPT_CONFIG_FN:
@@ -1334,50 +1321,30 @@ task_make_grid:
 # MAKE OROG config parameters
 #-----------------------------
 #-----------------------------------------------------------------------
-# KMP_AFFINITY_MAKE_OROG: 
-# Intel Thread Affinity Interface for the make_orog task. 
-# Settings for this task are disabled because this task does not use 
-# parallelized code.
-#
 # OMP_NUM_THREADS_MAKE_OROG: 
 # The number of OpenMP threads to use for parallel regions.
-#
-# OMP_STACKSIZE_MAKE_OROG: 
-# Controls the size of the stack for threads created by the OpenMP 
-# implementation.
 #
 # OROG_DIR: 
 # The directory containing pre-generated orography files to use when 
 # the MAKE_OROG task is not meant to run.
 #-----------------------------------------------------------------------
 task_make_orog:
-  KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
-  OMP_STACKSIZE_MAKE_OROG: "2048m"
   OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks.get("task_make_orog") else "" }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
 #-----------------------------
 #-----------------------------------------------------------------------
-# KMP_AFFINITY_MAKE_SFC_CLIMO: 
-# Intel Thread Affinity Interface for the make_sfc_climo task. 
-#
 # OMP_NUM_THREADS_MAKE_SFC_CLIMO: 
 # The number of OpenMP threads to use for parallel regions.
-#
-# OMP_STACKSIZE_MAKE_SFC_CLIMO: 
-# Controls the size of the stack for threads created by the OpenMP 
-# implementation.
 #
 # SFC_CLIMO_DIR: 
 # The directory containing pre-generated surface climatology files 
 # to use when the MAKE_SFC_CLIMO task is not meant to run.
 #-----------------------------------------------------------------------
 task_make_sfc_climo:
-  KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
-  OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
   SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks.get("task_make_sfc_climo") else "" }}'
 
 #----------------------------
@@ -1556,19 +1523,10 @@ task_get_extrn_lbcs:
 #-----------------------------
 task_make_ics:
   #-----------------------------------------------------------------------
-  # KMP_AFFINITY_MAKE_ICS: 
-  # Intel Thread Affinity Interface for the make_ics task. 
-  #
   # OMP_NUM_THREADS_MAKE_ICS: 
   # The number of OpenMP threads to use for parallel regions.
-  #
-  # OMP_STACKSIZE_MAKE_ICS: 
-  # Controls the size of the stack for threads created by the OpenMP 
-  # implementation.
   #-----------------------------------------------------------------------
-  KMP_AFFINITY_MAKE_ICS: "scatter"
   OMP_NUM_THREADS_MAKE_ICS: 1
-  OMP_STACKSIZE_MAKE_ICS: "1024m"
   #
   #-----------------------------------------------------------------------
   #
@@ -1613,83 +1571,51 @@ task_make_ics:
 task_make_lbcs:
   #------------------------------------------------------------------------
   #
-  # KMP_AFFINITY_MAKE_LBCS: 
-  # Intel Thread Affinity Interface for the make_lbcs task. 
-  # 
   # OMP_NUM_THREADS_MAKE_LBCS: 
   # The number of OpenMP threads to use for parallel regions.
   # 
-  # OMP_STACKSIZE_MAKE_LBCS: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
-  #
   # VCOORD_FILE: 
   # Full path to the file used to set the vertical coordinates in FV3. 
   # This file should be the same in both make_ics and make_lbcs.
   #
   #------------------------------------------------------------------------
-  KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
-  OMP_STACKSIZE_MAKE_LBCS: "1024m"
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # IO_LAYOUT_Y FORECAST config parameters
 #-----------------------------
-task_run_fcst:
+task_forecast:
   #------------------------------------------------------------------------
   #
-  # NNODES_RUN_FCST: 
+  # NNODES_FORECAST: 
   # The number of nodes to request from the job scheduler 
   # for the forecast task. 
   # 
-  # PPN_RUN_FCST: 
+  # PPN_FORECAST:
   # Processes per node for the forecast task. 
   #
-  # FV3_EXEC_FP: 
+  # FV3_EXEC_FP:
   # Full path to the forecast model executable.
   #
-  # IO_LAYOUT_Y: 
+  # IO_LAYOUT_Y:
   # Specifies how many MPI ranks to use in the Y direction for 
   # input/output (I/O). (X direction is assumed to be 1.)
   #
   #------------------------------------------------------------------------
-  NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
-  PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
+  NNODES_FORECAST: '{{ (PE_MEMBER01 + PPN_FORECAST - 1) // PPN_FORECAST }}'
+  PPN_FORECAST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_FORECAST }}'
   FV3_EXEC_FP: '{{ [user.HOMEdir, "exec", workflow.FV3_EXEC_FN]|path_join }}'
   IO_LAYOUT_Y: 1
   #
   #-----------------------------------------------------------------------
   #
-  # KMP_AFFINITY_*:
-  # From Intel: "The Intel® runtime library has the ability to bind OpenMP
-  # threads to physical processing units. The interface is controlled using
-  # the KMP_AFFINITY environment variable. Depending on the system (machine)
-  # topology, application, and operating system, thread affinity can have a
-  # dramatic effect on the application speed. 
-  #
-  # Thread affinity restricts execution of certain threads (virtual execution
-  # units) to a subset of the physical processing units in a multiprocessor 
-  # computer. Depending upon the topology of the machine, thread affinity can
-  # have a dramatic effect on the execution speed of a program."
-  #
-  # For more information, see the following link:
-  # https://software.intel.com/content/www/us/en/develop/documentation/cpp-
-  # compiler-developer-guide-and-reference/top/optimization-and-programming-
-  # guide/openmp-support/openmp-library-support/thread-affinity-interface-
-  # linux-and-windows.html
-  # 
-  # OMP_NUM_THREADS_RUN_FCST:
-  # The number of OpenMP threads to use for parallel regions.
-  # 
-  # OMP_STACKSIZE_RUN_FCST:
-  # Controls the size of the stack for threads created by the OpenMP 
-  # implementation.
+  # OMP_NUM_THREADS_FORECAST:
+  # The number of OpenMP threads to use for parallel regions. 
   #
   #-----------------------------------------------------------------------
   #
-  KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
-  OMP_STACKSIZE_RUN_FCST: "1024m"
+  OMP_NUM_THREADS_FORECAST: 2    # atmos_nthreads in model_configure
   #
   #-----------------------------------------------------------------------
   #
@@ -1715,7 +1641,7 @@ task_run_fcst:
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature
   # [i.e. calling the Unified Post Processor (UPP) from within the
-  # weather model].  If this is set to true, the the run_post task will
+  # weather model].  If this is set to true, the the upp_post task will
   # be deactivated.
   #
   # ITASKS:
@@ -1773,7 +1699,7 @@ task_run_fcst:
   #
   # Set write-component (quilting) parameters. 
   # 
-  # NOTE: The UPP (called by the run_post task) cannot process output on the 
+  # NOTE: The UPP (called by the upp_post task) cannot process output on the 
   # native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated 
   # to a write component grid before writing them to an output file. The output files 
   # written by the UFS Weather Model use an Earth System Modeling Framework (ESMF) 
@@ -1934,20 +1860,14 @@ task_run_fcst:
 #----------------------------
 # POST config parameters
 #-----------------------------
-task_run_post:
+task_upp_post:
   #-----------------------------------------------------------------------
-  # KMP_AFFINITY_RUN_POST: 
-  # Intel Thread Affinity Interface for the run_post task. 
   #
-  # OMP_NUM_THREADS_RUN_POST: 
+  # OMP_NUM_THREADS_UPP_POST: 
   # The number of OpenMP threads to use for parallel regions.
   #
-  # OMP_STACKSIZE_RUN_POST: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-----------------------------------------------------------------------
-  KMP_AFFINITY_RUN_POST: "scatter"
-  OMP_NUM_THREADS_RUN_POST: 1
-  OMP_STACKSIZE_RUN_POST: "1024m"
+  OMP_NUM_THREADS_UPP_POST: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -2026,18 +1946,12 @@ task_run_post:
 #-----------------------------
 task_run_prdgen:
   #-----------------------------------------------------------------------
-  # KMP_AFFINITY_RUN_PRDGEN: 
-  # Intel Thread Affinity Interface for the run_prdgen task. 
   #
   # OMP_NUM_THREADS_RUN_PRDGEN: 
   # The number of OpenMP threads to use for parallel regions.
   # 
-  # OMP_STACKSIZE_RUN_PRDGEN: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-----------------------------------------------------------------------
-  KMP_AFFINITY_RUN_PRDGEN: "scatter"
   OMP_NUM_THREADS_RUN_PRDGEN: 1
-  OMP_STACKSIZE_RUN_PRDGEN: "1024m"
   #-----------------------------------------------------------------------
   # DO_PARALLEL_PRDGEN:
   # Flag that determines whether to use CFP to run the product generation
@@ -2108,20 +2022,13 @@ task_nexus_emission:
   # The number of nodes to request from the job scheduler
   # for the nexus emission task.
   #
-  # KMP_AFFINITY_NEXUS_EMISSION: 
-  # Intel Thread Affinity Interface for the nexus_emission_* tasks. 
-  # 
   # OMP_NUM_THREADS_NEXUS_EMISSION: 
   # The number of OpenMP threads to use for parallel regions.
   # 
-  # OMP_STACKSIZE_NEXUS_EMISSION: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
   PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
   NNODES_NEXUS_EMISSION: 4
-  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
-  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
 
 #-----------------------------
 # POINT_SOURCE config parameters
@@ -2139,36 +2046,24 @@ task_point_source:
 #-----------------------------
 task_bias_correction_o3:
   #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_O3: 
-  # Intel Thread Affinity Interface for the bias_correction_o3 task. 
   # 
   # OMP_NUM_THREADS_BIAS_CORRECTION_O3: 
   # The number of OpenMP threads to use for parallel regions.
   # 
-  # OMP_STACKSIZE_BIAS_CORRECTION_O3: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
-  KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
-  OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
 
 #----------------------------
 # BIAS_CORRECTION_PM25 config parameters
 #-----------------------------
 task_bias_correction_pm25:
   #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_PM25: 
-  # Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
   # 
   # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 
   # The number of OpenMP threads to use for parallel regions.
   # 
-  # OMP_STACKSIZE_BIAS_CORRECTION_PM25: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
-  KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
-  OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
 # global config parameters
@@ -2427,7 +2322,7 @@ verification:
   # VX_ASNOW_ACCUMS_HRS must contain at least one element.  If not,
   # VX_ASNOW_ACCUMS_HRS will be ignored.
   #
-  VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_upp_post.POST_OUTPUT_DOMAIN_NAME }}'
   VX_FIELDS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
   VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
   VX_ASNOW_ACCUMS_HRS: [ 6, 24 ]

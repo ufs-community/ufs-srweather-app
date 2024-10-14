@@ -21,6 +21,6 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
-task_run_fcst:
+task_forecast:
   WRITE_DOPOST: true
   ITASKS: 2

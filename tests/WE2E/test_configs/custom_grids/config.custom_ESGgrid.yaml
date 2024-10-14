@@ -28,7 +28,7 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 40
   LAYOUT_X: 8
   LAYOUT_Y: 12
@@ -47,5 +47,5 @@ task_run_fcst:
   WRTCMP_ny: 150
   WRTCMP_dx: 25000.0
   WRTCMP_dy: 25000.0
-task_run_post:
+task_upp_post:
   POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid

@@ -155,7 +155,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Create a flag file to make rocoto aware that the run_post task has
+# Create a flag file to make rocoto aware that the upp_post task has
 # successfully completed. This flag is necessary for varying forecast
 # hours (FCST_LEN_HRS: -1)
 #

@@ -37,29 +37,9 @@ constants:
   # GTYPE:
   # Grid type string, set to regional for SRW
   #
-  # TILE_RGNL: 7
-  # Tile number set to 7 for a regional grid in SRW
-  #
-  # We will let:
-  #
-  # * NH0 denote the width (in units of number of cells on tile 7) of
-  #   the 0-cell-wide halo, i.e. NH0 = 0;
-  #
-  # * NH3 denote the width (in units of number of cells on tile 7) of
-  #   the 3-cell-wide halo, i.e. NH3 = 3; and
-  #
-  # * NH4 denote the width (in units of number of cells on tile 7) of
-  #   the 4-cell-wide halo, i.e. NH4 = 4.
-  #
-  # We define these variables next.
-  #
   #-----------------------------------------------------------------------
   #
   GTYPE: regional
-  TILE_RGNL: 7
-  NH0: 0
-  NH3: 3
-  NH4: 4
   #
   #-----------------------------------------------------------------------
   #

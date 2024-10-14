@@ -9,8 +9,9 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "SMOKE_DUST_FILE_PREFIX" "PRE_TASK_CMDS" "FIXsmoke" \
-  "INCR_CYCL_FREQ" "EBB_DCYCLE" "PREDEF_GRID_NAME" "RESTART_INTERVAL" )
+task_global_vars=( "EBB_DCYCLE" "FIXsmoke" "INCR_CYCL_FREQ" \
+  "PRE_TASK_CMDS" "PREDEF_GRID_NAME" "RESTART_INTERVAL" \
+  "SMOKE_DUST_FILE_PREFIX" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done

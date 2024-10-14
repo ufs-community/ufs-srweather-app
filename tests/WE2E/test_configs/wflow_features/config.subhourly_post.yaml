@@ -22,8 +22,8 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_FILES_LBCS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 120
-task_run_post:
+task_upp_post:
   SUB_HOURLY_POST: true
   DT_SUBHOURLY_POST_MNTS: 2

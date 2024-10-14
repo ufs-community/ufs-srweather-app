@@ -82,7 +82,7 @@ def create_model_configure_file(
         "nhours_fcst": fcst_len_hrs,
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
-        "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
+        "atmos_nthreads": OMP_NUM_THREADS_FORECAST,
         "restart_interval": RESTART_INTERVAL,
         "itasks": ITASKS,
         "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",

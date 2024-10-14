@@ -9,8 +9,9 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "PRE_TASK_CMDS" "NUM_SPLIT_NEXUS" "FCST_LEN_CYCL" \
-  "FCST_LEN_HRS" "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" "FIXaqm" "NEXUS_GRID_FN" )
+task_global_vars=( "DATE_FIRST_CYCL" "FCST_LEN_CYCL" "FCST_LEN_HRS" \
+  "FIXaqm" "INCR_CYCL_FREQ" "NEXUS_GRID_FN" "NUM_SPLIT_NEXUS" \
+  "PRE_TASK_CMDS" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done

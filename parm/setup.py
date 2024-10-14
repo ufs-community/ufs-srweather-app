@@ -513,7 +513,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
             remove_tag(rocoto_tasks, 'partition')
 
     # When not running subhourly post, remove those tasks, if they exist
-    if not expt_config.get("task_run_post", {}).get("SUB_HOURLY_POST"):
+    if not expt_config.get("task_upp_post", {}).get("SUB_HOURLY_POST"):
         post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
         post_meta.pop("metatask_run_sub_hourly_post", None)
         post_meta.pop("metatask_sub_hourly_last_hour_post", None)
@@ -668,7 +668,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    fcst_config = expt_config["task_run_fcst"]
+    fcst_config = expt_config["task_forecast"]
     grid_config = expt_config["task_make_grid"]
 
     # Warn if user has specified a large timestep inappropriately
@@ -823,7 +823,6 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
             jstart_of_t7_on_t6g=grid_config["GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G"],
             jend_of_t7_on_t6g=grid_config["GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G"],
             verbose=verbose,
-            nh4=expt_config["constants"]["NH4"],
         )
     elif grid_gen_method == "ESGgrid":
         grid_params = set_gridparams_ESGgrid(
@@ -1001,7 +1000,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
     #
 
     # If using a custom post configuration file, make sure that it exists.
-    post_config = expt_config["task_run_post"]
+    post_config = expt_config["task_upp_post"]
     if post_config.get("USE_CUSTOM_POST_CONFIG_FILE"):
         custom_post_config_fp = post_config.get("CUSTOM_POST_CONFIG_FP")
         try:
@@ -1117,7 +1116,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
         if not predef_grid_name:
             raise Exception(
                 f"""
-                The domain name used in naming the run_post output files
+                The domain name used in naming the upp_post output files
                 (POST_OUTPUT_DOMAIN_NAME) has not been set:
                 POST_OUTPUT_DOMAIN_NAME = \"{post_output_domain_name}\"
                 If this experiment is not using a predefined grid (i.e. if
@@ -1245,10 +1244,10 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
 
     run_make_ics = dict_find(rocoto_tasks, "task_make_ics")
     run_make_lbcs = dict_find(rocoto_tasks, "task_make_lbcs")
-    run_run_fcst = dict_find(rocoto_tasks, "task_run_fcst")
+    run_forecast = dict_find(rocoto_tasks, "task_forecast")
     run_any_coldstart_task = run_make_ics or \
                              run_make_lbcs or \
-                             run_run_fcst
+                             run_forecast
     # Flags for creating symlinks to pre-generated grid, orography, and sfc_climo files.
     # These consider dependencies of other tasks on each pre-processing task.
     create_symlinks_to_pregen_files = {
@@ -1302,7 +1301,6 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
                 target_dir=workflow_config["FIXlam"],
                 ccpp_phys_suite=workflow_config["CCPP_PHYS_SUITE"],
                 constants=expt_config["constants"],
-                dot_or_uscore=workflow_config["DOT_OR_USCORE"],
                 nhw=grid_params["NHW"],
                 run_task=False,
                 sfc_climo_fields=fixed_files["SFC_CLIMO_FIELDS"],
@@ -1344,7 +1342,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
     if fcst_config["WRITE_DOPOST"]:
-        # Turn off run_post
+        # Turn off upp_post
         task_name = 'metatask_run_ens_post'
         removed_task = task_defs.pop(task_name, None)
         if removed_task:
@@ -1359,7 +1357,7 @@ def setup(PARMsrw, user_config_fn="config.yaml", debug: bool = False):
             )
 
         # Check if SUB_HOURLY_POST is on
-        if expt_config["task_run_post"]["SUB_HOURLY_POST"]:
+        if expt_config["task_upp_post"]["SUB_HOURLY_POST"]:
             raise Exception(
                 f"""
                 SUB_HOURLY_POST is NOT available with Inline Post yet."""

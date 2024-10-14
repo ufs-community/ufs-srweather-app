@@ -182,7 +182,7 @@ fixed_files:
   #-----------------------------------------------------------------------
   #
   # THOMPSON_FIX_FILES
-  # Thompson microphysics requires additional fix files at the run_fcst step,
+  # Thompson microphysics requires additional fix files at the forecast step,
   # this array is appended to FIXgsm_FILES_TO_COPY_TO_FIXam at the workflow
   # generation step. Since all these file names are the same when linked,
   # appending CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING is handled in the

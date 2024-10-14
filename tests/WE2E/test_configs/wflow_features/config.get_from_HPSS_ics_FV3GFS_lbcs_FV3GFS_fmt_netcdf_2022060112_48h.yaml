@@ -21,7 +21,7 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 12
   FV3GFS_FILE_FMT_LBCS: netcdf
-task_run_fcst:
+task_forecast:
   LAYOUT_X: 10
   LAYOUT_Y: 4
   BLOCKSIZE: 40

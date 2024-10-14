@@ -35,14 +35,14 @@ custom_ESGgrid:
   make_sfc_climo_201907010000: SUCCEEDED
   make_ics_201907010000: SUCCEEDED
   make_lbcs_201907010000: SUCCEEDED
-  run_fcst_201907010000: SUCCEEDED
-  run_post_f000_201907010000: SUCCEEDED
-  run_post_f001_201907010000: SUCCEEDED
-  run_post_f002_201907010000: SUCCEEDED
-  run_post_f003_201907010000: SUCCEEDED
-  run_post_f004_201907010000: SUCCEEDED
-  run_post_f005_201907010000: SUCCEEDED
-  run_post_f006_201907010000: SUCCEEDED
+  forecast_201907010000: SUCCEEDED
+  upp_post_f000_201907010000: SUCCEEDED
+  upp_post_f001_201907010000: SUCCEEDED
+  upp_post_f002_201907010000: SUCCEEDED
+  upp_post_f003_201907010000: SUCCEEDED
+  upp_post_f004_201907010000: SUCCEEDED
+  upp_post_f005_201907010000: SUCCEEDED
+  upp_post_f006_201907010000: SUCCEEDED
 #Fifth example: an experiment that has died due to a failed task.
 custom_ESGgrid:
   expt_dir: /some_directory/expt_dirs/custom_ESGgrid

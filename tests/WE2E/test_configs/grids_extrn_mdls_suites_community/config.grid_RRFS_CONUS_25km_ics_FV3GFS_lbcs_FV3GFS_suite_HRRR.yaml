@@ -4,7 +4,7 @@ metadata:
     completes successfully on the RRFS_CONUS_25km grid using the HRRR
     physics suite with ICs and LBCs derived from the FV3GFS.
     Additionally, this test deactivates the write component (QUILTING=False)
-    to test the workflow's support for this option. Note that run_post and
+    to test the workflow's support for this option. Note that upp_post and
     subsequent tasks are deactivated as well, since these do not work on the
     native grid output at this time.
 
@@ -27,5 +27,5 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
-task_run_fcst:
+task_forecast:
   QUILTING: false

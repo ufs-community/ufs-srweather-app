@@ -34,5 +34,5 @@ rocoto:
     metatask_run_ensemble:
       task_make_lbcs_mem#mem#:
         walltime: 06:00:00
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         walltime: 06:00:00

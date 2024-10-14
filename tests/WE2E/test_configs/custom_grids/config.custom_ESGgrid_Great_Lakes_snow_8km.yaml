@@ -17,7 +17,7 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/test.yaml"]|include }}'
     metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         walltime: 01:00:00
 task_make_grid:
   ESGgrid_LON_CTR: -82.0
@@ -33,7 +33,7 @@ task_get_extrn_ics:
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 3
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 90
   LAYOUT_X: 8
   LAYOUT_Y: 10
@@ -52,7 +52,7 @@ task_run_fcst:
   WRTCMP_ny: 195
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
-task_run_post:
+task_upp_post:
   POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Michigan_Ontario
 verification:
   VX_FCST_MODEL_NAME: Michigan_Ontario_snow_8km

@@ -17,14 +17,13 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_MAKE_ICS" "OMP_NUM_THREADS_MAKE_ICS" \
-  "OMP_STACKSIZE_MAKE_ICS" "CCPP_PHYS_SUITE" "COLDSTART" "CPL_AQM" \
-  "CRES" "DATE_FIRST_CYCL" "DO_SMOKE_DUST" "DOT_OR_USCORE" \
-  "EXTRN_MDL_NAME_ICS" "EXTRN_MDL_VAR_DEFNS_FN" "FIXgsm" "FIXlam" \
-  "FV3GFS_FILE_FMT_ICS" "FVCOM_DIR" "FVCOM_FILE" "FVCOM_WCSTART" \
-  "HALO_BLEND" "NH0" "NH4" "PRE_TASK_CMDS" "RUN_CMD_UTILS" \
+task_global_vars=( "CCPP_PHYS_SUITE" "COLDSTART" "CPL_AQM" "CRES" \
+  "DATE_FIRST_CYCL" "DO_SMOKE_DUST" "EXTRN_MDL_NAME_ICS" \
+  "EXTRN_MDL_VAR_DEFNS_FN" "FIXgsm" "FIXlam" "FV3GFS_FILE_FMT_ICS" \
+  "FVCOM_DIR" "FVCOM_FILE" "FVCOM_WCSTART" "HALO_BLEND" \
+  "OMP_NUM_THREADS_MAKE_ICS" "PRE_TASK_CMDS" "RUN_CMD_UTILS" \
   "SDF_USES_RUC_LSM" "SDF_USES_THOMPSON_MP" "THOMPSON_MP_CLIMO_FP" \
-  "TILE_RGNL" "VCOORD_FILE" "USE_FVCOM" )
+  "VCOORD_FILE" "USE_FVCOM" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -72,9 +71,9 @@ This is the ex-script for the task that generates initial condition
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_MAKE_ICS}
+export KMP_AFFINITY="scatter"
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_ICS}
-export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_ICS}
+export OMP_STACKSIZE="1024m"
 #
 #-----------------------------------------------------------------------
 #
@@ -549,14 +548,14 @@ settings="
  'geogrid_file_input_grid': ${geogrid_file_input_grid}
  'grib2_file_input_grid': \"${fn_grib2}\"
  'halo_blend': $((10#${HALO_BLEND}))
- 'halo_bndy': $((10#${NH4}))
+ 'halo_bndy': 4
  'input_type': ${input_type}
  'lai_from_climo': ${lai_from_climo}
  'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo}
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}_mosaic.halo4.nc
  'nsoill_out': $((10#${nsoill_out}))
  'orog_dir_target_grid': ${FIXlam}
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'orog_files_target_grid': ${CRES}_oro_data.tile7.halo4.nc
  'regional': 1
  'atm_files_input_grid': ${fn_atm}
  'sfc_files_input_grid': ${fn_sfc}
@@ -608,19 +607,19 @@ if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TR
   else
     data_trans_path="${DATA_SHARE}"
   fi
-  cp -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  cp -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p out.atm.tile7.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile7.halo0.nc"
+  cp -p out.sfc.tile7.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile7.halo0.nc"
   cp -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-    cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+    cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f000.nc"
   else
-    cp -p gfs.bndy.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+    cp -p gfs.bndy.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f000.nc"
   fi
 else
-  mv out.atm.tile${TILE_RGNL}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv out.sfc.tile${TILE_RGNL}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv out.atm.tile7.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile7.halo0.nc
+  mv out.sfc.tile7.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile7.halo0.nc
   mv gfs_ctrl.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
-  mv gfs.bndy.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+  mv gfs.bndy.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f000.nc
 fi
 #
 #-----------------------------------------------------------------------
@@ -649,7 +648,7 @@ Please check the following user defined variables:
   pgm="fvcom_to_FV3"
 
   . prep_step 
-  eval ${RUN_CMD_UTILS} ${EXECsrw}/$pgm ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc \  
+  eval ${RUN_CMD_UTILS} ${EXECsrw}/$pgm ${NET}.${cycle}${dot_ensmem}.sfc_data.tile7.halo0.nc fvcom.nc \  
 ${FVCOM_WCSTART} ${fvcom_time} >>$pgmout 2>errfile
   export err=$?; err_chk
 fi

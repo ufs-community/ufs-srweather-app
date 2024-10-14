@@ -40,11 +40,10 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_MAKE_OROG" "OMP_NUM_THREADS_MAKE_OROG" \
-  "OMP_STACKSIZE_MAKE_OROG" "CRES" "CCPP_PHYS_SUITE" "DOT_OR_USCORE" \
-  "DO_SMOKE_DUST" "FIXam" "FIXlam" "FIXorg" "GRID_GEN_METHOD" "NHW" \
-  "NH0" "NH4" "NX" "NY" "OROG_DIR" "PRE_TASK_CMDS" "RUN_CMD_SERIAL" \
-  "STRETCH_FAC" "TILE_RGNL" )
+task_global_vars=( "CRES" "CCPP_PHYS_SUITE" "DO_SMOKE_DUST" "FIXam" \
+  "FIXlam" "FIXorg" "GRID_GEN_METHOD" "NHW" "NX" "NY" \
+  "OMP_NUM_THREADS_MAKE_OROG" "OROG_DIR" "PRE_TASK_CMDS" \
+  "RUN_CMD_SERIAL" "STRETCH_FAC" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -84,9 +83,9 @@ This is the ex-script for the task that generates orography files.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_MAKE_OROG}
+export KMP_AFFINITY="disabled"
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_OROG}
-export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_OROG}
+export OMP_STACKSIZE="2048m"
 
 eval ${PRE_TASK_CMDS}
 
@@ -126,7 +125,7 @@ cd ${tmp_dir}
 #
 #-----------------------------------------------------------------------
 #
-mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo${NHW}.nc"
+mosaic_fn="${CRES}_mosaic.halo${NHW}.nc"
 mosaic_fp="${FIXlam}/${mosaic_fn}"
 
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fp}" "gridfiles" ) || print_err_msg_exit "\
@@ -220,8 +219,8 @@ cd ${DATA}
 #-----------------------------------------------------------------------
 #
 raw_orog_fp_orig="${tmp_dir}/out.oro.nc"
-raw_orog_fn_prefix="${CRES}${DOT_OR_USCORE}raw_orog"
-fn_suffix_with_halo="tile${TILE_RGNL}.halo${NHW}.nc"
+raw_orog_fn_prefix="${CRES}_raw_orog"
+fn_suffix_with_halo="tile7.halo${NHW}.nc"
 raw_orog_fn="${raw_orog_fn_prefix}.${fn_suffix_with_halo}"
 raw_orog_fp="${raw_dir}/${raw_orog_fn}"
 mv "${raw_orog_fp_orig}" "${raw_orog_fp}"
@@ -237,7 +236,7 @@ mv "${raw_orog_fp_orig}" "${raw_orog_fp}"
 suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v17_p8" )
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   cd ${tmp_orog_data}
-  mosaic_fn_gwd="${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
+  mosaic_fn_gwd="${CRES}_mosaic.halo4.nc"
   mosaic_fp_gwd="${FIXlam}/${mosaic_fn_gwd}"
   grid_fn_gwd=$( get_charvar_from_netcdf "${mosaic_fp_gwd}" "gridfiles" ) || \
     print_err_msg_exit "get_charvar_from_netcdf function failed."
@@ -250,9 +249,9 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
 
   input_redirect_fn="grid_info.dat"
   cat > "${input_redirect_fn}" <<EOF
-${TILE_RGNL}
+7
 ${CRES:1}
-${NH4}
+4
 EOF
 
   print_info_msg "Starting orography file generation..."
@@ -264,8 +263,8 @@ EOF
   export err=$?; err_chk
   mv errfile ${DATA}/errfile_orog_gsl
 
-  mv "${CRES}${DOT_OR_USCORE}oro_data_ss.tile${TILE_RGNL}.halo${NH0}.nc" \
-     "${CRES}${DOT_OR_USCORE}oro_data_ls.tile${TILE_RGNL}.halo${NH0}.nc" \
+  mv "${CRES}_oro_data_ss.tile7.halo0.nc" \
+     "${CRES}_oro_data_ls.tile7.halo0.nc" \
      "${OROG_DIR}" 
 fi
 #
@@ -330,8 +329,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-fn_suffix_without_halo="tile${TILE_RGNL}.nc"
-filtered_orog_fn_prefix="${CRES}${DOT_OR_USCORE}filtered_orog"
+fn_suffix_without_halo="tile7.nc"
+filtered_orog_fn_prefix="${CRES}_filtered_orog"
 filtered_orog_fp_prefix="${filter_dir}/${filtered_orog_fn_prefix}"
 filtered_orog_fp="${filtered_orog_fp_prefix}.${fn_suffix_without_halo}"
 cp "${raw_orog_fp}" "${filtered_orog_fp}"
@@ -386,7 +385,7 @@ filtered_orog_fn_orig=$( basename "${filtered_orog_fp}" )
 filtered_orog_fn="${filtered_orog_fn_prefix}.${fn_suffix_with_halo}"
 filtered_orog_fp=$( dirname "${filtered_orog_fp}" )"/${filtered_orog_fn}"
 mv "${filtered_orog_fn_orig}" "${filtered_orog_fn}"
-cp "${filtered_orog_fp}" "${OROG_DIR}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NHW}.nc"
+cp "${filtered_orog_fp}" "${OROG_DIR}/${CRES}_oro_data.tile7.halo${NHW}.nc"
 #
 # Change location to the original directory.
 #
@@ -424,7 +423,7 @@ halo_num_list[${#halo_num_list[@]}]="${NHW}"
 for halo_num in "${halo_num_list[@]}"; do
   print_info_msg "Shaving filtered orography file with ${halo_num}-cell-wide halo..."
   nml_fn="input.shave.orog.halo${halo_num}"
-  shaved_fp="${shave_dir}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${halo_num}.nc"
+  shaved_fp="${shave_dir}/${CRES}_oro_data.tile7.halo${halo_num}.nc"
   printf "%s %s %s %s %s\n" \
   $NX $NY ${halo_num} \"${unshaved_fp}\" \"${shaved_fp}\" \
   > ${nml_fn}

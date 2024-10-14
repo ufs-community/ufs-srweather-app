@@ -20,11 +20,9 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_MAKE_SFC_CLIMO" \
-  "OMP_NUM_THREADS_MAKE_SFC_CLIMO" "OMP_STACKSIZE_MAKE_SFC_CLIMO" \
-  "PREDEF_GRID_NAME" "FIXsfc" "FIXlam" "CRES" "DOT_OR_USCORE" "NH4" \
-  "TILE_RGNL" "PRE_TASK_CMDS" "RUN_CMD_UTILS" "GTYPE" "SFC_CLIMO_DIR" \
-  "NH0" )
+task_global_vars=( "CRES" "OMP_NUM_THREADS_MAKE_SFC_CLIMO" "FIXlam" \
+  "FIXsfc" "OMP_NUM_THREADS_MAKE_SFC_CLIMO" "PRE_TASK_CMDS" \
+  "PREDEF_GRID_NAME" "RUN_CMD_UTILS" "GTYPE" "SFC_CLIMO_DIR" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -71,9 +69,9 @@ climatology.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_MAKE_SFC_CLIMO}
+export KMP_AFFINITY="scatter"
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_SFC_CLIMO}
-export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_SFC_CLIMO}
+export OMP_STACKSIZE="1024m"
 #
 #-----------------------------------------------------------------------
 #
@@ -103,10 +101,10 @@ input_slope_type_file="${FIXsfc}/slope_type.1.0.nc"
 input_soil_type_file="${input_soil_type_file}"
 input_vegetation_type_file="${input_vegetation_type_file}"
 input_vegetation_greenness_file="${FIXsfc}/vegetation_greenness.0.144.nc"
-mosaic_file_mdl="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
+mosaic_file_mdl="${FIXlam}/${CRES}_mosaic.halo4.nc"
 orog_dir_mdl="${FIXlam}"
-orog_files_mdl="${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-halo=${NH4}
+orog_files_mdl="${CRES}_oro_data.tile7.halo4.nc"
+halo=4
 maximum_snow_albedo_method="bilinear"
 snowfree_albedo_method="bilinear"
 vegetation_greenness_method="bilinear"
@@ -180,7 +178,7 @@ case "$GTYPE" in
   for fn in *.halo.nc; do
     if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
-      mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH4}.nc
+      mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo4.nc
     fi
   done
 #
@@ -193,7 +191,7 @@ case "$GTYPE" in
   for fn in *.nc; do
     if [ -f $fn ]; then
       bn="${fn%.nc}"
-      mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0}.nc
+      mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo0.nc
     fi
   done
   ;;

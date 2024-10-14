@@ -32,7 +32,7 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_FILES_LBCS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 15
   LAYOUT_X: 24
   LAYOUT_Y: 24
@@ -51,12 +51,12 @@ task_run_fcst:
   WRTCMP_ny: 557
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
-task_run_post:
+task_upp_post:
   POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_SF_Bay_Area
 rocoto:
   tasks:
     metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         walltime: 02:30:00
       task_make_ics_mem#mem#:
         nnodes: 16

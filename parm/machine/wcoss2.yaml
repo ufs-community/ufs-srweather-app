@@ -12,7 +12,7 @@ platform:
   QUEUE_DEFAULT: dev
   QUEUE_FCST: dev
   QUEUE_HPSS: dev_transfer
-  RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
+  RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_FORECAST} --cpu-bind core -depth ${OMP_NUM_THREADS_FORECAST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
   RUN_CMD_PRDGEN: mpiexec -n ${nprocs} --cpu-bind core cfp
   RUN_CMD_SERIAL: time
@@ -51,10 +51,10 @@ rocoto:
     task_plot_allvars:
       native:
     metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         cores:
         native: '{{ platform.SCHED_NATIVE_CMD }}'
-        nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST }}'
+        nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_forecast.OMP_NUM_THREADS_FORECAST }}'
         nodesize: '{{ platform.NCORES_PER_NODE }}'
     metatask_nexus_emission:
       task_nexus_emission_#nspt#:

@@ -146,16 +146,16 @@ metatask_run_ensemble:
           attrs:
             task: get_extrn_lbcs
 
-  task_run_fcst_mem#mem#:
+  task_forecast_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK; "forecast" "&HOMEdir;/jobs/JSRW_FORECAST"'
     envars:
       <<: *default_vars
       nprocs:
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
+    nnodes: '{{ task_forecast.NNODES_FORECAST // 1 }}'
     partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
-    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+    ppn: '{{ task_forecast.PPN_FORECAST // 1 }}'
     queue: '&QUEUE_FCST;'
     walltime: 04:30:00
     dependency:

@@ -22,7 +22,7 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/upp_post.yaml", "parm/wflow/test.yaml"]|include }}'
     metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         walltime: 01:20:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
@@ -35,7 +35,7 @@ task_get_extrn_lbcs:
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   USE_USER_STAGED_EXTRN_FILES: true    
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 180
   LAYOUT_X: 50
   LAYOUT_Y: 34
@@ -44,7 +44,7 @@ task_run_fcst:
   QUILTING: true
   PRINT_ESMF: false
   DO_FCST_RESTART: false
-task_run_post:
+task_upp_post:
   POST_OUTPUT_DOMAIN_NAME: 793
   USE_CUSTOM_POST_CONFIG_FILE: false
 global:

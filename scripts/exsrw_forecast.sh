@@ -16,19 +16,18 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_RUN_FCST" "OMP_NUM_THREADS_RUN_FCST" \
-  "OMP_STACKSIZE_RUN_FCST" "AQM_RC_PRODUCT_FN" "CCPP_PHYS_DIR" \
-  "CCPP_PHYS_SUITE" "COLDSTART" "CPL_AQM" "CRES" "CUSTOM_POST_CONFIG_FP" \
+task_global_vars=( "AQM_RC_PRODUCT_FN" "CCPP_PHYS_DIR" "CCPP_PHYS_SUITE" \
+  "COLDSTART" "CPL_AQM" "CRES" "CUSTOM_POST_CONFIG_FP" \
   "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING" "DATE_FIRST_CYCL" "DATA_TABLE_FN" \
-  "DATA_TABLE_FP" "DOT_OR_USCORE" "DO_ENSEMBLE" "DO_FCST_RESTART" \
-  "DO_LSM_SPP" "DO_SHUM" "DO_SKEB" "DO_SMOKE_DUST" "DO_SPP" "DO_SPPT" \
-  "DT_ATMOS" "DT_SUBHOURLY_POST_MNTS" "FCST_LEN_CYCL" "FCST_LEN_HRS" \
-  "FHROT" "FIELD_DICT_FN" "FIELD_DICT_FP" "FIELD_TABLE_FN" "FIELD_TABLE_FP" \
+  "DATA_TABLE_FP" "DO_ENSEMBLE" "DO_FCST_RESTART" "DO_LSM_SPP" "DO_SHUM" \
+  "DO_SKEB" "DO_SMOKE_DUST" "DO_SPP" "DO_SPPT" "DT_ATMOS" \
+  "DT_SUBHOURLY_POST_MNTS" "FCST_LEN_CYCL" "FCST_LEN_HRS" "FHROT" \
+  "FIELD_DICT_FN" "FIELD_DICT_FP" "FIELD_TABLE_FN" "FIELD_TABLE_FP" \
   "FIXam" "FIXclim" "FIXlam" "FIXsmoke" "FV3_EXEC_FN" "FV3_NML_FN" \
   "FV3_NML_FP" "FV3_NML_STOCH_FP" "INCR_CYCL_FREQ" "LBC_SPEC_INTVL_HRS" \
-  "NH0" "NH3" "NH4" "PRINT_ESMF" "PREDEF_GRID_NAME" "PRE_TASK_CMDS" \
+  "OMP_NUM_THREADS_FORECAST" "PRINT_ESMF" "PREDEF_GRID_NAME" "PRE_TASK_CMDS" \
   "POST_OUTPUT_DOMAIN_NAME" "RESTART_INTERVAL" "RUN_CMD_FCST" \
-  "SMOKE_DUST_FILE_PREFIX" "SUB_HOURLY_POST" "TILE_RGNL" \
+  "SMOKE_DUST_FILE_PREFIX" "SUB_HOURLY_POST" \
   "USE_CUSTOM_POST_CONFIG_FILE" "USE_MERRA_CLIMO" "WRITE_DOPOST" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
@@ -76,9 +75,9 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_RUN_FCST}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
-export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
+export KMP_AFFINITY="scatter"
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_FORECAST}
+export OMP_STACKSIZE="1024m"
 export MPI_TYPE_DEPTH=20
 export ESMF_RUNTIME_COMPLIANCECHECK=OFF:depth=4
 if [ $(boolify "${PRINT_ESMF}") = "TRUE" ]; then
@@ -130,7 +129,7 @@ mkdir -p ${DATA}/INPUT
 cd ${DATA}/INPUT
 
 # Symlink to mosaic file with a completely different name.
-target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"
+target="${FIXlam}/${CRES}_mosaic.halo3.nc"
 symlink="grid_spec.nc"
 ln -nsf $target $symlink
 
@@ -142,18 +141,18 @@ symlink="${grid_fn}"
 ln -nsf $target $symlink
 
 # Symlink to halo-4 grid file with "${CRES}_" stripped from name.
-target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
-symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
+target="${FIXlam}/${CRES}_grid.tile7.halo4.nc"
+symlink="grid.tile7.halo4.nc"
 ln -nsf $target $symlink
 
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
-target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${FIXlam}/${CRES}_oro_data.tile7.halo0.nc"
 symlink="oro_data.nc"
 ln -nsf $target $symlink
 
 # Symlink to halo-4 orography file with "${CRES}_" stripped from name.
-target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
+target="${FIXlam}/${CRES}_oro_data.tile7.halo4.nc"
+symlink="oro_data.tile7.halo4.nc"
 ln -nsf $target $symlink
 #
 # When using some specific physics suite, there are two files (that contain 
@@ -164,17 +163,17 @@ suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v15_thompson_mynn_lam3km" "
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   file_ids=( "ss" "ls" )
   for file_id in "${file_ids[@]}"; do
-    target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${file_id}.tile${TILE_RGNL}.halo${NH0}.nc"
+    target="${FIXlam}/${CRES}_oro_data_${file_id}.tile7.halo0.nc"
     symlink="oro_data_${file_id}.nc"
     ln -nsf $target $symlink
   done
 fi
 
-target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile7.halo0.nc"
 symlink="gfs_data.nc"
 ln -nsf $target $symlink
 
-target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile7.halo0.nc"
 symlink="sfc_data.nc"
 ln -nsf $target $symlink
 
@@ -183,8 +182,8 @@ symlink="gfs_ctrl.nc"
 ln -nsf $target $symlink
 
 for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc"
+  symlink="gfs_bndy.tile7.${fhr}.nc"
   ln -nsf $target $symlink
 done
 

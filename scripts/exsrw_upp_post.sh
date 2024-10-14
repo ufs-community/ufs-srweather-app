@@ -9,9 +9,8 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_RUN_POST" "OMP_NUM_THREADS_RUN_POST" \
-  "OMP_STACKSIZE_RUN_POST" "CPL_AQM" "CUSTOM_POST_CONFIG_FP" \
-  "DO_SMOKE_DUST" "DT_ATMOS" "FIXcrtm" "FIXupp" "NUMX" \
+task_global_vars=( "CPL_AQM" "CUSTOM_POST_CONFIG_FP" "DO_SMOKE_DUST" \
+  "DT_ATMOS" "FIXcrtm" "FIXupp" "NUMX" "OMP_NUM_THREADS_UPP_POST" \
   "POST_OUTPUT_DOMAIN_NAME" "PRE_TASK_CMDS" "PREDEF_GRID_NAME" \
   "RUN_CMD_POST" "SUB_HOURLY_POST" "USE_CRTM" "USE_CUSTOM_POST_CONFIG_FILE" )
 for var in ${task_global_vars[@]}; do
@@ -60,9 +59,9 @@ the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_RUN_POST}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_POST}
-export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST}
+export KMP_AFFINITY="scatter"
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_UPP_POST}
+export OMP_STACKSIZE="1024m"
 #
 #-----------------------------------------------------------------------
 #

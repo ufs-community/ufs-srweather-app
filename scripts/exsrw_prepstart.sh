@@ -9,8 +9,8 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "COLDSTART" "DATE_FIRST_CYCL" "PRE_TASK_CMDS" \
-  "DO_SMOKE_DUST" "TILE_RGNL" "NH0" "INCR_CYCL_FREQ" "IO_LAYOUT_Y" )
+task_global_vars=( "COLDSTART" "DATE_FIRST_CYCL" "DO_SMOKE_DUST" \
+  "INCR_CYCL_FREQ" "IO_LAYOUT_Y" "PRE_TASK_CMDS" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -61,7 +61,7 @@ else
   eval ${PRE_TASK_CMDS}  
   if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
     # IC gfs data file: gfs_data.tile7.halo0.nc
-    gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+    gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile7.halo0.nc"
     gfs_ic_fp="${DATA_SHARE}/${gfs_ic_fn}"
     gfs_ic_mod_fn="gfs_data.tile7.halo0.nc"
     cp -p ${gfs_ic_fp} ${gfs_ic_mod_fn}

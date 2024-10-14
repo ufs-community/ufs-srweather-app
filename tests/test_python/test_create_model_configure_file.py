@@ -47,7 +47,7 @@ class Testing(unittest.TestCase):
         set_env_var("FCST_LEN_HRS", 72)
         set_env_var("FHROT", 0)
         set_env_var("DT_ATMOS", 1)
-        set_env_var("OMP_NUM_THREADS_RUN_FCST", 1)
+        set_env_var("OMP_NUM_THREADS_FORECAST", 1)
         set_env_var("RESTART_INTERVAL", 4)
         set_env_var("ITASKS", 1)
 

@@ -38,7 +38,6 @@ def set_gridparams_GFDLgrid(
     jstart_of_t7_on_t6g,
     jend_of_t7_on_t6g,
     verbose,
-    nh4,
 ):
     """Sets the parameters for a grid that is to be generated using the "GFDLgrid"
     grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
@@ -54,7 +53,6 @@ def set_gridparams_GFDLgrid(
          jstart_of_t7_on_t6g
          jend_of_t7_on_t6g
          verbose
-         nh4
     Returns:
         Tuple of inputs and outputs (see return statement)
     """
@@ -199,7 +197,7 @@ def set_gridparams_GFDLgrid(
     # In order to calculate halo_width_on_t6g using the above expression, we must
     # first specify halo_width_on_t7g.  Next, we specify an initial value for it by
     # setting it to one more than the largest-width halo that the model ac-
-    # tually needs, which is NH4.  We then calculate halo_width_on_t6sg using the
+    # tually needs, which is 4.  We then calculate halo_width_on_t6sg using the
     # above expression.  Note that these values of halo_width_on_t7g and halo_width_on_t6sg will
     # likely not be their final values; their final values will be calcula-
     # ted later below after calculating the starting and ending indices of
@@ -208,7 +206,7 @@ def set_gridparams_GFDLgrid(
     #
     # -----------------------------------------------------------------------
     #
-    halo_width_on_t7g = nh4 + 1
+    halo_width_on_t7g = 5
     halo_width_on_t6sg = (
         2 * halo_width_on_t7g + refine_ratio_t6g_to_t7g - 1
     ) / refine_ratio_t6g_to_t7g

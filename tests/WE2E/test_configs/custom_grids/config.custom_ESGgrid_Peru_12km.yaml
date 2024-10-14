@@ -30,7 +30,7 @@ task_get_extrn_lbcs:
   FV3GFS_FILE_FMT_LBCS: grib2
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
-task_run_fcst:
+task_forecast:
   DT_ATMOS: 90
   LAYOUT_X: 8
   LAYOUT_Y: 8
@@ -49,11 +49,11 @@ task_run_fcst:
   WRTCMP_ny: 235
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
-task_run_post:
+task_upp_post:
   POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Peru
 rocoto:
   tasks:
     metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+      task_forecast_mem#mem#:
         walltime: 01:00:00
 

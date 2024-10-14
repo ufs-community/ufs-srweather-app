@@ -498,7 +498,7 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
                           ('workflow', 'DATE_LAST_CYCL'),
                           ('workflow', 'INCR_CYCL_FREQ'),
                           ('workflow', 'FCST_LEN_HRS'),
-                          ('task_run_fcst', 'DT_ATMOS'),
+                          ('task_forecast', 'DT_ATMOS'),
                           ('task_get_extrn_lbcs', 'LBC_SPEC_INTVL_HRS'),
                           ('global', 'NUM_ENS_MEMBERS') ]
 

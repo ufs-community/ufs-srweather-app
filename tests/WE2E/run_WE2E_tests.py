@@ -211,11 +211,11 @@ def run_we2e_tests(homedir, args) -> None:
 
         if args.compiler == "gnu":
             # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
-            if 'task_run_post' in test_cfg:
-                test_cfg['task_run_post'].update({"NUMX": 1})
+            if 'task_upp_post' in test_cfg:
+                test_cfg['task_upp_post'].update({"NUMX": 1})
                 logging.info(f"NUMX has been reset to 1 due to issues encountered with GNU compilers")
-            if 'task_run_fcst' in test_cfg:
-                test_cfg['task_run_fcst'].update({"ITASKS": 1})
+            if 'task_forecast' in test_cfg:
+                test_cfg['task_forecast'].update({"ITASKS": 1})
                 logging.info(f"ITASKS has been reset to 1 due to issues encountered with GNU compilers")
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\

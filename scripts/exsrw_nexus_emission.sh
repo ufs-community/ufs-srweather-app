@@ -9,11 +9,9 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "KMP_AFFINITY_NEXUS_EMISSION" \
-  "OMP_NUM_THREADS_NEXUS_EMISSION" "OMP_STACKSIZE_NEXUS_EMISSION" \
-  "PRE_TASK_CMDS" "RUN_CMD_NEXUS" "FIXaqm" "NEXUS_GRID_FN" \
-  "NUM_SPLIT_NEXUS" "DATE_FIRST_CYCL" "INCR_CYCL_FREQ" "FCST_LEN_CYCL" \
-  "FCST_LEN_HRS" "FIXemis" )
+task_global_vars=( "DATE_FIRST_CYCL" "FCST_LEN_CYCL" "FCST_LEN_HRS" \
+  "FIXaqm" "FIXemis" "INCR_CYCL_FREQ" "NEXUS_GRID_FN" "NUM_SPLIT_NEXUS" \
+  "OMP_NUM_THREADS_NEXUS_EMISSION" "PRE_TASK_CMDS" "RUN_CMD_NEXUS" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -59,9 +57,9 @@ This is the ex-script for the task that runs NEXUS EMISSION.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_EMISSION}
+export KMP_AFFINITY="scatter"
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_EMISSION}
-export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
+export OMP_STACKSIZE="1024m"
 #
 #-----------------------------------------------------------------------
 #
