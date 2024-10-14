@@ -66,8 +66,7 @@ def create_ufs_configure_file(run_dir,cfg):
     else:
         EARTH_component_list = 'ATM'
         ATM_petlist_bounds = f'0 {atm_end}'
-        ATM_omp_num_threads_line = \
-            f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
+        ATM_omp_num_threads_line = ''
         ATM_diag_line = '  Diagnostic = 0'
         runseq = [ "  ATM" ]
 

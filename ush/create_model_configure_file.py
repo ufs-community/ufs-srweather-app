@@ -70,7 +70,6 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
-        "PE_MEMBER01": PE_MEMBER01,
         "start_year": cdate.year,
         "start_month": cdate.month,
         "start_day": cdate.day,
@@ -78,7 +77,6 @@ def create_model_configure_file(
         "nhours_fcst": fcst_len_hrs,
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
-        "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
         "itasks": ITASKS,
         "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
