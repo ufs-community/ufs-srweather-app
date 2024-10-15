@@ -1,6 +1,5 @@
 ﻿Fundamental,Comprehensive,Test Name,PREDEF_GRID_NAME,CCPP_PHYS_SUITE,EXTRN_MDL_NAME_ICS,EXTRN_MDL_NAME_LBCS,DATES (UTC),FCST_LEN_HRS (hrs),est. core hours, walltime (min),notes
 yes,yes,grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta,RRFS_CONUScompact_25km,FV3_RRFS_v1beta,HRRR,RAP,2020081000,3,8,22,
-yes,yes,nco_grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_timeoffset_suite_GFS_v16,RRFS_CONUS_25km,FV3_GFS_v16,FV3GFS,FV3GFS,2022081012,6,10,15,
 yes,yes,grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,7,10,
 yes,yes,grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v17_p8_plot,RRFS_CONUS_25km,FV3_GFS_v17_p8,FV3GFS,FV3GFS,2019070100,6,11,15,
 yes,yes,grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR,RRFS_CONUScompact_25km,FV3_HRRR,HRRR,HRRR,2020081000,24,26,20
@@ -50,11 +49,6 @@ yes,yes,grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_GFS_v16,RRFS_CONUS_25km,FV3_
 ,yes,grid_SUBCONUS_Ind_3km_ics_RAP_lbcs_RAP_suite_RRFS_v1beta,SUBCONUS_Ind_3km,FV3_RRFS_v1beta,RAP,RAP,2020080103,3,20,22,
 ,yes,MET_ensemble_verification_only_vx,RRFS_CONUS_25km,*none*,*none*,*none*,2019061500,6,1,15,Runs ensemble verification tasks on staged data without running the rest of the workflow
 ,yes,MET_verification_only_vx,RRFS_CONUS_25km,*none*,*none*,*none*,2019061500,6,1,8,Runs verification tasks on staged data without running the rest of the workflow
-,yes,nco,RRFS_CONUS_25km,FV3_GFS_v16,FV3GFS,FV3GFS,2022040700,6,7,20,
-,yes,nco_ensemble,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100 2019070112 2019070200 2019070212,6,55,20,
-,yes,nco_grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16,RRFS_CONUS_13km,FV3_GFS_v16,FV3GFS,FV3GFS,2019061500,6,26,20,
-,yes,nco_grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15_thompson_mynn_lam3km,RRFS_CONUS_3km,FV3_GFS_v15_thompson_mynn_lam3km,FV3GFS,FV3GFS,2019061500,6,320,25,
-,yes,nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR,RRFS_CONUScompact_25km,FV3_HRRR,HRRR,RAP,2020081000,6,12,17,
 ,yes,pregen_grid_orog_sfc_climo,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,6,17,
 ,yes,specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2021061500,6,6,19,
 ,yes,specify_template_filenames,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,6,28,
