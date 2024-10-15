@@ -54,7 +54,8 @@ def create_ufs_configure_file(run_dir,cfg):
     elif cfg["UFS_FIRE"]:
         EARTH_component_list = 'ATM FIRE'
         ATM_petlist_bounds = f'0 {atm_end}'
-        ATM_omp_num_threads_line = ''
+        ATM_omp_num_threads_line = \
+            f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
         ATM_diag_line = ''
         FIRE_petlist_bounds = f'{fire_start} {fire_end}'
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
@@ -66,7 +67,8 @@ def create_ufs_configure_file(run_dir,cfg):
     else:
         EARTH_component_list = 'ATM'
         ATM_petlist_bounds = f'0 {atm_end}'
-        ATM_omp_num_threads_line = ''
+        ATM_omp_num_threads_line = \
+            f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
         ATM_diag_line = '  Diagnostic = 0'
         runseq = [ "  ATM" ]
 
