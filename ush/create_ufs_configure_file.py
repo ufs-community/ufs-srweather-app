@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Function to create a UFS configuration file for the FV3 forecast
-model(s) from a template.
+Creates a UFS configuration file for the FV3 forecast model(s) from a template.
 """
 
 import argparse
@@ -21,14 +20,13 @@ from python_utils import (
 )
 
 def create_ufs_configure_file(run_dir,cfg):
-    """ Creates a ufs configuration file in the specified
-    run directory
+    """ Creates a UFS configuration file in the specified run directory
 
     Args:
         run_dir: run directory
         cfg: dictionary of config settings
     Returns:
-        Boolean
+        True
     """
 
     # pylint: disable=undefined-variable
@@ -142,7 +140,7 @@ def create_ufs_configure_file(run_dir,cfg):
         )
     return True
 
-def parse_args(argv):
+def _parse_args(argv):
     """ Parse command line arguments"""
     parser = argparse.ArgumentParser(
         description='Creates UFS configuration file.'
@@ -161,7 +159,7 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     create_ufs_configure_file(run_dir=args.run_dir,cfg=cfg)

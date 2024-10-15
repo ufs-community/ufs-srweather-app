@@ -8,12 +8,12 @@ from types import ModuleType
 
 
 def str_to_date(s):
-    """Get python datetime object from string.
+    """Gets Python datetime object from string.
 
     Args:
-        s: a string
+        s (str): A string
     Returns:
-        datetime object or None
+        Datetime object or None
     """
     v = None
     try:
@@ -32,31 +32,30 @@ def str_to_date(s):
 
 
 def date_to_str(d, format="%Y%m%d%H%M"):
-    """Get string from python datetime object.
-    By default it converts to YYYYMMDDHHMM format unless
-    told otherwise by passing a different format
+    """Gets string from Python datetime object.
+    By default it converts to ``YYYYMMDDHHmm`` format unless told otherwise by passing a different format.
 
     Args:
-        d: datetime object
+        d (datetime.datetime): Datetime object
+        format (str): Format of the datetime string; default is ``"%Y%m%d%H%M"`` (see `format codes <https://docs.python.org/3/library/datetime.html#format-codes>`_ for other options).
     Returns:
-        string in YYYYMMDDHHMM or shorter version of it
+        String in YYYYMMDDHHmm or shorter version of it
     """
     v = d.strftime(format)
     return v
 
 
 def str_to_type(s, return_string=0):
-    """Check if the string contains a float, int, boolean, datetime, or just regular string.
+    """Checks whether the string is a float, int, boolean, datetime, or just regular string.
     This will be used to automatically convert environment variables to data types
     that are more convenient to work with. If you don't want this functionality,
-    pass return_string = 1
+    pass ``return_string = 1``.
 
     Args:
-        s: a string
-        return_string: Set to 1 to return the string itself
-                       Set to 2 to return the string itself only for a datetime object
+        s (str): A string
+        return_string (int): Set to ``1`` to return the string itself. Set to ``2`` to return the string itself only for a datetime object
     Returns:
-        a float, int, boolean, datetime, or the string itself when all else fails
+        A float, int, boolean, datetime, or the string itself when all else fails
     """
     s = s.strip("\"'")
     if return_string != 1:
@@ -91,13 +90,12 @@ def str_to_type(s, return_string=0):
 
 
 def type_to_str(v):
-    """Given a float/int/boolean/date or list of these types, gets a string
-    representing their values
+    """Gets a string representing the value of a given float, int, boolean, date or list of these types. 
 
     Args:
-        v: a variable of the above types
+        v: A variable of the above types
     Returns:
-        a string
+        A string
     """
     if isinstance(v, bool):
         return "TRUE" if v else "FALSE"
@@ -111,11 +109,12 @@ def type_to_str(v):
 
 
 def list_to_str(v, oneline=False):
-    """Given a string or list of string, construct a string
-    to be used on right hand side of shell environement variables
+    """Given a string or list of strings, constructs a string
+    to be used on right hand side of shell environment variables.
 
     Args:
-        v: a string/number, list of strings/numbers, or null string('')
+        v: A string/number, list of strings/numbers, or null string(``''``)
+        oneline (bool): If the string is a single line (True) or multiple (False) ?
     Returns:
         A string
     """
@@ -134,13 +133,13 @@ def list_to_str(v, oneline=False):
 
 
 def str_to_list(v, return_string=0):
-    """Given a string, construct a string or list of strings.
-    Basically does the reverse operation of `list_to_string`.
+    """Constructs a string or list of strings based on the given string.
+    Basically does the reverse operation of ``list_to_str``.
 
     Args:
-        v: a string
+        v: A string
     Returns:
-        a string, list of strings or null string('')
+        A string, a list of strings, or a null string(``''``)
     """
 
     if not isinstance(v, str):
@@ -167,11 +166,11 @@ def str_to_list(v, return_string=0):
 
 
 def set_env_var(param, value):
-    """Set an environment variable
+    """Sets an environment variable.
 
     Args:
-        param: the variable to set
-        value: either a string, list of strings or None
+        param: The variable to set
+        value: A string, a list of strings, or None
     Returns:
         None
     """
@@ -180,12 +179,12 @@ def set_env_var(param, value):
 
 
 def get_env_var(param):
-    """Get the value of an environement variable
+    """Gets the value of an environment variable
 
     Args:
-        param: the environement variable
+        param: The environment variable
     Returns:
-        Returns either a string, list of strings or None
+        A string, a list of strings, or None
     """
 
     if not param in os.environ:
@@ -195,30 +194,30 @@ def get_env_var(param):
 
 
 def import_vars(dictionary=None, target_dict=None, env_vars=None):
-    """Import all (or select few) environment/dictionary variables as python global
-    variables of the caller module. Call this function at the beginning of a function
+    """Imports all (or a select few) environment/dictionary variables as Python global
+    variables of the caller module. Calls this function at the beginning of a function
     that uses environment variables.
 
-    Note that for read-only environmental variables, calling this function once at the
+    Note that for read-only environment variables, calling this function once at the
     beginning should be enough. However, if the variable is modified in the module it is
-    called from, the variable should be explicitly tagged as `global`, and then its value
-    should be exported back to the environment with a call to export_vars()
+    called from, the variable should be explicitly tagged as ``global``, and then its value
+    should be exported back to the environment with a call to ``export_vars()``:
+
+    .. code-block:: console
 
         import_vars() # import all environment variables
         global MY_VAR, MY_LIST_VAR
         MY_PATH = "/path/to/somewhere"
         MY_LIST_VAR.append("Hello")
-        export_vars() # these exports all global variables
+        export_vars() # this exports all global variables
 
-    There doesn't seem to an easier way of imitating the shell script doing way of things, which
-    assumes that everything is global unless specifically tagged local, while the opposite is true
-    for python.
+    This is because in shell scripting assumes that everything is global unless specifically tagged local, while the opposite is true
+    for Python.
 
     Args:
-        dictionary: source dictionary (default=os.environ)
-        target_dict: target dictionary (default=caller module's globals())
-        env_vars: list of selected environement/dictionary variables to import, or None,
-        in which case all environment/dictionary variables are imported
+        dictionary  (dict): Source dictionary
+        target_dict (dict): Target dictionary
+        env_vars    (list): List of selected environment variables to import or ``None``, in which case all environment variables are imported
     Returns:
         None
     """
@@ -240,15 +239,14 @@ def import_vars(dictionary=None, target_dict=None, env_vars=None):
 
 
 def export_vars(dictionary=None, source_dict=None, env_vars=None):
-    """Export all (or select few) global variables of the caller module's
-    to either the environement/dictionary. Call this function at the end of
+    """Exports all (or a select few) global variables of the caller modules
+    to the environment/dictionary. Calls this function at the end of
     a function that updates environment variables.
 
     Args:
-        dictionary: target dictionary to set (default=os.environ)
-        source_dict: source dictionary (default=caller modules globals())
-        env_vars: list of selected environement/dictionary variables to export, or None,
-        in which case all environment/dictionary variables are exported
+        dictionary  (dict): Target dictionary to set
+        source_dict (dict): Source dictionary
+        env_vars    (list): List of selected environment variables to export or ``None``, in which case all environment variables are exported
     Returns:
         None
     """

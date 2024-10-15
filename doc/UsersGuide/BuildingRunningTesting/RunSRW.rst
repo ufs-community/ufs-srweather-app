@@ -55,8 +55,8 @@ The SRW App requires input files to run. These include static datasets, initial 
      - File location
    * - Derecho
      - /glade/work/epicufsrt/contrib/UFS_SRW_data/|data|/input_model_data
-   * - Gaea (C3/C4/C5)
-     - /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Gaea
+     - /gpfs/f5/epic/world-shared/UFS_SRW_data/|data|/input_model_data/
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/|data|/input_model_data/
    * - Hercules
@@ -134,13 +134,8 @@ Loading the Workflow Environment
 
 The |wflow_env| conda/Python environment can be activated in the following way:
 
-.. code-block:: console
-
-   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
-   module use /path/to/ufs-srweather-app/modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
+.. include:: ../../doc-snippets/load-env.rst
+In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
 
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
@@ -155,7 +150,7 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 then the user should run |activate|. This activates the |wflow_env| conda environment, and the user typically sees |prompt| in front of the Terminal prompt at this point.
 
 .. note::
-   If users do not use the wflow module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
+   If users do not use the ``wflow_<platform>`` module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
 
 After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
@@ -690,7 +685,7 @@ More information about configuring the ``rocoto:`` section can be found in :numr
 
 If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify_pre.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
-Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
+Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data. 
 
 Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data in ``config.yaml``. 
 

@@ -16,6 +16,9 @@ import os
 import sys
 import sphinx
 from sphinx.util import logging
+sys.path.insert(0, os.path.abspath('../ush'))
+sys.path.insert(0, os.path.abspath('../tests'))
+sys.path.insert(0, os.path.abspath('../tests/WE2E'))
 
 
 
@@ -33,6 +36,9 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
+nitpick_ignore = [('py:class', 'obj'),('py:class', 
+                   'yaml.dumper.Dumper'),('py:class', 
+                   'xml.etree.ElementTree'),]
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,13 +46,11 @@ numfig = True
 extensions = [
     'sphinx_rtd_theme',
     'sphinx.ext.autodoc',
+    'sphinxcontrib.autoyaml',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.extlinks',
-    'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinxcontrib.bibtex',
 ]
@@ -99,14 +103,16 @@ user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 # Ignore working links that cause a linkcheck 403 error.
 linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
-                    #r'https://glossary.ametsoc.org/.*',
+                    r'https://glossary.ametsoc.org/.*',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
 linkcheck_anchors_ignore = [r"current_srw_release_data/", 
                             r"input_model_data/.*",
                             r"fix.*",
-                            r"sample_cases/.*",
+                            r"experiment-user-cases/.*",
+                            r"rrfs_a/*",
+                            r"develop-20240618/*",
                             ]
 
 linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 
@@ -151,6 +157,7 @@ html_context = {}
 def setup(app):
     app.add_css_file('custom.css')  # may also be an URL
     app.add_css_file('theme_overrides.css')  # may also be a URL
+    app.connect('autodoc-process-docstring', warn_undocumented_members)
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -244,6 +251,36 @@ epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
 
+# -- Options for autodoc extension ---------------------------------------
+
+autodoc_mock_imports = ["f90nml","cartopy","mpl_toolkits.basemap","fill_jinja_template",
+   "matplotlib","numpy","uwtools","mpl_toolkits",
+   ]
+
+logger = logging.getLogger(__name__)
+
+members_to_watch = ['function', 'attribute', 'method']
+def warn_undocumented_members(app, what, name, obj, options, lines):
+    if(what in members_to_watch and len(lines)==0):
+        message = what + " is undocumented: " + name + "(%d)"% len(lines)
+        logger.warning(message)
+
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+    #"private-members": True
+}
+
+add_module_names = False
+
+# -- Options for napoleon extension ---------------------------------------
+
+napoleon_numpy_docstring = False
+napoleon_google_docstring = True
+napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of multiple values
+
+
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
@@ -272,3 +309,11 @@ extlinks = {'github-docs': ('https://docs.github.com/en/%s', '%s'),
             'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
             'uw': ('https://uwtools.readthedocs.io/en/main/%s', '%s'),
             }
+
+# -- Options for autoyaml extension ---------------------------------------
+
+autoyaml_root = "../ush"
+autoyaml_doc_delimiter = "###" # Character(s) which start a documentation comment.
+autoyaml_comment = "#" #Comment start character(s).
+autoyaml_level = 6
+#autoyaml_safe_loader = False

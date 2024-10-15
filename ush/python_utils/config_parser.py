@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 """
-This file provides utilities for processing different configuration file formats.
+This file provides utilities for processing different configuration (config) file formats.
 Supported formats include:
+
     a) YAML
     b) JSON
     c) SHELL
@@ -10,7 +11,7 @@ Supported formats include:
     e) XML
 
 Typical usage involves first loading the config file, then using the dictionary
-returnded by load_config to make queries.
+returned by ``load_config`` to make queries.
 
 """
 
@@ -43,7 +44,14 @@ from .run_command import run_command
 # YAML
 ##########
 def load_yaml_config(config_file):
-    """Safe load a yaml file"""
+    """
+    Safe loads a YAML file
+
+    Args:
+        config_file: Configuration file to parse
+    Returns:
+        cfg: A Python object containing the config file data
+    """
 
     with open(config_file, "r") as f:
         cfg = yaml.safe_load(f)
@@ -54,24 +62,34 @@ def load_yaml_config(config_file):
 try:
 
     class custom_dumper(yaml.Dumper):
-        """Custom yaml dumper to correct list indentation"""
+        """
+        Custom YAML dumper to correct list indentation
 
-        def increase_indent(self, flow=False, indentless=False):
-            return super(custom_dumper, self).increase_indent(flow, False)
+        Args: 
+            yaml.Dumper: A YAML Dumper object to custom format
+        
+        Returns:
+            A custom-formatted Dumper object
+        """
 
-    def str_presenter(dumper, data):
+        def _increase_indent(self, flow=False, indentless=False):
+            return super(custom_dumper, self)._increase_indent(flow, False)
+
+    def _str_presenter(dumper, data):
         if len(data.splitlines()) > 1:
             return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
         return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
-    yaml.add_representer(str, str_presenter)
+    yaml.add_representer(str, _str_presenter)
 
 except NameError:
     pass
 
 
 def cfg_to_yaml_str(cfg):
-    """Get contents of config file as a yaml string"""
+    """
+    Gets contents of config file as a YAML string
+    """
 
     return yaml.dump(
         cfg, sort_keys=False, default_flow_style=False
@@ -79,16 +97,19 @@ def cfg_to_yaml_str(cfg):
 
 def cycstr(loader, node):
 
-    ''' Returns a cyclestring Element whose content corresponds to the
-    input node argument '''
+    """
+    Returns a cyclestring element whose content corresponds to the
+    input node argument
+    """
 
     arg = loader.construct_scalar(node)
     return f'<cyclestr>{arg}</cyclestr>'
 
 def include(filepaths):
 
-    ''' Returns a dictionary that includes the contents of the referenced
-    YAML file(s). '''
+    """
+    Returns a dictionary that includes the contents of the referenced YAML file(s).
+    """
 
     srw_path = pathlib.Path(__file__).resolve().parents[0].parents[0]
 
@@ -104,15 +125,18 @@ def include(filepaths):
     return yaml.dump(cfg, sort_keys=False)
 
 def join_str(loader, node):
-    """Custom tag hangler to join strings"""
+    """
+    Custom tag hangler to join strings
+    """
     seq = loader.construct_sequence(node)
     return "".join([str(i) for i in seq])
 
 def startstopfreq(loader, node):
-
-    ''' Returns a Rocoto-formatted string for the contents of a cycledef
-    tag. Assume that the items in the node are env variables, and return
-    a Rocoto-formatted string'''
+    """
+    Returns a Rocoto-formatted string for the contents of a ``cycledef``
+    tag. Assumes that the items in the node are environment variables, and returns
+    a Rocoto-formatted string.
+    """
 
     args = loader.construct_sequence(node)
 
@@ -122,7 +146,7 @@ def startstopfreq(loader, node):
 
     return f'{start}00 {stop}00 {freq}:00:00'
 
-def nowtimestamp(loader, node):
+def _nowtimestamp(loader, node):
     return "id_" + str(int(datetime.datetime.now().timestamp()))
 
 try:
@@ -130,27 +154,31 @@ try:
     yaml.add_constructor("!include", include, Loader=yaml.SafeLoader)
     yaml.add_constructor("!join_str", join_str, Loader=yaml.SafeLoader)
     yaml.add_constructor("!startstopfreq", startstopfreq, Loader=yaml.SafeLoader)
-    yaml.add_constructor("!nowtimestamp", nowtimestamp ,Loader=yaml.SafeLoader)
+    yaml.add_constructor("!nowtimestamp", _nowtimestamp ,Loader=yaml.SafeLoader)
 except NameError:
     pass
 
 
 
 def path_join(arg):
-    """A filter for jinja2 that joins paths"""
+    """
+    A filter for jinja2 that joins paths
+    """
 
     return os.path.join(*arg)
 
 def days_ago(arg):
-    """A filter for jinja2 that gives us a date string for x number of
-    days ago"""
+    """
+    A filter for jinja2 that gives us a date string for x number of
+    days ago
+    """
 
     return (datetime.date.today() -
             datetime.timedelta(days=arg)).strftime("%Y%m%d00")
 
 def extend_yaml(yaml_dict, full_dict=None, parent=None):
     """
-    Updates yaml_dict inplace by rendering any existing Jinja2 templates
+    Updates ``yaml_dict`` in place by rendering any existing Jinja2 templates
     that exist in a value.
     """
 
@@ -250,7 +278,9 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
 # JSON
 ##########
 def load_json_config(config_file):
-    """Load json config file"""
+    """
+    Loads JSON config file
+    """
 
     try:
         with open(config_file, "r") as f:
@@ -262,7 +292,9 @@ def load_json_config(config_file):
 
 
 def cfg_to_json_str(cfg):
-    """Get contents of config file as a json string"""
+    """
+    Gets contents of config file as a JSON string
+    """
 
     return json.dumps(cfg, sort_keys=False, indent=4) + "\n"
 
@@ -271,7 +303,9 @@ def cfg_to_json_str(cfg):
 # SHELL
 ##########
 def load_shell_as_ini_config(file_name, return_string=1):
-    """Load shell config file with embedded structure in comments"""
+    """
+    Loads shell config file with embedded structure in comments
+    """
 
     # read contents and replace comments as sections
     with open(file_name, "r") as file:
@@ -294,13 +328,13 @@ def load_shell_as_ini_config(file_name, return_string=1):
 
 
 def load_shell_config(config_file, return_string=0):
-    """Loads old style shell config files.
-    We source the config script in a subshell and gets the variables it sets
+    """Loads old-style shell config files.
+    We source the config script in a subshell and get the variables it sets
 
     Args:
-         config_file: path to config file script
+         config_file: Path to config file script
     Returns:
-         dictionary that should be equivalent to one obtained from parsing a yaml file.
+         Dictionary that should be equivalent to one obtained from parsing a YAML file.
     """
 
     # First try to load it as a structured shell config file
@@ -339,7 +373,9 @@ def load_shell_config(config_file, return_string=0):
 
 
 def cfg_to_shell_str(cfg, kname=None):
-    """Get contents of config file as shell script string"""
+    """
+    Gets contents of config file as shell script string
+    """
 
     shell_str = ""
     for k, v in cfg.items():
@@ -369,7 +405,9 @@ def cfg_to_shell_str(cfg, kname=None):
 # INI
 ##########
 def load_ini_config(config_file, return_string=0):
-    """Load a config file with a format similar to Microsoft's INI files"""
+    """
+    Loads a config file with a format similar to Microsoft's INI files
+    """
 
     if not os.path.exists(config_file):
         raise FileNotFoundError(
@@ -391,7 +429,9 @@ def load_ini_config(config_file, return_string=0):
 
 
 def get_ini_value(config, section, key):
-    """Finds the value of a property in a given section"""
+    """
+    Finds the value of a property in a given section
+    """
 
     if not section in config:
         raise KeyError(f"Section not found: {section}")
@@ -402,7 +442,9 @@ def get_ini_value(config, section, key):
 
 
 def cfg_to_ini_str(cfg, kname=None):
-    """Get contents of config file as ini string"""
+    """
+    Gets contents of config file as INI string
+    """
 
     ini_str = ""
     for k, v in cfg.items():
@@ -427,7 +469,9 @@ def cfg_to_ini_str(cfg, kname=None):
 # XML
 ##########
 def xml_to_dict(root, return_string):
-    """Convert an xml tree to dictionary"""
+    """
+    Converts an XML tree to dictionary
+    """
 
     cfg = {}
     for child in root:
@@ -440,7 +484,7 @@ def xml_to_dict(root, return_string):
 
 
 def dict_to_xml(d, tag):
-    """Convert dictionary to an xml tree"""
+    """Converts dictionary to an XML tree"""
 
     elem = ET.Element(tag)
     for k, v in d.items():
@@ -456,7 +500,9 @@ def dict_to_xml(d, tag):
 
 
 def load_xml_config(config_file, return_string=0):
-    """Load xml config file"""
+    """
+    Loads XML config file
+    """
 
     tree = ET.parse(config_file)
     root = tree.getroot()
@@ -465,7 +511,9 @@ def load_xml_config(config_file, return_string=0):
 
 
 def cfg_to_xml_str(cfg):
-    """Get contents of config file as a xml string"""
+    """
+    Gets contents of config file as a XML string
+    """
 
     root = dict_to_xml(cfg, "root")
     r = ET.tostring(root, encoding="unicode")
@@ -479,11 +527,12 @@ def cfg_to_xml_str(cfg):
 # CONFIG utils
 ##################
 def flatten_dict(dictionary, keys=None):
-    """Flatten a recursive dictionary (e.g.yaml/json) to be one level deep
+    """
+    Flattens a recursive dictionary (e.g.YAML/JSON) to be one level deep
 
     Args:
-        dictionary: the source dictionary
-        keys: list of keys on top level whose contents to flatten, if None all of them
+        dictionary: The source dictionary
+        keys (list): Keys on top level whose contents to flatten; if ``None``, then all of them
     Returns:
         A one-level deep dictionary for the selected set of keys
     """
@@ -499,11 +548,12 @@ def flatten_dict(dictionary, keys=None):
 
 
 def structure_dict(dict_o, dict_t):
-    """Structure a dictionary based on a template dictionary
+    """
+    Structures a dictionary based on a template dictionary
 
     Args:
-        dict_o: dictionary to structure (flat one level structure)
-        dict_t: template dictionary used for structuring
+        dict_o: Dictionary to structure (flat one level structure)
+        dict_t: Template dictionary used for structuring
     Returns:
         A dictionary with contents of dict_o following structure of dict_t
     """
@@ -519,7 +569,7 @@ def structure_dict(dict_o, dict_t):
 
 
 def update_dict(dict_o, dict_t, provide_default=False):
-    """Update a dictionary with another
+    """Updates a dictionary with another
 
     Args:
         dict_o: flat dictionary used as source
@@ -549,15 +599,16 @@ def update_dict(dict_o, dict_t, provide_default=False):
 
 
 def check_structure_dict(dict_o, dict_t):
-    """Check if a dictionary's structure follows a template.
+    """
+    Checks if a dictionary's structure follows a template.
     The invalid entries are returned as a dictionary.
-    If all entries are valid, returns an empty dictionary
+    If all entries are valid, returns an empty dictionary.
 
     Args:
-        dict_o: target dictionary
-        dict_t: template dictionary to compare structure to
+        dict_o (dict): Target dictionary
+        dict_t (dict): Template dictionary to compare structure to
     Returns:
-        dict:  Invalid key-value pairs.
+        dict: Invalid key-value pairs.
     """
     inval = {}
     for k, v in dict_o.items():
@@ -573,10 +624,12 @@ def check_structure_dict(dict_o, dict_t):
 
 
 def filter_dict(dict_o, keys_regex):
-    """Filter dictionary keys based on a list of keys
+    """
+    Filters dictionary keys based on a list of keys
+
     Args:
-        dict_o: the source dictionary
-        keys_regex: list of keys to retain (could be regex exp.)
+        dict_o: The source dictionary
+        keys_regex: Keys to retain (could be regex expression)
     """
 
     keys = []
@@ -591,7 +644,12 @@ def filter_dict(dict_o, keys_regex):
 # CONFIG loader
 ##################
 def load_config_file(file_name, return_string=0):
-    """Load config file based on file name extension"""
+    """
+    Loads config file based on file name extension
+
+    Raises:
+        ValueError: If an unrecognized file extension is used. 
+    """
 
     ext = os.path.splitext(file_name)[1][1:]
     if ext == "sh":
@@ -619,7 +677,9 @@ def load_config_file(file_name, return_string=0):
 # CONFIG main
 ##################
 def cfg_main():
-    """Main function for converting and formatting between different config file formats"""
+    """
+    Converts between and formats different config file formats
+    """
 
     parser = argparse.ArgumentParser(
         description="Utility for managing different config formats."

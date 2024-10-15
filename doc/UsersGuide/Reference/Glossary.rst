@@ -10,7 +10,7 @@ Glossary
       To transport substances in the atmostphere by :term:`advection`.
 
    advection
-      According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Advection>`__, advection is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
+      According to the American Meteorological Society (AMS) definition, `advection <https://glossary.ametsoc.org/wiki/Advection>`_ is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
 
    AQM
       The `Air Quality Model <https://github.com/NOAA-EMC/AQM>`__ (AQM) is a UFS Application that dynamically couples the Community Multiscale Air Quality (:term:`CMAQ`) model with the UFS Weather Model through the :term:`NUOPC` Layer to simulate temporal and spatial variations of atmospheric compositions (e.g., ozone and aerosol compositions). The CMAQ, treated as a column chemistry model, updates concentrations of chemical species (e.g., ozone and aerosol compositions) at each integration time step. The transport terms (e.g., :term:`advection` and diffusion) of all chemical species are handled by the UFS Weather Model as :term:`tracers<tracer>`.
@@ -22,7 +22,7 @@ Glossary
       Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for METplus precipitation verification tasks within the SRW App. The most recent 8 days worth of data are publicly available and can be accessed `here <https://ftp.ncep.noaa.gov/data/nccf/com/ccpa/prod/>`__. 
 
    CCPP
-      The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`__ is a forecast-model agnostic, vetted collection of code containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
+      The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of code containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
@@ -78,10 +78,10 @@ Glossary
       The radar-indicated top of an area of precipitation. Specifically, it contains the height of the 18 dBZ reflectivity value.
 
    EMC
-      The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc_new.php>`__. 
-
+      The `Environmental Modeling Center <https://www.emc.ncep.noaa.gov/emc.php>`_. 
+  
    EPIC
-      The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`__ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
+      The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`_ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
 
    ESG
       Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
@@ -118,7 +118,7 @@ Glossary
       High-Performance Computing.
 
    HPC-Stack
-      The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework. View the HPC-Stack documentation :doc:`here <hpc-stack:index>`.
+      The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ is a repository that provides a unified, shell script-based build system for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufs.epic.noaa.gov/>`_ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`_ framework. View the HPC-Stack documentation :doc:`here <hpc-stack:index>`.
 
    HPSS
       High Performance Storage System (HPSS).
@@ -227,25 +227,25 @@ Glossary
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
 
    RRFS
-      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ (RRFS) is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain, see also `NOAA Rapid Refresh Forecast System (RRFS) <https://registry.opendata.aws/noaa-rrfs/>`__. Experimental data is currently available from the `AWS S3 NOAA-RRFS  <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`__ bucket for deterministic forecasts out to 60 hours at 00, 06, 12, and 18 UTC. Additionally, hourly forecasts out to 18 hours may be available for more recent RRFS model runs; the user needs to verify that data exists for needed dates.
+      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`_ (RRFS) is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain, see also `NOAA Rapid Refresh Forecast System (RRFS) <https://registry.opendata.aws/noaa-rrfs/>`__. Experimental data is currently available from the `AWS S3 NOAA-RRFS  <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`__ bucket for deterministic forecasts out to 60 hours at 00, 06, 12, and 18 UTC. Additionally, hourly forecasts out to 18 hours may be available for more recent RRFS model runs; the user needs to verify that data exists for needed dates.
 
 
    SDF
       Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.
 
    Spack
-      `Spack <https://spack.readthedocs.io/en/latest/>`__ is a package management tool designed to support multiple versions and configurations of software on a wide variety of platforms and environments. It was designed for large supercomputing centers, where many users and application teams share common installations of software on clusters with exotic architectures. 
+      `Spack <https://spack.readthedocs.io/en/latest/>`_ is a package management tool designed to support multiple versions and configurations of software on a wide variety of platforms and environments. It was designed for large supercomputing centers, where many users and application teams share common installations of software on clusters with exotic architectures. 
 
    spack-stack
-      The `spack-stack <https://github.com/JCSDA/spack-stack>`__ is a collaborative effort between the NOAA Environmental Modeling Center (EMC), the UCAR Joint Center for Satellite Data Assimilation (JCSDA), and the Earth Prediction Innovation Center (EPIC). *spack-stack* is a repository that provides a :term:`Spack`-based method for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufscommunity.org/>`__ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`__ framework. *spack-stack* uses the Spack package manager along with custom Spack configuration files and Python scripts to simplify installation of the libraries required to run various applications. The *spack-stack* can be installed on a range of platforms and comes pre-configured for many systems. Users can install the necessary packages for a particular application and later add the missing packages for another application without having to rebuild the entire stack. To get started, check out the documentation :doc:`here <spack-stack:index>`.
+      The `spack-stack <https://github.com/JCSDA/spack-stack>`_ is a collaborative effort between the NOAA Environmental Modeling Center (EMC), the UCAR Joint Center for Satellite Data Assimilation (JCSDA), and the Earth Prediction Innovation Center (EPIC). *spack-stack* is a repository that provides a :term:`Spack`-based method for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufs.epic.noaa.gov/>`_ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`_ framework. *spack-stack* uses the Spack package manager along with custom Spack configuration files and Python scripts to simplify installation of the libraries required to run various applications. The *spack-stack* can be installed on a range of platforms and comes pre-configured for many systems. Users can install the necessary packages for a particular application and later add the missing packages for another application without having to rebuild the entire stack. To get started, check out the documentation :doc:`here <spack-stack:index>`.
 
    tracer
-      According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Tracer>`__, a tracer is "Any substance in the atmosphere that can be used to track the history [i.e., movement] of an air mass." Tracers are carried around by the motion of the atmosphere (i.e., by :term:`advection`). These substances are usually gases (e.g., water vapor, CO2), but they can also be non-gaseous (e.g., rain drops in microphysics parameterizations). In weather models, temperature (or potential temperature), absolute humidity, and radioactivity are also usually treated as tracers. According to AMS, "The main requirement for a tracer is that its lifetime be substantially longer than the transport process under study."
+      According to the American Meteorological Society (AMS) definition, a `tracer <https://glossary.ametsoc.org/wiki/Tracer>`_ is "Any substance in the atmosphere that can be used to track the history [i.e., movement] of an air mass." Tracers are carried around by the motion of the atmosphere (i.e., by :term:`advection`). These substances are usually gases (e.g., water vapor, CO2), but they can also be non-gaseous (e.g., rain drops in microphysics parameterizations). In weather models, temperature (or potential temperature), absolute humidity, and radioactivity are also usually treated as tracers. According to AMS, "The main requirement for a tracer is that its lifetime be substantially longer than the transport process under study."
 
    UFS
       The Unified Forecast System is a community-based, coupled, comprehensive Earth modeling 
       system consisting of several applications (apps). These apps span regional to global 
-      domains and sub-hourly to seasonal time scales. The UFS is designed to support the :term:`Weather Enterprise` and to be the source system for NOAA's operational numerical weather prediction applications. For more information, visit https://ufscommunity.org/.
+      domains and sub-hourly to seasonal time scales. The UFS is designed to support the :term:`Weather Enterprise` and to be the source system for NOAA's operational numerical weather prediction applications. For more information, visit https://ufs.epic.noaa.gov/.
 
    UFS_UTILS
       A collection of code used by multiple :term:`UFS` apps (e.g., the UFS Short-Range Weather App,

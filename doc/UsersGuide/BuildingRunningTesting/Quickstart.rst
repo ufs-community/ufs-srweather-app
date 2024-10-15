@@ -50,13 +50,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Load the python environment for the workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. Then, run:
 
-      .. code-block:: console
-         
-         source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
-         module use /path/to/ufs-srweather-app/modulefiles
-         module load wflow_<platform>
-
-      where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
+      .. include:: ../../doc-snippets/load-env.rst
+      
+      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
 
       .. code-block:: console
 
@@ -89,10 +85,10 @@ For a detailed explanation of how to build and run the SRW App on any supported 
            CRON_RELAUNCH_INTVL_MNTS: 3
          task_get_extrn_ics:
            USE_USER_STAGED_EXTRN_FILES: true
-           EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+           EXTRN_MDL_SOURCE_BASEDIR_ICS: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          task_get_extrn_lbcs:
            USE_USER_STAGED_EXTRN_FILES: true
-           EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+           EXTRN_MDL_SOURCE_BASEDIR_LBCS: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
       
       Users on a different system would update the machine, account, and data paths accordingly. Additional changes may be required based on the system and experiment. More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. 
 

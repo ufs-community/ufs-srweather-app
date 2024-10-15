@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=logging-fstring-interpolation
+
 import os
 import sys
 import glob
@@ -22,11 +23,11 @@ from monitor_jobs import monitor_jobs, write_monitor_file
 from utils import print_test_info
 
 def run_we2e_tests(homedir, args) -> None:
-    """Function to run the WE2E tests selected by the user
+    """Runs the Workflow End-to-End (WE2E) tests selected by the user
 
     Args:
-        homedir (str): The full path of the top-level app directory
-        args    (obj): The argparse.Namespace object containing command-line arguments
+        homedir (str): The full path to the top-level application directory
+        args    (argparse.Namespace): Command-line arguments
 
     Returns:
         None
@@ -274,13 +275,13 @@ def run_we2e_tests(homedir, args) -> None:
 
 def check_tests(tests: list) -> list:
     """
-    Function for checking that all tests in a provided list of tests are valid
+    Checks that all tests in a provided list of tests are valid
 
     Args:
         tests (list): List of potentially valid test names
 
     Returns:
-        list: List of config files corresponding to test names
+        tests_to_run: List of configuration files corresponding to test names
     """
 
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -309,7 +310,7 @@ def check_tests(tests: list) -> list:
         if not match:
             raise Exception(f"Could not find test {test}")
         tests_to_run.append(match)
-    # Because some test files are symlinks to other tests, check that we don't
+    # Because some test files are symlinked to other tests, check that we don't
     # include the same test twice
     for testfile in tests_to_run.copy():
         if os.path.islink(testfile):
@@ -328,13 +329,13 @@ def check_tests(tests: list) -> list:
 
 def check_test(test: str) -> str:
     """
-    Function for checking that a string corresponds to a valid test name
+    Checks that a string corresponds to a valid test name
 
     Args:
-        test (str) : String of potential test name
+        test (str): Potential test name
 
     Returns:
-        str: File name of test config file (empty string if no test file found)
+        config: Name of the test configuration file (empty string if no test file is found)
     """
     # potential test files
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -350,17 +351,17 @@ def check_test(test: str) -> str:
 
 def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str = "") -> dict:
     """
-    Function for checking and updating various settings in task_get_extrn_ics or 
-    task_get_extrn_lbcs section of test config yaml
+    Checks and updates various settings in the ``task_get_extrn_ics`` or 
+    ``task_get_extrn_lbcs`` section of the test's configuration YAML file
 
     Args:
-        cfg         (dict): Dictionary loaded from test config file
-        mach        (dict): Dictionary loaded from machine settings file
-        dflt        (dict): Dictionary loaded from default config file
-        ics_or_lbcs (bool): Perform checks for ICs task or LBCs task
+        cfg         (dict): Contents loaded from test configuration file
+        mach        (dict): Contents loaded from machine settings file
+        dflt        (dict): Contents loaded from default configuration file (``config_defaults.yaml``)
+        ics_or_lbcs (str): Perform checks for either the ICs task or the LBCs task. Valid values: ``"ics"`` | ``"lbcs"``
 
     Returns:
-        dict: Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
+        cfg_bcs: Updated dictionary for ``task_get_extrn_[ics|lbcs]`` section of test configuration file
     """
 
     if ics_or_lbcs not in ["lbcs", "ics"]:
@@ -434,8 +435,14 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
-    Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
-    messages with detailed timing and routine info in the specified text file.
+    Sets up logging, prints high-priority (INFO and higher) messages to screen, and prints all
+    messages with detailed timing and routine info to the specified text file.
+
+    Args:
+        logfile  (str): Name of the test logging file (default: ``log.run_WE2E_tests``)
+        debug   (bool): Set to True for more detailed output/information
+    Returns:
+        None
     """
     logging.getLogger().setLevel(logging.DEBUG)
 
