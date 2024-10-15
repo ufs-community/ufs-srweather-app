@@ -117,7 +117,7 @@ is_enabled(BUILD_SHARED_LIBS enable_shared)
 is_enabled(STATUS_PARALLEL HAS_PARALLEL)
 
 # Generate file from template.
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/etc/build_settings_template.yaml"
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sorc/build_settings_template.yaml"
   "${CMAKE_CURRENT_BINARY_DIR}/build_settings.yaml"
   @ONLY)
 
