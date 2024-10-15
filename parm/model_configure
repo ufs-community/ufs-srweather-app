@@ -1,5 +1,3 @@
-total_member:            1
-PE_MEMBER01:             {{ PE_MEMBER01 }}
 start_year:              {{ start_year }}
 start_month:             {{ start_month }}
 start_day:               {{ start_day }}
@@ -13,7 +11,6 @@ ENS_SPS:                 .false.
 dt_atmos:                {{ dt_atmos }}
 calendar:                'julian'
 memuse_verbose:          .false.
-atmos_nthreads:          {{ atmos_nthreads }}
 restart_interval:        {{ restart_interval }}
 output_1st_tstep_rst:    .false.
 write_dopost:            {{ write_dopost }}
