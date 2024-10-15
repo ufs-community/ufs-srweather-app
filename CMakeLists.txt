@@ -137,7 +137,7 @@ INSTALL(FILES "${CMAKE_BINARY_DIR}/build_settings.yaml"
 # Create 'ufs_srweather_app_meta.h' include file.
 #####
 configure_file(
-  ufs_srweather_app_meta.h.in
+  sorc/ufs_srweather_app_meta.h.in
   ufs_srweather_app_meta.h @ONLY)
 
 FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)
