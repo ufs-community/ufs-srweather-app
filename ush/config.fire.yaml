@@ -12,20 +12,20 @@ workflow:
   PREDEF_GRID_NAME: SUBCONUS_CO_3km
   DATE_FIRST_CYCL: '2020081318'
   DATE_LAST_CYCL: '2020081318'
-  FCST_LEN_HRS: 27
+  FCST_LEN_HRS: 6 # 27 hours of LBCs staged on Derecho
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
 task_get_extrn_ics:
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: "/glade/derecho/scratch/kavulich/FIRE/2024/test_data/HRRR"
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
   EXTRN_MDL_NAME_ICS: HRRR
   FV3GFS_FILE_FMT_ICS: grib2
   EXTRN_MDL_FILES_ICS:
     - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
 task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/derecho/scratch/kavulich/FIRE/2024/test_data/HRRR"
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
   EXTRN_MDL_FILES_LBCS:
     - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
   EXTRN_MDL_NAME_LBCS: HRRR
@@ -63,5 +63,5 @@ rocoto:
   tasks:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        walltime: 02:00:00
+        walltime: 01:00:00
 
