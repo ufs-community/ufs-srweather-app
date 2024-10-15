@@ -196,7 +196,6 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-set -x
 #
 #-----------------------------------------------------------------------
 #

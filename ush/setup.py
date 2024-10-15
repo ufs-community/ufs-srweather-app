@@ -1527,10 +1527,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
             )
         if fire_conf["FIRE_NUM_TASKS"] < 1:
-            raise ValueError("FIRE_NUM_TASKS must be > 0")
+            raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
 
         if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
             raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
+    else:
+        if fire_conf["FIRE_NUM_TASKS"] < 1:
+            logging.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
 
     #
     # -----------------------------------------------------------------------
