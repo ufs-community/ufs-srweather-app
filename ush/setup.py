@@ -594,6 +594,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+    # Generate a list containing the starting times of the cycles.  This will
+    # be needed in checking that the hours-of-day of the forecast output match
+    # those of the observations.
+    #
+    # -----------------------------------------------------------------------
+    #
+    cycle_start_times \
+    = set_cycle_dates(date_first_cycl, date_last_cycl, cycl_intvl_dt,
+                      return_type='datetime')
+    #
+    # -----------------------------------------------------------------------
+    #
     # Ensure that the configuration parameters associated with cumulative
     # fields (e.g. APCP) in the verification section of the experiment
     # dicitonary are temporally consistent, e.g. that accumulation intervals
@@ -604,22 +616,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     vx_config, fcst_obs_matched_times_all_cycles_cumul \
     = check_temporal_consistency_cumul_fields(
-      vx_config,
-      date_first_cycl, date_last_cycl, cycl_intvl_dt,
-      fcst_len_dt, vx_fcst_output_intvl_dt)
+      vx_config, cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
     expt_config["verification"] = vx_config
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate a list containing the starting times of the cycles.  This will
-    # be needed in checking that the hours-of-day of the forecast output match
-    # those of the observations.
-    #
-    # -----------------------------------------------------------------------
-    #
-    cycle_start_times \
-    = set_cycle_dates(date_first_cycl, date_last_cycl, cycl_intvl_dt,
-                      return_type='datetime')
     #
     # -----------------------------------------------------------------------
     #

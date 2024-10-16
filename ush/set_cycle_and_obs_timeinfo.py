@@ -66,9 +66,7 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
 
 
 def check_temporal_consistency_cumul_fields(
-    vx_config,
-    start_time_first_cycl, start_time_last_cycl, cycl_intvl,
-    fcst_len, fcst_output_intvl):
+    vx_config, cycle_start_times, fcst_len, fcst_output_intvl):
     """
     This function reads in a subset of the parameters in the verification
     configuration dictionary and ensures that certain temporal constraints on
@@ -113,14 +111,9 @@ def check_temporal_consistency_cumul_fields(
         vx_config:
         The verification configuration dictionary.
 
-        start_time_first_cycl:
-        Starting time of first cycle; a datetime object.
-
-        start_time_last_cycl:
-        Starting time of last cycle; a datetime object.
-
-        cycl_intvl:
-        Time interval between cycle starting times; a timedelta object.
+        cycle_start_times:
+        List containing the starting times of the cycles in the experiment;
+        each list element is a datetime object.
 
         fcst_len:
         The length of each forecast; a timedelta object.
@@ -146,13 +139,6 @@ def check_temporal_consistency_cumul_fields(
     one_hour = timedelta(hours=1)
     fcst_len_hrs = int(fcst_len/one_hour)
     fcst_output_intvl_hrs = int(fcst_output_intvl/one_hour)
-
-    # Generate a list containing the starting times of the cycles.  This will
-    # be needed in checking that the hours-of-day of the forecast output match
-    # those of the observations.
-    cycle_start_times \
-    = set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
-                      return_type='datetime')
 
     # Initialize one of the variables that will be returned to an empty
     # dictionary.
@@ -372,14 +358,9 @@ def set_fcst_output_times_and_obs_days_all_cycles(
     accumulation interval smaller than this are obviously not allowed).
 
     Args:
-        start_time_first_cycl:
-        Starting time of first cycle; a datetime object.
-
-        start_time_last_cycl:
-        Starting time of last cycle; a datetime object.
-
-        cycl_intvl:
-        Time interval between cycle starting times; a timedelta object.
+        cycle_start_times:
+        List containing the starting times of the cycles in the experiment;
+        each list element is a datetime object.
 
         fcst_len:
         The length of each forecast; a timedelta object.
@@ -607,6 +588,13 @@ def get_obs_retrieve_times_by_day(
     Args:
         vx_config:
         The verification configuration dictionary.
+
+        cycle_start_times:
+        List containing the starting times of the cycles in the experiment;
+        each list element is a datetime object.
+
+        fcst_len:
+        The length of each forecast; a timedelta object.
 
         fcst_output_times_all_cycles:
         Dictionary containing a list of forecast output times over all cycles for
