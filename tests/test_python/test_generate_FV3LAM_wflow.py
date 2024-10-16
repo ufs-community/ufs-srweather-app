@@ -39,6 +39,14 @@ class Testing(unittest.TestCase):
         logfile = "log.generate_FV3LAM_wflow"
         sed = get_env_var("SED")
 
+        # create a dummy build settings file if needed
+        EXECdir = os.path.join(USHdir, "..", "exec") 
+        build_settings_file = os.path.join(EXECdir, "build_settings.yaml")
+        if not os.path.exists(build_settings_file):
+            os.makedirs(EXECdir)
+            with open(build_settings_file, 'w') as build_settings:
+                build_settings.write('Application:\n')
+
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(
