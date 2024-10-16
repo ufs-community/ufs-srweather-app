@@ -30,10 +30,6 @@ jobs:
           cache-downloads: true
           cache-environment: true
 
-      - name: Checkout externals
-        run: |
-          ./manage_externals/checkout_externals ufs-weather-model
-
       - name: Lint the python code
         run: |
           micromamba activate srw_app
@@ -58,3 +54,8 @@ jobs:
           export CI=true
           export PYTHONPATH=${PWD}/ush
           python3 -m unittest -b tests/test_python/test_retrieve_data.py
+
+      - name: Checkout externals
+        run: |
+          ./manage_externals/checkout_externals ufs-weather-model
+
