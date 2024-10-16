@@ -459,7 +459,7 @@ def generate_FV3LAM_wflow(
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        with open(FIELD_TABLE_FP, "a+") as file:
+        with open(FIELD_TABLE_FP, "a+", encoding='UTF-8') as file:
             file.write(field_table_append)
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
