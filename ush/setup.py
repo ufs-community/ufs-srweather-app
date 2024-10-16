@@ -611,6 +611,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+    # Generate a list containing the starting times of the cycles.  This will
+    # be needed in checking that the hours-of-day of the forecast output match
+    # those of the observations.
+    #
+    # -----------------------------------------------------------------------
+    #
+    cycle_start_times \
+    = set_cycle_dates(date_first_cycl, date_last_cycl, cycl_intvl_dt,
+                      return_type='datetime')
+    #
+    # -----------------------------------------------------------------------
+    #
     # Generate a list of forecast output times and a list of obs days (i.e.
     # days on which observations are needed to perform verification because
     # there is forecast output on those days) over all cycles, both for
@@ -623,8 +635,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     fcst_output_times_all_cycles, obs_days_all_cycles, \
     = set_fcst_output_times_and_obs_days_all_cycles(
-      date_first_cycl, date_last_cycl, cycl_intvl_dt,
-      fcst_len_dt, vx_fcst_output_intvl_dt)
+      cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
 
     workflow_config['OBS_DAYS_ALL_CYCLES_INST'] = obs_days_all_cycles['inst']
     workflow_config['OBS_DAYS_ALL_CYCLES_CUMUL'] = obs_days_all_cycles['cumul']
@@ -658,7 +669,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     vx_config = expt_config["verification"]
     obs_retrieve_times_by_day \
     = get_obs_retrieve_times_by_day(
-      vx_config, fcst_output_times_all_cycles, obs_days_all_cycles)
+      vx_config, cycle_start_times, fcst_len_dt, 
+      fcst_output_times_all_cycles, obs_days_all_cycles)
 
     for obtype, obs_days_dict in obs_retrieve_times_by_day.items():
         for obs_day, obs_retrieve_times in obs_days_dict.items():

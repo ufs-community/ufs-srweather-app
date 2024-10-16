@@ -361,8 +361,7 @@ def check_temporal_consistency_cumul_fields(
 
 
 def set_fcst_output_times_and_obs_days_all_cycles(
-    start_time_first_cycl, start_time_last_cycl, cycl_intvl,
-    fcst_len, fcst_output_intvl):
+    cycle_start_times, fcst_len, fcst_output_intvl):
     """
     This function returns forecast output times and observation days (i.e.
     days on which obs are needed because there is forecast output on those
@@ -400,12 +399,6 @@ def set_fcst_output_times_and_obs_days_all_cycles(
         instantaneous fields and a second analogous list for cumulative fields.
         Each element of these lists is a string of the form 'YYYYMMDD'.
     """
-
-    # Get the list containing the starting times of the cycles.  Each element
-    # of the list will be a datetime object.
-    cycle_start_times \
-    = set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
-                      return_type='datetime')
 
     # Get the number of forecast output times per cycle/forecast.
     num_fcst_output_times_per_cycle = int(fcst_len/fcst_output_intvl + 1)
@@ -603,7 +596,8 @@ def set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles):
 
 
 def get_obs_retrieve_times_by_day(
-    vx_config, fcst_output_times_all_cycles, obs_days_all_cycles):
+    vx_config, cycle_start_times, fcst_len,
+    fcst_output_times_all_cycles, obs_days_all_cycles):
     """
     This function generates dictionary of dictionaries that, for each
     combination of obs type needed and each obs day, contains a string list
