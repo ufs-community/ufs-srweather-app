@@ -49,6 +49,7 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
             Valid values are:
               valid_values = {valid_values}
             """)
+        logging.error(msg)
         raise Exception(msg)
 
     # iterate over cycles
@@ -184,6 +185,7 @@ def check_temporal_consistency_cumul_fields(
                   obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
                   24 % obs_avail_intvl_hrs = {remainder}"
                 """)
+            logging.error(msg)
             raise Exception(msg)
         # Assume that the obs are available at hour 0 of the day regardless
         # of obs type.
@@ -630,12 +632,12 @@ def get_obs_retrieve_times_by_day(
     """
     # Convert string contents of input dictionaries to datetime objects.
     for time_type in ['cumul', 'inst']:
-      fcst_output_times_all_cycles[time_type] \
-      = [datetime.strptime(fcst_output_times_all_cycles[time_type][i], "%Y%m%d%H")
-                           for i in range(len(fcst_output_times_all_cycles[time_type]))]
-      obs_days_all_cycles[time_type] \
-      = [datetime.strptime(obs_days_all_cycles[time_type][i], "%Y%m%d")
-                           for i in range(len(obs_days_all_cycles[time_type]))]
+        fcst_output_times_all_cycles[time_type] \
+        = [datetime.strptime(fcst_output_times_all_cycles[time_type][i], "%Y%m%d%H")
+                             for i in range(len(fcst_output_times_all_cycles[time_type]))]
+        obs_days_all_cycles[time_type] \
+        = [datetime.strptime(obs_days_all_cycles[time_type][i], "%Y%m%d")
+                             for i in range(len(obs_days_all_cycles[time_type]))]
 
     # Get list of forecast fields to be verified.
     vx_fields = vx_config['VX_FIELDS']
@@ -650,8 +652,9 @@ def get_obs_retrieve_times_by_day(
                                {'obtype': 'NDAS',   'fcst_fields': ['ADPSFC', 'ADPUPA']}]
                     }
 
-    # Keep only those items in the dictionary above that have forecast fields
-    # that appear in the list of forecast fields to be verified.
+    # Keep only those items in the dictionary vx_field_info defined above
+    # that have forecast fields that appear in the list of forecast fields to
+    # be verified.
     for obs_time_type, obtypes_to_fcst_fields_dict_list in vx_field_info.copy().items():
         for obtypes_to_fcst_fields_dict in obtypes_to_fcst_fields_dict_list.copy():
             obtype = obtypes_to_fcst_fields_dict['obtype']
