@@ -40,6 +40,10 @@ jobs:
           pylint ush/set_fv3nml*.py
           pylint ush/update_input_nml.py
 
+      - name: Checkout externals
+        run: |
+          ./manage_externals/checkout_externals ufs-weather-model
+
       - name: Run python unittests
         run: |
           # exclude test_retrieve_data that is tested in functional test
@@ -54,8 +58,4 @@ jobs:
           export CI=true
           export PYTHONPATH=${PWD}/ush
           python3 -m unittest tests/test_python/test_retrieve_data.py
-
-      - name: Checkout externals
-        run: |
-          ./manage_externals/checkout_externals ufs-weather-model
 
