@@ -11,12 +11,9 @@ from textwrap import dedent
 from uwtools.api.template import render
 
 from python_utils import (
-    cfg_to_yaml_str,
     flatten_dict,
-    import_vars,
     load_yaml_config,
     print_info_msg,
-    print_input_args,
 )
 
 def create_ufs_configure_file(run_dir,cfg):
@@ -38,10 +35,10 @@ def create_ufs_configure_file(run_dir,cfg):
     fire_end = str(int(cfg["PE_MEMBER01"]) - 1)
 
     if cfg["CPL_AQM"]:
-        EARTH_component_list = 'ATM AQM'
-        ATM_petlist_bounds = '-1 -1'
-        ATM_omp_num_threads_line = ''
-        ATM_diag_line = ''
+        earth_component_list = 'ATM AQM'
+        atm_petlist_bounds = '-1 -1'
+        atm_omp_num_threads_line = ''
+        atm_diag_line = ''
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM phase1\n",
                    "    ATM -> AQM\n",
@@ -50,12 +47,12 @@ def create_ufs_configure_file(run_dir,cfg):
                    "    ATM phase2\n",
                    "  @" ]
     elif cfg["UFS_FIRE"]:
-        EARTH_component_list = 'ATM FIRE'
-        ATM_petlist_bounds = f'0 {atm_end}'
-        ATM_omp_num_threads_line = \
+        earth_component_list = 'ATM FIRE'
+        atm_petlist_bounds = f'0 {atm_end}'
+        atm_omp_num_threads_line = \
             f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
-        ATM_diag_line = ''
-        FIRE_petlist_bounds = f'{fire_start} {fire_end}'
+        atm_diag_line = ''
+        fire_petlist_bounds = f'{fire_start} {fire_end}'
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM -> FIRE\n",
                    "    FIRE -> ATM :remapmethod=conserve\n",
@@ -63,11 +60,11 @@ def create_ufs_configure_file(run_dir,cfg):
                    "    FIRE\n",
                    "  @" ]
     else:
-        EARTH_component_list = 'ATM'
-        ATM_petlist_bounds = f'0 {atm_end}'
-        ATM_omp_num_threads_line = \
+        earth_component_list = 'ATM'
+        atm_petlist_bounds = f'0 {atm_end}'
+        atm_omp_num_threads_line = \
             f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
-        ATM_diag_line = '  Diagnostic = 0'
+        atm_diag_line = '  Diagnostic = 0'
         runseq = [ "  ATM" ]
 
     if cfg["PRINT_ESMF"]:
@@ -82,7 +79,7 @@ def create_ufs_configure_file(run_dir,cfg):
     #-----------------------------------------------------------------------
     #
     print_info_msg(f'''
-        Creating a ufs.configure file (\"{cfg["UFS_CONFIG_FN"]}\") in the specified 
+        Creating a ufs.configure file (\"{cfg["UFS_CONFIG_FN"]}\") in the specified
         run directory (run_dir):
           {run_dir=}''', verbose=cfg["VERBOSE"])
     #
@@ -99,13 +96,12 @@ def create_ufs_configure_file(run_dir,cfg):
     #-----------------------------------------------------------------------
     #
     settings = {
-      "cpl_aqm": cfg["CPL_AQM"],
       "ufs_fire": cfg["UFS_FIRE"],
       "logKindFlag": logkindflag,
-      "EARTH_cl": EARTH_component_list,
-      "ATM_pb": ATM_petlist_bounds,
-      "ATM_omp_num_threads_line": ATM_omp_num_threads_line,
-      "ATM_diag_line": ATM_diag_line,
+      "EARTH_cl": earth_component_list,
+      "ATM_pb": atm_petlist_bounds,
+      "ATM_omp_num_threads_line": atm_omp_num_threads_line,
+      "ATM_diag_line": atm_diag_line,
       "runseq": runseq,
       "FIRE_pb": "",
       "dt_atmos": cfg["DT_ATMOS"],
@@ -113,9 +109,7 @@ def create_ufs_configure_file(run_dir,cfg):
       "cpl_aqm": cfg["CPL_AQM"]
     }
     if cfg["UFS_FIRE"]:
-        settings["FIRE_pb"] = FIRE_petlist_bounds
-
-    settings_str = cfg_to_yaml_str(settings)
+        settings["FIRE_pb"] = fire_petlist_bounds
 
     print_info_msg(
         dedent(
@@ -160,6 +154,6 @@ def _parse_args(argv):
 
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
-    cfg = load_yaml_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
-    create_ufs_configure_file(run_dir=args.run_dir,cfg=cfg)
+    conf = load_yaml_config(args.path_to_defns)
+    confg = flatten_dict(conf)
+    create_ufs_configure_file(run_dir=args.run_dir,cfg=conf)
