@@ -40,11 +40,11 @@ class Testing(unittest.TestCase):
         sed = get_env_var("SED")
 
         # create a dummy build settings file if needed
-        EXECdir = os.path.join(USHdir, "..", "exec") 
+        EXECdir = os.path.join(USHdir, "..", "exec")
         build_settings_file = os.path.join(EXECdir, "build_settings.yaml")
         if not os.path.exists(build_settings_file):
             os.makedirs(EXECdir)
-            with open(build_settings_file, 'w') as build_settings:
+            with open(build_settings_file, 'w', encoding='utf-8') as build_settings:
                 build_settings.write('Application:\n')
 
         # community test case
