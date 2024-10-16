@@ -241,7 +241,46 @@ def load_config_for_setup(ushdir, default_config, user_config):
     except:
         pass
     cfg_d["workflow"]["EXPT_BASEDIR"] = os.path.abspath(expt_basedir)
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Ensure that the configuration parameters associated with cumulative
+    # fields (e.g. APCP) in the verification section of the experiment
+    # dicitonary are temporally consistent, e.g. that accumulation intervals
+    # are less than or equal to the forecast length.  Update the verification
+    # section of the dictionary to remove inconsistencies.
+    #
+    # -----------------------------------------------------------------------
+    #
+    vx_config = cfg_d["verification"]
+    workflow_config = cfg_d["workflow"]
 
+    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    vx_fcst_output_intvl_hrs = vx_config.get("VX_FCST_OUTPUT_INTVL_HRS")
+
+    # Convert various times and time intervals from integers or strings to
+    # datetime or timedelta objects.
+    date_first_cycl_dt = datetime.datetime.strptime(date_first_cycl, "%Y%m%d%H")
+    date_last_cycl_dt = datetime.datetime.strptime(date_last_cycl, "%Y%m%d%H")
+    cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
+    fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
+    vx_fcst_output_intvl_dt = datetime.timedelta(hours=vx_fcst_output_intvl_hrs)
+
+    # Generate a list containing the starting times of the cycles.
+    cycle_start_times \
+    = set_cycle_dates(date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt,
+                      return_type='datetime')
+
+    # Call function that runs the consistency checks on the vx parameters.
+    vx_config, fcst_obs_matched_times_all_cycles_cumul \
+    = check_temporal_consistency_cumul_fields(
+      vx_config, cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
+
+
+    cfg_d['verification'] = vx_config
     extend_yaml(cfg_d)
 
     # Do any conversions of data types
@@ -603,21 +642,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     cycle_start_times \
     = set_cycle_dates(date_first_cycl, date_last_cycl, cycl_intvl_dt,
                       return_type='datetime')
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Ensure that the configuration parameters associated with cumulative
-    # fields (e.g. APCP) in the verification section of the experiment
-    # dicitonary are temporally consistent, e.g. that accumulation intervals
-    # are less than or equal to the forecast length.  Update the verification
-    # section of the dictionary to remove inconsistencies.
-    #
-    # -----------------------------------------------------------------------
-    #
-    vx_config, fcst_obs_matched_times_all_cycles_cumul \
-    = check_temporal_consistency_cumul_fields(
-      vx_config, cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
-    expt_config["verification"] = vx_config
+    print(f"")
+    print(f"IIIIIIIIIIIIIII")
+    print(f"cycle_start_times = ")
+    pprint(cycle_start_times)
+    #mnmnmnmnmnmnmn
     #
     # -----------------------------------------------------------------------
     #
