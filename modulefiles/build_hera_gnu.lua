@@ -7,7 +7,7 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Hera using GN
 
 prepend_path("MODULEPATH", "/scratch2/NCEPDEV/stmp1/role.epic/installs/gnu/modulefiles")
 prepend_path("MODULEPATH", "/scratch2/NCEPDEV/stmp1/role.epic/installs/openmpi/modulefiles")
-prepend_path("MODULEPATH", "/scratch2/NCEPDEV/stmp1/role.epic/spack-stack/spack-stack-1.6.0_gnu13/envs/ufs-wm-srw-rocky8/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/stmp1/role.epic/spack-stack/spack-stack-1.6.0_gnu13/envs/upp-addon-env/install/modulefiles/Core")
 
 load("stack-gcc/13.3.0")
 load("stack-openmpi/4.1.6")

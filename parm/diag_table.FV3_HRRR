@@ -339,6 +339,9 @@
 "gfs_phys",    "spp_wts_rad",   "spp_wts_rad",   "fv3_history",  "all", .false., "none", 2
 "gfs_phys",    "spp_wts_gwd",   "spp_wts_gwd",   "fv3_history",  "all", .false., "none", 2
 
+# Additional entries from user-specified SRW settings (e.g. UFS-FIRE)
+{{ additional_entries }}
+
 #=============================================================================================
 #
 #====> This file can be used with diag_manager/v2.0a (or higher) <====

@@ -33,6 +33,8 @@ load("gfsio")
 load("wgrib2")
 load("upp")
 
+setenv("FC", "mpif90")
+
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpicxx")
 setenv("CMAKE_Fortran_COMPILER","mpif90")

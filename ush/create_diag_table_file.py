@@ -58,7 +58,10 @@ def create_diag_table_file(run_dir):
         verbose=VERBOSE,
     )
 
-    settings = {"starttime": CDATE, "cres": CRES}
+    settings = {"starttime": CDATE, "cres": CRES, "additional_entries": ""}
+    if UFS_FIRE:
+        settings["additional_entries"] = \
+                '"gfs_phys","fsmoke","fsmoke","fv3_history","all",.false.,"none",2'
     settings_str = cfg_to_yaml_str(settings)
 
     print_info_msg(

@@ -399,9 +399,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Create a dictionary of config options from defaults, machine, and
     # user config files.
+    build_config_fp = os.path.join(USHdir, os.pardir, "exec", "build_settings.yaml")
     default_config_fp = os.path.join(USHdir, "config_defaults.yaml")
     user_config_fp = os.path.join(USHdir, user_config_fn)
     expt_config = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
+
+    # Load build settings as a dictionary; will be used later to make sure the build is consistent with the user settings
+    build_config = load_config_file(build_config_fp)
+    logger.debug(f"Build configuration\n{build_config}")
 
     # Set up some paths relative to the SRW clone
     expt_config["user"].update(set_srw_paths(USHdir, expt_config))
@@ -690,8 +695,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
 
 
-    # Make sure the vertical coordinate file for both make_lbcs and
-    # make_ics is the same.
+    # Make sure the vertical coordinate file and LEVP for both make_lbcs and make_ics is the same.
     if ics_vcoord := expt_config.get("task_make_ics", {}).get("VCOORD_FILE") != \
             (lbcs_vcoord := expt_config.get("task_make_lbcs", {}).get("VCOORD_FILE")):
          raise ValueError(
@@ -705,6 +709,20 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
              make_lbcs:
                VCOORD_FILE: {lbcs_vcoord}
+             """
+         )
+    if ics_levp := expt_config.get("task_make_ics", {}).get("LEVP") != \
+            (lbcs_levp := expt_config.get("task_make_lbcs", {}).get("LEVP")):
+         raise ValueError(
+             f"""
+             The number of vertical levels LEVP must be set to the same value for both the
+             make_ics task and the make_lbcs tasks. They are currently set to:
+
+             make_ics:
+               LEVP: {ics_levp}
+
+             make_lbcs:
+               LEVP: {lbcs_levp}
              """
          )
 
@@ -1487,6 +1505,35 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         logging.debug(f'New fix file list:\n{fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"]=}')
         logging.debug(f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}')
 
+
+    # -----------------------------------------------------------------------
+    #
+    # Check that UFS FIRE settings are correct and consistent
+    #
+    # -----------------------------------------------------------------------
+    fire_conf = expt_config["fire"]
+    if fire_conf["UFS_FIRE"]:
+        if build_config["Application"]!="ATMF":
+            raise Exception("UFS_FIRE == True but UFS SRW has not been built for fire coupling; see users guide for details")
+        fire_input_file=os.path.join(fire_conf["FIRE_INPUT_DIR"],"geo_em.d01.nc")
+        if not os.path.isfile(fire_input_file):
+            raise FileNotFoundError(
+                dedent(
+                    f"""
+                The fire input file (geo_em.d01.nc) does not exist in the specified directory:
+                {fire_conf["FIRE_INPUT_DIR"]}
+                Check that the specified path is correct, and that the file exists and is readable
+                """
+                )
+            )
+        if fire_conf["FIRE_NUM_TASKS"] < 1:
+            raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
+
+        if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
+            raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
+    else:
+        if fire_conf["FIRE_NUM_TASKS"] < 1:
+            logging.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
 
     #
     # -----------------------------------------------------------------------

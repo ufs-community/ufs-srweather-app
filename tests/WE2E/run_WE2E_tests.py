@@ -230,7 +230,7 @@ def run_we2e_tests(homedir, args) -> None:
         if args.quiet:
             console_handler = logging.getLogger().handlers[1]
             console_handler.setLevel(logging.WARNING)
-        expt_dir = generate_FV3LAM_wflow(ushdir,logfile=f"{ushdir}/log.generate_FV3LAM_wflow",
+        expt_dir = generate_FV3LAM_wflow(ushdir,"config.yaml",logfile=f"{ushdir}/log.generate_FV3LAM_wflow",
                                          debug=args.debug)
         if args.quiet:
             if args.debug:
