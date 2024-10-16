@@ -406,6 +406,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Load build settings as a dictionary; will be used later to make sure the build is consistent with the user settings
     build_config = load_config_file(build_config_fp)
+    logger.debug(f"Build configuration\n{build_config}")
 
     # Set up some paths relative to the SRW clone
     expt_config["user"].update(set_srw_paths(USHdir, expt_config))
@@ -1510,7 +1511,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # Check that UFS FIRE settings are correct and consistent
     #
     # -----------------------------------------------------------------------
-    print(build_config)
     fire_conf = expt_config["fire"]
     if fire_conf["UFS_FIRE"]:
         if build_config["Application"]!="ATMF":
