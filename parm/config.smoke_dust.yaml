@@ -25,7 +25,7 @@ workflow:
   COLDSTART: true      # set to true for cold start
 #  WARMSTART_CYCLE_DIR: '/path/to/warm/start/files'
 nco:
-  envir_default: test
+  envir_default: test_smoke
   NET_default: smoke_dust
   RUN_default: smoke_dust
 rocoto:
