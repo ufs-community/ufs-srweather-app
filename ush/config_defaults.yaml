@@ -2428,7 +2428,7 @@ verification:
   MRMS_OBS_AVAIL_INTVL_HRS: 1
   NDAS_OBS_AVAIL_INTVL_HRS: 1
   #
-  # REMOVE_RAW_OBS_DIRS_[CCPA|MRMS|NDAS|NOHRSC]:
+  # REMOVE_RAW_OBS_DIRS_[CCPA|NOHRSC|MRMS|NDAS]:
   # Boolean flag specifying whether to remove the "raw" observation
   # directories after pulling the specified type of obs (CCPA, NOHRSC,
   # MRMS, or NOHRSC).  The raw directories are the ones in which the
@@ -2438,9 +2438,9 @@ verification:
   # structure).
   #
   REMOVE_RAW_OBS_CCPA: true
+  REMOVE_RAW_OBS_NOHRSC: true
   REMOVE_RAW_OBS_MRMS: true
   REMOVE_RAW_OBS_NDAS: true
-  REMOVE_RAW_OBS_NOHRSC: true
   # 
   # OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
   # Template used to specify the names of the output NetCDF observation
