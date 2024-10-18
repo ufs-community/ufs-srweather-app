@@ -39,7 +39,7 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
     """
 
     print_input_args(locals())
- 
+
     valid_values = ['string', 'datetime']
     if return_type not in valid_values:
         raise ValueError("Invalid value for 'a'. Expected 1, 2, or 3.")
@@ -72,7 +72,7 @@ def check_temporal_consistency_cumul_fields(
     configuration dictionary and ensures that certain temporal constraints on
     these parameters are satisfied.  It then returns an updated version of
     the verification configuration dictionary that satisfies these constraints.
-    
+
     The constraints are on the accumulation intervals associated with the
     cumulative forecast fields (and corresponding observation type pairs) that
     are to be verified.  The constraints on each such accumulation interval
@@ -181,7 +181,7 @@ def check_temporal_consistency_cumul_fields(
         obs_avail_hrs_of_day = [hr for hr in range(obs_avail_hr_start, obs_avail_hr_end, obs_avail_intvl_hrs)]
         obs_avail_hrs_of_day_str = ['%02d' % int(hr) for hr in obs_avail_hrs_of_day]
         #
-        # Get the array of accumulation intervals for the current cumulative field. 
+        # Get the array of accumulation intervals for the current cumulative field.
         # Then loop over them to ensure that the constraints listed above are
         # satisfied.  If for a given accumulation one or more of the constraints
         # is not satisfied, remove that accumulation from the list of accumulations
@@ -199,7 +199,7 @@ def check_temporal_consistency_cumul_fields(
             # Initialize a sub-sub-dictionary in one of the dictionaries to be returned.
             fcst_obs_matched_times_all_cycles_cumul[field_fcst][accum_hh] = []
             #
-            # Make sure that the accumulation interval is less than or equal to the 
+            # Make sure that the accumulation interval is less than or equal to the
             # forecast length.
             #
             if accum_hrs > fcst_len_hrs:
@@ -386,7 +386,7 @@ def set_fcst_output_times_and_obs_days_all_cycles(
 
     # Initialize dictionaries that will contain the various forecast output
     # time and obs day information.  Note that we initialize the contents of
-    # these dictionaries as sets because that better suites the data manipulation 
+    # these dictionaries as sets because that better suites the data manipulation
     # we will need to do, but these sets will later be converted to lists.
     fcst_output_times_all_cycles = dict()
     fcst_output_times_all_cycles['inst'] = set()
