@@ -36,7 +36,7 @@ rocoto:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/upp_post.yaml"]|include }}'
     metatask_run_ensemble:
       task_forecast_mem#mem#:
-        walltime: 01:20:00
+        walltime: 00:50:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
