@@ -3,7 +3,6 @@ exec/
 lib/
 lib64
 sorc/build/
-sorc/conda/
 sorc/lib/
 sorc/lib64
 sorc/include/
@@ -14,7 +13,6 @@ sorc/UFS_UTILS/
 sorc/UPP/
 sorc/ufs-weather-model/
 parm/__pycache__/
-parm/conda_loc
 parm/aqm_utils_parm/
 parm/nexus_config/
 parm/ufs_utils_parm/
