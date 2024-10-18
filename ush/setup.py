@@ -642,11 +642,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     cycle_start_times \
     = set_cycle_dates(date_first_cycl, date_last_cycl, cycl_intvl_dt,
                       return_type='datetime')
-    print(f"")
-    print(f"IIIIIIIIIIIIIII")
-    print(f"cycle_start_times = ")
-    pprint(cycle_start_times)
-    #mnmnmnmnmnmnmn
     #
     # -----------------------------------------------------------------------
     #

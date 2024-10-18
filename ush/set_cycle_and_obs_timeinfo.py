@@ -612,6 +612,7 @@ def get_obs_retrieve_times_by_day(
         Dictionary of dictionaries containing times at which each type of obs is
         needed on each obs day.
     """
+
     # Convert string contents of input dictionaries to datetime objects.
     for time_type in ['cumul', 'inst']:
         fcst_output_times_all_cycles[time_type] \
