@@ -51,24 +51,24 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
 
 def load_config_for_setup(ushdir, default_config, user_config):
-    """Updates a Python dictionary in place with experiment configuration settings from the 
-    default, machine, and user configuration files. 
+    """Updates a Python dictionary in place with experiment configuration settings from the
+    default, machine, and user configuration files.
 
     Args:
       ushdir             (str): Path to the ``ush`` directory for the SRW App
       default_config     (str): Path to ``config_defaults.yaml``
-      user_config        (str): Path to the user-provided config YAML (usually named 
+      user_config        (str): Path to the user-provided config YAML (usually named
                                 ``config.yaml``)
 
     Returns:
         None
-    
+
     Raises:
-        FileNotFoundError: If the user-provided configuration file or the machine file does not 
+        FileNotFoundError: If the user-provided configuration file or the machine file does not
                            exist.
-        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains 
-                   invalid sections/keys or (3) it does not contain mandatory information or (4) 
-                   an invalid datetime format is used. 
+        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains
+                   invalid sections/keys or (3) it does not contain mandatory information or (4)
+                   an invalid datetime format is used.
     """
 
     # Load the default config.
@@ -268,7 +268,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
                     Mandatory variable "{val}" not found in:
                     user config file {user_config}
                                   OR
-                    machine file {machine_file} 
+                    machine file {machine_file}
                     """
                 )
             )
@@ -300,17 +300,17 @@ def set_srw_paths(ushdir, expt_config):
     Other paths for the SRW App are set as defaults in ``config_defaults.yaml``.
 
     Args:
-        ushdir      (str) : Path to the system location of the ``ush`` directory under the 
+        ushdir      (str) : Path to the system location of the ``ush`` directory under the
                             SRW App clone
         expt_config (dict): Contains the configuration settings for the user-defined experiment
 
     Returns:
         Dictionary of configuration settings and system paths as keys/values
-    
+
     Raises:
-        KeyError: If the external repository required is not listed in the externals 
+        KeyError: If the external repository required is not listed in the externals
                   configuration file (e.g., ``Externals.cfg``)
-        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has 
+        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has
                            not been cloned properly
     """
 
@@ -371,23 +371,23 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     time.
 
     Args:
-        USHdir          (str): The full path of the ``ush/`` directory where this script 
+        USHdir          (str): The full path of the ``ush/`` directory where this script
                                (``setup.py``) is located
-        user_config_fn  (str): The name of a user-provided configuration YAML (usually 
+        user_config_fn  (str): The name of a user-provided configuration YAML (usually
                                ``config.yaml``)
         debug          (bool): Enable extra output for debugging
 
     Returns:
         None
-    
-    Raises: 
-        ValueError: If checked configuration values are invalid (e.g., forecast length, 
+
+    Raises:
+        ValueError: If checked configuration values are invalid (e.g., forecast length,
                     ``EXPTDIR`` path)
-        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not 
+        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not
                          set to a compatible handling method
-        FileNotFoundError: If the path to a particular file does not exist or if the file itself 
+        FileNotFoundError: If the path to a particular file does not exist or if the file itself
                            does not exist at the expected path
-        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no 
+        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no
                    corresponding custom configuration file or CRTM fix file directory is set
         KeyError: If an invalid value is provided (i.e., for ``GRID_GEN_METHOD``)
     """
@@ -480,7 +480,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             f"""
             EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
 
-            To ignore this error, delete the directory, or set 
+            To ignore this error, delete the directory, or set
             PREEXISTING_DIR_METHOD = delete, or
             PREEXISTING_DIR_METHOD = rename
             in your config file.
@@ -667,7 +667,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     vx_config = expt_config["verification"]
     obs_retrieve_times_by_day \
     = get_obs_retrieve_times_by_day(
-      vx_config, cycle_start_times, fcst_len_dt, 
+      vx_config, cycle_start_times, fcst_len_dt,
       fcst_output_times_all_cycles, obs_days_all_cycles)
 
     for obtype, obs_days_dict in obs_retrieve_times_by_day.items():
@@ -922,7 +922,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             if num_cycles != len(fcst_len_cycl):
               logger.error(f""" The number of entries in FCST_LEN_CYCL does
               not divide evenly into a 24 hour day or the number of cycles
-              in your experiment! 
+              in your experiment!
                 FCST_LEN_CYCL = {fcst_len_cycl}
               """
               )
@@ -1303,7 +1303,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         post_output_domain_name = lowercase(post_output_domain_name)
 
     # Write updated value of POST_OUTPUT_DOMAIN_NAME back to dictionary
-    post_config["POST_OUTPUT_DOMAIN_NAME"] = post_output_domain_name 
+    post_config["POST_OUTPUT_DOMAIN_NAME"] = post_output_domain_name
 
     #
     # -----------------------------------------------------------------------
@@ -1591,7 +1591,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["SDF_USES_THOMPSON_MP"] = has_tag_with_value(ccpp_suite_xml, "scheme", "mp_thompson")
 
     if workflow_config["SDF_USES_THOMPSON_MP"]:
-    
+
         logging.debug(f'Selected CCPP suite ({workflow_config["CCPP_PHYS_SUITE"]}) uses Thompson MP')
         logging.debug(f'Setting up links for additional fix files')
 
@@ -1701,8 +1701,8 @@ def clean_rocoto_dict(rocotodict):
 
     1. A task dictionary containing no "command" key
     2. A metatask dictionary containing no task dictionaries
-    
-    Args: 
+
+    Args:
         rocotodict (dict): A dictionary containing Rocoto workflow settings
     """
 
