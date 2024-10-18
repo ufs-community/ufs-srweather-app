@@ -1,9 +1,9 @@
 help([[
-This module loads python environement for running the UFS SRW App on
+This module loads python environement for running the UFS SRW-AQM/SD/FB on
 the NOAA RDHPC machine Hera
 ]])
 
-whatis([===[Loads libraries needed for running the UFS SRW App on Hera ]===])
+whatis([===[Loads libraries needed for running the UFS SRW-AQM/SD/FB on Hera ]===])
 
 --prepend_path("MODULEPATH","/contrib/sutils/modulefiles")
 --load("sutils")

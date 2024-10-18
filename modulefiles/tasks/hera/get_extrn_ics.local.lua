@@ -5,4 +5,3 @@ load(pathJoin("stack-intel-oneapi-mpi", stack_intel_oneapi_mpi_ver))
 
 load(pathJoin("prod_util", prod_util_ver))
 
-load("hpss")

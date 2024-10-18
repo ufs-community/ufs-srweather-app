@@ -1,0 +1,14 @@
+#!/bin/bash
+
+export modulepath_spack_stack="/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core"
+
+export cmake_ver="3.23.1"
+export nccmp_ver="1.9.0.1"
+export nco_ver="5.0.6"
+export prod_util_ver="2.1.1"
+export stack_intel_oneapi_mpi_ver="2021.9.0"
+export stack_intel_ver="2021.9.0"
+
+VER_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+echo "VER_DIR=" ${VER_DIR}
+source ${VER_DIR}/build_srw_common.ver

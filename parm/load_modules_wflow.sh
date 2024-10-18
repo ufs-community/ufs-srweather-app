@@ -56,18 +56,5 @@ Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow
 task failed:
   WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""; exit 1; }
 
-# Activate conda
-#[[ ${SHELLOPTS} =~ nounset ]] && has_mu=true || has_mu=false
-#
-#$has_mu && set +u
-#
-#if [ ! -z $(command -v conda) ]; then
-#  conda activate srw_app
-#fi
-#
-#$has_mu && set -u
-
-# List loaded modulefiles
-module --version
 module list
 

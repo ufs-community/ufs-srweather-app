@@ -16,5 +16,3 @@ load(pathJoin("py-numpy", py_numpy_ver))
 load(pathJoin("py-pyyaml", py_pyyaml_ver))
 load(pathJoin("py-xarray", py_xarray_ver))
 
-load("hpss")
-

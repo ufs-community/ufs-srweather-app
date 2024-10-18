@@ -17,6 +17,8 @@ set -xue
 #-----------------------------------------------------------------------
 #
 yyyymmddhh=${EXTRN_MDL_CDATE:0:10}
+yyyymmdd=${yyyymmddhh:0:8}
+hh=${yyyymmddhh:8:2}
 #
 . ${PARMsrw}/source_util_funcs.sh
 task_global_vars=( "DATE_FIRST_CYCL" "DO_ENSEMBLE" \
@@ -112,13 +114,6 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
 fi
 
 data_stores="${EXTRN_MDL_DATA_STORES}"
-
-yyyy=${yyyymmddhh:0:4}
-yyyymm=${yyyymmddhh:0:6}
-yyyymmdd=${yyyymmddhh:0:8}
-mm=${yyyymmddhh:4:2}
-dd=${yyyymmddhh:6:2}
-hh=${yyyymmddhh:8:2}
 
 # Set to use the pre-defined data paths in the machine file (ush/machine/).
 PDYext=${yyyymmdd}

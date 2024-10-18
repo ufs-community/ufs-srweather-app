@@ -9,11 +9,12 @@ set -xue
 #-----------------------------------------------------------------------
 #
 . ${PARMsrw}/source_util_funcs.sh
-task_global_vars=( "AQM_GEFS_FILE_PREFIX" "AQM_LBCS_FILES" "CRES" \
-  "DATE_FIRST_CYCL" "DO_AQM_CHEM_LBCS" "DO_AQM_GEFS_LBCS" "DO_REAL_TIME" \
-  "EXTRN_MDL_LBCS_OFFSET_HRS" "FCST_LEN_CYCL" "FCST_LEN_HRS" "FIXaqm" \
-  "INCR_CYCL_FREQ" "LBC_SPEC_INTVL_HRS" "MACHINE" \
-  "OMP_NUM_THREADS_MAKE_LBCS" "OROG_DIR" "PRE_TASK_CMDS" "RUN_CMD_AQMLBC" )
+task_global_vars=( "AQM_GEFS_FILE_CYC" "AQM_GEFS_FILE_PREFIX" \
+  "AQM_LBCS_FILES" "CRES" "DATE_FIRST_CYCL" "DO_AQM_CHEM_LBCS" \
+  "DO_AQM_GEFS_LBCS" "DO_REAL_TIME" "EXTRN_MDL_LBCS_OFFSET_HRS" \
+  "FCST_LEN_CYCL" "FCST_LEN_HRS" "FIXaqm" "INCR_CYCL_FREQ" \
+  "LBC_SPEC_INTVL_HRS" "MACHINE" "OMP_NUM_THREADS_MAKE_LBCS" \
+  "OROG_DIR" "PRE_TASK_CMDS" "RUN_CMD_AQMLBC" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done

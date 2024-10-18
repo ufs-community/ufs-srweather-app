@@ -120,6 +120,16 @@ if [ "${task_name}" = "smoke_dust" ]; then
   set -u
 fi
 
+# Load HPSS for some specific machines
+if [ "${machine}" = "hera" ] || [ "${machine}" = "wcoss2" ]; then
+  hpss_tasks=( "get_extrn_ics" "get_extrn_lbcs" "fire_emission" "nexus_gfs_sfc" )
+  if [[ ${hpss_tasks[@]} =~ "${task_name}" ]] ; then
+    set +u
+    module load hpss
+    set -u
+  fi
+fi
+
 module list
 #
 #-----------------------------------------------------------------------

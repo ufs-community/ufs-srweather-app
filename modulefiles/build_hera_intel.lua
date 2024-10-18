@@ -1,9 +1,9 @@
 help([[
-This module loads libraries for building the UFS SRW App on
-the NOAA RDHPC machine Hera using Intel-2022.1.2
+This module loads libraries for building the UFS SRW-AQM/SD/FB on
+the NOAA RDHPC machine Hera.
 ]])
 
-whatis([===[Loads libraries needed for building the UFS SRW App on Hera ]===])
+whatis([===[Loads libraries needed for building the UFS SRW-AQM/SD/FB on Hera ]===])
 
 prepend_path("MODULEPATH", os.getenv("modulepath_spack_stack"))
 
