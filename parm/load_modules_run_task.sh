@@ -111,11 +111,12 @@ fi
 if [ "${task_name}" = "smoke_dust" ]; then
   set +u
   if [ "${machine}" = "hera" ]; then
-    module unload python
     module use /contrib/miniconda3/modulefiles
     module load miniconda3/4.12.0
-    export ESMFMKFILE="/home/Chan-hoo.Jeon/.conda/envs/esmpy/lib/esmf.mk"
-    source /scratch2/NCEPDEV/naqfc/Chan-hoo.Jeon/PyVENV/main_aqm_pyenv/bin/activate
+    conda activate /scratch2/NCEPDEV/naqfc/Chan-hoo.Jeon/PY_VENV/main_aqm_pyenv
+  elif [ "${machine}" = "orion" ] || [ "${machine}" = "hercules" ]; then
+    module load miniconda3/24.3.0
+    conda activate /work/noaa/epic/chjeon/PY_VENV/main_aqm_pyenv
   fi
   set -u
 fi
