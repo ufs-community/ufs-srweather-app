@@ -116,6 +116,7 @@ if [ "${task_name}" = "smoke_dust" ]; then
     conda activate /scratch2/NCEPDEV/naqfc/Chan-hoo.Jeon/PY_VENV/main_aqm_pyenv
   elif [ "${machine}" = "orion" ] || [ "${machine}" = "hercules" ]; then
     module load miniconda3/24.3.0
+    source activate base
     conda activate /work/noaa/epic/chjeon/PY_VENV/main_aqm_pyenv
   fi
   set -u
