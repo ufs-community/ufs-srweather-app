@@ -76,7 +76,7 @@ task_run_MET_Pb2nc_obs_NDAS:
   attrs:
     cycledefs: cycledefs_obs_days_inst
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS_NDAS"'
+  command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
     <<: *default_vars
     VAR: ADPSFC
