@@ -10,6 +10,14 @@ default_task: &default_task
     cyc: !cycstr "@H"
     nprocs: '{{ parent.nnodes * parent.ppn }}'
     subcyc: !cycstr "@M"
+    HOMEdir: '&HOMEdir;'
+    envir: '&envir;'
+    model_ver: '&model_ver;'
+    KEEPDATA: '&KEEPDATA;'
+    SENDCOM: '&SENDCOM;'
+    COMROOT: '&COMROOT;'
+    DATAROOT: '&DATAROOT;'
+    DCOMROOT: '&DCOMROOT;'
     LOGDIR: !cycstr "&LOGDIR;"
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
@@ -142,7 +150,7 @@ metatask_run_ensemble:
 
   task_run_fcst_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
+    command: '{% if smoke_dust_parm.DO_SMOKE_DUST or cpl_aqm_parm.CPL_AQM %}&LOAD_MODULES_RUN_TASK; "forecast" "&JOBSdir;/JSRW_FORECAST" {% else %}&LOAD_MODULES_RUN_TASK; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST" {% endif %}'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
@@ -209,3 +217,21 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: aqm_lbcs
+        or_smoke_dust:
+          not:
+            taskvalid:
+              attrs:
+                task: smoke_dust
+          taskdep:
+            attrs:
+              task: smoke_dust
+        or_prepstart:
+          not:
+            taskvalid:
+              attrs:
+                task: prepstart
+          taskdep:
+            attrs:
+              task: prepstart
+
+

@@ -96,41 +96,14 @@ task_point_source:
         left: staged_grid
         right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
 
-task_aqm_ics_ext:
-  <<: *default_aqm
-  attrs:
-    cycledefs: at_start
-    maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
-  envars:
-    <<: *default_vars
-    PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 64G
-  dependency:
-    and:
-      taskdep:
-        attrs:
-          task: make_ics_mem000
-      or:
-        datadep_date_tag_tracer:
-          attrs:
-            age: 00:00:00:05
-          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
-        datadep_tracer:
-          attrs:
-            age: 00:00:00:05
-          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc'
-
 task_aqm_ics:
   <<: *default_aqm
   attrs:
-    cycledefs: cycled_from_second
+    cycledefs: forecast
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
   envars:
     <<: *default_vars
-    PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMIN_DIR;</cyclestr>'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 64G
   dependency:
@@ -139,14 +112,22 @@ task_aqm_ics:
         attrs:
           task: make_ics_mem000
       or:
-        datadep_date_tag_tracer:
+        datadep_coldstart:
           attrs:
             age: 00:00:00:05
+          text: !cycstr '{{ workflow.EXPTDIR }}/task_skip_coldstart_@Y@m@d@H00.txt'
+        datadep_warmstart_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
+        datadep_comin_tracer:
+          attrs:
+            age: 00:00:03:00
           text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
-        datadep_tracer:
+        datadep_datashare_tracer:
           attrs:
-            age: 00:00:00:05
-          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc'
+            age: 00:00:03:00
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&DATASHARE_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
 
 task_aqm_lbcs:
   <<: *default_aqm

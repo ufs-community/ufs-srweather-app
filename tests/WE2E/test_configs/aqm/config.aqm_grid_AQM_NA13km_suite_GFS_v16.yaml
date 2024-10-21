@@ -13,12 +13,14 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
+  COLDSTART: true
 nco:
-  NET_default: aqm
+  envir_default: we2e_aqm
+  NET_default: we2e_aqm
+  RUN_default: we2e_aqm
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'
-    task_aqm_ics_ext:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/upp_post.yaml", "parm/wflow/test.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:20:00
