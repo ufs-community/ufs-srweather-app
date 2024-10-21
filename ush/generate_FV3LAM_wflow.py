@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-User interface to create an experiment directory consistent with the user-defined ``config.yaml`` 
-file.
+User interface to create an experiment directory consistent with the user-defined YAML
+configuration file.
 """
 
 # pylint: disable=invalid-name
@@ -41,6 +41,7 @@ from check_python_version import check_python_version
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
         ushdir,
+        config: str = "config.yaml",
         logfile: str = "log.generate_FV3LAM_wflow",
         debug: bool = False) -> str:
     """
@@ -71,7 +72,7 @@ def generate_FV3LAM_wflow(
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(ushdir,debug=debug)
+    expt_config = setup(ushdir,user_config_fn=config,debug=debug)
 
     #
     # -----------------------------------------------------------------------
@@ -93,7 +94,7 @@ def generate_FV3LAM_wflow(
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the jinja variables in the template rocoto
     # XML should be set to.  These values are set either in the user-specified
-    # workflow configuration file (EXPT_CONFIG_FN) or in the setup() function
+    # workflow configuration file (config) or in the setup() function
     # called above.  Then call the python script that generates the XML.
     #
     # -----------------------------------------------------------------------
@@ -311,6 +312,9 @@ def generate_FV3LAM_wflow(
     npx = NX + 1
     npy = NY + 1
     #
+    # Set npz, which is just LEVP minus 1.
+    npz = LEVP - 1
+    #
     # For the physics suites that use RUC LSM, set the parameter kice to 9,
     # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
@@ -379,6 +383,7 @@ def generate_FV3LAM_wflow(
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
+        "npz": npz,
     })
     if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
         if CPL_AQM:
@@ -442,7 +447,26 @@ def generate_FV3LAM_wflow(
                 "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
                 "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
+
+    # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
+    if expt_config['fire'].get('UFS_FIRE'):
+        gfs_physics_nml_dict.update({
+            "cpl_fire": True,
+        })
+        field_table_append = """# smoke tracer for UFS_FIRE
+ "TRACER", "atmos_mod", "fsmoke"
+           "longname",     "fire smoke"
+           "units",        "kg/kg"
+       "profile_type", "fixed", "surface_value=0.0" /\n"""
+
+        with open(FIELD_TABLE_FP, "a+", encoding='UTF-8') as file:
+            file.write(field_table_append)
+
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
+
+    # Update levp in external_ic_nml; this should be the only variable that needs changing
+
+    settings["external_ic_nml"] = {"levp": LEVP}
 
     #
     # Add to "settings" the values of those namelist variables that specify
@@ -658,6 +682,43 @@ def generate_FV3LAM_wflow(
             output_format="nml",
             update_config=get_nml_config(settings),
             )
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Generate UFS_FIRE namelist if needed. Most variables in the &time section
+    # will be updated at the run_fcst step
+    #
+    #-----------------------------------------------------------------------
+    #
+    if expt_config['fire'].get('UFS_FIRE'):
+        fire_nml_dict = {}
+        fire_nml_dict['atm'] = {}
+        fire_nml_dict['time'] = {}
+        fire_nml_dict['fire'] = {}
+        # Fill in &atm variables
+        fire_nml_dict['atm']['interval_atm'] = expt_config['task_run_fcst']['DT_ATMOS']
+        fire_nml_dict['atm']['kde'] = expt_config['task_make_ics']['LEVP']
+        # Fill in &fire and static &time variables
+        for setting in expt_config['fire']:
+            # Would like to use pattern matching here but don't want to force Python 3.10
+            if setting in ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS"]:
+                pass
+            elif setting == "DT_FIRE":
+                fire_nml_dict['time']['dt'] = expt_config['fire'][setting]
+            elif setting == "OUTPUT_DT_FIRE":
+                fire_nml_dict['time']['interval_output'] = expt_config['fire'][setting]
+            else:
+                # For all other settings in config.yaml, convert to lowercase
+                # and enter into namelist.fire's &fire section
+                fire_nml_dict['fire'][setting.lower()] = expt_config['fire'][setting]
+
+        realize(
+            input_config=expt_config['workflow']['FIRE_NML_BASE_FP'],
+            input_format="nml",
+            output_file=expt_config['workflow']['FIRE_NML_FP'],
+            output_format="nml",
+            update_config=get_nml_config(fire_nml_dict),
+            )
 
     #
     # -----------------------------------------------------------------------
@@ -668,7 +729,7 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(ushdir, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(ushdir, config), EXPTDIR)
 
     #
     # -----------------------------------------------------------------------
@@ -770,6 +831,8 @@ if __name__ == "__main__":
                      description="Script for setting up a forecast and creating a workflow"\
                      "according to the parameters specified in the config file\n")
 
+    parser.add_argument('-c', '--config', default='config.yaml',
+                        help='Name of experiment config file in YAML format')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output')
     pargs = parser.parse_args()
@@ -780,7 +843,7 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile, pargs.debug)
+        expt_dir = generate_FV3LAM_wflow(USHdir, pargs.config, wflow_logfile, pargs.debug)
     except: # pylint: disable=bare-except
         logging.exception(
             dedent(

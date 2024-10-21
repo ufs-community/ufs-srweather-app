@@ -429,37 +429,24 @@ After hitting ``Enter``, the program will print a ``pmin`` value (e.g., ``pmin= 
 Configure the SRW App
 -----------------------
 
-To use the new ``ak``/``bk`` file to define vertical levels in an experiment, users will need to modify the input namelist file (``input.nml.FV3``) and their configuration file (``config.yaml``). 
-
-Modify ``input.nml.FV3``
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``levp`` and ``npz`` variables in this file. For ``n`` vertical levels, users should set ``levp=n`` and ``npz=n-1``. For example, a user who wants 128 vertical levels would set ``levp`` and ``npz`` as follows: 
-
-.. code-block:: console
-   
-   &external_ic_nml
-      levp = 128
-   
-   &fv_core_nml
-      npz = 127
-
-Additionally, check that ``external_eta = .true.``.
-
-.. note::
-
-   Keep in mind that levels and layers are not the same. In UFS code, ``levp`` is the number of vertical *levels*, and ``npz`` is the number of vertical levels without TOA. Thus, ``npz`` is equivalent to the number of vertical *layers*. For ``v`` vertical *layers*, set ``npz=v`` and ``levp=v+1``. Use the value of ``levp`` as the number of vertical levels when generating ``ak``/``bk``. 
+To use the new ``ak``/``bk`` file to define vertical levels in an experiment, users will need to modify their configuration file (``config.yaml``). 
 
 Modify ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-To use the text file produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` variable in their ``config.yaml`` file. Normally, this file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory on Level 1 systems, but users should adjust the path and name of the file to suit their system. For example, in ``config.yaml``, a user (Jane Smith) might set:
+To use the new vertical levels produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` and ``LEVP`` variables in their ``config.yaml`` file. Normally, the vertical coordinate file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory on Level 1 systems, but users should adjust the path and name of the file to suit their system. Additionally, update the ``LEVP`` variable for the new number of vertical levels. For example, in ``config.yaml``, a user (Jane Smith) might set:
 
 .. code-block:: console
 
    task_make_ics:
+      LEVP: 65
       VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/parm/global_hyblev.L128.txt
    task_make_lbcs:
+      LEVP: 65
       VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/parm/global_hyblev.L128.txt
+
+.. note::
+
+   Keep in mind that levels and layers are not the same. In UFS code, ``levp`` is the number of vertical *levels*, and ``npz`` is the number of vertical levels without TOA. Thus, ``npz`` in the UFS namelist file is equivalent to the number of vertical *layers*. For ``v`` vertical *layers*, ``npz=v`` and ``levp=v+1``. Use the value of ``levp`` as the number of vertical levels when generating ``ak``/``bk``.
 
 Configure other variables as desired and generate the experiment as described in :numref:`Section %s <GenerateForecast>`.

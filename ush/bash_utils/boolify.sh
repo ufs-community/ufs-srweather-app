@@ -11,15 +11,6 @@ function boolify() {
 #
 #-----------------------------------------------------------------------
 #
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
 # Get the name of this function and input.
 #
 #-----------------------------------------------------------------------
@@ -57,13 +48,4 @@ where:
     echo "FALSE"
   fi
 
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Restore the shell options saved at the beginning of this script/func-
-  # tion.
-  #
-  #-----------------------------------------------------------------------
-  #
-  { restore_shell_opts; } > /dev/null 2>&1
 }

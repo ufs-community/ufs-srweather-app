@@ -294,10 +294,77 @@
 #
 #-----------------------------------------------------------------------
 #
-# The RRFS Alaska domain with ~13km cells.
+# A 3km grid over Colorado, created for UFS FIRE (but can be used by any experiments)
 #
-# Note:
-# This grid has not been thoroughly tested (as of 20201027).
+#-----------------------------------------------------------------------
+#
+"SUBCONUS_CO_3km":
+  GRID_GEN_METHOD: "ESGgrid"
+  ESGgrid_LON_CTR: -105.6041
+  ESGgrid_LAT_CTR: 39.01737
+  ESGgrid_DELX: 3000.0
+  ESGgrid_DELY: 3000.0
+  ESGgrid_NX: 210
+  ESGgrid_NY: 200
+  ESGgrid_PAZI: 0.0
+  ESGgrid_WIDE_HALO_WIDTH: 6
+  DT_ATMOS: 36
+  LAYOUT_X: 5
+  LAYOUT_Y: 5
+  BLOCKSIZE: 40
+  QUILTING:
+    WRTCMP_write_groups: 1
+    WRTCMP_write_tasks_per_group: 5
+    WRTCMP_output_grid: "lambert_conformal"
+    WRTCMP_cen_lon: -105.6041
+    WRTCMP_cen_lat: 39.01736
+    WRTCMP_stdlat1: 39.01736
+    WRTCMP_stdlat2: 39.01736
+    WRTCMP_nx: 207
+    WRTCMP_ny: 197
+    WRTCMP_lon_lwr_left: -109.0989
+    WRTCMP_lat_lwr_left: 36.2794
+    WRTCMP_dx: 3000.0
+    WRTCMP_dy: 3000.0
+#
+#-----------------------------------------------------------------------
+#
+# A 1km grid over Colorado, created for UFS FIRE (but can be used by any experiments)
+#
+#-----------------------------------------------------------------------
+#
+"SUBCONUS_CO_1km":
+  GRID_GEN_METHOD: "ESGgrid"
+  ESGgrid_LON_CTR: -105.6041
+  ESGgrid_LAT_CTR: 39.01737
+  ESGgrid_DELX: 1000.0
+  ESGgrid_DELY: 1000.0
+  ESGgrid_NX: 630
+  ESGgrid_NY: 600
+  ESGgrid_PAZI: 0.0
+  ESGgrid_WIDE_HALO_WIDTH: 6
+  DT_ATMOS: 6
+  LAYOUT_X: 9
+  LAYOUT_Y: 6
+  BLOCKSIZE: 32
+  QUILTING:
+    WRTCMP_write_groups: 1
+    WRTCMP_write_tasks_per_group: 6
+    WRTCMP_output_grid: "lambert_conformal"
+    WRTCMP_cen_lon: -105.6041
+    WRTCMP_cen_lat: 39.01736
+    WRTCMP_stdlat1: 39.01736
+    WRTCMP_stdlat2: 39.01736
+    WRTCMP_nx: 599
+    WRTCMP_ny: 570
+    WRTCMP_lon_lwr_left: -109.1096
+    WRTCMP_lat_lwr_left: 36.2700
+    WRTCMP_dx: 1000.0
+    WRTCMP_dy: 1000.0
+#
+#-----------------------------------------------------------------------
+#
+# The RRFS Alaska domain with ~13km cells.
 #
 #-----------------------------------------------------------------------
 #
@@ -333,9 +400,6 @@
 #-----------------------------------------------------------------------
 #
 # The RRFS Alaska domain with ~3km cells.
-#
-# Note:
-# This grid has not been thoroughly tested (as of 20201027).
 #
 #-----------------------------------------------------------------------
 #

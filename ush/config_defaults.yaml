@@ -327,7 +327,7 @@ platform:
   # that will point to a subdirectory (having the name of the grid being
   # used) under this directory.  This variable should be set to a null 
   # string in this file, but it can be specified in the user-specified 
-  # workflow configuration file (EXPT_CONFIG_FN).
+  # workflow configuration file
   #
   #-----------------------------------------------------------------------
   #
@@ -542,9 +542,6 @@ workflow:
   #
   # Set file names.  Definitions:
   #
-  # EXPT_CONFIG_FN:
-  # Name of the user-specified configuration file for the forecast experiment.
-  #
   # CONSTANTS_FN:
   # Name of the file containing definitions of various mathematical, physical, 
   # and SRW App constants.
@@ -618,9 +615,10 @@ workflow:
   # AQM_RC_TMPL_FN:
   # Template file name of resource file for NOAA Air Quality Model (AQM)
   #  
+  # FIRE_NML_FN:
+  # Name of namelist file for UFS_FIRE capability.
   #-----------------------------------------------------------------------
   #
-  EXPT_CONFIG_FN: "config.yaml"
   CONSTANTS_FN: "constants.yaml"
   
   RGNL_GRID_NML_FN: "regional_grid.nml"
@@ -640,6 +638,7 @@ workflow:
   UFS_CONFIG_FN: "ufs.configure"
   AQM_RC_FN: "aqm.rc"
   AQM_RC_TMPL_FN: "aqm.rc"
+  FIRE_NML_FN: "namelist.fire"
 
   # 
   #-----------------------------------------------------------------------
@@ -682,6 +681,7 @@ workflow:
   MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
   UFS_CONFIG_TMPL_FP: '{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'
   AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
+  FIRE_NML_BASE_FP: '{{ [user.PARMdir, FIRE_NML_FN]|path_join }}'
 
   # 
   #-----------------------------------------------------------------------
@@ -756,6 +756,7 @@ workflow:
   UFS_CONFIG_FP: '{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
   FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
+  FIRE_NML_FP: '{{ [EXPTDIR, FIRE_NML_FN]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -923,11 +924,11 @@ workflow:
   #   they are also set to predefined values for the specified grid.
   #
   # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
-  #   will provide the native grid parameters in the user-specified 
-  #   experiment configuration file (EXPT_CONFIG_FN). In this case, the 
+  #   is providing the native grid parameters in the user-specified 
+  #   experiment configuration file.  In this case, the 
   #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
   #   the write-component grid parameters, the forecast model's 
-  # main time step DT_ATMOS, and the computational 
+  #   main time step DT_ATMOS, and the computational 
   #   parameters (LAYOUT_X, LAYOUT_Y, and BLOCKSIZE) must be set in that 
   #   configuration file; otherwise, the values of all of these parameters 
   #   in this default experiment configuration file will be used.
@@ -1629,9 +1630,16 @@ task_make_ics:
   # FV3-LAM grid. This file will be copied later to a new location and name
   # changed to fvcom.nc
   #
+  # LEVP:
+  # Number of vertical levels in the atmosphere. In order to change this
+  # number, the user will additionally need to create a vertical coordinate
+  # distribution file; this process is described in the Users Guide section
+  # "Changing the Number of Vertical Levels". This value should be the same
+  # in both make_ics and make_lbcs.
+  #
   # VCOORD_FILE:
-  # Full path to the file used to set the vertical coordinate in FV3.
-  # This file should be the same in both make_ics and make_lbcs.
+  # Full path to the vertical coordinate distribution file. This file should
+  # be the same in both make_ics and make_lbcs.
   #
   #------------------------------------------------------------------------
   #
@@ -1639,6 +1647,7 @@ task_make_ics:
   FVCOM_WCSTART: "cold"
   FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
+  LEVP: 65
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
@@ -1664,6 +1673,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  LEVP: 65
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
@@ -1784,7 +1794,7 @@ task_run_fcst:
   #
   # 1) If the experiment is using a predefined grid, then if the user 
   #    sets the parameter in the user-specified experiment configuration 
-  #    file (EXPT_CONFIG_FN), that value will be used in the forecast(s).
+  #    file, that value will be used in the forecast(s).
   #    Otherwise, the default value of the parameter for that predefined 
   #    grid will be used.
   #
@@ -1918,7 +1928,7 @@ task_run_fcst:
   QUILTING: true
   PRINT_ESMF: false
 
-  PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'
+  PE_MEMBER01: '{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + fire.FIRE_NUM_TASKS + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) if QUILTING else OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + fire.FIRE_NUM_TASKS) }}'
   
   WRTCMP_write_groups: ""
   WRTCMP_write_tasks_per_group: ""
@@ -2665,6 +2675,103 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+
+#----------------------------
+# UFS FIRE config parameters
+#-----------------------------
+fire:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # UFS_FIRE:
+  # Switch for turning on fire simulation
+  #
+  # FIRE_INPUT_DIR
+  # Directory where fire input file (geo_em.d01.nc) can be found
+  #
+  # DT_FIRE
+  # The fire behavior component’s integration timestep
+  #
+  # OUTPUT_DT_FIRE
+  # The fire behavior component’s output timestep
+  # 
+  # FIRE_NUM_IGNITIONS
+  # Number of fire ignitions
+  #
+  # FIRE_IGNITION_ROS1
+  # 
+  #
+  # FIRE_IGNITION_START_LAT1
+  # 
+  #
+  # FIRE_IGNITION_START_LON1
+  # 
+  #
+  # FIRE_IGNITION_END_LAT1
+  # 
+  # 
+  # FIRE_IGNITION_END_LON1
+  # 
+  # 
+  # FIRE_IGNITION_RADIUS1
+  # 
+  # 
+  # FIRE_IGNITION_START_TIME1
+  # 
+  # 
+  # FIRE_IGNITION_END_TIME1
+  #
+  # 
+  # FIRE_WIND_HEIGHT
+  # Height to interpolate winds to for calculating fire spread rate
+  # 
+  # FIRE_PRINT_MSG
+  # Debug print level for the weather model fire core. Levels greater than 1 will print extra
+  # messages to the log file at run time.
+  #   0: no extra prints
+  #   1: Extra prints
+  #   2: More extra prints
+  #   3: Even more extra prints
+  #  
+  # FIRE_ATM_FEEDBACK
+  # Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
+  # Intermediate values will vary the amount of forcing provided from the fire to the dynamical core
+  #
+  # FIRE_VISCOSITY
+  # Artificial viscosity in level set method. Maximum 1, required for FIRE_UPWINDING=0
+  # 
+  # FIRE_UPWINDING = 9
+  # 0=NONE, 1=STANDARD, 2=GODUNOV, 3=ENO, 4=SETHIAN
+  #
+  # FIRE_LSM_ZCOUPLING
+  #
+  # 
+  # FIRE_LSM_ZCOUPLING_REF
+  # 
+  # FIRE_NUM_TASKS
+  # Number of MPI tasks assigned to the FIRE_BEHAVIOR component.
+
+  UFS_FIRE: False
+  FIRE_INPUT_DIR: ""
+  DT_FIRE: 0.5
+  OUTPUT_DT_FIRE: 300
+  FIRE_NUM_IGNITIONS: 1
+  FIRE_IGNITION_ROS1: 0.05
+  FIRE_IGNITION_START_LAT1: 40.609
+  FIRE_IGNITION_START_LON1: -105.879
+  FIRE_IGNITION_END_LAT1: 40.609
+  FIRE_IGNITION_END_LON1: -105.879
+  FIRE_IGNITION_RADIUS1: 250
+  FIRE_IGNITION_START_TIME1: 6480
+  FIRE_IGNITION_END_TIME1: 7000
+  FIRE_WIND_HEIGHT: 5.0
+  FIRE_PRINT_MSG: 0
+  FIRE_ATM_FEEDBACK: 0.0
+  FIRE_VISCOSITY: 0.4
+  FIRE_UPWINDING: 9
+  FIRE_LSM_ZCOUPLING: False
+  FIRE_LSM_ZCOUPLING_REF: 60.0
+  FIRE_NUM_TASKS: 0
 
 rocoto:
   attrs: ""

@@ -117,7 +117,7 @@
 #
 . $USHdir/source_util_funcs.sh
 for sect in user nco platform workflow global cpl_aqm_parm constants fixed_files \
-  task_get_extrn_lbcs task_run_fcst task_run_post ; do
+  task_get_extrn_lbcs task_run_fcst task_run_post fire; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
@@ -196,7 +196,6 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -752,6 +751,49 @@ for the current cycle's (cdate) run directory (DATA) failed:
   else
     print_err_msg_exit "${message_txt}"
   fi
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the function for updating the &time section of namelist.fire
+#
+#-----------------------------------------------------------------------
+#
+if [ $(boolify "${UFS_FIRE}") = "TRUE" ]; then
+  FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
+  # This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
+  # trying to octal all up in our business
+  settings="
+  &time
+    start_year   = $((10#${CDATE:0:4})),
+    start_month  = $((10#${CDATE:4:2})),
+    start_day    = $((10#${CDATE:6:2})),
+    start_hour   = $((10#${CDATE:8:2})),
+    start_minute = 00,
+    start_second = 00,
+    end_year     = $((10#${FCST_END_DATE:0:4})),
+    end_month    = $((10#${FCST_END_DATE:4:2})),
+    end_day      = $((10#${FCST_END_DATE:6:2})),
+    end_hour     = $((10#${FCST_END_DATE:8:2})),
+    end_minute   = $((10#${FCST_END_DATE:10:2})),
+    end_second   = $((10#${FCST_END_DATE:12:2})),
+  /
+"
+
+  echo $settings | uw config realize --update-format nml --input-format nml --output-format nml --input-file "${FIRE_NML_FP}" -o "${FIRE_NML_FN}"
+  err=$?
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "\
+  Call to uw config realize to create ${FIRE_NML_FN} failed.
+  Parameters passed to this script are:
+    FIRE_NML_FN = \"${FIRE_NML_FN}\"
+    FIRE_NML_FP = \"${FIRE_NML_FP}\"
+  Namelist settings specified on command line:
+    settings =
+$settings"
+  fi
+  # Link fire input file
+  create_symlink_to_file ${FIRE_INPUT_DIR}/geo_em.d01.nc geo_em.d01.nc FALSE
 fi
 #
 #-----------------------------------------------------------------------
