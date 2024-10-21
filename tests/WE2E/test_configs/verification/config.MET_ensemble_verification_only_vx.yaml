@@ -8,15 +8,15 @@ metadata:
 user:
   RUN_ENVIR: community
 
-nco:
-  NET_default: rrfs
-
 workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019061500'
   DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+
+nco:
+  NET_default: rrfs
 
 rocoto:
   tasks:

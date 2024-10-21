@@ -1,6 +1,6 @@
 default_task_verify_det: &default_task_verify_det
   account: '&ACCOUNT;'
-  attrs:
+  attrs: &default_attrs
     cycledefs: forecast
     maxtries: '1'
   envars: &default_vars
@@ -30,6 +30,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
     task_run_MET_GridStat_vx_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task_verify_det
       attrs:
+        <<: *default_attrs
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
@@ -41,6 +42,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        OBS_AVAIL_INTVL_HRS: '{{- verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       walltime: 02:00:00
@@ -48,7 +50,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         and:
           taskdep_pcpcombine_obs:
             attrs:
-              task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+              task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h_CCPA
           taskdep_pcpcombine_fcst:
             attrs:
               task: run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#
@@ -62,6 +64,7 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
     task_run_MET_GridStat_vx_ASNOW#ACCUM_HH#h_mem#mem#:
       <<: *default_task_verify_det
       attrs:
+        <<: *default_attrs
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
@@ -73,14 +76,15 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        OBS_AVAIL_INTVL_HRS: '{{- verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep_get_obs_nohrsc:
+          taskdep_pcpcombine_obs:
             attrs:
-              task: get_obs_nohrsc
+              task: run_MET_PcpCombine_obs_ASNOW#ACCUM_HH#h_NOHRSC
           taskdep_pcpcombine_fcst:
             attrs:
               task: run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#
@@ -98,19 +102,35 @@ metatask_GridStat_MRMS_all_mems:
         <<: *default_vars
         OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
-        ACCUM_HH: '01'
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        OBS_AVAIL_INTVL_HRS: '{{- verification.MRMS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'L0'
         FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep_get_obs_mrms:
+          datadep_all_get_obs_mrms_complete:
             attrs:
-              task: get_obs_mrms
+              age: 00:00:00:30
+            # Check that the flag files that indicate that the get_obs_mrms tasks
+            # are complete are all present before launching any GridStat task.
+            text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+                   {%- set indent = "      " %}
+                   {%- set indent_p2 = indent + "  " %}
+                   {%- for n in range(0, num_obs_days) %}
+                     {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
+                     {%- if n == 0 %}
+                       {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_mrms_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {%- else %}
+                       {{- indent ~ "</datadep>\n" }}
+                       {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                       {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_mrms_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {%- endif %}
+                     {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                   {%- endfor %}'
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
@@ -131,17 +151,33 @@ metatask_PointStat_NDAS_all_mems:
         VAR: '#VAR#'
         METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
-        ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        OBS_AVAIL_INTVL_HRS: '{{- verification.NDAS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
       walltime: 01:00:00
       dependency:
         and:
-          taskdep_pb2nc:
+          datadep_all_pb2nc_obs_ndas_complete:
             attrs:
-              task: run_MET_Pb2nc_obs
+              age: 00:00:00:30
+            # Check that the flag files that indicate that the Pb2NC tasks are
+            # complete are all present before launching any PointStat task.
+            text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+                   {%- set indent = "      " %}
+                   {%- set indent_p2 = indent + "  " %}
+                   {%- for n in range(0, num_obs_days) %}
+                     {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
+                     {%- if n == 0 %}
+                       {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {%- else %}
+                       {{- indent ~ "</datadep>\n" }}
+                       {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                       {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {%- endif %}
+                     {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                   {%- endfor %}'
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30

@@ -21,7 +21,6 @@ done
 #
 . $USHdir/get_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
-. $USHdir/set_vx_fhr_list.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -74,6 +73,30 @@ to convert NDAS prep buffer observation files to NetCDF format.
 #
 #-----------------------------------------------------------------------
 #
+# The day (in the form YYYMMDD) associated with the current task via the
+# task's cycledefs attribute in the ROCOTO xml.
+#
+#-----------------------------------------------------------------------
+#
+yyyymmdd_task=${PDY}
+
+# Seconds since some reference time that the DATE_UTIL utility uses of
+# the day of the current task.  This will be used below to find hours
+# since the start of this day.
+sec_since_ref_task=$(${DATE_UTIL} --date "${yyyymmdd_task} 0 hours" +%s)
+#
+#-----------------------------------------------------------------------
+#
+# Get the list of all the times in the current day at which to retrieve
+# obs.  This is an array with elements having format "YYYYMMDDHH".
+#
+#-----------------------------------------------------------------------
+#
+array_name="OBS_RETRIEVE_TIMES_${OBTYPE}_${yyyymmdd_task}"
+eval obs_retrieve_times_crnt_day=\( \${${array_name}[@]} \)
+#
+#-----------------------------------------------------------------------
+#
 # Get the cycle date and time in YYYYMMDDHH format.
 #
 #-----------------------------------------------------------------------
@@ -113,29 +136,74 @@ set_vx_params \
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 
 OBS_INPUT_DIR="${OBS_DIR}"
-OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE} )
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE} )
 
 OUTPUT_BASE="${vx_output_basedir}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT} )
+OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE_PB2NC_OUTPUT} )
 STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
 #
 #-----------------------------------------------------------------------
 #
-# Set the array of forecast hours for which to run the MET/METplus tool.
+# Set the array of lead hours (relative to the date associated with this
+# task) for which to run the MET/METplus tool.
 #
 #-----------------------------------------------------------------------
 #
-set_vx_fhr_list \
-  cdate="${CDATE}" \
-  fcst_len_hrs="${FCST_LEN_HRS}" \
-  field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
-  base_dir="${OBS_INPUT_DIR}" \
-  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_accum_contrib_files="FALSE" \
-  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
-  outvarname_fhr_list="FHR_LIST"
+LEADHR_LIST=""
+num_missing_files=0
+for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
+  yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
+  hh=$(echo ${yyyymmddhh} | cut -c9-10)
+
+  # Set the full path to the final processed obs file (fp_proc) we want to
+  # create.
+  sec_since_ref=$(${DATE_UTIL} --date "${yyyymmdd} ${hh} hours" +%s)
+  lhr=$(( (sec_since_ref - sec_since_ref_task)/3600 ))
+  eval_METplus_timestr_tmpl \
+    init_time="${yyyymmdd_task}00" \
+    fhr="${lhr}" \
+    METplus_timestr_tmpl="${OBS_DIR}/${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE}" \
+    outvarname_evaluated_timestr="fp"
+
+  if [[ -f "${fp}" ]]; then
+    print_info_msg "
+Found ${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh):
+  yyyymmddhh = \"${yyyymmddhh}\"
+  fp = \"${fp}\"
+"
+    hh_noZero=$((10#${hh}))
+    LEADHR_LIST="${LEADHR_LIST},${hh_noZero}"
+  else
+    num_missing_files=$((num_missing_files+1))
+    print_info_msg "
+${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh)
+does not exist on disk:
+  yyyymmddhh = \"${yyyymmddhh}\"
+  fp = \"${fp}\"
+Removing this time from the list of times to be processed by ${METPLUSTOOLNAME}.
+"
+  fi
+done
+
+# If the number of missing files is greater than the maximum allowed
+# (specified by num_missing_files_max), print out an error message and
+# exit.
+if [ "${num_missing_files}" -gt "${NUM_MISSING_OBS_FILES_MAX}" ]; then
+  print_err_msg_exit "\
+The number of missing ${OBTYPE} obs files (num_missing_files) is greater
+than the maximum allowed number (NUM_MISSING_FILES_MAX):
+  num_missing_files = ${num_missing_files}
+  NUM_MISSING_OBS_FILES_MAX = ${NUM_MISSING_OBS_FILES_MAX}"
+fi
+
+# Remove leading comma from LEADHR_LIST.
+LEADHR_LIST=$( echo "${LEADHR_LIST}" | $SED "s/^,//g" )
+print_info_msg "$VERBOSE" "\
+Final (i.e. after filtering for missing obs files) set of lead hours
+(saved in a scalar string variable) is:
+  LEADHR_LIST = \"${LEADHR_LIST}\"
+"
 #
 #-----------------------------------------------------------------------
 #
@@ -169,15 +237,15 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-# Do not run METplus if there isn't at least one valid forecast hour for
-# which to run it.
+# Do not run METplus if there isn't at least one lead hour for which to
+# run it.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${FHR_LIST}" ]; then
+if [ -z "${LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of forecast hours for which to run METplus is empty:
-  FHR_LIST = [${FHR_LIST}]"
+The list of lead hours for which to run METplus is empty:
+  LEADHR_LIST = [${LEADHR_LIST}]"
 fi
 #
 #-----------------------------------------------------------------------
@@ -208,8 +276,8 @@ metplus_config_tmpl_fn="${MetplusToolName}_obs"
 # information, but we still include that info in the file name so that
 # the behavior in the two modes is as similar as possible.
 #
-metplus_config_fn="${metplus_config_tmpl_fn}_${CDATE}"
-metplus_log_fn="${metplus_config_fn}"
+metplus_config_fn="${metplus_config_tmpl_fn}_NDAS_${CDATE}"
+metplus_log_fn="${metplus_config_fn}_NDAS"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
@@ -241,10 +309,10 @@ settings="\
   'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
   'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
 #
-# Date and forecast hour information.
+# Date and lead hour information.
 #
   'cdate': '$CDATE'
-  'fhr_list': '${FHR_LIST}'
+  'leadhr_list': '${LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #
@@ -285,7 +353,7 @@ uw template render \
   -o ${metplus_config_fp} \
   --verbose \
   --values-file "${tmpfile}" \
-  --search-path "/" 
+  --search-path "/"
 
 err=$?
 rm $tmpfile
@@ -315,6 +383,16 @@ print_err_msg_exit "
 Call to METplus failed with return code: $?
 METplus configuration file used is:
   metplus_config_fp = \"${metplus_config_fp}\""
+#
+#-----------------------------------------------------------------------
+#
+# Create flag file that indicates completion of task.  This is needed by
+# the workflow.
+#
+#-----------------------------------------------------------------------
+#
+mkdir -p ${WFLOW_FLAG_FILES_DIR}
+touch "${WFLOW_FLAG_FILES_DIR}/run_met_pb2nc_obs_ndas_${PDY}_complete.txt"
 #
 #-----------------------------------------------------------------------
 #

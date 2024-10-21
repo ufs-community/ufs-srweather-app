@@ -37,16 +37,9 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       FCST_LEVEL: 'A#ACCUM_HH#'
       FCST_THRESH: 'all'
     dependency:
-      and:
-        # The PcpCombine task for obs must be complete because this GenEnsProd
-        # task checks to see the forecast hours for which obs are available before
-        # processing the forecast for those hours.
-        taskdep_pcpcombine_obs:
-          attrs:
-            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
-        metataskdep_pcpcombine_fcst:
-          attrs:
-            metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
+      metataskdep_pcpcombine_fcst:
+        attrs:
+          metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
     <<: *task_GenEnsProd_CCPA
     envars:
@@ -54,9 +47,13 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       METPLUSTOOLNAME: 'ENSEMBLESTAT'
       FCST_THRESH: 'none'
     dependency:
-      taskdep_genensprod:
-        attrs:
-          task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+      and:
+        taskdep_pcpcombine_obs_ccpa: &taskdep_pcpcombine_obs_ccpa
+          attrs:
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h_CCPA
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
 metatask_GenEnsProd_EnsembleStat_NOHRSC:
   var:
@@ -75,9 +72,6 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       FCST_THRESH: 'all'
     dependency:
       and:
-        # The PcpCombine task for obs must be complete because this GenEnsProd
-        # task checks to see the forecast hours for which obs are available before
-        # processing the forecast for those hours.
         metataskdep_pcpcombine_fcst:
           attrs:
             metatask: PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems
@@ -89,9 +83,9 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       FCST_THRESH: 'none'
     dependency:
       and:
-        taskdep:
+        taskdep_pcpcombine_obs_nohrsc: &taskdep_pcpcombine_obs_nohrsc
           attrs:
-            task: get_obs_nohrsc
+            task: run_MET_PcpCombine_obs_ASNOW#ACCUM_HH#h_NOHRSC
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
@@ -125,9 +119,25 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
       FCST_THRESH: 'none'
     dependency:
       and:
-        taskdep_get_obs_mrms:
+        datadep_all_get_obs_mrms_complete: &all_get_obs_mrms_complete
           attrs:
-            task: get_obs_mrms
+            age: 00:00:00:30
+          # Check that the flag files that indicate that the get_obs_mrms tasks
+          # are complete are all present before launching any EnsembleStat task.
+          text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+                 {%- set indent = "      " %}
+                 {%- set indent_p2 = indent + "  " %}
+                 {%- for n in range(0, num_obs_days) %}
+                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
+                   {%- if n == 0 %}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_mrms_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- else %}
+                     {{- indent ~ "</datadep>\n" }}
+                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_mrms_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- endif %}
+                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                 {%- endfor %}'
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_#VAR#
@@ -149,15 +159,8 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
       FCST_THRESH: 'all'
     walltime: 02:30:00
     dependency:
-      and:
-        # The Pb2nc task (which is run only for obs) must be complete because
-        # this GenEnsProd task checks to see the forecast hours for which obs
-        # are available before processing the forecast for those hours.
-        taskdep_pb2nc:
-          attrs:
-            task: run_MET_Pb2nc_obs
-        metataskdep_check_post_output:
-          <<: *check_post_output
+      metataskdep_check_post_output:
+         <<: *check_post_output
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
@@ -165,9 +168,29 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
       METPLUSTOOLNAME: 'ENSEMBLESTAT'
     walltime: 01:00:00
     dependency:
-      taskdep_genensprod:
-        attrs:
-          task: run_MET_GenEnsProd_vx_#VAR#
+      and:
+        datadep_all_pb2nc_obs_ndas_complete: &all_pb2nc_obs_ndas_complete
+          attrs:
+            age: 00:00:00:30
+          # Check that the flag files that indicate that the Pb2NC tasks are
+          # complete are all present before launching any EnsembleStat task.
+          text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+                 {%- set indent = "      " %}
+                 {%- set indent_p2 = indent + "  " %}
+                 {%- for n in range(0, num_obs_days) %}
+                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
+                   {%- if n == 0 %}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- else %}
+                     {{- indent ~ "</datadep>\n" }}
+                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
+                   {%- endif %}
+                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
+                 {%- endfor %}'
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_GridStat_CCPA_ensmeanprob_all_accums:
   var:
@@ -189,9 +212,12 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       dependency:
-        taskdep:
-          attrs:
-            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+        and:
+          taskdep_pcpcombine_obs_ccpa:
+            <<: *taskdep_pcpcombine_obs_ccpa
+          taskdep_genensprod:
+            attrs:
+              task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
 metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
   var:
@@ -213,9 +239,12 @@ metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       dependency:
-        taskdep:
-          attrs:
-            task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
+        and:
+          taskdep_pcpcombine_obs_nohrsc:
+            <<: *taskdep_pcpcombine_obs_nohrsc
+          taskdep_genensprod:
+            attrs:
+              task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
 
 metatask_GridStat_MRMS_ensprob:
   var:
@@ -233,9 +262,12 @@ metatask_GridStat_MRMS_ensprob:
       FCST_LEVEL: 'L0'
       FCST_THRESH: 'all'
     dependency:
-      taskdep:
-        attrs:
-          task: run_MET_GenEnsProd_vx_#VAR#
+      and:
+        datadep_all_get_obs_mrms_complete:
+          <<: *all_get_obs_mrms_complete
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_PointStat_NDAS_ensmeanprob:
   var:
@@ -257,6 +289,9 @@ metatask_PointStat_NDAS_ensmeanprob:
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
       dependency:
-        taskdep:
-          attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+        and:
+          datadep_all_pb2nc_obs_ndas_complete:
+            <<: *all_pb2nc_obs_ndas_complete
+          taskdep_genensprod:
+            attrs:
+              task: run_MET_GenEnsProd_vx_#VAR#
