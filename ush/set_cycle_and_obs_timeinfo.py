@@ -42,15 +42,14 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
 
     valid_values = ['string', 'datetime']
     if return_type not in valid_values:
-        raise ValueError("Invalid value for 'a'. Expected 1, 2, or 3.")
         msg = dedent(f"""
             Invalid value for optional argument "return_type":
-              return_type = {return_type}
+                {return_type = }
             Valid values are:
-              valid_values = {valid_values}
+                {valid_values = }
             """)
         logging.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # iterate over cycles
     all_cdates = []
@@ -168,17 +167,17 @@ def check_temporal_consistency_cumul_fields(
             msg = dedent(f"""
                 The obs availability interval for obs of type {obtype} must divide evenly
                 into 24 but doesn't:
-                  obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
-                  24 % obs_avail_intvl_hrs = {remainder}"
+                    {obs_avail_intvl_hrs = }
+                    24 % obs_avail_intvl_hrs = {remainder}"
                 """)
             logging.error(msg)
-            raise Exception(msg)
+            raise ValueError(msg)
         # Assume that the obs are available at hour 0 of the day regardless
         # of obs type.
         obs_avail_hr_start = 0
         obs_avail_hr_end = obs_avail_hr_start + 24
         # Construct list of obs availability hours-of-day.
-        obs_avail_hrs_of_day = [hr for hr in range(obs_avail_hr_start, obs_avail_hr_end, obs_avail_intvl_hrs)]
+        obs_avail_hrs_of_day = list(range(obs_avail_hr_start, obs_avail_hr_end, obs_avail_intvl_hrs))
         obs_avail_hrs_of_day_str = ['%02d' % int(hr) for hr in obs_avail_hrs_of_day]
         #
         # Get the array of accumulation intervals for the current cumulative field.
@@ -207,13 +206,13 @@ def check_temporal_consistency_cumul_fields(
                     The accumulation interval (accum_hrs) for the current cumulative forecast
                     field (field_fcst) and corresponding observation type (obtype) is greater
                     than the forecast length (fcst_len_hrs):
-                      field_fcst = {field_fcst}
-                      obtype = {obtype}
-                      accum_hrs = {accum_hrs}
-                      fcst_len_hrs = {fcst_len_hrs}
-                    Thus, this forecast field cannot be accumulated over this interval.
-                    Will remove this accumulation interval from the list of accumulation
-                    intervals to verify for this field/obtype.
+                        {field_fcst = }
+                        {obtype = }
+                        {accum_hrs = }
+                        {fcst_len_hrs = }
+                    Thus, this forecast field cannot be accumulated over this interval.  Will
+                    remove this accumulation interval from the list of accumulation intervals
+                    to verify for this field/obtype.
                     """)
                 logging.info(msg)
                 accum_intvls_hrs.remove(accum_hrs)
@@ -229,11 +228,11 @@ def check_temporal_consistency_cumul_fields(
                         field (field_fcst) and corresponding observation type (obtype) is not
                         evenly divisible by the observation type's availability interval
                         (obs_avail_intvl_hrs):
-                          field_fcst = {field_fcst}
-                          obtype = {obtype}
-                          accum_hrs = {accum_hrs}
-                          obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
-                          accum_hrs % obs_avail_intvl_hrs = {rem_obs}
+                            {field_fcst = }
+                            {obtype = }
+                            {accum_hrs = }
+                            {obs_avail_intvl_hrs = }
+                            accum_hrs % obs_avail_intvl_hrs = {rem_obs}
                         Thus, this observation type cannot be accumulated over this interval.
                         Will remove this accumulation interval from the list of accumulation
                         intervals to verify for this field/obtype.
@@ -251,14 +250,14 @@ def check_temporal_consistency_cumul_fields(
                         The accumulation interval (accum_hrs) for the current cumulative forecast
                         field (field_fcst) and corresponding observation type (obtype) is not
                         evenly divisible by the forecast output interval (fcst_output_intvl):
-                          field_fcst = {field_fcst}
-                          obtype = {obtype}
-                          accum_hrs = {accum_hrs} hr
-                          fcst_output_intvl_hrs = {fcst_output_intvl} hr
-                          accum_hrs % fcst_output_intvl_hrs = {rem_fcst}
-                        Thus, this forecast field cannot be accumulated over this interval.
-                        Will remove this accumulation interval from the list of accumulation
-                        intervals to verify for this field/obtype.
+                            {field_fcst = }
+                            {obtype = }
+                            {accum_hrs = }
+                            {fcst_output_intvl_hrs = }
+                            accum_hrs % fcst_output_intvl_hrs = {rem_fcst}
+                        Thus, this forecast field cannot be accumulated over this interval.  Will
+                        remove this accumulation interval from the list of accumulation intervals
+                        to verify for this field/obtype.
                         """)
                     logging.info(msg)
                     accum_intvls_hrs.remove(accum_hrs)
@@ -303,17 +302,17 @@ def check_temporal_consistency_cumul_fields(
                         field (field_fcst) is such that the forecast will output the field on at
                         least one of hour-of-day on which the corresponding observation type is
                         not available:
-                          field_fcst = {field_fcst}
-                          obtype = {obtype}
-                          accum_hrs = {accum_hrs} hr
+                            {field_fcst = }
+                            {obtype = }
+                            {accum_hrs = }
                         The forecast output hours-of-day for this field/accumulation interval
                         combination are:
-                          fcst_output_hrs_of_day_str = {fcst_output_hrs_of_day_str}
+                            {fcst_output_hrs_of_day_str = }
                         The hours-of-day at which the obs are available are:
-                          obs_avail_hrs_of_day_str = {obs_avail_hrs_of_day_str}
-                        Thus, at least some of the forecast output cannot be verified.
-                        Will remove this accumulation interval from the list of accumulation
-                        intervals to verify for this field/obtype.
+                            {obs_avail_hrs_of_day_str = }
+                        Thus, at least some of the forecast output cannot be verified.  Will remove
+                        this accumulation interval from the list of accumulation intervals to
+                        verify for this field/obtype.
                         """)
                     logging.info(msg)
                     accum_intvls_hrs.remove(accum_hrs)
@@ -335,8 +334,8 @@ def check_temporal_consistency_cumul_fields(
             msg = dedent(f"""
                 The list of accumulation intervals (accum_intvls_hrs) for the current
                 cumulative field to verify (field_fcst) is empty:
-                    field_fcst = {field_fcst}
-                    accum_intvls_hrs = {accum_intvls_hrs}
+                    {field_fcst = }
+                    {accum_intvls_hrs = }
                 Removing this field from the list of fields to verify.  The updated list
                 is:
                     {vx_config["VX_FIELDS"]}
@@ -683,10 +682,10 @@ def get_obs_retrieve_times_by_day(
                 msg = dedent(f"""
                     The obs availability interval for obs of type {obtype} must divide evenly
                     into 24 but doesn't:
-                      obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
-                      24 % obs_avail_intvl_hrs = {remainder}"
+                        {obs_avail_intvl_hrs = }
+                        24 % obs_avail_intvl_hrs = {remainder}"
                     """)
-                raise Exception(msg)
+                raise ValueError(msg)
             obs_avail_intvl = timedelta(hours=obs_avail_intvl_hrs)
             num_obs_avail_times_per_day = int(24/obs_avail_intvl_hrs)
 

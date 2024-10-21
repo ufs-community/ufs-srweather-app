@@ -61,9 +61,8 @@ Valid observation types are:
 "
 fi
 
-script_bn="get_obs"
 cmd="\
-python3 -u ${USHdir}/${script_bn}.py \
+python3 -u ${USHdir}/get_obs.py \
 --var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
 --obtype ${OBTYPE} \
 --obs_day ${PDY}"

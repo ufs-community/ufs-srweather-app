@@ -740,7 +740,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # If there are no vx fields specified, remove those tasks that are necessary
     # for all observation types.
-    vx_config = expt_config["verification"]
     vx_fields = vx_config["VX_FIELDS"]
     if not vx_fields:
         metatask = "metatask_check_post_output_all_mems"

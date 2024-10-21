@@ -11,6 +11,7 @@ from textwrap import dedent
 from pprint import pprint
 from math import ceil, floor
 import subprocess
+import retrieve_data
 from python_utils import (
     load_yaml_config,
 )
@@ -26,7 +27,7 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     Note that for cumulative fields (like CCPA and NOHRSC, as opposed to
     instantaneous ones like MRMS and NDAS), the archive files corresponding
     to hour 0 of the day represent accumulations over the previous day.  Thus,
-    here, we never return an achive hour of 0 for cumulative fields.  Instead,
+    here, we never return an archive hour of 0 for cumulative fields.  Instead,
     if the specified hour-of-day is 0, we consider that to represent the 0th
     hour of the NEXT day (i.e. the 24th hour of the current day) and set the
     archive hour to 24.
@@ -57,32 +58,32 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
         msg = dedent(f"""
             The specified observation type (after converting to upper case) is not
             supported:
-                obtype_upper = {obtype_upper}
+                {obtype_upper = }
             Valid observation types are:
                 {valid_obtypes}
         """)
         logging.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
-    # Ensure that the archive inerval divides evenly into 24 hours.
+    # Ensure that the archive interval divides evenly into 24 hours.
     remainder = 24 % arcv_intvl_hrs
     if remainder != 0:
         msg = dedent(f"""
             The archive interval for obs of type {obtype} must divide evenly into 24
             but doesn't:
-                arcv_intvl_hrs = {arcv_intvl_hrs}
+                {arcv_intvl_hrs = }
                 24 % arcv_intvl_hrs = {remainder}
             """)
         logging.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     if (hod < 0) or (hod > 23):
         msg = dedent(f"""
             The specified hour-of-day must be between 0 and 23, inclusive, but isn't:
-                hod = {hod}
+                {hod = }
         """)
         logging.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # Set the archive hour.  This depends on the obs type because each obs
     # type can organize its observation files into archives in a different
@@ -113,8 +114,10 @@ def get_obs(config, obtype, yyyymmdd_task):
     This script checks for the existence of obs files of the specified type
     at the locations specified by variables in the SRW App's configuration
     file.  If one or more of these files do not exist, it retrieves them from
-    a data store and places them in the locations specified by the configuration
-    variables, renaming them if necessary.
+    a data store (using the retrieve_data.py script and as specified by the
+    configuration file parm/data_locations.yml for that script) and places
+    them in the locations specified by the App's configuration variables,
+    renaming them if necessary.
 
     Args:
         config:
@@ -298,10 +301,9 @@ def get_obs(config, obtype, yyyymmdd_task):
     vx_config = cfg['verification']
 
     # Get the time interval (in hours) at which the obs are available.
-    key = obtype + '_OBS_AVAIL_INTVL_HRS'
-    obs_avail_intvl_hrs = vx_config[key]
+    obs_avail_intvl_hrs = vx_config[f'{obtype}_OBS_AVAIL_INTVL_HRS']
 
-    # The obs availability inerval must divide evenly into 24 hours.  Otherwise,
+    # The obs availability interval must divide evenly into 24 hours.  Otherwise,
     # different days would have obs available at different hours-of-day.  Make
     # sure this is the case.
     remainder = 24 % obs_avail_intvl_hrs
@@ -309,19 +311,18 @@ def get_obs(config, obtype, yyyymmdd_task):
         msg = dedent(f"""
             The obs availability interval for obs of type {obtype} must divide evenly
             into 24 but doesn't:
-                obs_avail_intvl_hrs = {obs_avail_intvl_hrs}
+                {obs_avail_intvl_hrs = }
                 24 % obs_avail_intvl_hrs = {remainder}
             """)
         logging.error(msg)
-        raise Exception(msg)
+        raise ValueError(msg)
 
     # For convenience, convert the obs availability interval to a datetime
     # object.
     obs_avail_intvl = dt.timedelta(hours=obs_avail_intvl_hrs)
 
     # Get the base directory for the observations.
-    key = obtype + '_OBS_DIR'
-    obs_dir = vx_config[key]
+    obs_dir = vx_config[f'{obtype}_OBS_DIR']
 
     # For each observation type, set the group of fields contained in those
     # observation files that we need for verification.  Each group of fields
@@ -368,8 +369,7 @@ def get_obs(config, obtype, yyyymmdd_task):
     # locations, they will be retrieved from HPSS and placed at these locations.
     fp_proc_templates = []
     for fg in field_groups_in_obs:
-        key = 'OBS_' + obtype + '_' + fg + '_FN_TEMPLATE'
-        fn_proc_template = vx_config[key]
+        fn_proc_template = vx_config[f'OBS_{obtype}_{fg}_FN_TEMPLATE']
         fp_proc_templates.append(os.path.join(obs_dir, fn_proc_template))
     #
     #-----------------------------------------------------------------------
@@ -393,45 +393,41 @@ def get_obs(config, obtype, yyyymmdd_task):
     fields_in_filenames = []
     levels_in_filenames = []
     if obtype == 'MRMS':
+        valid_mrms_field_groups = ['REFC', 'RETOP']
         for fg in field_groups_in_obs:
+            if fg not in valid_mrms_field_groups:
+                msg = dedent(f"""
+                    Invalid field group specified for obs type:
+                        {obtype = }
+                        {fg = }
+                    Valid field group are:
+                        {valid_mrms_field_groups}
+                    """)
+                logging.error(msg)
+                raise ValueError(msg)
             if fg == 'REFC':
                 fields_in_filenames.append('MergedReflectivityQCComposite')
                 levels_in_filenames.append('00.50')
             elif fg == 'RETOP':
                 fields_in_filenames.append('EchoTop')
                 levels_in_filenames.append('18_00.50')
-            else:
-                msg = dedent(f"""
-                    Invalid field specified for obs type:
-                        obtype = {obtype}
-                        field = {field}
-                    """)
-                logging.error(msg)
-                raise Exception(msg)
 
     # CCPA files for 1-hour accumulation have incorrect metadata in the files
     # under the "00" directory from 20180718 to 20210504.  Set these starting
     # and ending dates as datetime objects for later use.
-    yyyymmdd_bad_metadata_start_str = None
-    yyyymmdd_bad_metadata_end_str = None
-    yyyymmdd_bad_metadata_start = None
-    yyyymmdd_bad_metadata_end = None
-    if obtype == 'CCPA':
-        yyyymmdd_bad_metadata_start_str = '20180718'
-        yyyymmdd_bad_metadata_end_str = '20210504'
-        yyyymmdd_bad_metadata_start = dt.datetime.strptime(yyyymmdd_bad_metadata_start_str, '%Y%m%d')
-        yyyymmdd_bad_metadata_end = dt.datetime.strptime(yyyymmdd_bad_metadata_end_str, '%Y%m%d')
+    ccpa_bad_metadata_start = dt.datetime.strptime('20180718', '%Y%m%d')
+    ccpa_bad_metadata_end = dt.datetime.strptime('20210504', '%Y%m%d')
+
     #
     #-----------------------------------------------------------------------
     #
-    # Get the list of all the times in the current day at which to retrieve
-    # obs.  This is an array with elements having format "YYYYMMDDHH".
+    # Form a string list of all the times in the current day (each in the
+    # format "YYYYMMDDHH") at which to retrieve obs.
     #
     #-----------------------------------------------------------------------
     #
     yyyymmdd_task_str = dt.datetime.strftime(yyyymmdd_task, '%Y%m%d')
-    key = 'OBS_RETRIEVE_TIMES_' + obtype + '_' + yyyymmdd_task_str
-    obs_retrieve_times_crnt_day_str = vx_config[key]
+    obs_retrieve_times_crnt_day_str = vx_config[f'OBS_RETRIEVE_TIMES_{obtype}_{yyyymmdd_task_str}']
     obs_retrieve_times_crnt_day \
     = [dt.datetime.strptime(yyyymmddhh_str, '%Y%m%d%H') for yyyymmddhh_str in obs_retrieve_times_crnt_day_str]
     #
@@ -465,17 +461,14 @@ def get_obs(config, obtype, yyyymmdd_task):
 
     # Initial guess for starting archive hour.  This is set to the archive
     # hour containing obs at the first obs retrieval time of the day.
-    hod_first = obs_retrieve_times_crnt_day[0].hour
-    arcv_hr_start = get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod_first)
+    arcv_hr_start = get_obs_arcv_hr(obtype, arcv_intvl_hrs, obs_retrieve_times_crnt_day[0].hour)
 
     # Ending archive hour.  This is set to the archive hour containing obs at
     # the last obs retrieval time of the day.
-    hod_last = obs_retrieve_times_crnt_day[-1].hour
-    arcv_hr_end = get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod_last)
+    arcv_hr_end = get_obs_arcv_hr(obtype, arcv_intvl_hrs, obs_retrieve_times_crnt_day[-1].hour)
 
     # Set other variables needed below when evaluating the METplus template for
     # the full path to the processed observation files.
-    one_hour = dt.timedelta(hours=1)
     ushdir = config['user']['USHdir']
 
     # Create dictionary containing the paths to all the processed obs files
@@ -491,7 +484,7 @@ def get_obs(config, obtype, yyyymmdd_task):
         for yyyymmddhh in obs_retrieve_times_crnt_day:
             # Set the lead hour, i.e. the number of hours from the beginning of the
             # day at which the file is valid.
-            lhr = int((yyyymmddhh - yyyymmdd_task)/one_hour)
+            lhr = int((yyyymmddhh - yyyymmdd_task)/dt.timedelta(hours=1))
             # Call a bash script to evaluate the template for the full path to the
             # file containing METplus timestrings at the current time.  This should
             # be upgraded to a python script at some point.
@@ -517,18 +510,17 @@ def get_obs(config, obtype, yyyymmdd_task):
                 num_existing_files += 1
                 msg = dedent(f"""
                     File already exists on disk:
-                        fp_proc = {fp_proc}
+                        {fp_proc = }
                     """)
-                logging.info(msg)
+                logging.debug(msg)
             else:
-                hod = yyyymmddhh.hour
-                arcv_hr_start = get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod)
+                arcv_hr_start = get_obs_arcv_hr(obtype, arcv_intvl_hrs, yyyymmddhh.hour)
                 msg = dedent(f"""
                     File does not exist on disk:
-                        fp_proc = {fp_proc}
+                        {fp_proc = }
                     Setting the hour (since hour 0 of the current task day) of the first
                     archive to retrieve to:
-                        arcv_hr_start = {arcv_hr_start}
+                        {arcv_hr_start = }
                     """)
                 logging.info(msg)
                 do_break = True
@@ -537,14 +529,13 @@ def get_obs(config, obtype, yyyymmdd_task):
 
     # If the number of obs files that already exist on disk is equal to the
     # number of obs files needed, then there is no need to retrieve any files.
-    num_obs_retrieve_times_crnt_day = len(obs_retrieve_times_crnt_day)
-    num_files_needed = num_obs_retrieve_times_crnt_day*num_field_groups
+    num_files_needed = len(obs_retrieve_times_crnt_day)*num_field_groups
     if num_existing_files == num_files_needed:
 
         msg = dedent(f"""
             All obs files needed for the current day (yyyymmdd_task) already exist
             on disk:
-                yyyymmdd_task = {yyyymmdd_task}
+                {yyyymmdd_task = }
             Thus, there is no need to retrieve any files.
             """)
         logging.info(msg)
@@ -554,22 +545,20 @@ def get_obs(config, obtype, yyyymmdd_task):
     # the number of obs files needed, then we will need to retrieve files.
     # In this case, set the sequence of hours corresponding to the archives
     # from which files will be retrieved.
-    else:
-
-        arcv_hrs = [hr for hr in range(arcv_hr_start, arcv_hr_end+arcv_intvl_hrs, arcv_intvl_hrs)]
-        msg = dedent(f"""
-            At least some obs files needed needed for the current day (yyyymmdd_task)
-            do not exist on disk:
-                yyyymmdd_task = {yyyymmdd_task}
-            The number of obs files needed for the current day is:
-                num_files_needed = {num_files_needed}
-            The number of obs files that already exist on disk is:
-                num_existing_files = {num_existing_files}
-            Will retrieve remaining files by looping over archives corresponding to
-            the following hours (since hour 0 of the current day):
-                arcv_hrs = {arcv_hrs}
-            """)
-        logging.info(msg)
+    arcv_hrs = [hr for hr in range(arcv_hr_start, arcv_hr_end+arcv_intvl_hrs, arcv_intvl_hrs)]
+    msg = dedent(f"""
+        At least some obs files needed needed for the current day (yyyymmdd_task)
+        do not exist on disk:
+            {yyyymmdd_task = }
+        The number of obs files needed for the current day is:
+            {num_files_needed = }
+        The number of obs files that already exist on disk is:
+            {num_existing_files = }
+        Will retrieve remaining files by looping over archives corresponding to
+        the following hours (since hour 0 of the current day):
+            {arcv_hrs = }
+        """)
+    logging.info(msg)
     #
     #-----------------------------------------------------------------------
     #
@@ -595,18 +584,9 @@ def get_obs(config, obtype, yyyymmdd_task):
     #-----------------------------------------------------------------------
     #
 
-    # Whether to move the files or copy them from their raw to their processed
-    # locations.
-    mv_or_cp = 'cp'
     # Whether to remove raw observations after processed directories have
     # been created from them.
-    key = 'REMOVE_RAW_OBS_' + obtype
-    remove_raw_obs = vx_config[key]
-    # If the raw directories and files are to be removed at the end of this
-    # script, no need to copy the files since the raw directories are going
-    # to be removed anyway.
-    if remove_raw_obs:
-        mv_or_cp = 'mv'
+    remove_raw_obs = vx_config[f'REMOVE_RAW_OBS_{obtype}']
 
     # Base directory that will contain the archive subdirectories in which
     # the files extracted from each archive (tar) file will be placed.  We
@@ -657,15 +637,9 @@ def get_obs(config, obtype, yyyymmdd_task):
         #
         # MRMS:
         # There is only one archive per day, and it contains all the raw obs
-        # files needed to generate processed obs files for all hours of the
-        # current day.  Thus, we will only ever need this one archive, so there
-        # is no need to include the archive's hour information (there really
-        # isn't any) in the raw subdirectory name.  In addition, the archive's
-        # year, month, and day is the same as that of the obs day's, so it is
-        # already included in the name of the raw base directory.  Sine this is
-        # the only info we need to avoid differnt get_obs tasks clobbering each
-        # other's output obs files, for simplicity we simply do not create a raw
-        # archive subdirectory.
+        # files needed to generate processed obs files for the current day.
+        # Since we will only ever need this one archive for a given day,
+        # for simplicity we simply do not create a raw archive subdirectory.
         #
         # NDAS:
         # Same as for CCPA.
@@ -703,8 +677,8 @@ def get_obs(config, obtype, yyyymmdd_task):
         for obs_retrieve_time in obs_retrieve_times_crnt_day:
             if (obs_retrieve_time >= arcv_contents_start) and \
                (obs_retrieve_time <= arcv_contents_end):
-              do_retrieve = True
-              break
+                do_retrieve = True
+                break
 
         if not do_retrieve:
             msg = dedent(f"""
@@ -712,10 +686,10 @@ def get_obs(config, obtype, yyyymmdd_task):
                 hour 0 of the next day if considering a cumulative obs type) fall in the
                 range spanned by the current {arcv_intvl_hrs}-hourly archive file.  The
                 bounds of the data in the current archive are:
-                    arcv_contents_start = {arcv_contents_start}
-                    arcv_contents_end = {arcv_contents_end}
+                    {arcv_contents_start = }
+                    {arcv_contents_end = }
                 The times at which obs need to be retrieved are:
-                    obs_retrieve_times_crnt_day = {obs_retrieve_times_crnt_day}
+                    {obs_retrieve_times_crnt_day = }
                 """)
             logging.info(msg)
 
@@ -747,18 +721,15 @@ def get_obs(config, obtype, yyyymmdd_task):
             # files in the current archive, although we will make use of only 6 of
             # these (we will not use the tm00 file).
             parmdir = config['user']['PARMdir']
-            cmd = ' '.join(['python3', \
-                            '-u', os.path.join(ushdir, 'retrieve_data.py'), \
-                            '--debug', \
-                            '--file_set', 'obs', \
-                            '--config', os.path.join(parmdir, 'data_locations.yml'), \
-                            '--cycle_date', yyyymmddhh_arcv_str, \
-                            '--data_stores', 'hpss', \
-                            '--data_type', obtype + '_obs', \
-                            '--output_path', arcv_dir_raw, \
-                            '--summary_file', 'retrieve_data.log'])
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            rc = result.returncode
+            args = ['--debug', \
+                    '--file_set', 'obs', \
+                    '--config', os.path.join(parmdir, 'data_locations.yml'), \
+                    '--cycle_date', yyyymmddhh_arcv_str, \
+                    '--data_stores', 'hpss', \
+                    '--data_type', obtype + '_obs', \
+                    '--output_path', arcv_dir_raw, \
+                    '--summary_file', 'retrieve_data.log']
+            retrieve_data.main(args)
 
             # Get the list of times corresponding to the obs files in the current
             # archive.  This is a list of datetime objects.
@@ -836,7 +807,7 @@ def get_obs(config, obtype, yyyymmdd_task):
                         # Note that the script we call to do this (mrms_pull_topofhour.py) assumes
                         # a certain file naming convention.  That convention must match the names
                         # of the files that the retrieve_data.py script called above ends up
-                        # retrieving.  The list of possibile templates for these names is given
+                        # retrieving.  The list of possible templates for these names is given
                         # in parm/data_locations.yml, but which of those is actually used is not
                         # known until retrieve_data.py completes.  Thus, that information needs
                         # to be passed back by retrieve_data.py and then passed to mrms_pull_topofhour.py.
@@ -854,7 +825,7 @@ def get_obs(config, obtype, yyyymmdd_task):
                             rc = result.returncode
 
                         # The raw file name needs to be the same as what the retrieve_data.py
-                        # script called above ends up retrieving.  The list of possibile templates
+                        # script called above ends up retrieving.  The list of possible templates
                         # for this name is given in parm/data_locations.yml, but which of those
                         # is actually used is not known until retrieve_data.py completes.  Thus,
                         # that information needs to be passed back by the script and used here.
@@ -893,20 +864,20 @@ def get_obs(config, obtype, yyyymmdd_task):
                                 {fp_raw}
                             ...
                             """)
-                        logging.info(msg)
+                        logging.debug(msg)
 
                         yyyymmdd = yyyymmddhh.replace(hour=0, minute=0, second=0)
                         # CCPA files for 1-hour accumulation have incorrect metadata in the files
                         # under the "00" directory from 20180718 to 20210504.  After the data is
                         # pulled, reorganize into correct yyyymmdd structure.
                         if (obtype == 'CCPA') and \
-                           ((yyyymmdd >= yyyymmdd_bad_metadata_start) and (yyyymmdd <= yyyymmdd_bad_metadata_end)) and \
+                           ((yyyymmdd >= ccpa_bad_metadata_start) and (yyyymmdd <= ccpa_bad_metadata_end)) and \
                            (((hr >= 19) and (hr <= 23)) or (hr == 0)):
                             cmd = ' '.join(['wgrib2', fp_raw, '-set_date -24hr -grib', fp_proc, '-s'])
                             result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                        elif mv_or_cp == 'mv':
+                        elif remove_raw_obs:
                             shutil.move(fp_raw, fp_proc)
-                        elif mv_or_cp == 'cp':
+                        else:
                             shutil.copy(fp_raw, fp_proc)
     #
     #-----------------------------------------------------------------------
@@ -916,10 +887,7 @@ def get_obs(config, obtype, yyyymmdd_task):
     #-----------------------------------------------------------------------
     #
     if remove_raw_obs:
-        msg = dedent(f"""
-            Removing raw obs directories ..."
-            """)
-        logging.info(msg)
+        logging.info("Removing raw obs directories ...")
         shutil.rmtree(basedir_raw)
 
     return True
@@ -934,7 +902,6 @@ def parse_args(argv):
 
     parser.add_argument(
         "--obtype",
-        dest="obtype",
         type=str,
         required=True,
         choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS'],
@@ -943,7 +910,6 @@ def parse_args(argv):
 
     parser.add_argument(
         "--obs_day",
-        dest="obs_day",
         type=lambda d: dt.datetime.strptime(d, '%Y%m%d'),
         required=True,
         help="Date of observation day, in the form 'YYYMMDD'.",
@@ -951,7 +917,6 @@ def parse_args(argv):
 
     parser.add_argument(
         "--var_defns_path",
-        dest="var_defns_path",
         type=str,
         required=True,
         help="Path to variable definitions file.",
@@ -961,7 +926,6 @@ def parse_args(argv):
                               for pair in (str.lower(lvl), str.upper(lvl))]
     parser.add_argument(
         "--log_level",
-        dest="log_level",
         type=str,
         required=False,
         default='info',
@@ -972,7 +936,6 @@ def parse_args(argv):
 
     parser.add_argument(
         "--log_fp",
-        dest="log_fp",
         type=str,
         required=False,
         default='',
