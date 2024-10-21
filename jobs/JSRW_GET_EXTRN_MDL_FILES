@@ -21,6 +21,7 @@ set -xue
 #
 export USHsrw="${HOMEdir}/ush"
 export EXECsrw="${HOMEdir}/exec"
+export FIXsrw="${HOMEdir}/fix"
 export PARMsrw="${HOMEdir}/parm"
 export SCRIPTSsrw="${HOMEdir}/scripts"
 #

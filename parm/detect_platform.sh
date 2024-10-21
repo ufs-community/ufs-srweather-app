@@ -4,7 +4,7 @@
 #
 if [[ -d /scratch1 ]] ; then
   PLATFORM="hera"
-elif [[ -d /jetmon ]] ; then
+elif [[ -d /mnt ]] ; then
   PLATFORM="jet"
 elif [[ -d /work ]]; then
   hoststr=$(hostname)
@@ -13,6 +13,10 @@ elif [[ -d /work ]]; then
   else
     PLATFORM="orion"
   fi
+elif [[ -d /ncrc ]]; then
+  PLATFORM="gaea"
+elif [[ -d /glade ]]; then
+  PLATFORM="derecho"
 elif [[ -d /lfs/h2 ]] ; then
   PLATFORM="wcoss2"
 else
