@@ -168,48 +168,6 @@ These settings define platform-specific run commands. Users should set run comma
 ``PRE_TASK_CMDS``: (Default: "")
    Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
 
-METplus Parameters
-----------------------
-
-:ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. Many of the METplus parameters are described below, but additional documentation for the METplus components is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__. 
-
-.. _METParamNote:
-
-.. note::
-   Where a date field is required: 
-      * ``YYYY`` refers to the 4-digit valid year
-      * ``MM`` refers to the 2-digit valid month
-      * ``DD`` refers to the 2-digit valid day of the month
-      * ``HH`` refers to the 2-digit valid hour of the day
-      * ``mm`` refers to the 2-digit valid minutes of the hour
-      * ``SS`` refers to the two-digit valid seconds of the hour
-
-``CCPA_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"``)
-   User-specified location of the directory where :term:`CCPA` hourly precipitation files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure, as well as important caveats about errors in the metadata and file names. 
-   
-   .. attention:: 
-      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
-
-``NOHRSC_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"``)
-   User-specified location of top-level directory where NOHRSC 6- and 24-hour snowfall accumulation files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file scripts/exregional_get_verif_obs.sh for more details about files and directory structure 
-   
-   .. attention:: 
-      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur. 
-
-   .. note::
-      Due to limited availability of NOHRSC observation data on NOAA :term:`HPSS` and the likelihood that snowfall accumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
-
-``MRMS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/mrms/proc"``)
-   User-specified location of the directory where :term:`MRMS` composite reflectivity and echo top files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in the ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure. 
-   
-   .. attention:: 
-      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
-
-``NDAS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ndas/proc"``)
-   User-specified location of top-level directory where :term:`NDAS` prepbufr files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure. 
-   
-   .. attention:: 
-      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
 
 Other Platform-Specific Directories
 --------------------------------------
@@ -1634,6 +1592,49 @@ General Verification Parameters
 
 ``METPLUS_VERBOSITY_LEVEL``: (Default: ``2``)
    Logging verbosity level used by METplus verification tools. Valid values: 0 to 5, with 0 quiet and 5 loud. 
+
+METplus Parameters
+----------------------
+
+:ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. Many of the METplus parameters are described below, but additional documentation for the METplus components is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__. 
+
+.. _METParamNote:
+
+.. note::
+   Where a date field is required: 
+      * ``YYYY`` refers to the 4-digit valid year
+      * ``MM`` refers to the 2-digit valid month
+      * ``DD`` refers to the 2-digit valid day of the month
+      * ``HH`` refers to the 2-digit valid hour of the day
+      * ``mm`` refers to the 2-digit valid minutes of the hour
+      * ``SS`` refers to the two-digit valid seconds of the hour
+
+``CCPA_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"``)
+   User-specified location of the directory where :term:`CCPA` hourly precipitation files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure, as well as important caveats about errors in the metadata and file names. 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
+
+``NOHRSC_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"``)
+   User-specified location of top-level directory where NOHRSC 6- and 24-hour snowfall accumulation files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file scripts/exregional_get_verif_obs.sh for more details about files and directory structure 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur. 
+
+   .. note::
+      Due to limited availability of NOHRSC observation data on NOAA :term:`HPSS` and the likelihood that snowfall accumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
+
+``MRMS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/mrms/proc"``)
+   User-specified location of the directory where :term:`MRMS` composite reflectivity and echo top files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in the ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure. 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
+
+``NDAS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ndas/proc"``)
+   User-specified location of top-level directory where :term:`NDAS` prepbufr files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure. 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
 
 Templates for Observation Files
 ---------------------------------

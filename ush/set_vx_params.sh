@@ -3,8 +3,9 @@
 #
 # This file defines a function that sets various parameters needed when
 # performing verification.  The way these parameters are set depends on
-# the field being verified and, if the field is accumulated precipitation,
-# the accumulation period (both of which are inputs to this function).
+# the field being verified and, if the field is cumulative (e.g.
+# accumulated precipitation or snowfall), the accumulation period
+# (both of which are inputs to this function).
 #
 # As of 20220928, the verification tasks in the SRW App workflow use the
 # MET/METplus software (MET = Model Evaluation Tools) developed at the
@@ -91,10 +92,14 @@ function set_vx_params() {
 #
 #-----------------------------------------------------------------------
 #
-  if [[ ! "${accum_hh}" =~ ^[0-9]{2}$ ]]; then
-    print_err_msg_exit "\
-The accumulation (accum_hh) must be a 2-digit integer:
+  if [ "${obtype}" = "CCPA" ] || [ "${obtype}" = "NOHRSC" ]; then
+    if [[ ! "${accum_hh}" =~ ^[0-9]{2}$ ]]; then
+      print_err_msg_exit "\
+For the given observation type (obtype), the accumulation (accum_hh) must
+be a 2-digit integer:
+  obtype = \"${obtype}\"
   accum_hh = \"${accum_hh}\""
+    fi
   fi
 #
 #-----------------------------------------------------------------------

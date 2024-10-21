@@ -4,7 +4,7 @@
 rocoto:
   entities:
     ACCOUNT: '{{ user.ACCOUNT }}'
-    CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
+    CCPA_OBS_DIR: '{{ verification.CCPA_OBS_DIR }}'
     COLDSTART: '{{ workflow.COLDSTART }}'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
@@ -14,10 +14,10 @@ rocoto:
     LOAD_MODULES_RUN_TASK: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }} {{ user.MACHINE }}'
     LOGEXT: ".log"
     NET: '{{ nco.NET_default }}'
-    MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
+    MRMS_OBS_DIR: '{{ verification.MRMS_OBS_DIR }}'
     NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
-    NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
-    NOHRSC_OBS_DIR: '{{ platform.NOHRSC_OBS_DIR }}'
+    NDAS_OBS_DIR: '{{ verification.NDAS_OBS_DIR }}'
+    NOHRSC_OBS_DIR: '{{ verification.NOHRSC_OBS_DIR }}'
     PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
     PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
@@ -51,7 +51,13 @@ rocoto:
     forecast:
       - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
     cycled_from_second:
-      - !startstopfreq ['{%- if workflow.DATE_FIRST_CYCL != workflow.DATE_LAST_CYCL %}{{ [workflow.DATE_FIRST_CYCL[0:8], "{:02d}".format(workflow.INCR_CYCL_FREQ)]|join }}{%- else %}{{workflow.DATE_FIRST_CYCL}}{%- endif %}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
+      - !startstopfreq ['{%- if workflow.DATE_FIRST_CYCL != workflow.DATE_LAST_CYCL %}
+                           {{- workflow.DATE_SECOND_CYCL }}
+                         {%- else %}
+                           {{- workflow.DATE_FIRST_CYCL }}
+                         {%- endif %}',
+                        '{{ workflow.DATE_LAST_CYCL }}',
+                        '{{ workflow.INCR_CYCL_FREQ }}']
   log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.WORKFLOW_ID + "." }}{% endif %}log'
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'

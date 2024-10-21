@@ -142,7 +142,6 @@ def run_we2e_tests(homedir, args) -> None:
     pretty_list = "\n".join(str(x) for x in tests_to_run)
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
-
     config_default_file = os.path.join(ushdir,'config_defaults.yaml')
     logging.debug(f"Loading config defaults file {config_default_file}")
     config_defaults = load_config_file(config_default_file)
@@ -160,7 +159,13 @@ def run_we2e_tests(homedir, args) -> None:
         # test-specific options, then write resulting complete config.yaml
         starttime = datetime.now()
         starttime_string = starttime.strftime("%Y%m%d%H%M%S")
-        test_name = os.path.basename(test).split('.')[1]
+        test_fn = os.path.basename(test)
+        # Set the test name to all characters between the initial "config." and 
+        # the final ".yaml" in the file name.  This will allow any characters to
+        # be used as part of the test name, in particular a ".".
+        prefix = 'config.'
+        suffix = '.yaml'
+        test_name = test_fn[test_fn.find(prefix)+len(prefix):test_fn.rfind(suffix)]
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
@@ -203,13 +208,11 @@ def run_we2e_tests(homedir, args) -> None:
             # obs. If so, and if the config file does not explicitly set the observation locations,
             # fill these in with defaults from the machine files
             obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR','NOHRSC_OBS_DIR']
-            if 'platform' not in test_cfg:
-                test_cfg['platform'] = {}
             for obvar in obs_vars:
                 mach_path = machine_defaults['platform'].get('TEST_'+obvar)
-                if not test_cfg['platform'].get(obvar) and mach_path:
+                if not test_cfg['verification'].get(obvar) and mach_path:
                     logging.debug(f'Setting {obvar} = {mach_path} from machine file')
-                    test_cfg['platform'][obvar] = mach_path
+                    test_cfg['verification'][obvar] = mach_path
 
         if args.compiler == "gnu":
             # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU

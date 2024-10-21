@@ -56,7 +56,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/set_vx_fhr_list.sh
+. $USHdir/set_leadhrs.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -104,38 +104,33 @@ user-staged.
 #-----------------------------------------------------------------------
 #
 i="0"
-if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ]; then
+if [[ $(boolify "${DO_ENSEMBLE}") == "TRUE" ]]; then
   i=$( bc -l <<< "${ENSMEM_INDX}-1" )
 fi
 time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 #-----------------------------------------------------------------------
 #
-# Get the list of forecast hours for which there is a post-processed 
-# output file.  Note that:
-#
-# 1) CDATE (in YYYYMMDDHH format) is already available via the call to
-#    the job_preamble.sh script in the j-job of this ex-script.
-# 2) VAR is set to "APCP" and ACCUM_HH is set to "01" because we assume
-#    the output files are hourly, so these settings will result in the
-#    function set_vx_fhr_list checking for existence of hourly post output
-#    files.
+# Check to ensure that all the expected post-processed forecast output
+# files are present on disk.  This is done by the set_leadhrs function
+# below.  Note that CDATE (in YYYYMMDDHH format) is already available via
+# the call to the job_preamble.sh script in the j-job of this ex-script.
 #
 #-----------------------------------------------------------------------
 #
 ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" $(( 10#${ENSMEM_INDX})))
 ensmem_name="mem${ensmem_indx}"
 FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
-set_vx_fhr_list \
-  cdate="${CDATE}" \
-  fcst_len_hrs="${FCST_LEN_HRS}" \
-  field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
+
+set_leadhrs \
+  yyyymmddhh_init="${CDATE}" \
+  lhr_min="0" \
+  lhr_max="${FCST_LEN_HRS}" \
+  lhr_intvl="${VX_FCST_OUTPUT_INTVL_HRS}" \
   base_dir="${VX_FCST_INPUT_BASEDIR}" \
   fn_template="${FCST_INPUT_FN_TEMPLATE}" \
-  check_accum_contrib_files="FALSE" \
   num_missing_files_max="${NUM_MISSING_FCST_FILES_MAX}" \
-  outvarname_fhr_list="FHR_LIST"
+  outvarname_lhrs_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
 #

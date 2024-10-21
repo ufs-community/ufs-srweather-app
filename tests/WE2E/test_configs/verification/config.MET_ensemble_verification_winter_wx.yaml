@@ -32,3 +32,6 @@ global:
   NUM_ENS_MEMBERS: 10
 verification:
   VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
+  OBS_NOHRSC_ASNOW_FN_TEMPLATE: '{%- set data_intvl_hrs = "%02d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
+                                 {{- "{valid?fmt=%Y%m%d}/sfav2_CONUS_" ~ data_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2" }}'
+
