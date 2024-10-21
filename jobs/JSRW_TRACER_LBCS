@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------
 #
 # This script adds extra species for air quality modeling (AQM) to the 
-# initial conditions (ICs).
+# lateral boundary conditions (LBCs) files.
 #
 #-----------------------------------------------------------------------
 #
@@ -32,7 +32,7 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 . ${PARMsrw}/source_util_funcs.sh
 task_global_vars=( "MACHINE" "WORKFLOW_MANAGER" "SCHED" "NET_default" \
-  "RUN_default" "DO_ENSEMBLE" )
+  "RUN_default" "COMINgefs_default" "MAILTO_default" "DO_ENSEMBLE" )
 for var in ${task_global_vars[@]}; do
   source_config_for_task ${var} ${GLOBAL_VAR_DEFNS_FP}
 done
@@ -104,15 +104,17 @@ cd $DATA
 #
 export NET="${NET:-${NET_default}}"
 export RUN="${RUN:-${RUN_default}}"
+export MAILTO="${MAILTO:-${MAILTO_default}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
-  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver})}"
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
   export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
 else
-  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
   export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
 fi
+export COMINgefs="${COMINgefs:-${COMINgefs_default}}"
 
 mkdir -p ${COMOUT}
 
@@ -149,7 +151,7 @@ fi
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-${SCRIPTSsrw}/exsrw_aqm_ics.sh
+${SCRIPTSsrw}/exsrw_tracer_lbcs.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then

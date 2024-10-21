@@ -190,30 +190,22 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: point_source
-        or_aqm_ics:
+        or_tracer_ics:
           not:
             taskvalid:
               attrs:
-                task: aqm_ics
+                task: tracer_ics
           taskdep:
             attrs:
-              task: aqm_ics
-        or_aqm_ics_ext:
+              task: tracer_ics
+        or_tracer_lbcs:
           not:
             taskvalid:
               attrs:
-                task: aqm_ics_ext
+                task: tracer_lbcs
           taskdep:
             attrs:
-              task: aqm_ics_ext
-        or_aqm_lbcs:
-          not:
-            taskvalid:
-              attrs:
-                task: aqm_lbcs
-          taskdep:
-            attrs:
-              task: aqm_lbcs
+              task: tracer_lbcs
         or_smoke_dust:
           not:
             taskvalid:

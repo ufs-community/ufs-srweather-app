@@ -96,12 +96,12 @@ task_point_source:
         left: staged_grid
         right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
 
-task_aqm_ics:
+task_tracer_ics:
   <<: *default_aqm
   attrs:
     cycledefs: forecast
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
+  command: '&LOAD_MODULES_RUN_TASK; "tracer_ics" "&HOMEdir;/jobs/JSRW_TRACER_ICS"'
   envars:
     <<: *default_vars
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -129,9 +129,9 @@ task_aqm_ics:
             age: 00:00:03:00
           text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&DATASHARE_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
 
-task_aqm_lbcs:
+task_tracer_lbcs:
   <<: *default_aqm
-  command: '&LOAD_MODULES_RUN_TASK; "aqm_lbcs" "&HOMEdir;/jobs/JSRW_AQM_LBCS"'
+  command: '&LOAD_MODULES_RUN_TASK; "tracer_lbcs" "&HOMEdir;/jobs/JSRW_TRACER_LBCS"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   ppn: 24
   dependency:
