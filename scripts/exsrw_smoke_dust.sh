@@ -116,7 +116,8 @@ else
     "${DATA_SHARE}" \
     "${PREDEF_GRID_NAME}" \
     "${EBB_DCYCLE}" \
-    "${RESTART_INTERVAL}"
+    "${RESTART_INTERVAL}"\
+    "${PERSISTENCE}" \
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="generate_fire_emissions.py failed with return code $err"

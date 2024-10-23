@@ -2540,6 +2540,9 @@ smoke_dust_parm:
   # EBB_DCYCLE:
   # 1: for retro, 2: for forecast
   #
+  # PERSISTENCE:
+  # Flag turning on/off emissions persistence method, if off same day FRP is used
+  #
   # COMINsmoke_default:
   # Path to the directory containing smoke and dust files
   #
@@ -2553,6 +2556,7 @@ smoke_dust_parm:
   #
   DO_SMOKE_DUST: false
   EBB_DCYCLE: 1
+  PERSISTENCE: True 
   COMINsmoke_default: ""
   COMINrave_default: ""
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
