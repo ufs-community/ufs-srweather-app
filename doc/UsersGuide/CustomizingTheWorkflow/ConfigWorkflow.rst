@@ -1097,7 +1097,7 @@ For each workflow task, certain parameter values must be passed to the job sched
       For more information, see the `Intel Development Reference Guide <https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-10/thread-affinity-interface.html>`__. 
 
 ``OMP_NUM_THREADS_RUN_FCST``: (Default: 2)
-   The number of OpenMP threads to use for parallel regions. Corresponds to the ``ATM_omp_num_threads`` value in ``nems.configure``.
+   The number of OpenMP threads to use for parallel regions. Corresponds to the ``ATM_omp_num_threads`` value in ``ufs.configure``.
 
 ``OMP_STACKSIZE_RUN_FCST``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
@@ -1163,7 +1163,7 @@ Write-Component (Quilting) Parameters
 ``PRINT_ESMF``: (Default: false)
    Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory). Valid values: ``True`` | ``False``
 
-``PE_MEMBER01``: (Default: ``'{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) if QUILTING else LAYOUT_Y * LAYOUT_X}}'``)
+``PE_MEMBER01``: (Default: ``'{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) if QUILTING else OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X)}}'``)
    The number of MPI processes required by the forecast. When QUILTING is true, it is calculated as: 
    
    .. math::
