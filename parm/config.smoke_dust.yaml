@@ -71,5 +71,6 @@ global:
 smoke_dust_parm:
   DO_SMOKE_DUST: true
   EBB_DCYCLE: 1
+  PERSISTENCE: true
   SMOKE_DUST_FILE_PREFIX: SMOKE_RRFS_data
 

@@ -19,7 +19,7 @@ import interp_tools as i_tools
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Workflow
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def generate_emiss_workflow(staticdir, ravedir, intp_dir, predef_grid, ebb_dcycle, restart_interval):
+def generate_emiss_workflow(staticdir, ravedir, intp_dir, predef_grid, ebb_dcycle, restart_interval, persistence):
    
    # staticdir: path to FIX files
    # ravedir: path to RAVE fire data files (hourly), typically workding directory (DATA)
@@ -40,7 +40,7 @@ def generate_emiss_workflow(staticdir, ravedir, intp_dir, predef_grid, ebb_dcycl
    vars_emis = ["FRP_MEAN","FRE"]
    cols, rows = (2700, 3950) if predef_grid == 'RRFS_NA_3km' else (1092, 1820) 
    print('PREDEF GRID',predef_grid,'cols,rows',cols,rows)
-   print('WARNING, EBB_DCYCLE set to', ebb_dcycle, 'emissions are comes from same day satellite obs')   
+   print('WARNING, EBB_DCYCLE set to', ebb_dcycle, 'and persistence=', persistence, 'if persistence is false, emissions comes from same day satellite obs')   
    #used later when working with ebb_dcyle 1 or 2
    ebb_dcycle = float(ebb_dcycle)
 
@@ -68,7 +68,7 @@ def generate_emiss_workflow(staticdir, ravedir, intp_dir, predef_grid, ebb_dcycl
    # ----------------------------------------------------------------------
    # Sort raw RAVE, create source and target filelds, and compute emissions 
    # ----------------------------------------------------------------------
-   fcst_dates = i_tools.date_range(current_day, ebb_dcycle)
+   fcst_dates = i_tools.date_range(current_day, ebb_dcycle, persistence)
    intp_avail_hours, intp_non_avail_hours, inp_files_2use = i_tools.check_for_intp_rave(intp_dir, fcst_dates, rave_to_intp)
    rave_avail, rave_avail_hours, rave_nonavail_hours_test, first_day = i_tools.check_for_raw_rave(RAVE, intp_non_avail_hours, intp_avail_hours)
    srcfield, tgtfield, tgt_latt, tgt_lont, srcgrid, tgtgrid, src_latt, tgt_area = i_tools.creates_st_fields(grid_in, grid_out, intp_dir, rave_avail_hours) 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         print('Welcome to interpolating RAVE and processing fire emissions!')
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('')
-        generate_emiss_workflow(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+        generate_emiss_workflow(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6],sys.argv[7])
         print('')
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('Successful Completion. Bye!')
