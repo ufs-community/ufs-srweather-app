@@ -11,7 +11,6 @@ load("rocoto")
 load("conda")
 
 pushenv("MKLROOT", "/opt/intel/oneapi/mkl/2023.1.0/")
-setenv("LD_PRELOAD", "/opt/cray/pe/gcc/12.2.0/snos/lib64/libstdc++.so.6")
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
