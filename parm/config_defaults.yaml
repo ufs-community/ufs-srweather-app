@@ -2556,7 +2556,7 @@ smoke_dust_parm:
   #
   DO_SMOKE_DUST: false
   EBB_DCYCLE: 1
-  PERSISTENCE: True 
+  PERSISTENCE: true 
   COMINsmoke_default: ""
   COMINrave_default: ""
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
