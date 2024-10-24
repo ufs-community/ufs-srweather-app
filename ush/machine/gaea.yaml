@@ -12,7 +12,7 @@ platform:
   QUEUE_HPSS: normal
   REMOVE_MEMORY: True
   PARTITION_HPSS: eslogin_c5
-  RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
+  RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL -n $nprocs
   RUN_CMD_PRDGEN: srun --export=ALL -n $nprocs
   RUN_CMD_SERIAL: time
@@ -47,9 +47,9 @@ rocoto:
   tasks:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        cores:
         native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
-        nodes:
+        nodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}:ppn={{ task_run_fcst.PPN_RUN_FCST // 1 }}'
         nnodes:
         nodesize:
         ppn:
