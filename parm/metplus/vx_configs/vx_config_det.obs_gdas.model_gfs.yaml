@@ -1,0 +1,54 @@
+#
+# This configuration file specifies the field groups, fields, levels,
+# and thresholds to use for DETERMINISTIC verification.  The format is
+# as follows:
+#
+# FIELD_GROUP1:
+#     FIELD1:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     FIELD2:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     ...
+#             
+# FIELD_GROUP2:
+#     FIELD1:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     FIELD2:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     ...
+#
+#  ...
+#
+# If the threshold list for a given combination of field group, field,
+# and level is set to the empty string ([]), then all values of that
+# field will be included in the verification.
+#
+# Both the keys that represent field groups, fields, and levels and the
+# strings in the list of thresholds may contain the separator string "%%"
+# that separates the value of the quantity for the forecast from that for
+# the observations.  For example, if a field is set to
+#
+#   RETOP%%EchoTop18
+#
+# it means the name of the field in the forecast data is RETOP while its
+# name in the observations is EchoTop18.
+#
+ADPSFC:
+    TMP:
+        Z2: []
+    UGRD:
+        Z10: ['ge2.572']
+    VGRD:
+        Z10: ['ge2.572']
+    WIND:
+        Z10: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433']
+    PRMSL:
+        Z0: []

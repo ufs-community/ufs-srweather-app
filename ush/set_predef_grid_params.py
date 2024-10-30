@@ -13,11 +13,13 @@ def set_predef_grid_params(USHdir, grid_name, quilting):
     """Sets grid parameters for the specified predefined grid
 
     Args:
-        USHdir:      path to the SRW ush directory
-        grid_name    str specifying the predefined grid name.
-        quilting:    bool whether quilting should be used for output
+        USHdir       (str) : Path to the SRW App ``ush`` directory
+        grid_name    (str) : String specifying the predefined grid name
+        quilting     (bool): Whether quilting should be used for output
     Returns:
-        Dictionary of grid parameters
+        params_dict: A dictionary of grid parameters
+    Raises: 
+        KeyError: If a selected predefined grid is not found in ``predef_grid_params.yaml``.
     """
 
     params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))

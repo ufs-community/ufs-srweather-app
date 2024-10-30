@@ -23,6 +23,7 @@ ush/python_utils/__pycache__/
 ush/python_utils/workflow-tools/
 ush/*.swp
 conda_loc
+*/.DS_Store
 
 *.swp
 __pycache__

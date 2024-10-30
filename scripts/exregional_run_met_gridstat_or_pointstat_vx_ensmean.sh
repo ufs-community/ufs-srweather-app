@@ -122,20 +122,20 @@ if [ "${grid_or_point}" = "grid" ]; then
 
   case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
     "APCP"*)
-      OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
       OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       ;;
     "ASNOW"*)
-      OBS_INPUT_DIR="${OBS_DIR}"
-      OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
+      OBS_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/obs/metprd/PcpCombine_obs"
+      OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
       ;;
     "REFC")
       OBS_INPUT_DIR="${OBS_DIR}"
-      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_FN_TEMPLATES[1]}"
       ;;
     "RETOP")
       OBS_INPUT_DIR="${OBS_DIR}"
-      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_FN_TEMPLATES[3]}"
       ;;
   esac
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
@@ -143,7 +143,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
+  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
 
 fi
@@ -156,22 +156,35 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensmean"
 #
 #-----------------------------------------------------------------------
 #
-# Set the array of forecast hours for which to run the MET/METplus tool.
-# This is done by starting with the full list of forecast hours for which
-# there is forecast output and then removing from that list any forecast
-# hours for which there is no corresponding observation data.
+# Set the lead hours for which to run the MET/METplus tool.  This is done
+# by starting with the full list of lead hours for which we expect to
+# find forecast output and then removing from that list any hours for
+# which there is no corresponding observation data.
 #
 #-----------------------------------------------------------------------
 #
-FHR_LIST=$( python3 $USHdir/set_vx_fhr_list.py \
-  --cdate="${CDATE}" \
-  --fcst_len="${FCST_LEN_HRS}" \
-  --field="$VAR" \
-  --accum_hh="${ACCUM_HH}" \
+case "$OBTYPE" in
+  "CCPA"|"NOHRSC")
+    vx_intvl="$((10#${ACCUM_HH}))"
+    vx_hr_start="${vx_intvl}"
+    ;;
+  *)
+    vx_intvl="$((${VX_FCST_OUTPUT_INTVL_HRS}))"
+    vx_hr_start="0"
+    ;;
+esac
+vx_hr_end="${FCST_LEN_HRS}"
+
+VX_LEADHR_LIST=$( python3 $USHdir/set_leadhrs.py \
+  --date_init="${CDATE}" \
+  --lhr_min="${vx_hr_start}" \
+  --lhr_max="${vx_hr_end}" \
+  --lhr_intvl="${vx_intvl}" \
   --base_dir="${OBS_INPUT_DIR}" \
-  --filename_template="${OBS_INPUT_FN_TEMPLATE}" \
-  --num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}") || \
-print_err_msg_exit "Call to set_vx_fhr_list.py failed with return code: $?"
+  --fn_template="${OBS_INPUT_FN_TEMPLATE}" \
+  --num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" ) || \
+  print_err_msg_exit "Call to set_leadhrs.py failed with return code: $?"
+
 #
 #-----------------------------------------------------------------------
 #
@@ -214,15 +227,15 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-# Do not run METplus if there isn't at least one valid forecast hour for
-# which to run it.
+# Do not run METplus if there isn't at least one lead hour for which to
+# run it.
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${FHR_LIST}" ]; then
+if [ -z "${VX_LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of forecast hours for which to run METplus is empty:
-  FHR_LIST = [${FHR_LIST}]"
+The list of lead hours for which to run METplus is empty:
+  VX_LEADHR_LIST = [${VX_LEADHR_LIST}]"
 fi
 #
 #-----------------------------------------------------------------------
@@ -252,9 +265,7 @@ metplus_log_fn="metplus.log.${metplus_log_bn}"
 #
 #-----------------------------------------------------------------------
 #
-det_or_ens="ens"
-vx_config_fn="vx_config_${det_or_ens}.yaml"
-vx_config_fp="${METPLUS_CONF}/${vx_config_fn}"
+vx_config_fp="${METPLUS_CONF}/${VX_CONFIG_ENS_FN}"
 vx_config_dict=$(<"${vx_config_fp}")
 # Indent each line of vx_config_dict so that it is aligned properly when
 # included in the yaml-formatted variable "settings" below.
@@ -287,7 +298,7 @@ settings="\
 # Date and forecast hour information.
 #
 'cdate': '$CDATE'
-'fhr_list': '${FHR_LIST}'
+'vx_leadhr_list': '${VX_LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #

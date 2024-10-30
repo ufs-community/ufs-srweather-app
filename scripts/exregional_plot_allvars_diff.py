@@ -652,6 +652,7 @@ if __name__ == "__main__":
                 facecolor="none",
                 linewidth=fline_wd,
                 alpha=falpha,
+                zorder=4,
             )
             coastline = cfeature.NaturalEarthFeature(
                 "physical",
@@ -661,6 +662,7 @@ if __name__ == "__main__":
                 facecolor="none",
                 linewidth=fline_wd,
                 alpha=falpha,
+                zorder=4,
             )
             states = cfeature.NaturalEarthFeature(
                 "cultural",
@@ -671,6 +673,7 @@ if __name__ == "__main__":
                 linewidth=fline_wd,
                 linestyle=":",
                 alpha=falpha,
+                zorder=4,
             )
             borders = cfeature.NaturalEarthFeature(
                 "cultural",
@@ -680,6 +683,7 @@ if __name__ == "__main__":
                 facecolor="none",
                 linewidth=fline_wd,
                 alpha=falpha,
+                zorder=4,
             )
     
             # All lat lons are earth relative, so setup the associated projection correct for that data

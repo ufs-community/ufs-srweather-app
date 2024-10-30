@@ -12,9 +12,9 @@ def print_input_args(valid_args):
     """Prints function arguments for debugging purposes
 
     Args:
-        valid_args: dictionary of arg-value pairs
+        valid_args (dict): Dictionary of argument-value pairs
     Returns:
-        Number of printed arguments
+        num_valid_args: Number of printed arguments
     """
 
     # get verbosity from environment

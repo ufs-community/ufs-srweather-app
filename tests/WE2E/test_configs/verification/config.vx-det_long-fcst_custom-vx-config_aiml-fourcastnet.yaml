@@ -1,0 +1,63 @@
+metadata:
+  description: |-
+    SRW App configuration file to test deterministic verification of the
+    FourCastNet (fcnv2) global AI model.  Note that this test uses a custom 
+    verification configuration file (as opposed to the default one in the
+    SRW) because the AI model output often does not include many of the
+    fields that exist in physics-based models.
+
+user:
+  RUN_ENVIR: community
+
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
+
+workflow:
+  PREEXISTING_DIR_METHOD: rename
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2024073000'
+  DATE_LAST_CYCL: '2024073000'
+  FCST_LEN_HRS: 240
+
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+
+task_get_extrn_lbcs:
+  LBC_SPEC_INTVL_HRS: 3
+
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: 'global'
+
+verification:
+  METPLUS_VERBOSITY_LEVEL: 5
+  # Base directories in which to look for obs.  If these do not exist and/or
+  # do not contain the required obs, create and populate them.
+  # Note that when performing WE2E tests, the default behavior is not to
+  # get obs files from HPSS but to use staged obs files.  This is done by
+  # setting these variables to the (platform-specific) locations of these
+  # staged files.  To force the WE2E testing system to get the obs from
+  # HPSS, here we reset these variables to their default values in the SRW
+  # workflow configuration file config_defaults.yaml.
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
+  NDAS_OBS_DIR: "/scratch2/BMC/fv3lam/Gerard.Ketefian/obs_for_ai_tests"
+  # Do not remove raw obs files to be able to verify that only the necessary
+  # raw files are fetched from HPSS (if it's necessary to fetch obs files).
+  REMOVE_RAW_OBS_CCPA: false
+  REMOVE_RAW_OBS_MRMS: false
+  REMOVE_RAW_OBS_NDAS: false
+  REMOVE_RAW_OBS_NOHRSC: false
+  #
+  OBS_NDAS_FN_TEMPLATES: [ 'ADPSFCandADPUPA', 'gdas/{valid?fmt=%Y%m%d}/gdas.t{valid?fmt=%H}z.prepbufr.nr' ]
+  #
+  VX_FCST_MODEL_NAME: 'fcnv2'
+  VX_CONFIG_DET_FN: 'vx_configs/vx_config_det.obs_gdas.model_aiml.yaml'
+  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_ai_tests'
+  FCST_SUBDIR_TEMPLATE: '{{- verification.VX_FCST_MODEL_NAME }}.{init?fmt=%Y%m%d}/{init?fmt=%H}'
+  FCST_FN_TEMPLATE: '{{- verification.VX_FCST_MODEL_NAME }}.t00z.prslev.f{lead?fmt=%HHH}.grb2'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- verification.VX_FCST_MODEL_NAME }}.t00z.prslev.f{lead?fmt=%HHH}_a${ACCUM_HH}h.nc'
+  #
+  VX_FCST_OUTPUT_INTVL_HRS: 6
+  VX_FIELD_GROUPS: [ "ADPSFC" ]

@@ -18,14 +18,13 @@ rocoto:
         walltime: 01:00:00
 verification:
   VX_FCST_MODEL_NAME: RRFS_smoke_test
-  VX_FIELDS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA", "AOD", "PM25"]
-#  VX_FIELDS: [ "AOD", "PM25", "PM10" ]
+  VX_FIELD_GROUPS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA", "AOD", "PM25"]
+#  VX_FIELD_GROUPS: [ "AOD", "PM25", "PM10" ]
   VX_FCST_INPUT_BASEDIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/smoke_vx/fcst
   FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}'
   FCST_FN_TEMPLATE: 'rrfs.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.conus_3km.grib2'
-  OBS_AIRNOW_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat'
+  OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
   AIRNOW_INPUT_FORMAT: airnowhourlyaqobs
-platform:
   CCPA_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/CCPA_obs
   MRMS_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/MRMS_obs
   NDAS_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/NDAS_obs

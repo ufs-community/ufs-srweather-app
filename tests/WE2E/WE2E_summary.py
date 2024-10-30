@@ -14,8 +14,13 @@ from utils import calculate_core_hours, create_expts_dict, print_WE2E_summary, w
 
 def setup_logging(debug: bool = False) -> None:
     """
-    Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
-    messages with detailed timing and routine info in the specified text file.
+    Sets up logging to print high-priority (INFO and higher) messages to the console and to print all
+    messages with detailed timing and routine info to the specified text file.
+
+    Args:
+        debug (bool): Set to True to print more verbose output to the console
+    Returns:
+        None
     """
     logging.getLogger().setLevel(logging.DEBUG)
 

@@ -28,11 +28,11 @@ REPORT_WIDTH = 100
 EXPT_COLUMN_WIDTH = 65
 TASK_COLUMN_WIDTH = 40
 def print_WE2E_summary(expts_dict: dict, debug: bool = False):
-    """Function that creates a summary for the specified experiment
+    """Creates a summary of the specified experiment
 
     Args:
         expts_dict (dict): A dictionary containing the information needed to run
-                           one or more experiments. See example file WE2E_tests.yaml
+                           one or more experiments. See example file ``WE2E_tests.yaml``.
         debug      (bool): [optional] Enable extra output for debugging
 
     Returns:
@@ -105,16 +105,16 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         for line in expt_details:
             f.write(f"{line}\n")
 
-def create_expts_dict(expt_dir: str) -> dict:
+def create_expts_dict(expt_dir: str):
     """
-    Function takes in a directory, searches that directory for subdirectories containing
-    experiments, and creates a skeleton dictionary that can be filled out by update_expt_status()
+    Takes in a directory, searches that directory for subdirectories containing
+    experiments, and creates a skeleton dictionary that can be filled out by ``update_expt_status()``
 
     Args:
-        expt_dir (str): Experiment directory
+        expt_dir (str): Experiment directory name
 
     Returns:
-        dict: Experiment dictionary
+        (summary_file, expts_dict): A tuple including the name of the summary file (``WE2E_tests_YYYYMMDDHHmmSS.yaml``) and the experiment dictionary
     """
     contents = sorted(os.listdir(expt_dir))
 
@@ -141,15 +141,14 @@ def create_expts_dict(expt_dir: str) -> dict:
 
 def calculate_core_hours(expts_dict: dict) -> dict:
     """
-    Function takes in an experiment dictionary, reads the var_defns file for necessary information,
-    and calculates the core hours used by each task, updating expts_dict with this info
+    Takes in an experiment dictionary, reads the ``var_defns.sh`` file for necessary information,
+    and calculates the core hours used by each task, updating ``expts_dict`` with this information
 
     Args:
-        expts_dict (dict): A dictionary containing the information needed to run
-                           one or more experiments. See example file WE2E_tests.yaml
+        expts_dict (dict): The information needed to run one or more experiments. See example file ``WE2E_tests.yaml``
 
     Returns:
-        dict: Experiments dictionary updated with core hours
+        expts_dict: Experiment dictionary updated with core hours
     """
 
     for expt in expts_dict:
@@ -188,6 +187,16 @@ def calculate_core_hours(expts_dict: dict) -> dict:
 
 
 def write_monitor_file(monitor_file: str, expts_dict: dict):
+    """Writes status of tests to file
+
+    Args:
+        monitor_file  (str): File name
+        expts_dict   (dict): Experiments being monitored
+    Returns:
+        None
+    Raises: 
+        KeyboardInterrupt: If a user attempts to disrupt program execution (e.g., with ``Ctrl+C``) while program is writing information to ``monitor_file``.  
+    """
     try:
         with open(monitor_file,"w", encoding="utf-8") as f:
             f.write("### WARNING ###\n")
@@ -209,55 +218,29 @@ def write_monitor_file(monitor_file: str, expts_dict: dict):
 def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool = False,
                        submit: bool = True) -> dict:
     """
-    This function reads the dictionary showing the location of a given experiment, runs a
-    `rocotorun` command to update the experiment (running new jobs and updating the status of
-    previously submitted ones), and reads the rocoto database file to update the status of
-    each job for that experiment in the experiment dictionary.
+    This function reads the dictionary for a given experiment, runs the ``rocotorun`` command to update the experiment (by running new jobs and updating the status of previously submitted ones), and reads the Rocoto database (``.db``) file to update the status of each job in the experiment dictionary. The function then uses a simple set of rules to combine the statuses of every task into a useful summary status for the whole experiment and returns the updated experiment dictionary.
 
-    The function then and uses a simple set of rules to combine the statuses of every task
-    into a useful "status" for the whole experiment, and returns the updated experiment dictionary.
+    Experiment status levels explained:
 
-    Experiment "status" levels explained:
-    CREATED: The experiments have been created, but the monitor script has not yet processed them.
-             This is immediately overwritten at the beginning of the "monitor_jobs" function, so we
-             should never see this status in this function. Including just for completeness sake.
-    SUBMITTING: All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; we will
-             continue to monitor this experiment.
-    DYING:   One or more tasks have died (status "DEAD"), so this experiment has had an error.
-             We will continue to monitor this experiment until all tasks are either status DEAD or
-             status SUCCEEDED (see next entry).
-    DEAD:    One or more tasks are at status DEAD, and the rest are either DEAD or SUCCEEDED. We
-             will no longer monitor this experiment.
-    ERROR:   Could not read the rocoto database file. This will require manual intervention to
-             solve, so we will no longer monitor this experiment.
-             This status may also appear if we fail to read the rocoto database file.
-    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED,
-             SUBMITTED, or SUCCEEDED. This is a normal state; we will continue to monitor this
-             experiment.
-    QUEUED:  One or more jobs are at status QUEUED, and some others may be at status SUBMITTED or
-             SUCCEEDED.
-             This is a normal state; we will continue to monitor this experiment.
-    SUCCEEDED: All jobs are status SUCCEEDED; we will monitor for one more cycle in case there are
-             unsubmitted jobs remaining.
-    COMPLETE:All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle
-             to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
+        * **CREATED:** The experiments have been created, but the monitor script has not yet processed them. This is immediately overwritten at the beginning of the ``monitor_jobs()`` function. 
+        * **SUBMITTING:** All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; experiment monitoring will continue.
+        * **DYING:** One or more tasks have died (status DEAD), so this experiment has an error. Experiment monitoring will continue until all previously submitted tasks are in either status DEAD or status SUCCEEDED (see next entry).
+        * **DEAD:** One or more tasks are in status DEAD, and other previously submitted jobs are either DEAD or SUCCEEDED. This experiment will no longer be monitored.
+        * **ERROR:** Could not read the Rocoto database (``.db``) file. This will require manual intervention to solve, so the experiment will no longer be monitored. 
+        * **RUNNING:** One or more jobs are in status RUNNING, and other previously submitted jobs are in status QUEUED, SUBMITTED, or SUCCEEDED. This is a normal state; experiment monitoring will continue.
+        * **QUEUED:** One or more jobs are in status QUEUED, and some others may be in status SUBMITTED or SUCCEEDED. This is a normal state; experiment monitoring will continue.
+        * **SUCCEEDED:** All jobs are in status SUCCEEDED; experiment monitoring will continue for one more cycle in case there are unsubmitted jobs remaining.
+        * **COMPLETE:** All jobs are in status SUCCEEDED, and the experiment has been monitored for an additional cycle to ensure that there are no unsubmitted jobs. This experiment will no longer be monitored.
 
     Args:
-        expt    (dict): A dictionary containing the information for an individual experiment, as
-                        described in the main monitor_jobs() function.
+        expt    (dict): A dictionary containing the information for an individual experiment, as described in the main ``monitor_jobs()`` function.
         name     (str): Name of the experiment; used for logging only
-        refresh (bool): If true, this flag will check an experiment status even if it is listed
-                        as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments
-                        that may have been restarted.
-        debug   (bool): Will capture all output from rocotorun. This will allow information such
-                        as job cards and job submit messages to appear in the log files, but can
-                        slow down the process drastically.
-        submit  (bool): In addition to reading the rocoto database, script will advance the
-                        workflow by calling rocotorun. If simply generating a report, set this
-                        to False
+        refresh (bool): If True, this flag will check an experiment status even if it is listed as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments that may have been restarted.
+        debug   (bool): Will capture all output from ``rocotorun``. This will allow information such as job cards and job submit messages to appear in the log files, but turning on this option can drastically slow down the testing process.
+        submit  (bool): In addition to reading the Rocoto database (``.db``) file, the script will advance the workflow by calling ``rocotorun``. If simply generating a report, set this to False.
 
     Returns:
-        dict: The updated experiment dictionary.
+        expt: The updated experiment dictionary
     """
 
     #If we are no longer tracking this experiment, return unchanged
@@ -305,8 +288,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
 
     for task in db:
         # For each entry from rocoto database, store that task's info under a dictionary key named
-        # TASKNAME_CYCLE; Cycle comes from the database in Unix Time (seconds), so convert to
-        # human-readable
+        # TASKNAME_CYCLE; cycle comes from the database in Unix Time (seconds), so convert to
+        # human-readable time
         cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
         if f"{task[0]}_{cycle}" not in expt:
             expt[f"{task[0]}_{cycle}"] = dict()
@@ -377,20 +360,18 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
                                 debug: bool = False) -> dict:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
-    the process if given enough parallel processes. Given a dictionary of experiments, it will
-    pass each individual experiment dictionary to update_expt_status() to be updated, making use
-    of the python multiprocessing starmap functionality to achieve this in parallel
+    the testing if given enough parallel processes. Given a dictionary of experiments, it will
+    pass each individual experiment dictionary to ``update_expt_status()``, making use
+    of the Python multiprocessing ``starmap()`` functionality to update the experiments in parallel.
 
     Args:
         expts_dict (dict): A dictionary containing information for all experiments
         procs       (int): The number of parallel processes
-        refresh    (bool): "Refresh" flag to pass to update_expt_status()
-        debug      (bool): Will capture all output from rocotorun. This will allow information such
-                           as job cards and job submit messages to appear in the log files, but can
-                           slow down the process drastically.
+        refresh    (bool): "Refresh" flag to pass to ``update_expt_status()``. If True, this flag will check an experiment status even if it is listed as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments that may have been restarted.
+        debug      (bool): Will capture all output from ``rocotorun``. This will allow information such as job cards and job submit messages to appear in the log files, but can drastically slow down the testing process.
 
     Returns:
-        dict: The updated dictionary of experiment dictionaries
+        expts_dict: The updated dictionary of experiment dictionaries
     """
 
     args = []
@@ -413,11 +394,12 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
 
 
 def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
-    """Prints a pipe ( | ) delimited text file containing summaries of each test defined by a
-    config file in test_configs/*
+    """Prints a pipe-delimited ( ``|`` ) text file containing summaries of each test with a configuration file in ``test_configs/*``
 
     Args:
-        txtfile (str): File name for test details file
+        txtfile (str): File name for test details file (default: ``WE2E_test_info.txt``)
+    Returns:
+        None
     """
 
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -508,9 +490,15 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
 
 
 def compare_rocotostat(expt_dict,name):
-    """Reads the dictionary showing the location of a given experiment, runs a `rocotostat` command
+    """Reads the dictionary showing the location of a given experiment, runs a ``rocotostat`` command
     to get the full set of tasks for the experiment, and compares the two to see if there are any
     unsubmitted tasks remaining.
+
+    Args:
+        expt_dict (dict): A dictionary containing the information for an individual experiment
+        name       (str): Name of the experiment
+    Returns:
+        expt_dict: A dictionary containing the information for an individual experiment
     """
 
     # Call rocotostat and store output

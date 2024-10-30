@@ -9,3 +9,7 @@ grid_RRFS_AK_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR
 grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16_plot
 grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
 grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta
+vx-det_long-fcst_custom-vx-config_aiml-panguweather
+vx-det_multicyc_long-fcst-overlap_nssl-mpas
+vx-det_multicyc_last-obs-00z_ncep-hrrr
+vx-det_multicyc_no-fcst-overlap_ncep-hrrr

@@ -81,7 +81,7 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/containers
    * - Jet
-     - /mnt/lfs4/HFIP/hfv3gfs/role.epic/containers
+     - /mnt/lfs5/HFIP/hfv3gfs/role.epic/containers
    * - NOAA Cloud
      - /contrib/EPIC/containers
    * - Orion/Hercules [#fn]_

@@ -4,10 +4,10 @@ import subprocess
 
 
 def run_command(cmd):
-    """Run system command in a subprocess
+    """Runs system command in a subprocess
 
     Args:
-        cmd: command to execute
+        cmd (str): Command to execute
     Returns:
         Tuple of (exit code, std_out, std_err)
     """

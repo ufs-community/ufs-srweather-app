@@ -2,13 +2,15 @@
 
 
 def check_var_valid_value(var, values):
-    """Check if specified variable has a valid value
+    """Checks whether the specified variable has a valid value
 
     Args:
-        var: the variable
-        values: list of valid values
+        var: The variable
+        values (list): Valid values
     Returns:
-        True: if var has valid value, exit(1) otherwise
+        True: If ``var`` has valid value; otherwise ``exit(1)``
+    Raises:
+        ValueError: If ``var`` has an invalid value
     """
 
     if not var:

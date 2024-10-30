@@ -1,0 +1,63 @@
+metadata:
+  description: |-
+    SRW App configuration file to first pull CCPA, MRMS, and NDAS observations
+    from HPSS for multiple cycles and then perform deterministic verification
+    for all cycles, including first performing vx preprocessing with METplus
+    tools such as PcpCombine and Pb2Nc.
+
+    The staged forecast data are from NCEP's operational version of the HRRR.
+
+    This test is for the scenario in which there are multiple, short (i.e.
+    shorter than 24hr), NON-overlapping forecasts in a day with multi-hour
+    (but < 24hr) gaps between the end of one forecast and the start of the
+    next.
+
+user:
+  RUN_ENVIR: community
+
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
+
+workflow:
+  PREEXISTING_DIR_METHOD: rename
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  INCR_CYCL_FREQ: 11
+  DATE_FIRST_CYCL: '2024042902'
+  DATE_LAST_CYCL: '2024043022'
+  FCST_LEN_HRS: 3
+
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+
+task_get_extrn_lbcs:
+  LBC_SPEC_INTVL_HRS: 3
+
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: 'hrrr_ncep'
+
+verification:
+  METPLUS_VERBOSITY_LEVEL: 5
+  # Base directories in which to look for obs.  If these do not exist and/or
+  # do not contain the required obs, create and populate them.
+  # Note that when performing WE2E tests, the default behavior is not to
+  # get obs files from HPSS but to use staged obs files.  This is done by
+  # setting these variables to the (platform-specific) locations of these
+  # staged files.  To force the WE2E testing system to get the obs from
+  # HPSS, here we reset these variables to their default values in the SRW
+  # workflow configuration file config_defaults.yaml.
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
+  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
+  # Do not remove raw obs files to be able to verify that only the necessary
+  # raw files are fetched from HPSS.
+  REMOVE_RAW_OBS_CCPA: false
+  REMOVE_RAW_OBS_MRMS: false
+  REMOVE_RAW_OBS_NDAS: false
+  REMOVE_RAW_OBS_NOHRSC: false
+  #
+  VX_FCST_MODEL_NAME: 'hrrr_ncep'
+  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.linked/{{- verification.VX_FCST_MODEL_NAME }}'
+  FCST_FN_TEMPLATE: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}.grib2'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${VAR}_a${ACCUM_HH}h.nc'

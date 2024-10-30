@@ -35,25 +35,24 @@ def link_fix(
     sfc_climo_fields,
     **kwargs,
 ):
-    """This file defines a function that links fix files to the target
-    directory for a given SRW experiment. Only links files for one group
-    at a time.
+    """Links fix files to the target directory for a given SRW experiment. 
+    It only links files for one group at a time.
 
     Args:
-        cfg_d: dictionary of settings
-        file_group: could be on of ["grid", "orog", "sfc_climo"]
-        source_dir: the path to directory where the file_group fix files
-                    are linked from
-        target_dir: the directory where the fix files should be linked to
-        dot_or_uscore: str containing either a dot or an underscore
-        nhw: grid parameter setting
-        constants: dict containing the constants used by SRW
-        run_task: boolean value indicating whether the task is to be run
-                  in the experiment
-        climo_fields: list of fields needed for climo
+        cfg_d           (dict): Dictionary of configuration settings
+        file_group      (str) : Choice of [``"grid"``, ``"orog"``, ``"sfc_climo"``]
+        source_dir      (str) : Path to directory that the ``file_group`` fix files are linked from
+        target_dir      (str) : Directory that the fix files should be linked to
+        dot_or_uscore   (str) : Either a dot (``.``) or an underscore (``_``)
+        nhw             (int) : Wide halo width (grid parameter setting: N=number of cells, 
+                                H=halo, W=wide halo)
+        constants       (dict): Dictionary containing the constants used by the SRW App
+        run_task        (bool): Whether the task is to be run in the experiment
+        climo_fields    (list): List of fields needed for surface climatology (see 
+                                ``fixed_files_mapping.yaml`` for details)
 
     Returns:
-        a string: resolution
+        res (str): File/grid resolution
     """
 
     print_input_args(locals())
@@ -99,9 +98,9 @@ def link_fix(
     # 1) "C*.mosaic.halo${NHW}.nc"
     #    This mosaic file for the wide-halo grid (i.e. the grid with a ${NHW}-
     #    cell-wide halo) is needed as an input to the orography filtering
-    #    executable in the orography generation task.  The filtering code
+    #    executable in the orography generation task. The filtering code
     #    extracts from this mosaic file the name of the file containing the
-    #    grid on which it will generate filtered topography.  Note that the
+    #    grid on which it will generate filtered topography. Note that the
     #    orography generation and filtering are both performed on the wide-
     #    halo grid.  The filtered orography file on the wide-halo grid is then
     #    shaved down to obtain the filtered orography files with ${NH3}- and
@@ -256,7 +255,7 @@ def link_fix(
             if not res:
                 print_err_msg_exit(
                     f"""
-                    The resolution could not be extracted from the current file's name.  The
+                    The resolution could not be extracted from the current file's name. The
                     full path to the file (fp) is:
                       fp = '{fp}'
                     This may be because fp contains the * globbing character, which would
@@ -376,8 +375,8 @@ def link_fix(
     return res
 
 
-def parse_args(argv):
-    """Parse command line arguments"""
+def _parse_args(argv):
+    """Parses command line arguments"""
     parser = argparse.ArgumentParser(
         description="Creates symbolic links to FIX directories."
     )
@@ -402,7 +401,7 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     link_fix(
         verbose=cfg["workflow"]["VERBOSE"],

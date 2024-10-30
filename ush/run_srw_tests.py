@@ -5,17 +5,19 @@ import subprocess
 import time
 import argparse
 
-# Python class to handle the launching of a set of SRW tests
-# The expectation is to have a "clean" experiment directory with only new experiments
-# that are ready to run (e.g. no _old* experiments left around from previous tests
-# This script takes only one parameter "-e" or "--exptdir" which points to the 
-# expt_basedir specified when the run_WE2E_tests.sh is run to set up the tests.
-# The script will work sequentially through each of the test directories and 
-# launch the workflow for each with a call to launch_FV3LAM_wflow.sh
-# After the initial launch, the checkTests method is called to monitor the
-# status of each test and call the launch_FV3LAM_wflow.sh script repeatedly 
-# in each uncompleted workflow until all workflows are done.
 class SRWTest:
+
+  """Python class to handle the launching of a set of SRW tests.
+  The expectation is to have a "clean" experiment directory with only new experiments
+  that are ready to run (e.g., no ``_old*`` experiments left around from previous tests).
+  This script takes only one parameter (``-e`` or ``--exptdir``) which points to the 
+  ``expt_basedir`` specified when the ``run_WE2E_tests.py`` script is run to set up the tests.
+  The script will work sequentially through each of the test directories and 
+  launch the workflow for each with a call to ``launch_FV3LAM_wflow.sh``.
+  After the initial launch, the ``checkTests`` method is called to monitor the
+  status of each test and to call the ``launch_FV3LAM_wflow.sh`` script repeatedly 
+  in each uncompleted workflow until all workflows are done."""
+
   def __init__(self, exptdir):
     self.exptdir=exptdir
     # Get a list of test directories 
@@ -34,9 +36,13 @@ class SRWTest:
     self.checkTests()
 
   def checkTests(self):
+    """Check status of workflows/experiments; remove any that have failed or completed, 
+    and continue running the launch command for those that aren't complete.
+    
+    Returns:
+      None
+    """
     while(len(self.testDirectories) > 0):
-      # Only continue running launch command for workflows that aren't complete
-      # so check for any that have failed or completed and cull them from the list
       cmdstring="grep -L 'wflow_status =' */log.launch_FV3LAM_wflow | xargs dirname"
       try:
         status= subprocess.check_output(cmdstring,shell=True).strip().decode('utf-8')

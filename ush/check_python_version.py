@@ -7,8 +7,13 @@ from textwrap import dedent
 
 
 def check_python_version():
-    """Check if python version >= 3.6 and presence of some
-    non-standard packages currently jinja2, yaml, f90nml"""
+    """Checks for python version >= 3.6 and for presence of some
+    non-standard packages (currently ``jinja2``, ``yaml``, ``f90nml``)
+    
+    Raises:
+        ImportError: If checked packages are missing.
+        Exception: If Python version is less than 3.6
+    """
 
     # Check for non-standard python packages
     try:

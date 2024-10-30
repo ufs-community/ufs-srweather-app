@@ -15,21 +15,26 @@ from python_utils import (
 def set_gridparams_ESGgrid(
     lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, pazi, constants
 ):
-    """Sets the parameters for a grid that is to be generated using the "ESGgrid"
-    grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
+    """
+    Sets the parameters for a grid that is to be generated using the "ESGgrid"
+    grid generation method (i.e., when ``GRID_GEN_METHOD: "ESGgrid"``).
 
     Args:
-        lon_ctr
-        lat_ctr
-        nx
-        ny
-        halo_width
-        delx
-        dely
-        pazi
-        constants: dictionary of SRW constants
+        lon_ctr    (float): The longitude of the center of the grid (in degrees).
+        lat_ctr    (float): The latitude of the center of the grid (in degrees).
+        nx           (int): The number of cells in the zonal direction on the regional grid.
+        ny           (int): The number of cells in the meridional direction on the regional grid.
+        halo_width   (int): The width (in number of grid cells) of the wide :term:`halo` to add 
+                            around the regional grid before shaving the halo down to the width(s) 
+                            expected by the forecast model. For predefined grids, this value is 
+                            set in ``setup.py`` based on the ``ESGgrid_WIDE_HALO_WIDTH`` value in 
+                            ``predef_grid_params.yaml``. 
+        delx       (float): The cell size in the zonal direction of the regional grid (in meters).
+        dely       (float): The cell size in the meridional direction of the regional grid (in meters).
+        pazi       (float): The rotational parameter for the “ESGgrid” (in degrees).
+        constants   (dict): Dictionary of SRW constants
     Returns:
-        Tuple of inputs, and 4 outputs (see return statement)
+        Dictionary of inputs and 4 outputs (see return statement in code for details)
     """
 
     print_input_args(locals())
@@ -43,12 +48,12 @@ def set_gridparams_ESGgrid(
     #
     # For a ESGgrid-type grid, the orography filtering is performed by pass-
     # ing to the orography filtering the parameters for an "equivalent" glo-
-    # bal uniform cubed-sphere grid.  These are the parameters that a global
+    # bal uniform cubed-sphere grid. These are the parameters that a global
     # uniform cubed-sphere grid needs to have in order to have a nominal
     # grid cell size equal to that of the (average) cell size on the region-
-    # al grid.  These globally-equivalent parameters include a resolution
+    # al grid. These globally-equivalent parameters include a resolution
     # (in units of number of cells in each of the two horizontal directions)
-    # and a stretch factor.  The equivalent resolution is calculated in the
+    # and a stretch factor. The equivalent resolution is calculated in the
     # script that generates the grid, and the stretch factor needs to be set
     # to 1 because we are considering an equivalent globally UNIFORM grid.
     # However, it turns out that with a non-symmetric regional grid (one in
@@ -56,7 +61,7 @@ def set_gridparams_ESGgrid(
     # cause the orography filtering program is designed for a global cubed-
     # sphere grid and thus assumes that nx and ny for a given tile are equal
     # when stretch_factor is exactly equal to 1.
-    # ^^-- Why is this?  Seems like symmetry btwn x and y should still hold when the stretch factor is not equal to 1.
+    # ^^-- Why is this?  Seems like symmetry between x and y should still hold when the stretch factor is not equal to 1.
     # It turns out that the program will work if we set stretch_factor to a
     # value that is not exactly 1.  This is what we do below.
     #

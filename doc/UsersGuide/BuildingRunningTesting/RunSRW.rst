@@ -55,14 +55,14 @@ The SRW App requires input files to run. These include static datasets, initial 
      - File location
    * - Derecho
      - /glade/work/epicufsrt/contrib/UFS_SRW_data/|data|/input_model_data
-   * - Gaea (C3/C4/C5)
-     - /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Gaea
+     - /gpfs/f5/epic/world-shared/UFS_SRW_data/|data|/input_model_data/
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/|data|/input_model_data/
    * - Hercules
      - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
    * - Jet
-     - /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/|data|/input_model_data/
+     - /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/|data|/input_model_data/
    * - NOAA Cloud
      - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
    * - Orion
@@ -549,6 +549,7 @@ The ``data:`` section of the machine file can point to various data sources that
          netcdf: /Users/username/DATA/UFS/FV3GFS/netcdf
       RAP: /Users/username/DATA/UFS/RAP/grib2
       HRRR: /Users/username/DATA/UFS/HRRR/grib2
+      RRFS: /Users/username/DATA/UFS/RRFS/grib2
 
 This can be helpful when conducting multiple experiments with different types of data. 
 

@@ -9,6 +9,7 @@ Steps to build and use the Sphinx documentation tool:
     pip install sphinx
     pip install sphinxcontrib-bibtex
     pip install sphinx-rtd-theme
+    pip install sphinxcontrib.autoyaml
 
     One approach that has worked to resolve "Module Not Found" errors for users with MacPorts package manager: 
     $ sudo port install py-six  # may not be necessary

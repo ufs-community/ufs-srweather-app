@@ -1,21 +1,33 @@
 #!/usr/bin/env python
-#
-# To use this tool, you should source the regional workflow environment
-#    $> source env/wflow_xxx.env
-# and activate pygraf (or any one with cartopy installation)
-#    $> conda activate pygraf
-#
+
+"""
+To use this tool, first source the workflow environment:
+
+.. code-block:: console 
+    
+   $> module use /path/to/ufs-srweather-app/modulefiles
+   $> module load wflow_<machine>
+   $> conda activate srw_graphics
+
+Make sure to adjust the ``modulefiles`` path and ``<machine>`` to correspond to your system. 
+Even though the message printed to the console will direct users to run ``conda activate srw_app``, this script requires an environment (e.g., ``srw_graphics``) that includes ``pygraf`` or ``cartopy``. The ``srw_graphics`` environment uses ``cartopy`` for plotting. If the ``srw_app`` environment is already loaded, users can simply run ``conda activate srw_graphics`` to switch environments. 
+
+For usage instructions, run:
+
+.. code-block:: console 
+
+    $> python fv3write_parms_lambert.py -h
+
+"""
 
 import argparse
 
 import cartopy.crs as ccrs
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#
-# Main function to return parameters for the FV3 write component.
-#
-
 if __name__ == "__main__":
+    """
+    Main function to return parameters for the FV3 write component.
+    """
 
     parser = argparse.ArgumentParser(
         description="Determine FV3 write component lat1/lon1 for Lamert Conformal map projection",

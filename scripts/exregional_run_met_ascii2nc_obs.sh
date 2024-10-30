@@ -9,8 +9,7 @@
 #
 . $USHdir/source_util_funcs.sh
 for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files \
-  task_run_met_ascii2nc_obs ; do
+  constants fixed_files ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -67,6 +66,23 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs the METplus tool ${MetplusToolName}
 to convert ASCII format observation files to NetCDF format.
 ========================================================================"
+
+yyyymmdd_task=${PDY}
+
+# Seconds since some reference time that the DATE_UTIL utility uses of
+# the day of the current task.  This will be used below to find hours
+# since the start of this day.
+sec_since_ref_task=$(${DATE_UTIL} --date "${yyyymmdd_task} 0 hours" +%s)
+#
+#-----------------------------------------------------------------------
+#
+# Get the list of all the times in the current day at which to retrieve
+# obs.  This is an array with elements having format "YYYYMMDDHH".
+#
+#-----------------------------------------------------------------------
+#
+array_name="OBS_RETRIEVE_TIMES_${OBTYPE}_${yyyymmdd_task}"
+eval obs_retrieve_times_crnt_day=\( \${${array_name}[@]} \)
 #
 CDATE="${PDY}${cyc}"
 #
@@ -85,16 +101,16 @@ OUTPUT_BASE="${vx_output_basedir}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
 STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
 if [ "${OBTYPE}" = "AERONET" ]; then
-  OBS_INPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATE}
+  OBS_INPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATES[1]}
   OUTPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT}
   ASCII2NC_INPUT_FORMAT=aeronetv3
 elif [ "${OBTYPE}" = "AIRNOW" ]; then
-  OBS_INPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE}
+  OBS_INPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATES[1]}
   OUTPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT}
   if [ -z "${AIRNOW_INPUT_FORMAT}" ]; then
-    if [[ "${OBS_AIRNOW_FN_TEMPLATE}" == *"HourlyData"* ]]; then
+    if [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}" == *"HourlyData"* ]]; then
       ASCII2NC_INPUT_FORMAT=airnowhourly
-    elif [[ "${OBS_AIRNOW_FN_TEMPLATE}" == *"HourlyAQObs"* ]]; then
+    elif [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}" == *"HourlyAQObs"* ]]; then
       ASCII2NC_INPUT_FORMAT=airnowhourlyaqobs
     else
       print_err_msg_exit "Could not automatically determine format of Airnow observations;\
@@ -113,16 +129,61 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-FHR_LIST=$( python3 $USHdir/set_vx_fhr_list.py \
-  --cdate="${CDATE}" \
-  --fcst_len="${FCST_LEN_HRS}" \
-  --field="$VAR" \
-  --accum_hh="${ACCUM_HH}" \
-  --base_dir="${OBS_INPUT_DIR}" \
-  --filename_template="${OBS_INPUT_FN_TEMPLATE}" \
-  --num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}") || \
-print_err_msg_exit "Call to set_vx_fhr_list.py failed with return code: $?"
+LEADHR_LIST=""
+num_missing_files=0
+for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
+  yyyymmdd=$(echo ${yyyymmddhh} | cut -c1-8)
+  hh=$(echo ${yyyymmddhh} | cut -c9-10)
 
+  # Set the full path to the final processed obs file (fp_proc) we want to
+  # create.
+  sec_since_ref=$(${DATE_UTIL} --date "${yyyymmdd} ${hh} hours" +%s)
+  lhr=$(( (sec_since_ref - sec_since_ref_task)/3600 ))
+
+  fp=$( python3 $USHdir/eval_metplus_timestr_tmpl.py \
+    --init_time="${yyyymmdd_task}00" \
+    --lhr="${lhr}" \
+    --fn_template="${OBS_DIR}/${OBS_INPUT_FN_TEMPLATE}") || \
+    print_err_msg_exit "Call to eval_metplus_timestr_tmpl.py failed with return code: $?"
+
+  if [[ -f "${fp}" ]]; then
+    print_info_msg "
+Found ${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh):
+  yyyymmddhh = \"${yyyymmddhh}\"
+  fp = \"${fp}\"
+"
+    hh_noZero=$((10#${hh}))
+    LEADHR_LIST="${LEADHR_LIST},${hh_noZero}"
+  else
+    num_missing_files=$((num_missing_files+1))
+    print_info_msg "
+${OBTYPE} obs file corresponding to observation retrieval time (yyyymmddhh)
+does not exist on disk:
+  yyyymmddhh = \"${yyyymmddhh}\"
+  fp = \"${fp}\"
+Removing this time from the list of times to be processed by ${METPLUSTOOLNAME}.
+"
+  fi
+done
+
+# If the number of missing files is greater than the maximum allowed
+# (specified by num_missing_files_max), print out an error message and
+# exit.
+if [ "${num_missing_files}" -gt "${NUM_MISSING_OBS_FILES_MAX}" ]; then
+  print_err_msg_exit "\
+The number of missing ${OBTYPE} obs files (num_missing_files) is greater
+than the maximum allowed number (NUM_MISSING_FILES_MAX):
+  num_missing_files = ${num_missing_files}
+  NUM_MISSING_OBS_FILES_MAX = ${NUM_MISSING_OBS_FILES_MAX}"
+fi
+
+# Remove leading comma from LEADHR_LIST.
+LEADHR_LIST=$( echo "${LEADHR_LIST}" | $SED "s/^,//g" )
+print_info_msg "$VERBOSE" "\
+Final (i.e. after filtering for missing obs files) set of lead hours
+(saved in a scalar string variable) is:
+  LEADHR_LIST = \"${LEADHR_LIST}\"
+"
 #
 #-----------------------------------------------------------------------
 #
@@ -161,10 +222,10 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-if [ -z "${FHR_LIST}" ]; then
+if [ -z "${LEADHR_LIST}" ]; then
   print_err_msg_exit "\
 The list of forecast hours for which to run METplus is empty:
-  FHR_LIST = [${FHR_LIST}]"
+  LEADHR_LIST = [${LEADHR_LIST}]"
 fi
 #
 #-----------------------------------------------------------------------
@@ -219,7 +280,7 @@ settings="\
 # Date and forecast hour information.
 #
   'cdate': '$CDATE'
-  'fhr_list': '${FHR_LIST}'
+  'fhr_list': '${LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #

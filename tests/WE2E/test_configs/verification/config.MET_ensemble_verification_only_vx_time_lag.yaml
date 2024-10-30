@@ -16,24 +16,26 @@ workflow:
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 
+nco:
+  NET_default: 'RRFSE_CONUS'
+
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
-
-nco:
-  NET_default: 'RRFSE_CONUS'
 
 global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 2
   ENS_TIME_LAG_HRS: '[ 0, 12 ]'
 
-platform:
+
+verification:
+  # If the following is commented out, then the obs files staged on each
+  # platform will be (found and) used.
   CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/ccpa/proc'
   MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/mrms/proc'
   NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/ndas/proc'
-
-verification:
+  #
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
   VX_NDIGITS_ENSMEM_NAMES: 1

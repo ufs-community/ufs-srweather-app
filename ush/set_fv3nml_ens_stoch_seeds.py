@@ -23,19 +23,17 @@ from python_utils import (
 
 def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
     """
-    This function, for an ensemble-enabled experiment
-    (i.e. for an experiment for which the workflow configuration variable
-    DO_ENSEMBLE has been set to "TRUE"), creates new namelist files with
-    unique stochastic "seed" parameters, using a base namelist file in the
-    ${EXPTDIR} directory as a template. These new namelist files are stored
-    within each member directory housed within each cycle directory. Files
-    of any two ensemble members differ only in their stochastic "seed"
-    parameter values.  These namelist files are generated when this file is
-    called as part of the TN_RUN_FCST task.
+    Creates new namelist files with unique stochastic "seed" parameters for an ensemble-enabled 
+    experiment (i.e., where ``DO_ENSEMBLE: True``), using a base namelist file in ``${EXPTDIR}`` 
+    as a template. These new namelist files are stored within each member directory housed within 
+    each cycle directory. Files of any two ensemble members differ only in their stochastic "seed"
+    parameter values. These namelist files are generated when this file is called as part of the 
+    ``run_fcst`` task.
 
     Args:
-        cdate        the cycle
-        expt_config  the in-memory dict representing the experiment configuration
+        cdate       (datetime.datetime): The cycle date
+        expt_config              (dict): The in-memory dictionary representing the experiment 
+                                         configuration file
     Returns:
         None
     """
@@ -115,7 +113,7 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
         update_config=get_nml_config(settings),
         )
 
-def parse_args(argv):
+def _parse_args(argv):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
         description="Creates stochastic seeds for an ensemble experiment."
@@ -141,6 +139,6 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
+    args = _parse_args(sys.argv[1:])
     cfg = load_yaml_config(args.path_to_defns)
     set_fv3nml_ens_stoch_seeds(args.cdate, cfg)

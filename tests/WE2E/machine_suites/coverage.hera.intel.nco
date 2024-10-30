@@ -10,3 +10,7 @@ grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
 grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_HRRR
 pregen_grid_orog_sfc_climo
+vx-det_long-fcst_custom-vx-config_aiml-graphcast
+vx-det_multicyc_long-fcst-no-overlap_nssl-mpas
+vx-det_multicyc_first-obs-00z_ncep-hrrr
+vx-det_multicyc_no-00z-obs_nssl-mpas
