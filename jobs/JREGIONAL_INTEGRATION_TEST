@@ -34,7 +34,12 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco workflow ; do
+sections=(
+  user
+  nco
+  workflow
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 . $USHdir/job_preamble.sh

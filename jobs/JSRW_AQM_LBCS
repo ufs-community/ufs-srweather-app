@@ -31,8 +31,18 @@ export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 export USHdir="${USHsrw}"  # should be removed later
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global cpl_aqm_parm cpl_aqm_parm task_get_extrn_lbcs \
-  task_make_orog task_make_lbcs ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  cpl_aqm_parm
+  task_get_extrn_lbcs
+  task_make_orog
+  task_make_lbcs
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
