@@ -86,7 +86,18 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm constants task_get_extrn_ics task_make_ics ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  cpl_aqm_parm
+  constants
+  task_get_extrn_ics
+  task_make_ics
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
