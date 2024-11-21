@@ -6,20 +6,27 @@ default_task_verify_det: &default_task_verify_det
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
-    PDY: !cycstr '@Y@m@d'
-    cyc: !cycstr "@H"
-    subcyc: !cycstr "@M"
-    LOGDIR: !cycstr "&LOGDIR;"
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: '{% if user.MACHINE not in ["NOAACLOUD"] %}{{ "2G" }}{% endif %}'
+    PDY:
+      cyclestr:
+        value: '@Y@m@d'
+    cyc:
+      cyclestr:
+        value: '@H'
+    subcyc:
+      cyclestr:
+        value: '@M'
+    LOGDIR:
+      cyclestr:
+        value: '&LOGDIR;'
+    SLASH_ENSMEM_SUBDIR_OR_NULL: '{{ "/mem#mem#" if global.DO_ENSEMBLE }}'
+  join:
+    cyclestr:
+      value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: '{{ "2G" if user.MACHINE not in ["NOAACLOUD"] }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nnodes: 1
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  ppn: 1
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "" }}'
+  cores: !int '{{ verification_resources.execution.cores }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: 00:30:00
 
 metatask_GridStat_APCP_all_accums_all_mems:
   var:
@@ -41,11 +48,10 @@ metatask_GridStat_APCP_all_accums_all_mems:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
-        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
         OBS_AVAIL_INTVL_HRS: '{{- verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
-      walltime: 02:00:00
+      walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
       dependency:
         and:
           taskdep_pcpcombine_obs:
@@ -75,11 +81,10 @@ metatask_GridStat_ASNOW_all_accums_all_mems:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
-        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
         OBS_AVAIL_INTVL_HRS: '{{- verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
-      walltime: 02:00:00
+      walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
       dependency:
         and:
           taskdep_pcpcombine_obs:
@@ -105,11 +110,10 @@ metatask_GridStat_REFC_RETOP_all_mems:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
-        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
         OBS_AVAIL_INTVL_HRS: '{{- verification.MRMS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'L0'
         FCST_THRESH: 'all'
-      walltime: 02:00:00
+      walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
       dependency:
         and:
           datadep_all_get_obs_mrms_complete:
@@ -117,7 +121,7 @@ metatask_GridStat_REFC_RETOP_all_mems:
               age: 00:00:00:30
             # Check that the flag files that indicate that the get_obs_mrms tasks
             # are complete are all present before launching any GridStat task.
-            text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+            value: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
                    {%- set indent = "      " %}
                    {%- set indent_p2 = indent + "  " %}
                    {%- for n in range(0, num_obs_days) %}
@@ -134,7 +138,9 @@ metatask_GridStat_REFC_RETOP_all_mems:
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
-            text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+            value:
+              cyclestr:
+                value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
 
 metatask_PointStat_SFC_UPA_all_mems:
   var:
@@ -152,11 +158,10 @@ metatask_PointStat_SFC_UPA_all_mems:
         METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
         ENSMEM_INDX: "#mem#"
-        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
         OBS_AVAIL_INTVL_HRS: '{{- verification.NDAS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
-      walltime: 01:00:00
+      walltime: "{{ verification_resources.execution.deterministic.pointstat.walltime }}"
       dependency:
         and:
           datadep_all_pb2nc_obs_ndas_complete:
@@ -181,4 +186,6 @@ metatask_PointStat_SFC_UPA_all_mems:
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
-            text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+            value:
+              cyclestr:
+                value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
