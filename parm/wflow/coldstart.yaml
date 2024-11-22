@@ -32,16 +32,16 @@ task_get_extrn_ics:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
-    nprocs: !int '{{ task_get_extrn_ics.execution.tasks_per_node }}'
+    nprocs: !int '{{ task_get_extrn_ics.execution.batchargs.cores }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 4G
   native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD}}'
   partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") else "None" }}'
-  cores: !int '{{ task_get_extrn_ics.execution.tasks_per_node }}'
+  cores: !int '{{ task_get_extrn_ics.execution.batchargs.cores }}'
   queue: '&QUEUE_HPSS;'
-  walltime: '{{ task_get_extrn_ics.execution.walltime }}'
+  walltime: '{{ task_get_extrn_ics.execution.batchargs.walltime }}'
   dependency:
     or:
       and:
@@ -69,16 +69,16 @@ task_get_extrn_lbcs:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
-    nprocs: !int '{{ task_get_extrn_lbcs.execution.tasks_per_node }}'
+    nprocs: !int '{{ task_get_extrn_lbcs.execution.batchargs.cores }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 4G
-  cores: !int '{{ task_get_extrn_lbcs.execution.tasks_per_node }}'
+  cores: !int '{{ task_get_extrn_lbcs.execution.batchargs.cores }}'
   native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD }}'
   partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") else "None" }}'
   queue: '&QUEUE_HPSS;'
-  walltime: '{{ task_get_extrn_lbcs.execution.walltime }}'
+  walltime: '{{ task_get_extrn_lbcs.execution.batchargs.walltime }}'
   dependency:
     or:
       and:
@@ -181,8 +181,8 @@ metatask_run_ensemble:
         value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     partition: '{{ "&PARTITION_FCST;" if platform.get("PARTITION_FCST") else "None" }}'
     queue: '&QUEUE_FCST;'
-    nodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}:ppn={{ task_run_fcst.PPN_RUN_FCST // 1 }}'
-    walltime: '{{ task_run_fcst.walltime }}'
+    nodes: '{{ task_run_fcst.fv3.execution.batchargs.nodes // 1 }}:ppn={{ task_run_fcst.fv3.execution.batchargs.tasks_per_node // 1 }}'
+    walltime: '{{ task_run_fcst.fv3.execution.batchargs.walltime }}'
     dependency:
       and:
         taskdep_make_ics:

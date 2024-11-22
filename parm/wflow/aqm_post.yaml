@@ -31,9 +31,9 @@ task_pre_post_stat:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_pre_post_stat.execution.cores }}'
-  cores: !int '{{ task_pre_post_stat.execution.cores }}'
-  walltime: '{{ task_pre_post_stat.execution.walltime }}'
+    nprocs: '{{ task_pre_post_stat.execution.batchargs.cores }}'
+  cores: !int '{{ task_pre_post_stat.execution.batchargs.cores }}'
+  walltime: '{{ task_pre_post_stat.execution.batchargs.walltime }}'
   dependency:
     or:
       datadep:
@@ -54,10 +54,10 @@ task_post_stat_o3:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_post_stat_o3.execution.cores }}'
-  cores: !int '{{ task_post_stat_o3.execution.cores }}'
+    nprocs: '{{ task_post_stat_o3.execution.batchargs.cores }}'
+  cores: !int '{{ task_post_stat_o3.execution.batchargs.cores }}'
   memory: 120G
-  walltime: '{{ task_post_stat_o3.execution.walltime }}'
+  walltime: '{{ task_post_stat_o3.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:
@@ -71,10 +71,10 @@ task_post_stat_pm25:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_post_stat_pm25.execution.cores }}'
-  cores: !int '{{ task_post_stat_pm25.execution.cores }}'
+    nprocs: '{{ task_post_stat_pm25.execution.batchargs.cores }}'
+  cores: !int '{{ task_post_stat_pm25.execution.batchargs.cores }}'
   memory: 120G
-  walltime: '{{ task_post_stat_pm25.execution.walltime }}'
+  walltime: '{{ task_post_stat_pm25.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:
@@ -88,10 +88,10 @@ task_bias_correction_o3:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_bias_correction_o3.execution.cores }}'
+    nprocs: '{{ task_bias_correction_o3.execution.batchargs.cores }}'
   memory: 120G
-  cores: !int '{{ task_bias_correction_o3.execution.cores }}'
-  walltime: '{{ task_bias_correction_o3.execution.walltime }}'
+  cores: !int '{{ task_bias_correction_o3.execution.batchargs.cores }}'
+  walltime: '{{ task_bias_correction_o3.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:
@@ -105,10 +105,10 @@ task_bias_correction_pm25:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_bias_correction_pm25.execution.cores }}'
+    nprocs: '{{ task_bias_correction_pm25.execution.batchargs.cores }}'
   memory: 120G
-  cores: !int '{{ task_bias_correction_pm25.execution.cores }}'
-  walltime: '{{ task_bias_correction_pm25.execution.walltime }}'
+  cores: !int '{{ task_bias_correction_pm25.execution.batchargs.cores }}'
+  walltime: '{{ task_bias_correction_pm25.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:

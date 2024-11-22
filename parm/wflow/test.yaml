@@ -29,7 +29,7 @@ default_task_test: &default_task
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "" }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: '{{ task_integration_test.execution.walltime }}'
+  walltime: '{{ task_integration_test.execution.batchargs.walltime }}'
 
 metatask_integration_test:
   var:
@@ -37,7 +37,7 @@ metatask_integration_test:
   task_integration_test_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK; "integration_test" "&JOBSdir;/JREGIONAL_INTEGRATION_TEST"'
-    cores: '{{ task_integration_test.execution.tasks_per_node }}'
+    cores: '{{ task_integration_test.execution.batchargs.cores }}'
     join:
       cyclestr:
         value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'

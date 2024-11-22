@@ -30,11 +30,11 @@ task_make_grid:
   command: '&LOAD_MODULES_RUN_TASK; "make_grid" "&JOBSdir;/JREGIONAL_MAKE_GRID"'
   envars:
     <<: *default_envars
-    nprocs: '{{ task_make_grid.execution.nodes * task_make_grid.execution.cores }}'
+    nprocs: '{{ task_make_grid.execution.nodes * task_make_grid.execution.tasks_per_node }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  nodes: '{{ task_make_grid.execution.nodes }}:ppn={{ task_make_grid.execution.cores }}'
+  nodes: '{{ task_make_grid.execution.nodes }}:ppn={{ task_make_grid.execution.tasks_per_node }}'
   walltime: "{{ task_make_grid.execution.walltime }}"
 
 task_make_orog:

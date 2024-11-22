@@ -41,9 +41,9 @@ task_nexus_gfs_sfc:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_nexus_gfs_sfc.execution.cores }}'
-  cores: !int '{{ task_nexus_gfs_sfc.execution.cores }}'
-  walltime: '{{ task_nexus_gfs_sfc.execution.walltime }}'
+    nprocs: '{{ task_nexus_gfs_sfc.execution.batchargs.cores }}'
+  cores: !int '{{ task_nexus_gfs_sfc.execution.batchargs.cores }}'
+  walltime: '{{ task_nexus_gfs_sfc.execution.batchargs.walltime }}'
   memory: 2G
   dependency:
     or:
@@ -91,9 +91,9 @@ task_nexus_post_split:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_nexus_post_split.execution.cores }}'
-  cores: !int '{{ task_nexus_post_split.execution.cores }}'
-  walltime: '{{ task_nexus_post_split.execution.walltime }}'
+    nprocs: '{{ task_nexus_post_split.execution.batchargs.cores }}'
+  cores: !int '{{ task_nexus_post_split.execution.batchargs.cores }}'
+  walltime: '{{ task_nexus_post_split.execution.batchargs.walltime }}'
   dependency:
     metataskdep:
       attrs:
@@ -108,9 +108,9 @@ task_fire_emission:
   memory: 2G
   envars:
     <<: *default_vars
-    nprocs: '{{ task_fire_emission.execution.cores }}'
-  cores: !int '{{ task_fire_emission.execution.cores }}'
-  walltime: '{{ task_fire_emission.execution.walltime }}'
+    nprocs: '{{ task_fire_emission.execution.batchargs.cores }}'
+  cores: !int '{{ task_fire_emission.execution.batchargs.cores }}'
+  walltime: '{{ task_fire_emission.execution.batchargs.walltime }}'
 
 task_point_source:
   <<: *default_aqm
@@ -120,9 +120,9 @@ task_point_source:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_point_source.execution.cores }}'
-  cores: !int '{{ task_point_source.execution.cores }}'
-  walltime: '{{ task_point_source.execution.walltime }}'
+    nprocs: '{{ task_point_source.execution.batchargs.cores }}'
+  cores: !int '{{ task_point_source.execution.batchargs.cores }}'
+  walltime: '{{ task_point_source.execution.batchargs.walltime }}'
   dependency:
     or_make_grid:
       datadep_grid:
@@ -142,12 +142,12 @@ task_aqm_ics_ext:
   envars:
     <<: *default_vars
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
-    nprocs: '{{ task_aqm_ics_ext.execution.cores }}'
+    nprocs: '{{ task_aqm_ics_ext.execution.batchargs.cores }}'
   join:
     cyclestr:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  cores: !int '{{ task_aqm_ics_ext.execution.cores }}'
-  walltime: '{{ task_aqm_ics_ext.execution.walltime }}'
+  cores: !int '{{ task_aqm_ics_ext.execution.batchargs.cores }}'
+  walltime: '{{ task_aqm_ics_ext.execution.batchargs.walltime }}'
   memory: 64G
   dependency:
     and:
@@ -181,12 +181,12 @@ task_aqm_ics:
         attrs:
           offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
         value: '&COMIN_DIR;'
-    nprocs: '{{ task_aqm_ics.execution.cores }}'
+    nprocs: '{{ task_aqm_ics.execution.batchargs.cores }}'
   join:
     cyclestr:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  cores: !int '{{ task_aqm_ics.execution.cores }}'
-  walltime: '{{ task_aqm_ics.execution.walltime }}'
+  cores: !int '{{ task_aqm_ics.execution.batchargs.cores }}'
+  walltime: '{{ task_aqm_ics.execution.batchargs.walltime }}'
   memory: 64G
   dependency:
     and:
@@ -221,8 +221,8 @@ task_aqm_lbcs:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_aqm_lbcs.execution.nodes * task_aqm_lbcs.execution.cores }}'
-  nodes: '{{ task_aqm_lbcs.execution.nodes }}:ppn={{ task_aqm_lbcs.execution.cores }}'
+    nprocs: '{{ task_aqm_lbcs.execution.batchargs.nodes * task_aqm_lbcs.execution.batchargs.cores }}'
+  nodes: '{{ task_aqm_lbcs.execution.batchargs.nodes }}:ppn={{ task_aqm_lbcs.execution.batchargs.cores }}'
   dependency:
     taskdep:
       attrs:

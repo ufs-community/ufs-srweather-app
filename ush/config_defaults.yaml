@@ -1403,95 +1403,100 @@ task_make_sfc_climo:
 # EXTRN ICS config parameters
 #-----------------------------
 task_get_extrn_ics:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set initial and lateral boundary condition generation parameters.  
-  # Definitions:
-  #
-  # EXTRN_MDL_NAME_ICS:
-  # The name of the external model that will provide fields from which initial
-  # condition files, surface files, and 0-th hour boundary condition files will 
-  # be generated for input into the forecast model.
-  #
-  # EXTRN_MDL_ICS_OFFSET_HRS:
-  # Users may wish to start a forecast using forecast data from a previous cycle
-  # of an external model. This variable indicates how many hours earlier
-  # the external model started than the FV3 forecast configured here.
-  # For example, if the forecast should start from a 6-hour
-  # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS: "6".
-  #
-  # FV3GFS_FILE_FMT_ICS:
-  # If using the FV3GFS model as the source of the ICs (i.e., if EXTRN_MDL_NAME_ICS
-  # is set to "FV3GFS"), this variable specifies the format of the model
-  # files to use when generating the ICs.
-  #
-  #-----------------------------------------------------------------------
-  #
-  EXTRN_MDL_NAME_ICS: "FV3GFS"
-  EXTRN_MDL_ICS_OFFSET_HRS: 0
-  FV3GFS_FILE_FMT_ICS: "nemsio"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Base directories in which to search for external model files.
-  #
-  # EXTRN_MDL_SYSBASEDIR_ICS:
-  # A known location of a real data stream on a given platform. This is typically 
-  # a real-time data stream as on Hera, Jet, or WCOSS. External model files 
-  # for generating ICs on the native grid should be accessible via this data stream. 
-  # The way the full path containing these files is constructed depends on the 
-  # user-specified external model for ICs, i.e. EXTRN_MDL_NAME_ICS.
-  #
-  # Note that this must be defined as a null string here so that if it is 
-  # specified by the user in the experiment configuration file, it remains 
-  # set to those values, and if not, it gets set to machine-dependent 
-  # values.
-  #
-  #-----------------------------------------------------------------------
-  # 
-  EXTRN_MDL_SYSBASEDIR_ICS: ''
-  #
-  #-----------------------------------------------------------------------
-  #
-  # User-staged external model directories and files.  Definitions:
-  #
-  # USE_USER_STAGED_EXTRN_FILES:
-  # Flag that determines whether or not the workflow will look for the 
-  # external model files needed for generating ICs in user-specified
-  # directories.
-  #
-  # EXTRN_MDL_SOURCE_BASEDIR_ICS:
-  # Directory in which to look for external model files for generating ICs.
-  # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in 
-  # this directory for a subdirectory named "YYYYMMDDHH" consisting of the 
-  # starting date and cycle hour of 
-  # the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
-  # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
-  # the external model files specified by the array EXTRN_MDL_FILES_ICS 
-  # (these files will be used to generate the ICs on the native FV3-LAM 
-  # grid). This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
-  # set to false.
-  # 
-  # EXTRN_MDL_FILES_ICS:
-  # Array containing templates of the names of the files to search for in
-  # the directory specified by EXTRN_MDL_SOURCE_BASEDIR_ICS.  This
-  # variable is not used if USE_USER_STAGED_EXTRN_FILES is set to false.
-  # A single template should be used for each model file type that is
-  # used. You may use any of the Python-style templates
-  # allowed in the ush/retrieve_data.py script. To see the full list of
-  # supported templates, run that script with a -h option. For example, to 
-  # set FV3GFS nemsio input files, add:
-  #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio \
-  #   gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio )
-  # Or for FV3GFS grib files:
-  #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
-  #
-  #-----------------------------------------------------------------------
-  #
-  USE_USER_STAGED_EXTRN_FILES: false
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
-  EXTRN_MDL_FILES_ICS: ""
+  execution:
+    batchargs:
+      cores: 1
+      walltime: 01:30:00
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Set initial and lateral boundary condition generation parameters.  
+    # Definitions:
+    #
+    # EXTRN_MDL_NAME_ICS:
+    # The name of the external model that will provide fields from which initial
+    # condition files, surface files, and 0-th hour boundary condition files will 
+    # be generated for input into the forecast model.
+    #
+    # EXTRN_MDL_ICS_OFFSET_HRS:
+    # Users may wish to start a forecast using forecast data from a previous cycle
+    # of an external model. This variable indicates how many hours earlier
+    # the external model started than the FV3 forecast configured here.
+    # For example, if the forecast should start from a 6-hour
+    # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS: "6".
+    #
+    # FV3GFS_FILE_FMT_ICS:
+    # If using the FV3GFS model as the source of the ICs (i.e., if EXTRN_MDL_NAME_ICS
+    # is set to "FV3GFS"), this variable specifies the format of the model
+    # files to use when generating the ICs.
+    #
+    #-----------------------------------------------------------------------
+    #
+  envvars:
+    EXTRN_MDL_NAME_ICS: "FV3GFS"
+    EXTRN_MDL_ICS_OFFSET_HRS: 0
+    FV3GFS_FILE_FMT_ICS: "nemsio"
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Base directories in which to search for external model files.
+    #
+    # EXTRN_MDL_SYSBASEDIR_ICS:
+    # A known location of a real data stream on a given platform. This is typically 
+    # a real-time data stream as on Hera, Jet, or WCOSS. External model files 
+    # for generating ICs on the native grid should be accessible via this data stream. 
+    # The way the full path containing these files is constructed depends on the 
+    # user-specified external model for ICs, i.e. EXTRN_MDL_NAME_ICS.
+    #
+    # Note that this must be defined as a null string here so that if it is 
+    # specified by the user in the experiment configuration file, it remains 
+    # set to those values, and if not, it gets set to machine-dependent 
+    # values.
+    #
+    #-----------------------------------------------------------------------
+    # 
+    EXTRN_MDL_SYSBASEDIR_ICS: ''
+    #
+    #-----------------------------------------------------------------------
+    #
+    # User-staged external model directories and files.  Definitions:
+    #
+    # USE_USER_STAGED_EXTRN_FILES:
+    # Flag that determines whether or not the workflow will look for the 
+    # external model files needed for generating ICs in user-specified
+    # directories.
+    #
+    # EXTRN_MDL_SOURCE_BASEDIR_ICS:
+    # Directory in which to look for external model files for generating ICs.
+    # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in 
+    # this directory for a subdirectory named "YYYYMMDDHH" consisting of the 
+    # starting date and cycle hour of 
+    # the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
+    # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
+    # the external model files specified by the array EXTRN_MDL_FILES_ICS 
+    # (these files will be used to generate the ICs on the native FV3-LAM 
+    # grid). This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
+    # set to false.
+    # 
+    # EXTRN_MDL_FILES_ICS:
+    # Array containing templates of the names of the files to search for in
+    # the directory specified by EXTRN_MDL_SOURCE_BASEDIR_ICS.  This
+    # variable is not used if USE_USER_STAGED_EXTRN_FILES is set to false.
+    # A single template should be used for each model file type that is
+    # used. You may use any of the Python-style templates
+    # allowed in the ush/retrieve_data.py script. To see the full list of
+    # supported templates, run that script with a -h option. For example, to 
+    # set FV3GFS nemsio input files, add:
+    #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio \
+    #   gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio )
+    # Or for FV3GFS grib files:
+    #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
+    #
+    #-----------------------------------------------------------------------
+    #
+    USE_USER_STAGED_EXTRN_FILES: false
+    EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
+    EXTRN_MDL_FILES_ICS: ""
 
 #----------------------------
 # EXTRN LBCS config parameters
@@ -1499,7 +1504,7 @@ task_get_extrn_ics:
 task_get_extrn_lbcs:
   execution:
     batchargs:
-      tasks_per_node: 1
+      cores: 1
       walltime: 01:30:00
   #
   #-----------------------------------------------------------------------
@@ -2079,7 +2084,7 @@ task_run_prdgen:
   execution:
     batchargs:
       nodes: 1
-      cores: 22
+      tasks_per_node: 22
       walltime: 00:30:00
   #-----------------------------------------------------------------------
   # KMP_AFFINITY_RUN_PRDGEN: 
@@ -2937,6 +2942,75 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+
+# AQM Task Resources
+task_post_stat_o3:
+  execution:
+    batchargs:
+      tasks_per_node: 
+      nodes:
+      walltime:
+task_post_stat_pm25:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_bias_correction_o3:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_bias_correction_pm25:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_nexus_gfs_sfc:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_nexus_emission:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_nexus_post_split:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_point_source:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_aqm_ics_ext:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_aqm_ics:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+task_aqm_lbcs:
+  execution:
+    batchargs:
+      tasks_per_node:
+      nodes:
+      walltime:
+
 
 #----------------------------
 # UFS FIRE config parameters

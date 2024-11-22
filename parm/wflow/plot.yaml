@@ -28,13 +28,13 @@ metatask_plot_allvars:
             value:  "&LOGDIR;"
         SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
         ENSMEM_INDX: '#mem#'
-        nprocs: '{{ task_plot_allvars.execution.nodes * task_plot_allvars.execution.cores }}'
+        nprocs: '{{ task_plot_allvars.execution.batchargs.nodes * task_plot_allvars.execution.batchargs.tasks_per_node }}'
         fhr: '#fhr#'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
-      nodes: '{{ task_plot_allvars.execution.nodes }}:ppn={{ task_plot_allvars.execution.cores }}'
+      nodes: '{{ task_plot_allvars.execution.batchargs.nodes }}:ppn={{ task_plot_allvars.execution.batchargs.tasks_per_node }}'
       partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "None" }}'
       queue: '&QUEUE_DEFAULT;'
-      walltime: '{{ task_plot_allvars.execution.walltime }}'
+      walltime: '{{ task_plot_allvars.execution.batchargs.walltime }}'
       join:
         cyclestr:
           value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'

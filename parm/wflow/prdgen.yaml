@@ -23,15 +23,15 @@ metatask_run_prdgen:
         fhr: '#fhr#'
         SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
         ENSMEM_INDX: '#mem#'
-        nprocs: '{{ task_run_prdgen.execution.nodes * task_run_prdgen.execution.cores }}'
+        nprocs: '{{ task_run_prdgen.execution.batchargs.nodes * task_run_prdgen.execution.batchargs.tasks_per_node }}'
       join:
         cyclestr:
           value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
-      nodes: '{{ task_run_prdgen.execution.nodes }}:ppn={{ task_run_prodgen.execution.cores }}'
+      nodes: '{{ task_run_prdgen.execution.batchargs.nodes }}:ppn={{ task_run_prodgen.execution.batchargs.tasks_per_node }}'
       partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "None" }}'
       queue: '&QUEUE_DEFAULT;'
-      walltime: '{{ task_run_prdgen.execution.walltime }}'
+      walltime: '{{ task_run_prdgen.execution.batchargs.walltime }}'
       dependency:
         taskdep:
           attrs:
