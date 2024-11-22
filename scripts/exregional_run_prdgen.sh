@@ -19,7 +19,7 @@ sections=(
   constants
   fixed_files
   grid_params
-  task_run_post
+  task_run_post.envvars
   task_run_prdgen.envvars
 )
 for sect in ${sections[*]} ; do

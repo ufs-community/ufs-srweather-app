@@ -20,7 +20,7 @@ sections=(
   fixed_files
   grid_params
   task_point_source
-  task_run_fcst
+  task_run_fcst.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

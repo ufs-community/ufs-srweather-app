@@ -96,8 +96,8 @@ sections=(
   workflow
   constants
   grid_params
-  task_make_grid
-  task_make_orog
+  task_make_grid.envvars
+  task_make_orog.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

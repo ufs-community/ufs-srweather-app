@@ -68,6 +68,7 @@
 #  task_run_fcst:
 #    DO_FCST_RESTART
 #    DT_ATMOS
+#    FHROT
 #    FV3_EXEC_FP
 #    KMP_AFFINITY_RUN_FCST
 #    OMP_NUM_THREADS_RUN_FCST
@@ -126,7 +127,8 @@ sections=(
   constants
   fixed_files
   task_get_extrn_lbcs.envvars
-  task_run_fcst
+  task_run_fcst.envvars
+  task_run_post.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

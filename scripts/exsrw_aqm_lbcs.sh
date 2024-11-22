@@ -19,7 +19,7 @@ sections=(
   constants
   fixed_files
   grid_params
-  task_get_extrn_lbcs
+  task_get_extrn_lbcs.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
