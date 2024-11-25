@@ -28,10 +28,12 @@ task_get_extrn_lbcs:
   EXTRN_MDL_FILES_LBCS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_run_fcst:
-  DT_ATMOS: 120
+  envvars:
+    DT_ATMOS: 120
 task_run_post:
-  SUB_HOURLY_POST: true
-  DT_SUBHOURLY_POST_MNTS: 12
+  envvars:
+    SUB_HOURLY_POST: true
+    DT_SUBHOURLY_POST_MNTS: 12
 global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 2
