@@ -2077,7 +2077,17 @@ task_run_post:
     TESTBED_FIELDS_FN: ""
     NUMX: 1
 
-#----------------------------
+#-----------------------------
+# Integration test resources
+#-----------------------------
+
+task_integration_test:
+  execution:
+    batchargs:
+      walltime: 00:05:00
+      cores: 1
+
+#-----------------------------
 # RUN PRDGEN config parameters
 #-----------------------------
 task_run_prdgen:
@@ -2135,6 +2145,11 @@ task_run_prdgen:
 # PLOT_ALLVARS config parameters
 #-----------------------------
 task_plot_allvars:
+  execution:
+    batchargs:
+      cores: 1
+      exclusive: True
+      walltime: 01:00:00
   #-------------------------------------------------------------------------
   # Path to the reference experiment's COMOUT directory. This is where the GRIB2 files 
   # from postprocessing are located. Make this a template to compare
