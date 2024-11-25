@@ -28,12 +28,14 @@ task_make_grid:
   GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G: 87
   GFDLgrid_USE_NUM_CELLS_IN_FILENAMES: false
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: FV3GFS
-  USE_USER_STAGED_EXTRN_FILES: true
+  envvars:
+    EXTRN_MDL_NAME_ICS: FV3GFS
+    USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: FV3GFS
-  LBC_SPEC_INTVL_HRS: 3
-  USE_USER_STAGED_EXTRN_FILES: true
+  envvars:
+    EXTRN_MDL_NAME_LBCS: FV3GFS
+    LBC_SPEC_INTVL_HRS: 3
+    USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
   DT_ATMOS: 100
   LAYOUT_X: 6
@@ -52,4 +54,5 @@ task_run_fcst:
   WRTCMP_dlon: 0.24
   WRTCMP_dlat: 0.24
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: custom_GFDLgrid
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: custom_GFDLgrid

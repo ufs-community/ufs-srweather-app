@@ -22,12 +22,14 @@ task_make_grid:
   ESGgrid_WIDE_HALO_WIDTH: 6
   ESGgrid_PAZI: 0.0
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: FV3GFS
-  USE_USER_STAGED_EXTRN_FILES: true
+  envvars:
+    EXTRN_MDL_NAME_ICS: FV3GFS
+    USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: FV3GFS
-  LBC_SPEC_INTVL_HRS: 3
-  USE_USER_STAGED_EXTRN_FILES: true
+  envvars:
+    EXTRN_MDL_NAME_LBCS: FV3GFS
+    LBC_SPEC_INTVL_HRS: 3
+    USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
   DT_ATMOS: 45
   LAYOUT_X: 12
@@ -47,11 +49,10 @@ task_run_fcst:
   WRTCMP_ny: 285
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
-task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_central_asia
-rocoto:
-  tasks:
-    metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
+  fv3:
+    execution:
+      batchargs:
         walltime: 01:00:00
-
+task_run_post:
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_central_asia
