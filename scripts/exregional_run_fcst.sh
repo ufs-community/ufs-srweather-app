@@ -57,6 +57,8 @@
 #    FV3_NML_FN
 #    FV3_NML_FP
 #    FV3_NML_STOCH_FP
+#    FIRE_NML_FN
+#    FIRE_NML_FP
 #    INCR_CYCL_FREQ
 #    PREDEF_GRID_NAME
 #    SYMLINK_FIX_FILES
@@ -106,6 +108,10 @@
 #  fixed_files:
 #    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
 #
+#  fire:
+#    UFS_FIRE
+#    FIRE_INPUT_DIR
+#
 #-----------------------------------------------------------------------
 #
 
@@ -129,6 +135,7 @@ sections=(
   task_get_extrn_lbcs.envvars
   task_run_fcst.envvars
   task_run_post.envvars
+  fire.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
