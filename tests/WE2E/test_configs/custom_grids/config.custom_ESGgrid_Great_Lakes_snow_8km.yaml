@@ -41,7 +41,8 @@ task_run_fcst:
     execution:
       batchargs:
         walltime: 01:00:00
-  DT_ATMOS: 90
+  envvars:
+    DT_ATMOS: 90
   LAYOUT_X: 8
   LAYOUT_Y: 10
   BLOCKSIZE: 32

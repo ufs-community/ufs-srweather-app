@@ -15,13 +15,13 @@ workflow:
   DATE_LAST_CYCL: '2021050500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+  taskgroups:
+    - parm/wflow/verify_pre.yaml
+    - parm/wflow/verify_det.yaml
+    - parm/wflow/verify_ens.yaml
 
 nco:
   NET_default: 'RRFSE_CONUS'
-
-rocoto:
-  tasks:
-    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
 
 global:
   DO_ENSEMBLE: true

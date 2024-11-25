@@ -18,16 +18,17 @@ workflow:
   DATE_FIRST_CYCL: '2024073000'
   DATE_LAST_CYCL: '2024073000'
   FCST_LEN_HRS: 240
-
-rocoto:
-  tasks:
-    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+  taskgroups:
+    - parm/wflow/verify_pre.yaml
+    - parm/wflow/verify_det.yaml
 
 task_get_extrn_lbcs:
-  LBC_SPEC_INTVL_HRS: 3
+  envvars:
+    LBC_SPEC_INTVL_HRS: 3
 
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: 'global'
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: 'global'
 
 verification:
   METPLUS_VERBOSITY_LEVEL: 5
