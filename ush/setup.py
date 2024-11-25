@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 
 import copy
+import datetime
+import logging
 import json
 import os
+import re
 import sys
-import datetime
 import traceback
-import logging
+from pathlib import Path
 from textwrap import dedent
 
 import yaml
 from uwtools.api.config import get_yaml_config
-from pprint import pprint
 
+from link_fix import link_fix
 from python_utils import (
     log_info,
     cd_vrfy,
@@ -40,74 +42,51 @@ from python_utils import (
     load_xml_file,
 )
 
-from set_cycle_and_obs_timeinfo import \
-     set_cycle_dates, set_fcst_output_times_and_obs_days_all_cycles, \
-     set_rocoto_cycledefs_for_obs_days, \
-     check_temporal_consistency_cumul_fields, \
-     get_obs_retrieve_times_by_day
+from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
-from link_fix import link_fix
+from uwtools.api.config import get_yaml_config, validate
 
-def load_config_for_setup(ushdir, default_config, user_config):
-    """Updates a Python dictionary in place with experiment configuration settings from the
-    default, machine, and user configuration files.
+def load_config_for_setup(ushdir, default_config_path, user_config_path):
+    """Load in the default, machine, and user configuration files into
+    Python dictionaries. Return the combined experiment dictionary.
 
     Args:
       ushdir             (str): Path to the ``ush`` directory for the SRW App
       default_config     (str): Path to ``config_defaults.yaml``
-      user_config        (str): Path to the user-provided config YAML (usually named
+      user_config        (str): Path to the user-provided config YAML (usually named 
                                 ``config.yaml``)
 
     Returns:
-        cfg_d            (dict): Experiment configuration dictionary based on default,
-                                 machine, and user config files
-        do_vx            (bool): Flag specifying whether workflow will run vx tasks
-
+        None
+    
     Raises:
-        FileNotFoundError: If the user-provided configuration file or the machine file does not
+        FileNotFoundError: If the user-provided configuration file or the machine file does not 
                            exist.
-        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains
-                   invalid sections/keys or (3) it does not contain mandatory information or (4)
-                   an invalid datetime format is used.
+        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains 
+                   invalid sections/keys or (3) it does not contain mandatory information or (4) 
+                   an invalid datetime format is used. 
     """
 
-    # Load the default config.
-    logging.debug(f"Loading config defaults file {default_config}")
-    cfg_d = load_config_file(default_config)
+    ushdir = Path(ushdir)
+
+    # Load the default and user configs.
+    logging.debug(f"Loading config defaults file {default_config_path}")
+    default_config = get_yaml_config(default_config_path)
     logging.debug(f"Read in the following values from config defaults file:\n")
-    logging.debug(cfg_d)
+    logging.debug(default_config)
 
-    # Load the user config file, then ensure all user-specified
-    # variables correspond to a default value.
-    if not os.path.exists(user_config):
-        raise FileNotFoundError(
-            f"""
-            User config file not found:
-            user_config = {user_config}
-            """
-        )
-
-    try:
-        cfg_u = load_config_file(user_config)
-        logging.debug(f"Read in the following values from YAML config file {user_config}:\n")
-        logging.debug(cfg_u)
-    except:
-        errmsg = dedent(
-            f"""\n
-            Could not load YAML config file:  {user_config}
-            Reference the above traceback for more information.
-            """
-        )
-        raise Exception(errmsg)
+    user_config = get_yaml_config(user_config_path)
+    logging.debug(f"Read in the following values from YAML config file {user_config}:\n")
+    logging.debug(user_config)
 
     # Make sure the keys in user config match those in the default
-    # config.
-    invalid = check_structure_dict(cfg_u, cfg_d)
+    # config. Skipping during uwtools integration activities.
+    invalid = {}
 
     # Task and metatask entries can be added arbitrarily under the
-    # rocoto section. Remove those from invalid if they exist
+    # rocoto section. Remove those from invalid if they exist.
     for key in invalid.copy().keys():
         if key.split("_", maxsplit=1)[0] in ["task", "metatask"]:
             invalid.pop(key)
@@ -124,7 +103,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
     mandatory = ["user.MACHINE"]
     for val in mandatory:
         sect, key = val.split(".")
-        user_setting = cfg_u.get(sect, {}).get(key)
+        user_setting = user_config.get(sect, {}).get(key)
         if user_setting is None:
             raise Exception(
                 f"""Mandatory variable "{val}" not found in
@@ -132,12 +111,12 @@ def load_config_for_setup(ushdir, default_config, user_config):
             )
 
     # Load the machine config file
-    machine = uppercase(cfg_u.get("user").get("MACHINE"))
-    cfg_u["user"]["MACHINE"] = uppercase(machine)
+    machine = uppercase(user_config.get("user").get("MACHINE"))
+    user_config["user"]["MACHINE"] = uppercase(machine)
 
-    machine_file = os.path.join(ushdir, "machine", f"{lowercase(machine)}.yaml")
+    machine_file = ushdir / "machine" / f"{lowercase(machine)}.yaml"
 
-    if not os.path.exists(machine_file):
+    if not machine_file.exists():
         raise FileNotFoundError(
             dedent(
                 f"""
@@ -147,201 +126,78 @@ def load_config_for_setup(ushdir, default_config, user_config):
             )
         )
     logging.debug(f"Loading machine defaults file {machine_file}")
-    machine_cfg = load_config_file(machine_file)
+    machine_config = get_yaml_config(machine_file)
 
     # Load the fixed files configuration
-    cfg_f = load_config_file(
-        os.path.join(ushdir, os.pardir, "parm", "fixed_files_mapping.yaml")
-    )
+    fix_file_config = get_yaml_config( ushdir.parent / "parm" / "fixed_files_mapping.yaml")
 
     # Load the constants file
-    cfg_c = load_config_file(os.path.join(ushdir, "constants.yaml"))
+    constants = get_yaml_config(ushdir / "constants.yaml")
 
 
     # Load the rocoto workflow default file
-    cfg_wflow = load_config_file(os.path.join(ushdir, os.pardir, "parm",
-        "wflow", "default_workflow.yaml"))
+    default_workflow = Path(ushdir).parent / "parm" / "wflow" / "default_workflow.yaml"
+    workflow_config = get_yaml_config(default_workflow)
 
-    # Takes care of removing any potential "null" entries, i.e.,
-    # unsetting a default value from an anchored default_task
-    update_dict(cfg_wflow, cfg_wflow)
+    # Update default config with other loaded config file. Order matters.
+    for cfg in (constants, workflow_config, machine_config, fix_file_config,
+            user_config):
+        default_config.update_from(cfg)
 
+    # Load one more if running Coupled AQM
+    if default_config['cpl_aqm_parm']['CPL_AQM']:
+        aqm_config = get_yaml_config(ushdir / "config_defaults_aqm.yaml")
+        default_config.update_from(aqm_config)
 
-    # Take any user-specified taskgroups entry here.
-    taskgroups = cfg_u.get('rocoto', {}).get('tasks', {}).get('taskgroups')
-    if taskgroups:
-        cfg_wflow['rocoto']['tasks']['taskgroups'] = taskgroups
+    # Load CCPP suite-specific settings
+    ccpp_suite = default_config['workflow']['CCPP_PHYS_SUITE']
+    ccpp_config = get_yaml_config(ushdir / "ccpp_suites_defaults.yaml").get(ccpp_suite, {})
+    default_config.update_from(ccpp_config)
 
-    # Save string specifying final workflow taskgroups for use later on.
-    taskgroups = cfg_wflow['rocoto']['tasks']['taskgroups']
-
-    # Extend yaml here on just the rocoto section to include the
-    # appropriate groups of tasks
-    extend_yaml(cfg_wflow)
-
-    # Put the entries expanded under taskgroups in tasks
-    rocoto_tasks = cfg_wflow["rocoto"]["tasks"]
-    cfg_wflow["rocoto"]["tasks"] = yaml.load(rocoto_tasks.pop("taskgroups"),Loader=yaml.SafeLoader)
-
-    # Update wflow config from user one more time to make sure any of
-    # the "null" settings are removed, i.e., tasks turned off.
-    update_dict(cfg_u.get('rocoto', {}), cfg_wflow["rocoto"])
-
-    def _add_jobname(tasks):
-        """ Adds the jobname entry for all the tasks in the workflow """
-
-        if not isinstance(tasks, dict):
-            return
-        for task, task_settings in tasks.items():
-            task_type = task.split("_", maxsplit=1)[0]
-            if task_type == "task":
-                # Use the provided attribute if it is present, otherwise use
-                # the name in the key
-                tasks[task]["jobname"] = \
-                    task_settings.get("attrs", {}).get("name") or \
-                    task.split("_", maxsplit=1)[1]
-            elif task_type == "metatask":
-                _add_jobname(task_settings)
-
-
-    # Add jobname entry to each remaining task
-    _add_jobname(cfg_wflow["rocoto"]["tasks"])
-
-    # Update default config with the constants, the machine config, and
-    # then the user_config
-    # Recall: update_dict updates the second dictionary with the first,
-    # and so, we update the default config settings in place with all
-    # the others.
-
-    # Constants
-    update_dict(cfg_c, cfg_d)
-
-    # Default workflow settings
-    update_dict(cfg_wflow, cfg_d)
-
-    # Machine settings
-    update_dict(machine_cfg, cfg_d)
-
-    # Fixed files
-    update_dict(cfg_f, cfg_d)
-
-    # User settings (take precedence over all others)
-    update_dict(cfg_u, cfg_d)
-
-    # Update the cfg_d against itself now, to remove any "null"
-    # stranglers.
-    update_dict(cfg_d, cfg_d)
+    # Load external model-specific settings
+    external_cfg = get_yaml_config(ushdir / "external_model_defaults.yaml")
+    for bcs in ("ics", "lbcs"):
+        get_task_config = default_config[f"task_get_extrn_{bcs}"]
+        external_model = get_task_config["envvars"][f"EXTRN_MDL_NAME_{bcs.upper()}"]
+        bcs_task = f"task_make_{bcs}"
+        default_config.update_from(
+            {bcs_task: external_cfg.get(external_model, {}).get(bcs_task, {}) }
+        )
 
     # Set "Home" directory, the top-level ufs-srweather-app directory
-    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
-    cfg_d["user"]["HOMEdir"] = homedir
+    homedir = Path(__file__).parent.parent.resolve()
+    default_config["user"]["HOMEdir"] = str(homedir)
 
     # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
-    expt_basedir = cfg_d["workflow"]["EXPT_BASEDIR"]
+    expt_basedir = default_config["workflow"]["EXPT_BASEDIR"]
     if (not expt_basedir) or (expt_basedir[0] != "/"):
-        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
-    try:
-        expt_basedir = os.path.realpath(expt_basedir)
-    except:
-        pass
-    cfg_d["workflow"]["EXPT_BASEDIR"] = os.path.abspath(expt_basedir)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the workflow includes at least one verification task, ensure that
-    # the configuration parameters associated with cumulative fields (e.g.
-    # APCP) in the verification section of the experiment dicitonary are
-    # temporally consistent, e.g. that accumulation intervals are less than
-    # or equal to the forecast length.  Update the verification section of
-    # the dictionary to remove inconsistencies.
-    #
-    # -----------------------------------------------------------------------
-    #
-    # List containing the names of all workflow config files for vx (i.e.
-    # whether or not they're included in the workflow).
-    vx_taskgroup_fns = ['verify_pre.yaml', 'verify_det.yaml', 'verify_ens.yaml']
-    # Flag that specifies whether the workflow will be running any vx tasks.
-    do_vx = any([fn for fn in vx_taskgroup_fns if fn in taskgroups])
+        expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
+    default_config["workflow"]["EXPT_BASEDIR"] = str(Path(expt_basedir).resolve())
 
-    # Initialize variable containing the vx configuration.  This may be 
-    # modified within the if-statement below.
-    vx_config = cfg_d["verification"]
+    # Expand out the workflow tasks now that all settings have been applied
+    taskgroups = default_config["workflow"]["taskgroups"]
+    default_config["rocoto"]["tasks"] = {}
+    for taskgroup in taskgroups:
+        tasks = get_yaml_config(homedir / taskgroup)
+        keep = {k: v for k, v in tasks.items() if not re.search(r"^default_*", k)}
+        default_config["rocoto"]["tasks"].update(keep)
 
-    if do_vx:
-        workflow_config = cfg_d["workflow"]
+    # Update one more time in case there are user or machine settings to override the tasks
+    for cfg in (machine_config, user_config):
+        default_config.update_from(cfg)
 
-        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
-        fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
-        vx_fcst_output_intvl_hrs = vx_config.get("VX_FCST_OUTPUT_INTVL_HRS")
+    # Dereference all Jinja expressions
+    default_config.dereference()
 
-        # Convert various times and time intervals from integers or strings to
-        # datetime or timedelta objects.
-        date_first_cycl_dt = datetime.datetime.strptime(date_first_cycl, "%Y%m%d%H")
-        date_last_cycl_dt = datetime.datetime.strptime(date_last_cycl, "%Y%m%d%H")
-        cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
-        fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
-        vx_fcst_output_intvl_dt = datetime.timedelta(hours=vx_fcst_output_intvl_hrs)
+    # Validate experiment config against schema
+    schema = ushdir / "experiment.jsonschema"
+    valid = validate(schema_file=schema, config=default_config)
 
-        # Generate a list containing the starting times of the cycles.
-        cycle_start_times \
-        = set_cycle_dates(date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt,
-                          return_type='datetime')
+    if not valid:
+        logging.error(f"Experiment configuration is not valid against schema")
+        sys.exit(1)
 
-        # Call function that runs the consistency checks on the vx parameters.
-        vx_config, fcst_obs_matched_times_all_cycles_cumul \
-        = check_temporal_consistency_cumul_fields(
-          vx_config, cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
-
-
-    cfg_d['verification'] = vx_config
-    extend_yaml(cfg_d)
-
-    # Do any conversions of data types
-    for sect, settings in cfg_d.items():
-        for k, v in settings.items():
-            if not (v is None or v == ""):
-                cfg_d[sect][k] = str_to_list(v)
-
-    # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
-    mandatory = [
-        "NCORES_PER_NODE",
-        "FIXgsm",
-        "FIXaer",
-        "FIXlut",
-        "FIXorg",
-        "FIXsfc",
-    ]
-    flat_cfg = flatten_dict(cfg_d)
-    for val in mandatory:
-        if not flat_cfg.get(val):
-            raise Exception(
-                dedent(
-                    f"""
-                    Mandatory variable "{val}" not found in:
-                    user config file {user_config}
-                                  OR
-                    machine file {machine_file}
-                    """
-                )
-            )
-
-    # Check that input dates are in a date format
-    dates = ["DATE_FIRST_CYCL", "DATE_LAST_CYCL"]
-    for val in dates:
-        if not isinstance(cfg_d["workflow"][val], datetime.date):
-            raise Exception(
-                dedent(
-                    f"""
-                        Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
-
-                        For examples of valid formats, see the Users' Guide.
-                        """
-                )
-            )
-
-    return cfg_d, do_vx
+    return default_config
 
 
 def set_srw_paths(ushdir, expt_config):
@@ -354,17 +210,17 @@ def set_srw_paths(ushdir, expt_config):
     Other paths for the SRW App are set as defaults in ``config_defaults.yaml``.
 
     Args:
-        ushdir      (str) : Path to the system location of the ``ush`` directory under the
+        ushdir      (str) : Path to the system location of the ``ush`` directory under the 
                             SRW App clone
         expt_config (dict): Contains the configuration settings for the user-defined experiment
 
     Returns:
         Dictionary of configuration settings and system paths as keys/values
-
+    
     Raises:
-        KeyError: If the external repository required is not listed in the externals
+        KeyError: If the external repository required is not listed in the externals 
                   configuration file (e.g., ``Externals.cfg``)
-        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has
+        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has 
                            not been cloned properly
     """
 
@@ -425,23 +281,23 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     time.
 
     Args:
-        USHdir          (str): The full path of the ``ush/`` directory where this script
+        USHdir          (str): The full path of the ``ush/`` directory where this script 
                                (``setup.py``) is located
-        user_config_fn  (str): The name of a user-provided configuration YAML (usually
+        user_config_fn  (str): The name of a user-provided configuration YAML (usually 
                                ``config.yaml``)
         debug          (bool): Enable extra output for debugging
 
     Returns:
         None
-
-    Raises:
-        ValueError: If checked configuration values are invalid (e.g., forecast length,
+    
+    Raises: 
+        ValueError: If checked configuration values are invalid (e.g., forecast length, 
                     ``EXPTDIR`` path)
-        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not
+        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not 
                          set to a compatible handling method
-        FileNotFoundError: If the path to a particular file does not exist or if the file itself
+        FileNotFoundError: If the path to a particular file does not exist or if the file itself 
                            does not exist at the expected path
-        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no
+        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no 
                    corresponding custom configuration file or CRTM fix file directory is set
         KeyError: If an invalid value is provided (i.e., for ``GRID_GEN_METHOD``)
     """
@@ -528,7 +384,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     exptdir = workflow_config.get("EXPTDIR")
 
     # Update some paths that include EXPTDIR and EXPT_BASEDIR
-    extend_yaml(expt_config)
+    expt_config.dereference()
     preexisting_dir_method = workflow_config.get("PREEXISTING_DIR_METHOD", "")
     try:
         check_for_preexist_dir_file(exptdir, preexisting_dir_method)
@@ -546,7 +402,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             f"""
             EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
 
-            To ignore this error, delete the directory, or set
+            To ignore this error, delete the directory, or set 
             PREEXISTING_DIR_METHOD = delete, or
             PREEXISTING_DIR_METHOD = rename
             in your config file.
@@ -868,7 +724,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             return ""
 
     # Get the paths to any platform-supported data streams
-    get_extrn_ics = expt_config.get("task_get_extrn_ics", {})
+    get_extrn_ics = expt_config.get("task_get_extrn_ics", {}).get("envvars")
     extrn_mdl_sysbasedir_ics = _get_location(
         get_extrn_ics.get("EXTRN_MDL_NAME_ICS"),
         get_extrn_ics.get("FV3GFS_FILE_FMT_ICS"),
@@ -876,7 +732,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     )
     get_extrn_ics["EXTRN_MDL_SYSBASEDIR_ICS"] = extrn_mdl_sysbasedir_ics
 
-    get_extrn_lbcs = expt_config.get("task_get_extrn_lbcs", {})
+    get_extrn_lbcs = expt_config.get("task_get_extrn_lbcs", {}).get("envvars")
     extrn_mdl_sysbasedir_lbcs = _get_location(
         get_extrn_lbcs.get("EXTRN_MDL_NAME_LBCS"),
         get_extrn_lbcs.get("FV3GFS_FILE_FMT_LBCS"),
@@ -978,7 +834,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             workflow_config["PREDEF_GRID_NAME"],
             fcst_config["QUILTING"],
         )
-
         # Users like to change these variables, so don't overwrite them
         special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
         for param, value in grid_params.items():
@@ -1013,6 +868,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
         fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
@@ -1029,13 +889,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             if num_cycles != len(fcst_len_cycl):
               logger.error(f""" The number of entries in FCST_LEN_CYCL does
               not divide evenly into a 24 hour day or the number of cycles
-              in your experiment!
+              in your experiment! 
                 FCST_LEN_CYCL = {fcst_len_cycl}
               """
               )
               raise ValueError
 
-        # Build cycledefs entries for the long forecasts
+        # Build cycledef entries for the long forecasts
         # Short forecast cycles will be relevant to all intended
         # forecasts...after all, a 12 hour forecast also encompasses a 3
         # hour forecast, so the short ones will be consistent with the
@@ -1054,11 +914,16 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         fcst_cdef = []
 
         for hh in long_cycles:
-            first = date_first_cycl.replace(hour=hh).strftime("%Y%m%d%H")
-            last = date_last_cycl.replace(hour=hh).strftime("%Y%m%d%H")
-            fcst_cdef.append(f'{first}00 {last}00 24:00:00')
+            first = date_first_cycl.replace(hour=hh).strftime("%Y%m%d%H%S")
+            last = date_last_cycl.replace(hour=hh).strftime("%Y%m%d%H%S")
+            spec = f'{first} {last} 24:00:00'
 
-        rocoto_config['cycledefs']['long_forecast'] = fcst_cdef
+            rocoto_config['cycledef'].append(
+                {
+                    "attrs": {"group": "long_forecast"},
+                    "spec": spec
+                 }
+            )
 
     # check the availability of restart intervals for restart capability of forecast
     do_fcst_restart = fcst_config.get("DO_FCST_RESTART")
@@ -1070,7 +935,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         else:
             restart_hrs.append(str(restart_interval))
 
-        lbc_spec_intvl_hrs = expt_config["task_get_extrn_lbcs"]["LBC_SPEC_INTVL_HRS"]
+        lbc_spec_intvl_hrs = get_extrn_lbcs["LBC_SPEC_INTVL_HRS"]
         for irst in restart_hrs:
             rem_rst = int(irst) % lbc_spec_intvl_hrs
             if rem_rst != 0:
@@ -1280,35 +1145,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    # If using a custom post configuration file, make sure that it exists.
-    post_config = expt_config["task_run_post"]
-    if post_config.get("USE_CUSTOM_POST_CONFIG_FILE"):
-        custom_post_config_fp = post_config.get("CUSTOM_POST_CONFIG_FP")
-        try:
-            # os.path.exists returns exception if passed None, so use
-            # "try/except" to catch it and the non-existence of a
-            # provided path
-            if not os.path.exists(custom_post_config_fp):
-                raise FileNotFoundError(
-                    dedent(
-                        f"""
-                    USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
-                    CUSTOM_POST_CONFIG_FP = {custom_post_config_fp}
-                    could not be found."""
-                    )
-                ) from None
-        except TypeError:
-            raise TypeError(
-                dedent(
-                    f"""
-                USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom
-                post configuration file path (CUSTOM_POST_CONFIG_FP) is
-                None.
-                """
-                )
-            ) from None
-        except FileNotFoundError:
-            raise
 
     # If using external CRTM fix files to allow post-processing of synthetic
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
@@ -1648,7 +1484,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
 
     workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
-    workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
+    if res_in_fixlam_filenames:
+        workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
 
     #
     # -----------------------------------------------------------------------
@@ -1805,19 +1642,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # (e.g. metatasks with no tasks, tasks with no associated commands)
     clean_rocoto_dict(expt_config["rocoto"]["tasks"])
 
-    rocoto_yaml_fp = workflow_config["ROCOTO_YAML_FP"]
-    with open(rocoto_yaml_fp, 'w') as f:
-        yaml.Dumper.ignore_aliases = lambda *args : True
-        yaml.dump(expt_config.get("rocoto"), f, sort_keys=False)
+    rocoto_yaml_fp = Path(workflow_config["ROCOTO_YAML_FP"])
+    rocoto_yaml = get_yaml_config({"workflow": expt_config["rocoto"]})
+    rocoto_yaml.dump(rocoto_yaml_fp)
 
-    var_defns_cfg = get_yaml_config(config=expt_config)
+    var_defns_cfg = get_yaml_config(config=expt_config.data)
     del var_defns_cfg["rocoto"]
 
     # Fixup a couple of data types:
     for dates in ("DATE_FIRST_CYCL", "DATE_LAST_CYCL"):
         var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
-    var_defns_cfg.dump(global_var_defns_fp)
-
+    var_defns_cfg.dump(Path(global_var_defns_fp))
 
     #
     # -----------------------------------------------------------------------
@@ -1826,32 +1661,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+    # Validate experiment config against schema
+    schema = Path(USHdir) / "experiment.jsonschema"
+    valid = validate(schema_file=schema, config=var_defns_cfg)
 
-    # loop through the flattened expt_config and check validity of params
-    cfg_v = load_config_file(os.path.join(USHdir, "valid_param_vals.yaml"))
-    for k, v in flatten_dict(expt_config).items():
-        if v is None or v == "":
-            continue
-        vkey = "valid_vals_" + k
-        if (vkey in cfg_v):
-            if (type(v) == list):
-                if not(all(ele in cfg_v[vkey] for ele in v)):
-                    raise Exception(
-                        dedent(f"""
-                        The variable
-                            {k} = {v}
-                        in the user's configuration has at least one invalid value.  Possible values are:
-                            {k} = {cfg_v[vkey]}"""
-                    ))
-            else:
-                if not (v in cfg_v[vkey]):
-                    raise Exception(
-                        dedent(f"""
-                        The variable
-                            {k} = {v}
-                        in the user's configuration does not have a valid value.  Possible values are:
-                            {k} = {cfg_v[vkey]}"""
-                    ))
+    if not valid:
+        logging.error(f"Experiment configuration is not valid against schema")
+        sys.exit(1)
+
 
     return expt_config
 
@@ -1860,8 +1677,8 @@ def clean_rocoto_dict(rocotodict):
 
     1. A task dictionary containing no "command" key
     2. A metatask dictionary containing no task dictionaries
-
-    Args:
+    
+    Args: 
         rocotodict (dict): A dictionary containing Rocoto workflow settings
     """
 
