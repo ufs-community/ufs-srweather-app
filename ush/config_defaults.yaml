@@ -478,9 +478,9 @@ workflow:
   #
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: 'experiment'
-  EXEC_SUBDIR: "exec"
-  EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
-  WFLOW_FLAG_FILES_DIR: '{{ [workflow.EXPTDIR, "wflow_flag_files"]|path_join }}'
+  EXEC_SUBDIR: 'exec'
+  EXPTDIR: '{{ workflow.EXPT_BASEDIR }}/{{ workflow.EXPT_SUBDIR] }}'
+  WFLOW_FLAG_FILES_DIR: '{{ workflow.EXPTDIR }}/wflow_flag_files'
   #
   #-----------------------------------------------------------------------
   #
@@ -1797,7 +1797,7 @@ task_run_fcst:
     KMP_AFFINITY_RUN_FCST: "scatter"
     OMP_NUM_THREADS_RUN_FCST: 2    # ATM_omp_num_threads in ufs.configure
     OMP_STACKSIZE_RUN_FCST: "1024m"
-    DT_ATMOS: ""
+    DT_ATMOS: !int ""
     FHROT: 0
     RESTART_INTERVAL: 0
     WRITE_DOPOST: false
@@ -2073,7 +2073,7 @@ task_run_post:
     #
     USE_CUSTOM_POST_CONFIG_FILE: true
     CUSTOM_POST_CONFIG_FP: "{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt"
-    POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
+    POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME | lower() }}'
     TESTBED_FIELDS_FN: ""
     NUMX: 1
 
@@ -3144,11 +3144,3 @@ fire:
   FIRE_IGNITION_START_TIME: 6480
   FIRE_IGNITION_END_TIME: 7000
 
-
-rocoto:
-  attrs: ""
-  cycledefs: ""
-  entities: ""
-  log: ""
-  tasks:
-    taskgroups: ""

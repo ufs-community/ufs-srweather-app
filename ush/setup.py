@@ -12,7 +12,9 @@ from pathlib import Path
 from textwrap import dedent
 
 import yaml
-from uwtools.api.config import get_yaml_config
+from uwtools.api.config import get_yaml_config, validate
+from uwtools.api.fs import makedirs
+
 
 from link_fix import link_fix
 from python_utils import (
@@ -46,7 +48,6 @@ from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
-from uwtools.api.config import get_yaml_config, validate
 
 def load_config_for_setup(ushdir, default_config_path, user_config_path):
     """Load in the default, machine, and user configuration files into
@@ -81,38 +82,17 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     logging.debug(f"Read in the following values from YAML config file {user_config}:\n")
     logging.debug(user_config)
 
-    # Make sure the keys in user config match those in the default
-    # config. Skipping during uwtools integration activities.
-    invalid = {}
+    # Check user config against experiment schema
+    schema = ushdir / "user.jsonschema"
+    valid = validate(schema_file=schema, config=user_config)
 
-    # Task and metatask entries can be added arbitrarily under the
-    # rocoto section. Remove those from invalid if they exist.
-    for key in invalid.copy().keys():
-        if key.split("_", maxsplit=1)[0] in ["task", "metatask"]:
-            invalid.pop(key)
-            logging.info(f"Found and allowing key {key}")
-
-    if invalid:
-        errmsg = f"Invalid key(s) specified in {user_config}:\n"
-        for entry in invalid:
-            errmsg = errmsg + f"{entry} = {invalid[entry]}\n"
-        errmsg = errmsg + f"\nCheck {default_config} for allowed user-specified variables\n"
-        raise Exception(errmsg)
-
-    # Mandatory variables *must* be set in the user's config; the default value is invalid
-    mandatory = ["user.MACHINE"]
-    for val in mandatory:
-        sect, key = val.split(".")
-        user_setting = user_config.get(sect, {}).get(key)
-        if user_setting is None:
-            raise Exception(
-                f"""Mandatory variable "{val}" not found in
-            user config file {user_config}"""
-            )
+    if not valid:
+        logging.error(f"User configuration is not valid against schema")
+        sys.exit(1)
 
     # Load the machine config file
-    machine = uppercase(user_config.get("user").get("MACHINE"))
-    user_config["user"]["MACHINE"] = uppercase(machine)
+    machine = uppercase(user_config["user"]["MACHINE"])
+    user_config["user"]["MACHINE"] = machine
 
     machine_file = ushdir / "machine" / f"{lowercase(machine)}.yaml"
 
@@ -134,9 +114,8 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     # Load the constants file
     constants = get_yaml_config(ushdir / "constants.yaml")
 
-
     # Load the rocoto workflow default file
-    default_workflow = Path(ushdir).parent / "parm" / "wflow" / "default_workflow.yaml"
+    default_workflow = ushdir.parent / "parm" / "wflow" / "default_workflow.yaml"
     workflow_config = get_yaml_config(default_workflow)
 
     # Update default config with other loaded config file. Order matters.
@@ -144,27 +123,7 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
             user_config):
         default_config.update_from(cfg)
 
-    # Load one more if running Coupled AQM
-    if default_config['cpl_aqm_parm']['CPL_AQM']:
-        aqm_config = get_yaml_config(ushdir / "config_defaults_aqm.yaml")
-        default_config.update_from(aqm_config)
-
-    # Load CCPP suite-specific settings
-    ccpp_suite = default_config['workflow']['CCPP_PHYS_SUITE']
-    ccpp_config = get_yaml_config(ushdir / "ccpp_suites_defaults.yaml").get(ccpp_suite, {})
-    default_config.update_from(ccpp_config)
-
-    # Load external model-specific settings
-    external_cfg = get_yaml_config(ushdir / "external_model_defaults.yaml")
-    for bcs in ("ics", "lbcs"):
-        get_task_config = default_config[f"task_get_extrn_{bcs}"]
-        external_model = get_task_config["envvars"][f"EXTRN_MDL_NAME_{bcs.upper()}"]
-        bcs_task = f"task_make_{bcs}"
-        default_config.update_from(
-            {bcs_task: external_cfg.get(external_model, {}).get(bcs_task, {}) }
-        )
-
-    # Set "Home" directory, the top-level ufs-srweather-app directory
+    # Set the path to the top-level ufs-srweather-app directory
     homedir = Path(__file__).parent.parent.resolve()
     default_config["user"]["HOMEdir"] = str(homedir)
 
@@ -225,33 +184,29 @@ def set_srw_paths(ushdir, expt_config):
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
-    homedir = expt_config.get("user", {}).get("HOMEdir")
+    homedir = Path(expt_config["user"]["HOMEdir"])
 
     # Read Externals.cfg
-    mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
-    try:
-        mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
-    except:
-        pass
-    cfg = load_ini_config(mng_extrns_cfg_fn)
+    externals_config_fn = homedir / "Externals.cfg"
+    externals_config = get_ini_config(externals_config_fn)
 
     # Get the base directory of the FV3 forecast model code.
-    external_name = expt_config.get("workflow", {}).get("FCST_MODEL")
+    external_name = expt_config["workflow"]["FCST_MODEL"]
     property_name = "local_path"
 
     try:
-        ufs_wthr_mdl_dir = get_ini_value(cfg, external_name, property_name)
+        ufs_wthr_mdl_dir = externals_config[external_name][property_name]
     except KeyError:
         errmsg = dedent(
             f"""
-            Externals configuration file {mng_extrns_cfg_fn}
+            Externals configuration file {str(externals_config_fn)}
             does not contain '{external_name}'."""
         )
         raise Exception(errmsg) from None
 
     # Check that the model code has been downloaded
-    ufs_wthr_mdl_dir = os.path.join(homedir, ufs_wthr_mdl_dir)
-    if not os.path.exists(ufs_wthr_mdl_dir):
+    ufs_wthr_mdl_dir = homedir / ufs_wthr_mdl_dir
+    if not ufs_wthr_mdl_dir.exists:
         raise FileNotFoundError(
             dedent(
                 f"""
@@ -263,10 +218,9 @@ def set_srw_paths(ushdir, expt_config):
             )
         )
 
-    return dict(
-        USHdir=ushdir,
-        UFS_WTHR_MDL_DIR=ufs_wthr_mdl_dir,
-    )
+    return {
+        "UFS_WTHR_MDL_DIR": ufs_wthr_mdl_dir,
+    }
 
 
 def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
@@ -331,7 +285,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         raise ValueError("Check config settings for correct value for 'machine'")
 
     # Set up some paths relative to the SRW clone
-    expt_config["user"].update(set_srw_paths(USHdir, expt_config))
+    expt_config["user"].update({
+        "USHdir": USHdir,
+        **set_srw_paths(USHdir, expt_config),
+        }
+        )
 
     #
     # -----------------------------------------------------------------------
@@ -348,7 +306,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_id = workflow_config["WORKFLOW_ID"]
     log_info(f"""WORKFLOW ID = {workflow_id}""")
 
-    debug = workflow_config.get("DEBUG")
+    debug = workflow_config["DEBUG"]
     if debug:
         log_info(
             """
@@ -361,7 +319,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # The forecast length (in integer hours) cannot contain more than 3 characters.
     # Thus, its maximum value is 999.
     fcst_len_hrs_max = 999
-    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    fcst_len_hrs = workflow_config["FCST_LEN_HRS"]
     if fcst_len_hrs > fcst_len_hrs_max:
         raise ValueError(
             f"""
@@ -380,12 +338,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    expt_subdir = workflow_config.get("EXPT_SUBDIR", "")
-    exptdir = workflow_config.get("EXPTDIR")
 
     # Update some paths that include EXPTDIR and EXPT_BASEDIR
     expt_config.dereference()
-    preexisting_dir_method = workflow_config.get("PREEXISTING_DIR_METHOD", "")
+    exptdir = workflow_config["EXPTDIR"]
+    preexisting_dir_method = workflow_config["PREEXISTING_DIR_METHOD"]
     try:
         check_for_preexist_dir_file(exptdir, preexisting_dir_method)
     except ValueError:
@@ -418,10 +375,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    if workflow_config.get("USE_CRON_TO_RELAUNCH"):
-        intvl_mnts = workflow_config.get("CRON_RELAUNCH_INTVL_MNTS")
-        launch_script_fn = workflow_config.get("WFLOW_LAUNCH_SCRIPT_FN")
-        launch_log_fn = workflow_config.get("WFLOW_LAUNCH_LOG_FN")
+    if workflow_config["USE_CRON_TO_RELAUNCH"]:
+        intvl_mnts = workflow_config["CRON_RELAUNCH_INTVL_MNTS"]
+        launch_script_fn = workflow_config["WFLOW_LAUNCH_SCRIPT_FN"]
+        launch_log_fn = workflow_config["WFLOW_LAUNCH_LOG_FN"]
         workflow_config["CRONTAB_LINE"] = (
             f"""*/{intvl_mnts} * * * * cd {exptdir} && """
             f"""./{launch_script_fn} called_from_cron="TRUE" >> ./{launch_log_fn} 2>&1"""
@@ -441,7 +398,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     run_make_sfc_climo = rocoto_tasks.get('task_make_sfc_climo') is not None
 
     # Necessary tasks are turned on
-    pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
+    pregen_basedir = expt_config["platform"]["DOMAIN_PREGEN_BASEDIR"]
     if pregen_basedir is None and not (
         run_make_grid and run_make_orog and run_make_sfc_climo
     ):
@@ -455,8 +412,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         )
 
     # A batch system account is specified
-    if expt_config["platform"].get("WORKFLOW_MANAGER") is not None:
-        if not expt_config.get("user").get("ACCOUNT"):
+    if expt_config["platform"]["WORKFLOW_MANAGER"] != "":
+        if not expt_config["user"]["ACCOUNT"]:
             raise Exception(
                 dedent(
                     f"""
@@ -478,7 +435,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 _remove_tag(task_settings, tag)
 
     # Remove all memory tags for platforms that do not support them
-    remove_memory = expt_config["platform"].get("REMOVE_MEMORY")
+    remove_memory = expt_config["platform"]["REMOVE_MEMORY"]
     if remove_memory:
         _remove_tag(rocoto_tasks, "memory")
 
@@ -488,19 +445,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             _remove_tag(rocoto_tasks, 'partition')
 
     # When not running subhourly post, remove those tasks, if they exist
-    if not expt_config.get("task_run_post", {}).get("SUB_HOURLY_POST"):
+    if not expt_config["task_run_post"]["SUB_HOURLY_POST"]:
         post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
         post_meta.pop("metatask_run_sub_hourly_post", None)
         post_meta.pop("metatask_sub_hourly_last_hour_post", None)
 
 
-    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+    date_first_cycl = workflow_config["DATE_FIRST_CYCL"]
+    date_last_cycl = workflow_config["DATE_LAST_CYCL"]
+    incr_cycl_freq = workflow_config["INCR_CYCL_FREQ"]
     cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
     date_second_cycl = date_first_cycl + cycl_intvl_dt
     fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
-    vx_fcst_output_intvl_hrs = vx_config.get("VX_FCST_OUTPUT_INTVL_HRS")
+    vx_fcst_output_intvl_hrs = vx_config["VX_FCST_OUTPUT_INTVL_HRS"]
     vx_fcst_output_intvl_dt = datetime.timedelta(hours=vx_fcst_output_intvl_hrs)
     #
     # -----------------------------------------------------------------------
@@ -704,24 +661,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    # The "cycled_from_second" cycledef in the default workflow configuration
-    # file (default_workflow.yaml) requires the starting date of the second
-    # cycle.  That is difficult to calculate in the yaml file itself because
-    # currently, there are no utilities to perform arithmetic with dates.
-    # Thus, we calculate it here and save it as a variable in the workflow
-    # configuration dictionary.  Note that correct functioning of the default
-    # workflow yaml file also requires that DATE_[FIRST|SECOND|LAST]_CYCL all
-    # be strings, not datetime objects.  We perform those conversions here.
-    #
-    # -----------------------------------------------------------------------
-    #
-    date_second_cycl = date_first_cycl + cycl_intvl_dt
-    workflow_config['DATE_FIRST_CYCL'] = datetime.datetime.strftime(date_first_cycl, "%Y%m%d%H")
-    workflow_config['DATE_SECOND_CYCL'] = datetime.datetime.strftime(date_second_cycl, "%Y%m%d%H")
-    workflow_config['DATE_LAST_CYCL'] = datetime.datetime.strftime(date_last_cycl, "%Y%m%d%H")
-    #
-    # -----------------------------------------------------------------------
-    #
     # ICS and LBCS settings and validation
     #
     # -----------------------------------------------------------------------
@@ -738,18 +677,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             return ""
 
     # Get the paths to any platform-supported data streams
-    get_extrn_ics = expt_config.get("task_get_extrn_ics", {}).get("envvars")
+    get_extrn_ics = expt_config["task_get_extrn_ics"]["envvars"]
     extrn_mdl_sysbasedir_ics = _get_location(
-        get_extrn_ics.get("EXTRN_MDL_NAME_ICS"),
-        get_extrn_ics.get("FV3GFS_FILE_FMT_ICS"),
+        get_extrn_ics["EXTRN_MDL_NAME_ICS"],
+        get_extrn_ics["FV3GFS_FILE_FMT_ICS"],
         expt_config,
     )
     get_extrn_ics["EXTRN_MDL_SYSBASEDIR_ICS"] = extrn_mdl_sysbasedir_ics
 
-    get_extrn_lbcs = expt_config.get("task_get_extrn_lbcs", {}).get("envvars")
+    get_extrn_lbcs = expt_config["task_get_extrn_lbcs"]["envvars"]
     extrn_mdl_sysbasedir_lbcs = _get_location(
-        get_extrn_lbcs.get("EXTRN_MDL_NAME_LBCS"),
-        get_extrn_lbcs.get("FV3GFS_FILE_FMT_LBCS"),
+        get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"],
+        get_extrn_lbcs["FV3GFS_FILE_FMT_LBCS"],
         expt_config,
     )
     get_extrn_lbcs["EXTRN_MDL_SYSBASEDIR_LBCS"] = extrn_mdl_sysbasedir_lbcs
@@ -766,7 +705,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     )
 
     for task, data_key in task_keys:
-        use_staged_extrn_files = task.get("USE_USER_STAGED_EXTRN_FILES")
+        use_staged_extrn_files = task["USE_USER_STAGED_EXTRN_FILES"]
         if use_staged_extrn_files:
             basedir = task[data_key]
             # Check for the base directory up to the first templated field.
@@ -785,8 +724,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
 
     # Make sure the vertical coordinate file and LEVP for both make_lbcs and make_ics is the same.
-    if ics_vcoord := expt_config.get("task_make_ics", {}).get("VCOORD_FILE") != \
-            (lbcs_vcoord := expt_config.get("task_make_lbcs", {}).get("VCOORD_FILE")):
+    make_ics_config = expt_config["task_make_ics"]
+    make_lbcs_config = expt_config["task_make_ics"]
+    if ics_vcoord := make_ics_config["VCOORD_FILE"] != (lbcs_vcoord :=
+            make_lbcs_config["VCOORD_FILE"]):
          raise ValueError(
              f"""
              The VCOORD_FILE must be set to the same value for both the
@@ -800,8 +741,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                VCOORD_FILE: {lbcs_vcoord}
              """
          )
-    if ics_levp := expt_config.get("task_make_ics", {}).get("LEVP") != \
-            (lbcs_levp := expt_config.get("task_make_lbcs", {}).get("LEVP")):
+    if ics_levp := make_ics_config["LEVP"] != \
+            (lbcs_levp := make_lbcs_config["LEVP"]):
          raise ValueError(
              f"""
              The number of vertical levels LEVP must be set to the same value for both the
@@ -825,27 +766,27 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
+    ccpp_physics_suite = workflow_config["CCPP_PHYS_SUITE"]
 
     # Warn if user has specified a large timestep inappropriately
     hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
-    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites:
-        dt = fcst_config.get("DT_ATMOS")
-        if dt:
-            if dt > 40:
-                logger.warning(dedent(
-                    f"""
-                    WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
-                    time step regardless of grid resolution. The user-specified value
-                    DT_ATMOS = {fcst_config.get("DT_ATMOS")}
-                    may result in CFL violations or other errors!
-                    """
-                ))
+    if ccpp_physics_suite in hires_ccpp_suites:
+        dt = fcst_config["envvars"]["DT_ATMOS"]
+        if dt > 40:
+            logger.warning(dedent(
+                f"""
+                WARNING: CCPP suite {ccpp_physics_suite} requires short
+                time step regardless of grid resolution. The user-specified value
+                DT_ATMOS = {dt}
+                may result in CFL violations or other errors!
+                """
+            ))
 
     # Gather the pre-defined grid parameters, if needed
-    if workflow_config.get("PREDEF_GRID_NAME"):
+    if predef_grid := workflow_config["PREDEF_GRID_NAME"] != "":
         grid_params = set_predef_grid_params(
             USHdir,
-            workflow_config["PREDEF_GRID_NAME"],
+            predef_grid,
             fcst_config["QUILTING"],
         )
         # Users like to change these variables, so don't overwrite them
@@ -859,33 +800,28 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                     continue
                 # DT_ATMOS needs special treatment based on CCPP suite
                 elif param == "DT_ATMOS":
-                    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites and grid_params[param] > 40:
+                    if ccpp_physics_suite in hires_ccpp_suites and grid_params[param] > 40:
                         logger.warning(dedent(
                             f"""
-                            WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                            WARNING: CCPP suite {ccpp_physics_suite} requires short
                             time step regardless of grid resolution; setting DT_ATMOS to 40.\n
                             This value can be overwritten in the user config file.
                             """
                         ))
-                        fcst_config[param] = 40
+                        fcst_config["envvars"][param] = 40
                     else:
-                        fcst_config[param] = value
+                        fcst_config["envvars"][param] = value
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
-                if fcst_config.get(param) == "":
+                if fcst_config[param] == "":
                     fcst_config[param] = value
             elif param == "GRID_GEN_METHOD":
                 workflow_config[param] = value
             else:
                 grid_config[param] = value
 
-    run_envir = expt_config["user"].get("RUN_ENVIR", "")
-
-    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
-    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+    run_envir = expt_config["user"]["RUN_ENVIR"]
 
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
@@ -940,23 +876,22 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             )
 
     # check the availability of restart intervals for restart capability of forecast
-    do_fcst_restart = fcst_config.get("DO_FCST_RESTART")
+    do_fcst_restart = fcst_config["envvars"]["DO_FCST_RESTART"]
+    lbc_spec_intvl_hrs = get_extrn_lbcs["envvars"]["LBC_SPEC_INTVL_HRS"]
     if do_fcst_restart:
-        restart_interval = fcst_config.get("RESTART_INTERVAL")
+        restart_interval = fcst_config["envvars"]["RESTART_INTERVAL"]
         restart_hrs = []
         if " " in str(restart_interval):
             restart_hrs = restart_interval.split()
         else:
             restart_hrs.append(str(restart_interval))
 
-        lbc_spec_intvl_hrs = get_extrn_lbcs["LBC_SPEC_INTVL_HRS"]
-        for irst in restart_hrs:
-            rem_rst = int(irst) % lbc_spec_intvl_hrs
-            if rem_rst != 0:
+        for interval in restart_hrs:
+            if int(interval) % lbc_spec_intvl_hrs != 0:
                 raise Exception(
                     f"""
                 The restart interval is not divided by LBC_SPEC_INTVL_HRS:
-                  RESTART_INTERVAL = {irst}
+                  RESTART_INTERVAL = {interval}
                   LBC_SPEC_INTVL_HRS = {lbc_spec_intvl_hrs}"""
                 )
 
@@ -1012,14 +947,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Check to make sure that mandatory forecast variables are set.
     vlist = [
-        "DT_ATMOS",
         "LAYOUT_X",
         "LAYOUT_Y",
         "BLOCKSIZE",
     ]
+
+    msg = "Mandatory variable task_run_fcst.{val} has not been set."
     for val in vlist:
         if not fcst_config.get(val):
-            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
+            raise ValueError(msg.format(val=val))
+    if not fcst_config["envvars"]["DT_ATMOS"]:
+        raise ValueError(msg.format(val="envvars.DT_ATMOS"))
 
     #
     # -----------------------------------------------------------------------
@@ -1048,7 +986,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    if global_sect.get("DO_SPP"):
+    if global_sect["DO_SPP"]:
         global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
     else:
         global_sect["N_VAR_SPP"] = 0
@@ -1071,7 +1009,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         "ISEED_SPP",
     ]
 
-    if global_sect.get("DO_SPP"):
+    if global_sect["DO_SPP"]:
         for spp_var in spp_vars:
             if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
                 raise Exception(
@@ -1097,7 +1035,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    if global_sect.get("DO_LSM_SPP"):
+    if global_sect["DO_LSM_SPP"]:
         global_sect["N_VAR_LNDP"] = len(global_sect["LSM_SPP_VAR_LIST"])
         global_sect["LNDP_TYPE"] = 2
         global_sect["LNDP_MODEL_TYPE"] = 2
@@ -1121,7 +1059,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         "LSM_SPP_LSCALE",
         "LSM_SPP_TSCALE",
     ]
-    if global_sect.get("DO_LSM_SPP"):
+    if global_sect["DO_LSM_SPP"]:
         for lsm_spp_var in lsm_spp_vars:
             if len(global_sect[lsm_spp_var]) != global_sect["N_VAR_LNDP"]:
                 raise Exception(
@@ -1139,7 +1077,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
     # array of forecast hours at which the boundary values will be updated.
 
-    lbc_spec_intvl_hrs = get_extrn_lbcs.get("LBC_SPEC_INTVL_HRS")
     rem = fcst_len_hrs % lbc_spec_intvl_hrs
     if rem != 0 and fcst_len_hrs > 0:
         raise Exception(
@@ -1162,41 +1099,28 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # If using external CRTM fix files to allow post-processing of synthetic
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
-    if global_sect.get("USE_CRTM"):
-        crtm_dir = global_sect.get("CRTM_DIR")
-        try:
-            # os.path.exists returns exception if passed None, so use
-            # "try/except" to catch it and the non-existence of a
-            # provided path
-            if not os.path.exists(crtm_dir):
-                raise FileNotFoundError(
-                    dedent(
-                        f"""
-                    USE_CRTM has been set, but the external CRTM fix file directory:
-                    CRTM_DIR = {crtm_dir}
-                    could not be found."""
-                    )
-                ) from None
-        except TypeError:
-            raise TypeError(
+    if global_sect["USE_CRTM"]:
+        crtm_dir = global_sect["CRTM_DIR"]
+        if crtm_dir:
+            crtm_dir = Path(crtm_dir)
+        else:
+            raise ValueError("CRTM_DIR is not set.")
+        if not crtm_dir.exists():
+            raise FileNotFoundError(
                 dedent(
-                    f"""
-                USE_CRTM has been set, but the external CRTM fix file
-                directory (CRTM_DIR) is None.
+                f"""
+                The user-supplied CRTM fix file directory does not exist:
+                CRTM_DIR = {str(crtm_dir)}
                 """
-                )
-            ) from None
-        except FileNotFoundError:
-            raise
 
     # If performing sub-hourly model output and post-processing, check that
     # the output interval DT_SUBHOURLY_POST_MNTS (in minutes) is specified
     # correctly.
-    if post_config.get("SUB_HOURLY_POST"):
+    if post_config["envvars"]["SUB_HOURLY_POST"]:
 
         # Subhourly post should be set with minutes between 1 and 59 for
         # real subhourly post to be performed.
-        dt_subhourly_post_mnts = post_config.get("DT_SUBHOURLY_POST_MNTS")
+        dt_subhourly_post_mnts = post_config["DT_SUBHOURLY_POST_MNTS"]
         if dt_subhourly_post_mnts == 0:
             logger.warning(
                 f"""
@@ -1239,29 +1163,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 that this remainder is zero."""
             )
 
-    # Make sure the post output domain is set
-    predef_grid_name = workflow_config.get("PREDEF_GRID_NAME")
-    post_output_domain_name = post_config.get("POST_OUTPUT_DOMAIN_NAME")
-
-    if not post_output_domain_name:
-        if not predef_grid_name:
-            raise Exception(
-                f"""
-                The domain name used in naming the run_post output files
-                (POST_OUTPUT_DOMAIN_NAME) has not been set:
-                POST_OUTPUT_DOMAIN_NAME = \"{post_output_domain_name}\"
-                If this experiment is not using a predefined grid (i.e. if
-                PREDEF_GRID_NAME is set to a null string), POST_OUTPUT_DOMAIN_NAME
-                must be set in the configuration file (\"{user_config}\"). """
-            )
-        post_output_domain_name = predef_grid_name
-
-    if not isinstance(post_output_domain_name, int):
-        post_output_domain_name = lowercase(post_output_domain_name)
-
-    # Write updated value of POST_OUTPUT_DOMAIN_NAME back to dictionary
-    post_config["POST_OUTPUT_DOMAIN_NAME"] = post_output_domain_name
-
     #
     # -----------------------------------------------------------------------
     #
@@ -1270,7 +1171,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
     # Use env variables for NCO variables and create NCO directories
-    workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
+    workflow_manager = expt_config["platform"]["WORKFLOW_MANAGER"]
     if run_envir == "nco" and workflow_manager == "rocoto":
         # Update the rocoto string for the fcst output location if
         # running an ensemble in nco mode
@@ -1279,7 +1180,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 "{{ nco.PTMP }}/{{ nco.envir_default }}/tmp/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
 
     # create experiment dir
-    mkdir_vrfy(f' -p "{exptdir}"')
+    Path(exptdir).mkdir(parents=True)
 
     # -----------------------------------------------------------------------
     #
@@ -1319,23 +1220,23 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
     # Check for the CCPP_PHYSICS suite xml file
-    ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
-    if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):
+    ccpp_phys_suite_in_ccpp_fp = Path(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"])
+    if not ccpp_phys_suite_in_ccpp_fp.exists():
         raise FileNotFoundError(
             f"""
             The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
             in the local clone of the ufs-weather-model:
-              CCPP_PHYS_SUITE_IN_CCPP_FP = '{ccpp_phys_suite_in_ccpp_fp}'"""
+              CCPP_PHYS_SUITE_IN_CCPP_FP = '{str(ccpp_phys_suite_in_ccpp_fp)}'"""
         )
 
     # Check for the field dict file
-    field_dict_in_uwm_fp = workflow_config["FIELD_DICT_IN_UWM_FP"]
-    if not os.path.exists(field_dict_in_uwm_fp):
+    field_dict_in_uwm_fp = Path(workflow_config["FIELD_DICT_IN_UWM_FP"])
+    if not field_dict_in_uwm_fp.exists():
         raise FileNotFoundError(
             f"""
             The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
             in the local clone of the ufs-weather-model:
-              FIELD_DICT_IN_UWM_FP = '{field_dict_in_uwm_fp}'"""
+              FIELD_DICT_IN_UWM_FP = '{str(field_dict_in_uwm_fp)}'"""
         )
 
     #
@@ -1346,34 +1247,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    # Get list of all top-level tasks and metatasks in the workflow.
-    task_defs = rocoto_config.get('tasks')
-    all_tasks = [task for task in task_defs]
-
-    # Get list of all valid top-level tasks and metatasks pertaining to ensemble
-    # verification.
-    ens_vx_task_defns = load_config_file(
-      os.path.join(USHdir, os.pardir, "parm", "wflow", "verify_ens.yaml"))
-    ens_vx_valid_tasks = [task for task in ens_vx_task_defns]
-
-    # Get list of all valid top-level tasks and metatasks in the workflow that
-    # pertain to ensemble verification.
-    ens_vx_tasks = [task for task in ens_vx_valid_tasks if task in all_tasks]
-
+    ens_vx_tasks = "verify_ens.yaml" in taskgroups
     # Get the value of the configuration flag for ensemble mode (DO_ENSEMBLE)
     # and ensure that it is set to True if ensemble vx tasks are included in
     # the workflow (or vice-versa).
     do_ensemble = global_sect["DO_ENSEMBLE"]
     if (not do_ensemble) and ens_vx_tasks:
-        task_str = "    " + "\n    ".join(ens_vx_tasks)
         msg = dedent(f"""
               Ensemble verification can not be run unless running in ensemble mode:
                   DO_ENSEMBLE = \"{do_ensemble}\"
               Ensemble verification tasks:
-              """)
-        msg = "".join([msg, task_str, dedent(f"""
+              {"\n".join(ens_vx_tasks)}
               Please set DO_ENSEMBLE to True or remove ensemble vx tasks from the
-              workflow.""")])
+              workflow.""")
         raise Exception(msg)
 
     #
@@ -1386,7 +1272,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
     fixlam = workflow_config["FIXlam"]
-    mkdir_vrfy(f' -p "{fixlam}"')
+    Path(fixlam).mkdir(parents=True)
 
     #
     # Use the pregenerated domain files if the tasks to generate them
@@ -1427,6 +1313,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     fixed_files = expt_config["fixed_files"]
 
+    task_defs = rocoto_config.get('tasks')
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
@@ -1436,11 +1323,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         # file from the staged files.
         if not task_defs.get(sect_key):
             dir_key = f"{prep_task}_DIR"
-            task_dir = expt_config[sect_key].get(dir_key)
+            task_dir = expt_config[sect_key]["envvars"][dir_key]
 
             if not task_dir:
-                task_dir = os.path.join(pregen_basedir, predef_grid_name)
-                expt_config[sect_key][dir_key] = task_dir
+                task_dir = Path(pregen_basedir, predef_grid)
+                expt_config[sect_key][dir_key] = str(task_dir)
                 msg = dedent(
                     f"""
                    {dir_key} will point to a location containing pre-generated files.
@@ -1449,11 +1336,12 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
                 logger.warning(msg)
 
-            if not os.path.exists(task_dir):
+            if not Path(task_dir).exists():
                 msg = dedent(
                     f"""
-                    File directory does not exist!
-                    {dir_key} needs {task_dir}
+                    The directory ({dir_key}) that should contain the pregenerated
+                    {prep_task.lower()} files does not exist:
+                      {dir_key} = \"{task_dir}\"'''
                     """
                 )
                 raise FileNotFoundError(msg)
@@ -1465,7 +1353,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 file_group=prep_task.lower(),
                 source_dir=task_dir,
                 target_dir=workflow_config["FIXlam"],
-                ccpp_phys_suite=workflow_config["CCPP_PHYS_SUITE"],
+                ccpp_phys_suite=ccpp_physics_suite,
                 constants=expt_config["constants"],
                 dot_or_uscore=workflow_config["DOT_OR_USCORE"],
                 nhw=grid_params["NHW"],
@@ -1489,17 +1377,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                         )
                     )
 
-            if not os.path.exists(task_dir):
-                raise FileNotFoundError(
-                    f'''
-                    The directory ({dir_key}) that should contain the pregenerated
-                    {prep_task.lower()} files does not exist:
-                      {dir_key} = \"{task_dir}\"'''
-                )
-
     workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
     if res_in_fixlam_filenames:
         workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
+    elif cres := os.getenv("CRES"):
+        workflow_config["CRES"] = cres
 
     #
     # -----------------------------------------------------------------------
@@ -1509,7 +1391,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    if fcst_config["WRITE_DOPOST"]:
+    if fcst_config["envvars"]["WRITE_DOPOST"]:
         # Turn off run_post
         task_name = 'metatask_run_ens_post'
         removed_task = task_defs.pop(task_name, None)
@@ -1525,7 +1407,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             )
 
         # Check if SUB_HOURLY_POST is on
-        if expt_config["task_run_post"]["SUB_HOURLY_POST"]:
+        if expt_config["task_run_post"]["envvars"]["SUB_HOURLY_POST"]:
             raise Exception(
                 f"""
                 SUB_HOURLY_POST is NOT available with Inline Post yet."""
@@ -1550,7 +1432,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     if workflow_config["SDF_USES_THOMPSON_MP"]:
 
-        logger.debug(f'Selected CCPP suite ({workflow_config["CCPP_PHYS_SUITE"]}) uses Thompson MP')
+        logger.debug(f'Selected CCPP suite ({ccpp_physics_suite}) uses Thompson MP')
         logger.debug(f'Setting up links for additional fix files')
 
         # If the model ICs or BCs are not from RAP or HRRR, they will not contain aerosol
@@ -1581,7 +1463,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         if build_config["Application"]!="ATMF":
             raise Exception("UFS_FIRE == True but UFS SRW has not been built for fire coupling; see users guide for details")
         fire_input_file=os.path.join(fire_conf["FIRE_INPUT_DIR"],"geo_em.d01.nc")
-        if not os.path.isfile(fire_input_file):
+        if not Path(fire_input_file).is_file():
             raise FileNotFoundError(
                 dedent(
                     f"""
@@ -1632,15 +1514,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    extend_yaml(expt_config)
-    for sect, sect_keys in expt_config.items():
-        for k, v in sect_keys.items():
-            expt_config[sect][k] = str_to_list(v)
-    extend_yaml(expt_config)
+    expt_config.dereference()
 
     # print content of var_defns if DEBUG=True
-    all_lines = cfg_to_yaml_str(expt_config)
-    log_info(all_lines, verbose=debug)
+    if DEBUG:
+        print(expt_config)
 
     global_var_defns_fp = workflow_config["GLOBAL_VAR_DEFNS_FP"]
     # print info message
@@ -1733,5 +1611,5 @@ def clean_rocoto_dict(rocotodict):
 # -----------------------------------------------------------------------
 #
 if __name__ == "__main__":
-    USHdir = os.path.dirname(os.path.abspath(__file__))
+    USHdir = Path(__file__).resolve().parent.as_posix()
     setup(USHdir)
