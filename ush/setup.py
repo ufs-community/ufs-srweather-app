@@ -55,18 +55,18 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     Args:
       ushdir             (str): Path to the ``ush`` directory for the SRW App
       default_config     (str): Path to ``config_defaults.yaml``
-      user_config        (str): Path to the user-provided config YAML (usually named 
+      user_config        (str): Path to the user-provided config YAML (usually named
                                 ``config.yaml``)
 
     Returns:
         None
-    
+
     Raises:
-        FileNotFoundError: If the user-provided configuration file or the machine file does not 
+        FileNotFoundError: If the user-provided configuration file or the machine file does not
                            exist.
-        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains 
-                   invalid sections/keys or (3) it does not contain mandatory information or (4) 
-                   an invalid datetime format is used. 
+        Exception: If (1) the user-provided configuration file cannot be loaded or (2) it contains
+                   invalid sections/keys or (3) it does not contain mandatory information or (4)
+                   an invalid datetime format is used.
     """
 
     ushdir = Path(ushdir)
@@ -210,17 +210,17 @@ def set_srw_paths(ushdir, expt_config):
     Other paths for the SRW App are set as defaults in ``config_defaults.yaml``.
 
     Args:
-        ushdir      (str) : Path to the system location of the ``ush`` directory under the 
+        ushdir      (str) : Path to the system location of the ``ush`` directory under the
                             SRW App clone
         expt_config (dict): Contains the configuration settings for the user-defined experiment
 
     Returns:
         Dictionary of configuration settings and system paths as keys/values
-    
+
     Raises:
-        KeyError: If the external repository required is not listed in the externals 
+        KeyError: If the external repository required is not listed in the externals
                   configuration file (e.g., ``Externals.cfg``)
-        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has 
+        FileNotFoundError: If the ``ufs-weather-model`` code containing the FV3 source code has
                            not been cloned properly
     """
 
@@ -281,23 +281,23 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     time.
 
     Args:
-        USHdir          (str): The full path of the ``ush/`` directory where this script 
+        USHdir          (str): The full path of the ``ush/`` directory where this script
                                (``setup.py``) is located
-        user_config_fn  (str): The name of a user-provided configuration YAML (usually 
+        user_config_fn  (str): The name of a user-provided configuration YAML (usually
                                ``config.yaml``)
         debug          (bool): Enable extra output for debugging
 
     Returns:
         None
-    
-    Raises: 
-        ValueError: If checked configuration values are invalid (e.g., forecast length, 
+
+    Raises:
+        ValueError: If checked configuration values are invalid (e.g., forecast length,
                     ``EXPTDIR`` path)
-        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not 
+        FileExistsError: If ``EXPTDIR`` already exists, and ``PREEXISTING_DIR_METHOD`` is not
                          set to a compatible handling method
-        FileNotFoundError: If the path to a particular file does not exist or if the file itself 
+        FileNotFoundError: If the path to a particular file does not exist or if the file itself
                            does not exist at the expected path
-        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no 
+        TypeError: If ``USE_CUSTOM_POST_CONFIG_FILE`` or ``USE_CRTM`` are set to true but no
                    corresponding custom configuration file or CRTM fix file directory is set
         KeyError: If an invalid value is provided (i.e., for ``GRID_GEN_METHOD``)
     """
@@ -316,7 +316,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # user config files.
     default_config_fp = os.path.join(USHdir, "config_defaults.yaml")
     user_config_fp = os.path.join(USHdir, user_config_fn)
-    expt_config, do_vx = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
+    expt_config = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
 
     # Load build settings as a dictionary; will be used later to make sure the build is consistent with the user settings
     build_config_fp = os.path.join(expt_config["user"].get("EXECdir"), "build_settings.yaml")
@@ -402,7 +402,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             f"""
             EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
 
-            To ignore this error, delete the directory, or set 
+            To ignore this error, delete the directory, or set
             PREEXISTING_DIR_METHOD = delete, or
             PREEXISTING_DIR_METHOD = rename
             in your config file.
@@ -498,6 +498,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
     incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
     cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
+    date_second_cycl = date_first_cycl + cycl_intvl_dt
+    fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
+    vx_fcst_output_intvl_hrs = vx_config.get("VX_FCST_OUTPUT_INTVL_HRS")
+    vx_fcst_output_intvl_dt = datetime.timedelta(hours=vx_fcst_output_intvl_hrs)
     #
     # -----------------------------------------------------------------------
     #
@@ -506,7 +510,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    if do_vx:
+    taskgroups = default_config["workflow"]["taskgroups"]
+    if any(["verify" in fn for fn in taskgroups]):
         #
         # -----------------------------------------------------------------------
         #
@@ -516,10 +521,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         # -----------------------------------------------------------------------
         #
         vx_config = expt_config["verification"]
-    
-        fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+
+        # Generate a list containing the starting times of the cycles.
+        cycle_start_times \
+        = set_cycle_dates(date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt,
+                          return_type='datetime')
+
+        # Call function that runs the consistency checks on the vx parameters.
+        vx_config, fcst_obs_matched_times_all_cycles_cumul \
+        = check_temporal_consistency_cumul_fields(
+          vx_config, cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
+
         vx_fcst_output_intvl_hrs = vx_config.get("VX_FCST_OUTPUT_INTVL_HRS")
-    
+
         # To enable arithmetic with dates and times, convert various time
         # intervals from integer to datetime.timedelta objects.
         fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
@@ -552,7 +566,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         fcst_output_times_all_cycles, obs_days_all_cycles, \
         = set_fcst_output_times_and_obs_days_all_cycles(
           cycle_start_times, fcst_len_dt, vx_fcst_output_intvl_dt)
-    
+
         workflow_config['OBS_DAYS_ALL_CYCLES_INST'] = obs_days_all_cycles['inst']
         workflow_config['OBS_DAYS_ALL_CYCLES_CUMUL'] = obs_days_all_cycles['cumul']
         #
@@ -567,7 +581,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         #
         cycledefs_obs_days_inst = set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles['inst'])
         cycledefs_obs_days_cumul = set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles['cumul'])
-    
+
         rocoto_config['cycledefs']['cycledefs_obs_days_inst'] = cycledefs_obs_days_inst
         rocoto_config['cycledefs']['cycledefs_obs_days_cumul'] = cycledefs_obs_days_cumul
         #
@@ -586,7 +600,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         = get_obs_retrieve_times_by_day(
           vx_config, cycle_start_times, fcst_len_dt,
           fcst_output_times_all_cycles, obs_days_all_cycles)
-    
+
         for obtype, obs_days_dict in obs_retrieve_times_by_day.items():
             for obs_day, obs_retrieve_times in obs_days_dict.items():
                 array_name = '_'.join(["OBS_RETRIEVE_TIMES", obtype, obs_day])
@@ -601,7 +615,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         #
         vx_field_groups_all_by_obtype = {}
         vx_metatasks_all_by_obtype = {}
-    
+
         vx_field_groups_all_by_obtype["CCPA"] = ["APCP"]
         vx_metatasks_all_by_obtype["CCPA"] \
         = ["task_get_obs_ccpa",
@@ -610,7 +624,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
            "metatask_GridStat_APCP_all_accums_all_mems",
            "metatask_GenEnsProd_EnsembleStat_APCP_all_accums",
            "metatask_GridStat_APCP_all_accums_ensmeanprob"]
-    
+
         vx_field_groups_all_by_obtype["NOHRSC"] = ["ASNOW"]
         vx_metatasks_all_by_obtype["NOHRSC"] \
         = ["task_get_obs_nohrsc",
@@ -619,14 +633,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
            "metatask_GridStat_ASNOW_all_accums_all_mems",
            "metatask_GenEnsProd_EnsembleStat_ASNOW_all_accums",
            "metatask_GridStat_ASNOW_all_accums_ensmeanprob"]
-    
+
         vx_field_groups_all_by_obtype["MRMS"] = ["REFC", "RETOP"]
         vx_metatasks_all_by_obtype["MRMS"] \
         = ["task_get_obs_mrms",
            "metatask_GridStat_REFC_RETOP_all_mems",
            "metatask_GenEnsProd_EnsembleStat_REFC_RETOP",
            "metatask_GridStat_REFC_RETOP_ensprob"]
-    
+
         vx_field_groups_all_by_obtype["NDAS"] = ["SFC", "UPA"]
         vx_metatasks_all_by_obtype["NDAS"] \
         = ["task_get_obs_ndas",
@@ -634,14 +648,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
            "metatask_PointStat_SFC_UPA_all_mems",
            "metatask_GenEnsProd_EnsembleStat_SFC_UPA",
            "metatask_PointStat_SFC_UPA_ensmeanprob"]
-    
+
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.
         vx_field_groups = vx_config["VX_FIELD_GROUPS"]
         if not vx_field_groups:
             metatask = "metatask_check_post_output_all_mems"
             rocoto_config['tasks'].pop(metatask)
-    
+
         # If for a given obs type none of its field groups are specified for
         # verification, remove all vx metatasks for that obs type.
         for obtype in vx_field_groups_all_by_obtype:
@@ -889,7 +903,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             if num_cycles != len(fcst_len_cycl):
               logger.error(f""" The number of entries in FCST_LEN_CYCL does
               not divide evenly into a 24 hour day or the number of cycles
-              in your experiment! 
+              in your experiment!
                 FCST_LEN_CYCL = {fcst_len_cycl}
               """
               )
@@ -1535,7 +1549,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["SDF_USES_THOMPSON_MP"] = has_tag_with_value(ccpp_suite_xml, "scheme", "mp_thompson")
 
     if workflow_config["SDF_USES_THOMPSON_MP"]:
-    
+
         logger.debug(f'Selected CCPP suite ({workflow_config["CCPP_PHYS_SUITE"]}) uses Thompson MP')
         logger.debug(f'Setting up links for additional fix files')
 
@@ -1677,8 +1691,8 @@ def clean_rocoto_dict(rocotodict):
 
     1. A task dictionary containing no "command" key
     2. A metatask dictionary containing no task dictionaries
-    
-    Args: 
+
+    Args:
         rocotodict (dict): A dictionary containing Rocoto workflow settings
     """
 
