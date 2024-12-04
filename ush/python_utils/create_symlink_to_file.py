@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+from pathlib import Path
 
 from .print_input_args import print_input_args
 from .print_msg import print_err_msg_exit
-from .filesys_cmds_vrfy import ln_vrfy
 
 
 def create_symlink_to_file(target, symlink, relative=True):
@@ -44,10 +44,7 @@ def create_symlink_to_file(target, symlink, relative=True):
                 target = '{target}'"""
         )
 
-    relative_flag = ""
     if relative:
-        RELATIVE_LINK_FLAG = os.getenv("RELATIVE_LINK_FLAG")
-        if RELATIVE_LINK_FLAG is not None:
-            relative_flag = f"{RELATIVE_LINK_FLAG}"
+        symlink = Path(symlink).relative_to(Path(target))
 
-    ln_vrfy(f"-sf {relative_flag} {target} {symlink}")
+    Path(target).symlink_to(symlink)

@@ -10,7 +10,10 @@ configuration file.
 import argparse
 import logging
 import os
+import shutil
 import sys
+from glob import glob
+from pathlib import Path
 from stat import S_IXUSR
 from string import Template
 from textwrap import dedent
@@ -23,10 +26,6 @@ from python_utils import (
     log_info,
     import_vars,
     export_vars,
-    cp_vrfy,
-    ln_vrfy,
-    mkdir_vrfy,
-    mv_vrfy,
     check_for_preexist_dir_file,
     cfg_to_yaml_str,
     find_pattern_in_str,
@@ -192,7 +191,7 @@ def generate_FV3LAM_wflow(
             verbose=debug,
         )
 
-        ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
+        Path(FIXgsm).symlink_to(FIXam, target_is_directory=True)
     else:
 
         log_info(
@@ -204,13 +203,12 @@ def generate_FV3LAM_wflow(
         )
 
         check_for_preexist_dir_file(FIXam, "delete")
-        mkdir_vrfy("-p", FIXam)
-        mkdir_vrfy("-p", os.path.join(FIXam, "fix_co2_proj"))
+        Path(FIXam, "fix_co2_proj").mkdir(parents=True, exist_ok=True)
 
         num_files = len(FIXgsm_FILES_TO_COPY_TO_FIXam)
         for i in range(num_files):
             fn = f"{FIXgsm_FILES_TO_COPY_TO_FIXam[i]}"
-            cp_vrfy(os.path.join(FIXgsm, fn), os.path.join(FIXam, fn))
+            shutil.copy(Path(FIXgsm, fn), Path(FIXam, fn))
     #
     # -----------------------------------------------------------------------
     #
@@ -230,14 +228,17 @@ def generate_FV3LAM_wflow(
         )
 
         check_for_preexist_dir_file(FIXclim, "delete")
-        mkdir_vrfy("-p", FIXclim)
+        fixclim = Path(FIXclim)
+        fixclim.mkdir(parents=True, exist_ok=True)
 
-        if SYMLINK_FIX_FILES:
-            ln_vrfy("-fsn", os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
-            ln_vrfy("-fsn", os.path.join(FIXlut, "optics*.dat"), FIXclim)
-        else:
-            cp_vrfy(os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
-            cp_vrfy(os.path.join(FIXlut, "optics*.dat"), FIXclim)
+        merra_files = glob(Path(FIXaer, "merra2.aerclim*.nc"))
+        optics_files = glob(Path(FIXlut, "optics*.dat"))
+        for fpath in merra_files + optics_files:
+            path = Path(fpath)
+            if SYMLINK_FIX_FILES:
+                path.symlink_to(fixclim / path.name)
+            else:
+                shutil.copy(path, fixclim / path.name)
     #
     # -----------------------------------------------------------------------
     #
@@ -256,14 +257,14 @@ def generate_FV3LAM_wflow(
         Copying the template data table file to the experiment directory...""",
         verbose=debug,
     )
-    cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
+    shutil.copy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
     log_info(
         """
         Copying the template field table file to the experiment directory...""",
         verbose=debug,
     )
-    cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
+    shutil.copy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
     #
     # Copy the CCPP physics suite definition file from its location in the
@@ -276,7 +277,7 @@ def generate_FV3LAM_wflow(
         the forecast model directory structure to the experiment directory...""",
         verbose=debug,
     )
-    cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
+    shutil.copy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
     #
     # Copy the field dictionary file from its location in the
     # clone of the FV3 code repository to the experiment directory (EXPT-
@@ -289,7 +290,7 @@ def generate_FV3LAM_wflow(
         directory...""",
         verbose=debug,
     )
-    cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
+    shutil.copy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
     #
     # -----------------------------------------------------------------------
     #
@@ -750,7 +751,7 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(ushdir, config), EXPTDIR)
+    shutil.copy(os.path.join(ushdir, config), EXPTDIR)
 
     #
     # -----------------------------------------------------------------------
@@ -802,7 +803,7 @@ def generate_FV3LAM_wflow(
 
     # If we got to this point everything was successful: move the log
     # file to the experiment directory.
-    mv_vrfy(logfile, EXPTDIR)
+    shutil.move(logfile, EXPTDIR)
 
     return EXPTDIR
 

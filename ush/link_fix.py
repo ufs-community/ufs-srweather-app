@@ -15,8 +15,6 @@ from python_utils import (
     define_macos_utilities,
     check_var_valid_value,
     flatten_dict,
-    cd_vrfy,
-    mkdir_vrfy,
     find_pattern_in_str,
     load_yaml_config,
 )
@@ -298,7 +296,7 @@ def link_fix(
     # -----------------------------------------------------------------------
     #
     save_dir = os.getcwd()
-    cd_vrfy(target_dir)
+    os.chdir(target_dir)
     #
     # -----------------------------------------------------------------------
     #
@@ -370,7 +368,7 @@ def link_fix(
             create_symlink_to_file(halo_tile, no_halo_tile, True)
 
     # Change directory back to original one.
-    cd_vrfy(save_dir)
+    os.chdir(save_dir)
 
     return res
 
