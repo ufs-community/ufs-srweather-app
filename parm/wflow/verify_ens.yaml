@@ -21,7 +21,7 @@ default_task_verify_ens: &default_task_verify_ens
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 
-metatask_GenEnsProd_EnsembleStat_CCPA:
+metatask_GenEnsProd_EnsembleStat_APCP_all_accums:
   var:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
   task_run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h: &task_GenEnsProd_CCPA
@@ -31,7 +31,7 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       <<: *default_vars
       ACCUM_HH: '#ACCUM_HH#'
       OBS_DIR: '&CCPA_OBS_DIR;'
-      VAR: APCP
+      FIELD_GROUP: 'APCP'
       METPLUSTOOLNAME: 'GENENSPROD'
       OBTYPE: 'CCPA'
       FCST_LEVEL: 'A#ACCUM_HH#'
@@ -39,7 +39,7 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
     dependency:
       metataskdep_pcpcombine_fcst:
         attrs:
-          metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
+          metatask: PcpCombine_APCP#ACCUM_HH#h_all_mems
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
     <<: *task_GenEnsProd_CCPA
     envars:
@@ -50,12 +50,12 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
       and:
         taskdep_pcpcombine_obs_ccpa: &taskdep_pcpcombine_obs_ccpa
           attrs:
-            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h_CCPA
+            task: run_MET_PcpCombine_APCP#ACCUM_HH#h_obs_CCPA
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
-metatask_GenEnsProd_EnsembleStat_NOHRSC:
+metatask_GenEnsProd_EnsembleStat_ASNOW_all_accums:
   var:
     ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
   task_run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h: &task_GenEnsProd_NOHRSC
@@ -65,7 +65,7 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       <<: *default_vars
       ACCUM_HH: '#ACCUM_HH#'
       OBS_DIR: '&NOHRSC_OBS_DIR;'
-      VAR: ASNOW
+      FIELD_GROUP: 'ASNOW'
       METPLUSTOOLNAME: 'GENENSPROD'
       OBTYPE: 'NOHRSC'
       FCST_LEVEL: 'A#ACCUM_HH#'
@@ -74,7 +74,7 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       and:
         metataskdep_pcpcombine_fcst:
           attrs:
-            metatask: PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems
+            metatask: PcpCombine_ASNOW#ACCUM_HH#h_all_mems
   task_run_MET_EnsembleStat_vx_ASNOW#ACCUM_HH#h:
     <<: *task_GenEnsProd_NOHRSC
     envars:
@@ -85,22 +85,22 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       and:
         taskdep_pcpcombine_obs_nohrsc: &taskdep_pcpcombine_obs_nohrsc
           attrs:
-            task: run_MET_PcpCombine_obs_ASNOW#ACCUM_HH#h_NOHRSC
+            task: run_MET_PcpCombine_ASNOW#ACCUM_HH#h_obs_NOHRSC
         taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
 
-metatask_GenEnsProd_EnsembleStat_MRMS:
+metatask_GenEnsProd_EnsembleStat_REFC_RETOP:
   var:
-    VAR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
-  task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_MRMS
+    FIELD_GROUP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  task_run_MET_GenEnsProd_vx_#FIELD_GROUP#: &task_GenEnsProd_MRMS
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
     envars: &envars_GenEnsProd_MRMS
       <<: *default_vars
       ACCUM_HH: '01'
       OBS_DIR: '&MRMS_OBS_DIR;'
-      VAR: '#VAR#'
+      FIELD_GROUP: '#FIELD_GROUP#'
       METPLUSTOOLNAME: 'GENENSPROD'
       OBTYPE: 'MRMS'
       FCST_LEVEL: 'L0'
@@ -110,7 +110,7 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
         metataskdep_check_post_output: &check_post_output
           attrs:
             metatask: check_post_output_all_mems
-  task_run_MET_EnsembleStat_vx_#VAR#:
+  task_run_MET_EnsembleStat_vx_#FIELD_GROUP#:
     <<: *task_GenEnsProd_MRMS
     envars:
       <<: *envars_GenEnsProd_MRMS
@@ -140,18 +140,18 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
                  {%- endfor %}'
         taskdep_genensprod:
           attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+            task: run_MET_GenEnsProd_vx_#FIELD_GROUP#
 
-metatask_GenEnsProd_EnsembleStat_NDAS:
+metatask_GenEnsProd_EnsembleStat_SFC_UPA:
   var:
-    VAR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["ADPSFC", "ADPUPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
-  task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_NDAS
+    FIELD_GROUP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  task_run_MET_GenEnsProd_vx_#FIELD_GROUP#: &task_GenEnsProd_NDAS
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
     envars: &envars_GenEnsProd_NDAS
       <<: *default_vars
       OBS_DIR: '&NDAS_OBS_DIR;'
-      VAR: '#VAR#'
+      FIELD_GROUP: '#FIELD_GROUP#'
       METPLUSTOOLNAME: 'GENENSPROD'
       OBTYPE: 'NDAS'
       ACCUM_HH: '01'
@@ -161,7 +161,7 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
     dependency:
       metataskdep_check_post_output:
          <<: *check_post_output
-  task_run_MET_EnsembleStat_vx_#VAR#:
+  task_run_MET_EnsembleStat_vx_#FIELD_GROUP#:
     <<: *task_GenEnsProd_NDAS
     envars:
       <<: *envars_GenEnsProd_NDAS
@@ -190,22 +190,22 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
                  {%- endfor %}'
         taskdep_genensprod:
           attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+            task: run_MET_GenEnsProd_vx_#FIELD_GROUP#
 
-metatask_GridStat_CCPA_ensmeanprob_all_accums:
+metatask_GridStat_APCP_all_accums_ensmeanprob:
   var:
     stat: MEAN PROB
     statlc: mean prob
-  metatask_GridStat_CCPA_ens#statlc#_all_accums:
+  metatask_GridStat_APCP_all_accums_ens#statlc#:
     var:
       ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-    task_run_MET_GridStat_vx_ens#statlc#_APCP#ACCUM_HH#h:
+    task_run_MET_GridStat_vx_APCP#ACCUM_HH#h_ens#statlc#:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
       envars:
         <<: *default_vars
         OBS_DIR: '&CCPA_OBS_DIR;'
-        VAR: APCP
+        FIELD_GROUP: 'APCP'
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'CCPA'
         ACCUM_HH: '#ACCUM_HH#'
@@ -219,20 +219,20 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
             attrs:
               task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
-metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
+metatask_GridStat_ASNOW_all_accums_ensmeanprob:
   var:
     stat: MEAN PROB
     statlc: mean prob
-  metatask_GridStat_NOHRSC_ens#statlc#_all_accums:
+  metatask_GridStat_ASNOW_all_accums_ens#statlc#:
     var:
       ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-    task_run_MET_GridStat_vx_ens#statlc#_ASNOW#ACCUM_HH#h:
+    task_run_MET_GridStat_vx_ASNOW#ACCUM_HH#h_ens#statlc#:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
       envars:
         <<: *default_vars
         OBS_DIR: '&NOHRSC_OBS_DIR;'
-        VAR: ASNOW
+        FIELD_GROUP: 'ASNOW'
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'NOHRSC'
         ACCUM_HH: '#ACCUM_HH#'
@@ -246,17 +246,17 @@ metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
             attrs:
               task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
 
-metatask_GridStat_MRMS_ensprob:
+metatask_GridStat_REFC_RETOP_ensprob:
   var:
-    VAR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
-  task_run_MET_GridStat_vx_ensprob_#VAR#:
+    FIELD_GROUP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  task_run_MET_GridStat_vx_#FIELD_GROUP#_ensprob:
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"'
     envars:
       <<: *default_vars
       ACCUM_HH: '01'
       OBS_DIR: '&MRMS_OBS_DIR;'
-      VAR: '#VAR#'
+      FIELD_GROUP: '#FIELD_GROUP#'
       METPLUSTOOLNAME: 'GRIDSTAT'
       OBTYPE: 'MRMS'
       FCST_LEVEL: 'L0'
@@ -267,22 +267,22 @@ metatask_GridStat_MRMS_ensprob:
           <<: *all_get_obs_mrms_complete
         taskdep_genensprod:
           attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+            task: run_MET_GenEnsProd_vx_#FIELD_GROUP#
 
-metatask_PointStat_NDAS_ensmeanprob:
+metatask_PointStat_SFC_UPA_ensmeanprob:
   var:
     stat: MEAN PROB
     statlc: mean prob
-  metatask_PointStat_NDAS_ens#statlc#:
+  metatask_PointStat_SFC_UPA_ens#statlc#:
     var:
-      VAR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["ADPSFC", "ADPUPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
-    task_run_MET_PointStat_vx_ens#statlc#_#VAR#:
+      FIELD_GROUP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+    task_run_MET_PointStat_vx_#FIELD_GROUP#_ens#statlc#:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
       envars:
         <<: *default_vars
         OBS_DIR: '&NDAS_OBS_DIR;'
-        VAR: '#VAR#'
+        FIELD_GROUP: '#FIELD_GROUP#'
         METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
         ACCUM_HH: '01'
@@ -294,4 +294,4 @@ metatask_PointStat_NDAS_ensmeanprob:
             <<: *all_pb2nc_obs_ndas_complete
           taskdep_genensprod:
             attrs:
-              task: run_MET_GenEnsProd_vx_#VAR#
+              task: run_MET_GenEnsProd_vx_#FIELD_GROUP#

@@ -81,14 +81,9 @@ Save the path to this file in and ``INDYDATA`` environment variable:
 Load the Workflow
 ^^^^^^^^^^^^^^^^^^^^
 
-First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workflow environment:
+To load the workflow environment, run:
 
-.. code-block:: console
-   
-   source /path/to/etc/lmod-setup.sh <platform>
-   module use /path/to/ufs-srweather-app/modulefiles
-   module load wflow_<platform>
-
+.. include:: ../../doc-snippets/load-env.rst
 Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. 
@@ -267,7 +262,7 @@ Point STAT Files
 
 The Point-Stat files contain continuous variables like temperature, pressure, and wind speed. A description of the Point-Stat file can be found :ref:`here <met:point-stat>` in the MET documentation. 
 
-The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found :ref:`here <met:point_stat-output>`.
+The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`_ and `MBIAS <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixC.html#multiplicative-bias>`_ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found :ref:`here <met:point_stat-output>`.
 
 To narrow down the variable field even further, users can focus on these weather variables: 
 

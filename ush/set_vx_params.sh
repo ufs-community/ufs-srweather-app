@@ -3,9 +3,10 @@
 #
 # This file defines a function that sets various parameters needed when
 # performing verification.  The way these parameters are set depends on
-# the field being verified and, if the field is cumulative (e.g.
-# accumulated precipitation or snowfall), the accumulation period
-# (both of which are inputs to this function).
+# the field group being verified and, if the field group consists of a 
+# set of cumulative fields (e.g. accumulated precipitation or accumulated
+# snowfall), the accumulation interval (both of which are inputs to this
+# function).
 #
 # As of 20220928, the verification tasks in the SRW App workflow use the
 # MET/METplus software (MET = Model Evaluation Tools) developed at the
@@ -54,7 +55,7 @@ function set_vx_params() {
 #
   local valid_args=( \
         "obtype" \
-        "field" \
+        "field_group" \
         "accum_hh" \
         "outvarname_grid_or_point" \
         "outvarname_fieldname_in_obs_input" \
@@ -108,15 +109,17 @@ be a 2-digit integer:
 #
 # grid_or_point:
 # String that is set to either "grid" or "point" depending on whether
-# the field in consideration has obs that are gridded or point-based.
+# obs type containing the field group is gridded or point-based.
 #
 # fieldname_in_obs_input:
-# String used to search for the field in the input observation files
-# read in by MET.
+# If the field group represents a single field, this is the string used
+# to search for that field in the input observation files read in by MET.
+# If not, this is set to a null string.
 #
 # fieldname_in_fcst_input:
-# String used to search for the field in the input forecast files read
-# in by MET.
+# If the field group represents a single field, this is the string used
+# to search for that field in the input forecast files read in by MET.
+# If not, this is set to a null string.
 #
 # fieldname_in_MET_output:
 # String that will be used in naming arrays defined in MET output files
@@ -140,21 +143,21 @@ be a 2-digit integer:
     "CCPA")
 
       _grid_or_point_="grid"
-      case "${field}" in
+      case "${field_group}" in
 
         "APCP")
-          fieldname_in_obs_input="${field}"
-          fieldname_in_fcst_input="${field}"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}${accum_hh}h"
+          fieldname_in_obs_input="${field_group}"
+          fieldname_in_fcst_input="${field_group}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}${accum_hh}h"
           ;;
 
         *)
           print_err_msg_exit "\
 A method for setting verification parameters has not been specified for
-this observation type (obtype) and field (field) combination:
+this observation type (obtype) and field group (field_group) combination:
   obtype = \"${obtype}\"
-  field = \"${field}\""
+  field_group = \"${field_group}\""
           ;;
 
       esac
@@ -163,21 +166,21 @@ this observation type (obtype) and field (field) combination:
     "NOHRSC")
 
       _grid_or_point_="grid"
-      case "${field}" in
+      case "${field_group}" in
 
         "ASNOW")
-          fieldname_in_obs_input="${field}"
-          fieldname_in_fcst_input="${field}"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}${accum_hh}h"
+          fieldname_in_obs_input="${field_group}"
+          fieldname_in_fcst_input="${field_group}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}${accum_hh}h"
           ;;
 
         *)
           print_err_msg_exit "\
 A method for setting verification parameters has not been specified for
-this observation type (obtype) and field (field) combination:
+this observation type (obtype) and field group (field_group) combination:
   obtype = \"${obtype}\"
-  field = \"${field}\""
+  field_group = \"${field_group}\""
           ;;
 
       esac
@@ -186,28 +189,28 @@ this observation type (obtype) and field (field) combination:
     "MRMS")
 
       _grid_or_point_="grid"
-      case "${field}" in
+      case "${field_group}" in
 
         "REFC")
           fieldname_in_obs_input="MergedReflectivityQCComposite"
-          fieldname_in_fcst_input="${field}"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_fcst_input="${field_group}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
           ;;
 
         "RETOP")
           fieldname_in_obs_input="EchoTop18"
-          fieldname_in_fcst_input="${field}"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_fcst_input="${field_group}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
           ;;
 
         *)
           print_err_msg_exit "\
 A method for setting verification parameters has not been specified for
-this observation type (obtype) and field (field) combination:
+this observation type (obtype) and field group (field_group) combination:
   obtype = \"${obtype}\"
-  field = \"${field}\""
+  field_group = \"${field_group}\""
           ;;
 
       esac
@@ -216,28 +219,28 @@ this observation type (obtype) and field (field) combination:
     "NDAS")
 
       _grid_or_point_="point"
-      case "${field}" in
+      case "${field_group}" in
 
-        "ADPSFC")
+        "SFC")
           fieldname_in_obs_input=""
           fieldname_in_fcst_input=""
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_MET_output="ADP${field_group}"
+          fieldname_in_MET_filedir_names="ADP${field_group}"
           ;;
 
-        "ADPUPA")
+        "UPA")
           fieldname_in_obs_input=""
           fieldname_in_fcst_input=""
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_MET_output="ADP${field_group}"
+          fieldname_in_MET_filedir_names="ADP${field_group}"
           ;;
 
         *)
           print_err_msg_exit "\
 A method for setting verification parameters has not been specified for
-this observation type (obtype) and field (field) combination:
+this observation type (obtype) and field group (field_group) combination:
   obtype = \"${obtype}\"
-  field = \"${field}\""
+  field_group = \"${field_group}\""
           ;;
 
       esac
@@ -246,21 +249,21 @@ this observation type (obtype) and field (field) combination:
     "AERONET")
 
       _grid_or_point_="point"
-      case "${field}" in
+      case "${field_group}" in
 
         "AOD")
-          fieldname_in_obs_input="${field}"
+          fieldname_in_obs_input="${field_group}"
           fieldname_in_fcst_input="AOTK"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
           ;;
 
         *)
           print_err_msg_exit "\
 A method for setting verification parameters has not been specified for
-this observation type (obtype) and field (field) combination:
+this observation type (obtype) and field group (field_group) combination:
   obtype = \"${obtype}\"
-  field = \"${field}\""
+  field_group = \"${field_group}\""
           ;;
 
       esac
@@ -269,27 +272,27 @@ this observation type (obtype) and field (field) combination:
     "AIRNOW")
 
       _grid_or_point_="point"
-      case "${field}" in
+      case "${field_group}" in
 
         "PM25")
-          fieldname_in_obs_input="${field}"
+          fieldname_in_obs_input="${field_group}"
           fieldname_in_fcst_input="MASSDEN"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
           ;;
         "PM10")
-          fieldname_in_obs_input="${field}"
+          fieldname_in_obs_input="${field_group}"
           fieldname_in_fcst_input="MASSDEN"
-          fieldname_in_MET_output="${field}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
           ;;
 
         *)
           print_err_msg_exit "\
 A method for setting verification parameters has not been specified for
-this observation type (obtype) and field (field) combination:
+this observation type (obtype) and field_group (field_group) combination:
   obtype = \"${obtype}\"
-  field = \"${field}\""
+  field_group = \"${field_group}\""
           ;;
 
       esac

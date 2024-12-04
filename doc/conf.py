@@ -103,14 +103,16 @@ user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 # Ignore working links that cause a linkcheck 403 error.
 linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
-                    #r'https://glossary.ametsoc.org/.*',
+                    r'https://glossary.ametsoc.org/.*',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
 linkcheck_anchors_ignore = [r"current_srw_release_data/", 
                             r"input_model_data/.*",
                             r"fix.*",
-                            r"sample_cases/.*",
+                            r"experiment-user-cases/.*",
+                            r"rrfs_a/*",
+                            r"develop-20240618/*",
                             ]
 
 linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 

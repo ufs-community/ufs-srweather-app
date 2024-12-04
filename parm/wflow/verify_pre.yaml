@@ -106,7 +106,7 @@ task_run_MET_Pb2nc_obs_NDAS:
   command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
     <<: *default_vars
-    VAR: ADPSFC
+    FIELD_GROUP: 'SFC'
     ACCUM_HH: '01'
     FCST_OR_OBS: OBS
     OBTYPE: NDAS
@@ -127,22 +127,17 @@ task_run_MET_Pb2nc_obs_NDAS:
 
 metatask_ASCII2nc_obs:
   var:
-    METAVAR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["AOD", "PM25", "PM10"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
-    METAVAR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}AOD {% elif var in ["PM25", "PM10"] %}PM25 {% endif %}{% endfor %}'
     METAOBTYPE: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}AERONET {% elif var in ["PM25", "PM10"] %}AIRNOW {% endif %}{% endfor %}'
     METAOBS_DIR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}&AERONET_OBS_DIR; {% elif var in ["PM25", "PM10"] %}&AIRNOW_OBS_DIR; {% endif %}{% endfor %}'
     TASKDEP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}get_obs_aeronet {% elif var in ["PM25", "PM10"] %}get_obs_airnow {% endif %}{% endfor %}'
   task_run_MET_ASCII2nc_obs_#METAOBTYPE#:
     <<: *default_task_verify_pre
     attrs:
-      cycledefs: forecast
+      cycledefs: cycledefs_obs_days_inst
       maxtries: '2'
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_ASCII2NC_OBS"'
     envars:
       <<: *default_vars
-      VAR: '#METAVAR#'
-      ACCUM_HH: '01'
-      FCST_OR_OBS: OBS
       OBTYPE: '#METAOBTYPE#'
       OBS_DIR: '#METAOBS_DIR#'
       METPLUSTOOLNAME: 'ASCII2NC'
@@ -159,10 +154,10 @@ metatask_ASCII2nc_obs:
             attrs:
               task: '#TASKDEP#'
 
-metatask_PcpCombine_obs_APCP_all_accums_CCPA:
+metatask_PcpCombine_APCP_all_accums_obs_CCPA:
   var:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h_CCPA:
+  task_run_MET_PcpCombine_APCP#ACCUM_HH#h_obs_CCPA:
     <<: *default_task_verify_pre
     attrs:
       cycledefs: forecast
@@ -170,7 +165,7 @@ metatask_PcpCombine_obs_APCP_all_accums_CCPA:
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
     envars:
       <<: *default_vars
-      VAR: APCP
+      FIELD_GROUP: 'APCP'
       ACCUM_HH: '#ACCUM_HH#'
       FCST_OR_OBS: OBS
       OBTYPE: CCPA
@@ -201,10 +196,10 @@ metatask_PcpCombine_obs_APCP_all_accums_CCPA:
                    {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
                  {%- endfor %}'
 
-metatask_PcpCombine_obs_ASNOW_all_accums_NOHRSC:
+metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
   var:
     ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  task_run_MET_PcpCombine_obs_ASNOW#ACCUM_HH#h_NOHRSC:
+  task_run_MET_PcpCombine_ASNOW#ACCUM_HH#h_obs_NOHRSC:
     <<: *default_task_verify_pre
     attrs:
       cycledefs: forecast
@@ -212,7 +207,7 @@ metatask_PcpCombine_obs_ASNOW_all_accums_NOHRSC:
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
     envars:
       <<: *default_vars
-      VAR: ASNOW
+      FIELD_GROUP: 'ASNOW'
       ACCUM_HH: '#ACCUM_HH#'
       FCST_OR_OBS: OBS
       OBTYPE: NOHRSC
@@ -254,7 +249,6 @@ metatask_check_post_output_all_mems:
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_CHECK_POST_OUTPUT"'
     envars:
       <<: *default_vars
-      VAR: APCP
       ENSMEM_INDX: '#mem#'
     dependency:
       # This "or" checks that the necessary stand-alone post tasks or forecast
@@ -293,7 +287,15 @@ metatask_check_post_output_all_mems:
           #      metatask: run_post_mem#mem#_all_fhrs
           taskdep: 
             attrs:
-              task: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h > 0 %}{{"      <taskdep task="}}{% endif %}{{ "\"run_post_mem#mem#_f%03d\"" % h }}{% if h < workflow.LONG_FCST_LEN %}{{"/>\n"}}{% endif %}{%- endfor -%}'
+              task: '{%- for h in range(0, workflow.LONG_FCST_LEN+1) %}
+                       {%- if h > 0 %}
+                         {{- "      <taskdep task=" }}
+                       {%- endif %}
+                       {{- "\"run_post_mem#mem#_f%03d\"" % h }}
+                       {%- if h < workflow.LONG_FCST_LEN %}
+                         {{- "/>\n" }}
+                       {%- endif %}
+                     {%- endfor %}'
         # This "and" is to check whether post is being run inline (i.e. as part of
         # the weather model), and if so, to ensure that the forecast task for the
         # current member has completed.
@@ -320,13 +322,13 @@ metatask_check_post_output_all_mems:
               taskvalid:
                 <<: *fcst_task_exists
 
-metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
+metatask_PcpCombine_APCP_all_accums_all_mems:
   var:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
+  metatask_PcpCombine_APCP#ACCUM_HH#h_all_mems:
     var:
       mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
-    task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
+    task_run_MET_PcpCombine_APCP#ACCUM_HH#h_fcst_mem#mem#:
       <<: *default_task_verify_pre
       attrs:
         cycledefs: forecast
@@ -334,7 +336,7 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
         <<: *default_vars
-        VAR: APCP
+        FIELD_GROUP: 'APCP'
         ACCUM_HH: '#ACCUM_HH#'
         FCST_OR_OBS: FCST
         OBTYPE: CCPA
@@ -348,13 +350,13 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
           text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
       walltime: 00:30:00
 
-metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
+metatask_PcpCombine_ASNOW_all_accums_all_mems:
   var:
     ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  metatask_PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems:
+  metatask_PcpCombine_ASNOW#ACCUM_HH#h_all_mems:
     var:
       mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
-    task_run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#:
+    task_run_MET_PcpCombine_ASNOW#ACCUM_HH#h_fcst_mem#mem#:
       <<: *default_task_verify_pre
       attrs:
         cycledefs: forecast
@@ -362,7 +364,7 @@ metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
         <<: *default_vars
-        VAR: ASNOW
+        FIELD_GROUP: 'ASNOW'
         ACCUM_HH: '#ACCUM_HH#'
         FCST_OR_OBS: FCST
         OBTYPE: NOHRSC
@@ -390,7 +392,7 @@ metatask_PcpCombine_fcst_PM_all_mems:
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
         <<: *default_vars
-        VAR: '#PM#'
+        FIELD_GROUP: '#PM#'
         ACCUM_HH: '01'
         FCST_OR_OBS: FCST
         OBTYPE: AIRNOW

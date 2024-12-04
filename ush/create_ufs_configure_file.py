@@ -50,6 +50,8 @@ def create_ufs_configure_file(run_dir):
     # Set output file path
     #
     ufs_config_fp = os.path.join(run_dir, UFS_CONFIG_FN)
+    pe_member01_m1 = str(int(PE_MEMBER01)-1)
+    aqm_pe_member01_m1 = str(int(LAYOUT_X*LAYOUT_Y)-1)
     #
     #-----------------------------------------------------------------------
     #
@@ -62,7 +64,10 @@ def create_ufs_configure_file(run_dir):
     settings = {
       "dt_atmos": DT_ATMOS,
       "print_esmf": PRINT_ESMF,
-      "cpl_aqm": CPL_AQM
+      "cpl_aqm": CPL_AQM,
+      "pe_member01_m1": pe_member01_m1,
+      "aqm_pe_member01_m1": aqm_pe_member01_m1,
+      "atm_omp_num_threads": OMP_NUM_THREADS_RUN_FCST,
     }
     settings_str = cfg_to_yaml_str(settings)
 

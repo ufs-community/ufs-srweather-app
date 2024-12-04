@@ -634,6 +634,7 @@ def get_obs_retrieve_times_by_day(
     = [{'obtype': 'CCPA',   'time_type': 'cumul', 'field_groups': ['APCP']},
        {'obtype': 'NOHRSC', 'time_type': 'cumul', 'field_groups': ['ASNOW']},
        {'obtype': 'MRMS',   'time_type': 'inst',  'field_groups': ['REFC', 'RETOP']},
+       {'obtype': 'NDAS',   'time_type': 'inst',  'field_groups': ['SFC', 'UPA']},
        {'obtype': 'NDAS',   'time_type': 'inst',  'field_groups': ['ADPSFC', 'ADPUPA']},
        {'obtype': 'AERONET',   'time_type': 'inst',  'field_groups': ['AOD']},
        {'obtype': 'AIRNOW',   'time_type': 'inst',  'field_groups': ['PM25', 'PM10']}

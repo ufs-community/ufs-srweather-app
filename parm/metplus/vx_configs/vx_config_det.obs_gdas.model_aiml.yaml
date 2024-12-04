@@ -41,7 +41,7 @@
 # it means the name of the field in the forecast data is RETOP while its
 # name in the observations is EchoTop18.
 #
-ADPSFC:
+SFC:
     TMP:
         Z2: []
     UGRD:

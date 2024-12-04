@@ -30,11 +30,6 @@ task_plot_allvars:
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
-verification:
-  CCPA_OBS_DIR: ""
-  MRMS_OBS_DIR: ""
-  NDAS_OBS_DIR: ""
-  VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
 rocoto:
   tasks:
     metatask_run_ensemble:

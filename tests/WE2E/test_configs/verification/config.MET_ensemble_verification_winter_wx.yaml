@@ -31,7 +31,7 @@ global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 10
 verification:
-  VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
+  VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
   OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW',
                              '{%- set data_intvl_hrs = "%02d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
                               {{- "{valid?fmt=%Y%m%d}/sfav2_CONUS_" ~ data_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2" }}' ]

@@ -107,7 +107,7 @@ FIELDNAME_IN_MET_FILEDIR_NAMES=""
 
 set_vx_params \
   obtype="${OBTYPE}" \
-  field="$VAR" \
+  field_group="${FIELD_GROUP}" \
   accum_hh="${ACCUM_HH}" \
   outvarname_grid_or_point="grid_or_point" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
@@ -158,7 +158,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
+  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
   FCST_INPUT_DIR="${vx_fcst_input_basedir}"
 
 fi
@@ -183,7 +183,7 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
-  if [ "${VAR}" = "APCP" ] || [ "${VAR}" = "ASNOW" ]; then
+  if [ "${FIELD_GROUP}" = "APCP" ] || [ "${FIELD_GROUP}" = "ASNOW" ]; then
     template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
   else
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
@@ -387,7 +387,7 @@ settings="\
 'accum_hh': '${ACCUM_HH:-}'
 'accum_no_pad': '${ACCUM_NO_PAD:-}'
 'metplus_templates_dir': '${METPLUS_CONF:-}'
-'input_field_group': '${VAR:-}'
+'input_field_group': '${FIELD_GROUP:-}'
 'input_level_fcst': '${FCST_LEVEL:-}'
 'input_thresh_fcst': '${FCST_THRESH:-}'
 #

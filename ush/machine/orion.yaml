@@ -13,7 +13,7 @@ platform:
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
-  RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
+  RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL
   RUN_CMD_PRDGEN: srun --export=ALL
   RUN_CMD_SERIAL: time
@@ -50,3 +50,14 @@ cpl_aqm_parm:
   COMINfire_default: /work/noaa/epic/SRW-AQM_DATA/aqm_data/RAVE_fire
   COMINgefs_default: /work/noaa/epic/SRW-AQM_DATA/aqm_data/GEFS_DATA
   NEXUS_GFS_SFC_DIR: /work/noaa/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores:
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
+        nodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}:ppn={{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+        nnodes:
+        nodesize:
+        ppn:

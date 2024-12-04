@@ -750,33 +750,34 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         vx_field_groups_all_by_obtype["CCPA"] = ["APCP"]
         vx_metatasks_all_by_obtype["CCPA"] \
         = ["task_get_obs_ccpa",
-           "metatask_PcpCombine_obs_APCP_all_accums_CCPA",
-           "metatask_PcpCombine_fcst_APCP_all_accums_all_mems",
-           "metatask_GridStat_CCPA_all_accums_all_mems",
-           "metatask_GenEnsProd_EnsembleStat_CCPA",
-           "metatask_GridStat_CCPA_ensmeanprob_all_accums"]
+           "metatask_PcpCombine_APCP_all_accums_obs_CCPA",
+           "metatask_PcpCombine_APCP_all_accums_all_mems",
+           "metatask_GridStat_APCP_all_accums_all_mems",
+           "metatask_GenEnsProd_EnsembleStat_APCP_all_accums",
+           "metatask_GridStat_APCP_all_accums_ensmeanprob"]
     
         vx_field_groups_all_by_obtype["NOHRSC"] = ["ASNOW"]
         vx_metatasks_all_by_obtype["NOHRSC"] \
         = ["task_get_obs_nohrsc",
-           "metatask_PcpCombine_obs_ASNOW_all_accums_NOHRSC",
-           "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems",
-           "metatask_GridStat_NOHRSC_all_accums_all_mems",
-           "metatask_GenEnsProd_EnsembleStat_NOHRSC",
-           "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
+           "metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC",
+           "metatask_PcpCombine_ASNOW_all_accums_all_mems",
+           "metatask_GridStat_ASNOW_all_accums_all_mems",
+           "metatask_GenEnsProd_EnsembleStat_ASNOW_all_accums",
+           "metatask_GridStat_ASNOW_all_accums_ensmeanprob"]
     
         vx_field_groups_all_by_obtype["MRMS"] = ["REFC", "RETOP"]
         vx_metatasks_all_by_obtype["MRMS"] \
         = ["task_get_obs_mrms",
-           "metatask_GridStat_MRMS_all_mems",
-           "metatask_GenEnsProd_EnsembleStat_MRMS",
-           "metatask_GridStat_MRMS_ensprob"]
+           "metatask_GridStat_REFC_RETOP_all_mems",
+           "metatask_GenEnsProd_EnsembleStat_REFC_RETOP",
+           "metatask_GridStat_REFC_RETOP_ensprob"]
     
-        vx_field_groups_all_by_obtype["NDAS"] = ["ADPSFC", "ADPUPA"]
+        vx_field_groups_all_by_obtype["NDAS"] = ["SFC", "UPA"]
         vx_metatasks_all_by_obtype["NDAS"] \
         = ["task_get_obs_ndas",
            "task_run_MET_Pb2nc_obs_NDAS",
-           "metatask_PointStat_NDAS_all_mems",
+           "metatask_PointStat_SFC_all_mems",
+           "metatask_PointStat_UPA_all_mems",
            "metatask_GenEnsProd_EnsembleStat_NDAS",
            "metatask_PointStat_NDAS_ensmeanprob"]
 
@@ -815,8 +816,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                             f"""
                             Removing verification (meta)task
                               "{metatask}"
-                            from workflow since no fields belonging to observation type "{obtype}"
-                            are specified for verification."""
+                            from workflow since no field groups from observation type "{obtype}" are
+                            specified for verification."""
                         ))
                         rocoto_config['tasks'].pop(metatask)
         #

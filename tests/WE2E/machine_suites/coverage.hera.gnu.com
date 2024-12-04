@@ -10,6 +10,8 @@ MET_ensemble_verification_only_vx_time_lag
 2019_halloween_storm
 2020_jan_cold_blast
 vx-det_long-fcst_custom-vx-config_aiml-fourcastnet
+vx-det_long-fcst_custom-vx-config_aiml-panguweather
 vx-det_long-fcst_custom-vx-config_gfs
 vx-det_long-fcst_winter-wx_SRW-staged
 vx-det_multicyc_fcst-overlap_ncep-hrrr
+vx-det_multicyc_last-obs-00z_ncep-hrrr

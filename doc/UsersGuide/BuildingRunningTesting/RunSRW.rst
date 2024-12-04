@@ -134,13 +134,8 @@ Loading the Workflow Environment
 
 The |wflow_env| conda/Python environment can be activated in the following way:
 
-.. code-block:: console
-
-   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
-   module use /path/to/ufs-srweather-app/modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
+.. include:: ../../doc-snippets/load-env.rst
+In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
 
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
@@ -155,7 +150,7 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 then the user should run |activate|. This activates the |wflow_env| conda environment, and the user typically sees |prompt| in front of the Terminal prompt at this point.
 
 .. note::
-   If users do not use the wflow module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
+   If users do not use the ``wflow_<platform>`` module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
 
 After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
@@ -203,15 +198,6 @@ The user must set the specifics of their experiment configuration in a ``config.
    * - ACCOUNT
      - ""
      - "an_account"
-   * - CCPA_OBS_DIR
-     - "{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"
-     - ""
-   * - MRMS_OBS_DIR
-     - "{{ workflow.EXPTDIR }}/obs_data/mrms/proc"
-     - ""
-   * - NDAS_OBS_DIR
-     - "{{ workflow.EXPTDIR }}/obs_data/ndas/proc"
-     - ""
    * - USE_CRON_TO_RELAUNCH
      - false
      - false
@@ -269,9 +255,6 @@ The user must set the specifics of their experiment configuration in a ``config.
    * - NUM_ENS_MEMBERS
      - 1
      - 2
-   * - VX_FCST_MODEL_NAME
-     - '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-     - FV3_GFS_v16_CONUS_25km
 
 .. _GeneralConfig:
 
@@ -634,15 +617,21 @@ The output files (in ``.png`` format) will be located in the ``postprd`` directo
    * To configure an experiment to run METplus verification tasks, see the :ref:`next section <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
+
 .. _VXConfig:
 
 Configure METplus Verification Suite (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their machine file (``ush/machine/<platform>.yaml``) or their ``config.yaml`` file. Other users may skip to the next step (:numref:`Section %s: Generate the SRW App Workflow <GenerateWorkflow>`). 
+Users who want to use the METplus verification (VX) suite to evaluate their forecasts or to evaluate
+a staged forecast (e.g. from another forecasting system) need to add additional information to their
+machine file (``ush/machine/<platform>.yaml``) or their ``config.yaml`` file. Other users may skip
+to the next step (:numref:`Section %s: Generate the SRW App Workflow <GenerateWorkflow>`). 
+
+To use METplus verification,  MET and METplus modules need to be installed on the system.
 
 .. note::
-   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` to correspond to their system's updated installation:
+   If users update their METplus installation, they must also update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` to correspond to their system's updated installation:
 
    .. code-block:: console
       
@@ -650,15 +639,54 @@ Users who want to use the METplus verification suite to evaluate their forecasts
       module load met/<version.X.X>
       module load metplus/<version.X.X>
 
-To use METplus verification,  MET and METplus modules need to be installed. To turn on verification tasks in the workflow, include the ``parm/wflow/verify_*.yaml`` file(s) in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``. For example:
 
-.. code-block:: console
+Background
+``````````````
+Whether generated by the SRW App or another forecasting system, a forecasting experiment consists
+of one or more forecast periods known as cycles.  If there is one forecast per cycle, the experiment
+is referred to briefly as a deterministic forecast, and if there are multiple, it is referred to as
+an ensemble forecast.  Verification of a deterministic forecast is known (unsurprisingly) as
+deterministic VX, while verification of an ensemble forecast as a whole is known as ensemble VX.
+It is also possible to consider each member of an ensemble separately and verify each such member
+deterministically.
 
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+The SRW App allows users to include in the Rocoto XML that defines the workflow various tasks that
+perform deterministic and/or ensemble VX.  The forecast files to be verified may be generated as part
+of the SRW experiment that is performing the verification, or they may be pre-generated files that
+are staged somewhere on disk.  In the latter case, the forecast files may have been generated from a 
+previous SRW experiment, or they may have been generated from another forecasting system altogether
+(see :numref:`Section %s <VXStageFcstFiles>` for the procedure to stage forecast files).  In the SRW
+App, the flag ``DO_ENSEMBLE`` in the ``global:`` section of ``config.yaml`` specifies whether the
+(generated or staged) forecast files to be verified constitute a deterministic or an ensemble forecast.
+Setting ``DO_ENSEMBLE: False`` (the default) causes the SRW App workflow to assume that the forecast
+is deterministic, while setting ``DO_ENSEMBLE: True`` causes it to assume that the forecast is ensemble.
+In the latter case, the number of ensemble members must be specified via the variable ``NUM_ENS_MEMBERS``,
+also found in the ``global:`` section of ``config.yaml``.
 
-:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to run verification (VX); it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
+Both deterministic and ensemble VX require observation and forecast files as well as possible preprocessing
+of those files.  Thus, whenever deterministic or ensemble VX tasks are included in the workflow, preprocessing
+(meta)tasks must also be included that check for the presence of the required obs and forecast files on disk,
+retrieve obs files if necessary from a data store such as NOAA HPSS (see note below regarding forecast files), 
+and preprocess both types of files as needed. We refer to these collectively as the VX preprocessing tasks.
+
+.. note::
+   Currently, the SRW App workflow does not support the ability to retrieve forecast files from data stores;
+   these must either be generated by the forecast model in the SRW App or be manually staged by the user. 
+   See :numref:`Section %s <VXStageFcstFiles>` for details.
+
+
+Adding VX Tasks to the Workflow
+``````````````````````````````````
+To add verification tasks to the workflow, users must include the VX taskgroup files ``verify_pre.yaml``,
+``verify_det.yaml``, and/or ``verify_ens.yaml`` (all located in the ``parm/wflow`` directory) in the ``rocoto:
+tasks: taskgroups:`` section of ``config.yaml``.  :numref:`Table %s <VX-yamls>` specifies the set of workflow
+VX (meta)tasks that each ``verify_*.yaml`` file defines.  As implied above, users must add ``verify_pre.yaml``
+to  ``rocoto: tasks: taskgroups:`` anytime they want to run deterministic and/or ensemble VX because this
+contains VX preprocessing tasks that are required by both VX types.  Then users can add ``verify_det.yaml``
+to run deterministic VX on either a deterministic forecast or on each member of an ensemble forecast, they
+can add ``verify_ens.yaml`` to run ensemble VX on an ensemble forecast, or they can add both if they want to
+run both deterministic and ensemble VX on an ensemble forecast (where the deterministic VX is performed on
+each member of the ensemble).
 
 .. _VX-yamls:
 
@@ -666,43 +694,267 @@ To use METplus verification,  MET and METplus modules need to be installed. To t
    :widths: 20 50
    :header-rows: 1
 
-   * - File
-     - Description
-   * - verify_pre.yaml
-     - Contains (meta)tasks that are prerequisites for both deterministic and ensemble verification (vx)
-   * - verify_det.yaml
-     - Perform deterministic vx
-   * - verify_ens.yaml
-     - Perform ensemble vx (must set ``DO_ENSEMBLE: true`` in ``config.yaml``)
+   * - Taskgroup File
+     - Taskgroup Description
+   * - ``verify_pre.yaml``
+     - Defines (meta)tasks that run the VX preprocessing tasks that are prerequisites for both deterministic
+       and ensemble VX.
+   * - ``verify_det.yaml``
+     - Defines (meta)tasks that perform deterministic VX on a single forecast or on each member of an ensemble
+       forecast (the latter requires ``DO_ENSEMBLE`` and ``NUM_ENS_MEMBERS`` in ``config.yaml`` to be set to
+       ``True`` and the number of ensemble members, respectively).
+   * - ``verify_ens.yaml``
+     - Defines (meta)tasks that perform ensemble VX on an ensemble of forecasts as a whole (requires ``DO_ENSEMBLE``
+       and ``NUM_ENS_MEMBERS`` in ``config.yaml`` to be set to ``True`` and the number of ensemble members,
+       respectively).
 
-The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. Individual verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. The tasks in the ``verify_*.yaml`` files are independent of each other, so users may want to turn some off depending on the needs of their experiment. To turn off a task, simply include its entry from ``verify_*.yaml`` as an empty YAML entry in ``config.yaml``. For example, to turn off PointStat tasks:
+For example, to enable deterministic VX, ``rocoto: tasks: taskgroups:`` may be set as follows:
 
 .. code-block:: console
 
    rocoto:
      tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
-     metatask_vx_ens_member:
-       metatask_PointStat_mem#mem#:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml",
+                        "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-
-More information about configuring the ``rocoto:`` section can be found in :numref:`Section %s <DefineWorkflow>`.
-
-If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify_pre.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
-
-Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
-
-Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data in ``config.yaml``. 
+This setting can apply to either a deterministic or an ensemble forecast.  In the latter case, it will
+cause deterministic VX will be performed on each member of the ensemble (but not on the ensemble as a
+whole).  Note that with this setting, the weather model will be run as part of the workflow to generate
+forecast output because ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml`` are also included in
+``rocoto: tasks: taskgroups:``.  Whether these forecasts are deterministic or ensemble depends on
+whether ``DO_ENSEMBLE`` in ``config.yaml`` is set to ``False`` or ``True``, respectively (and, if
+``True``, ``NUM_ENS_MEMBERS`` must be set to the number of ensemble members).  Similarly, to enable
+ensemble VX for an ensemble forecast as well as deterministic VX for each member of that ensemble,
+``rocoto: tasks: taskgroups:`` may be set as follows:
 
 .. code-block:: console
 
-   platform:
-      CCPA_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ccpa/proc
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/nohrsc/proc
-      MRMS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ndas/proc
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml",
+                        "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml" "parm/wflow/verify_ens.yaml"]|include }}'
 
-After adding the VX tasks to the ``rocoto:`` section and the data paths to the ``platform:`` section, users can proceed to generate the experiment, which will perform VX tasks in addition to the default workflow tasks.
+If deterministic VX of each ensemble member is not desired, ``verify_det.yaml`` must be left out of the
+above.  Note that, as in the previous example, this setting of  ``rocoto: tasks: taskgroups:`` will cause
+the workflow to run the weather model to generate forecast output because ``prep.yaml``, ``coldstart.yaml``,
+and ``post.yaml`` are again included, but in this case, ``DO_ENSEMBLE`` **must be** set to ``True`` (and
+``NUM_ENS_MEMBERS`` set appropriately) in ``config.yaml`` because inclusion of ``verify_ens.yaml`` requires
+that the forecast be an ensemble one.
+
+If users want to manually stage the forecast files instead of generating them with the SRW's native weather
+model (see :numref:`Section %s <VXStageFcstFiles>` for the procedure), they must exclude ``prep.yaml``,
+``coldstart.yaml``, and ``post.yaml`` from the examples above.  Also, regardless of whether the forecast
+files are generated by the SRW App or staged manually by the user, if the forecast to be verified is an
+ensemble one, in the ``global:`` section of ``config.yaml`` users must set ``DO_ENSEMBLE`` to ``True``
+and ``NUM_ENS_MEMBERS`` to the number of ensemble members.  This tells the workflow to look for multiple
+forecasts for each cycle instead of just one (as well as the number of such forecasts).
+
+More information about configuring the ``rocoto:`` section can be found in :numref:`Section %s <DefineWorkflow>`.
+
+
+VX Taskgroup Organization and VX Field Groups
+`````````````````````````````````````````````````
+The VX (meta)tasks in the ``verify_*.yaml`` taskgroup files are described in detail in :numref:`Table %s
+<VXWorkflowTasksTable>`.  They are organized as follows.
+
+The (meta)tasks in ``verify_pre.yaml`` each
+operate on a single obs type (except for ``metatask_check_post_output_all_mems``, which operates on the
+forecast(s) and checks for the presence of all necessary forecast files), while the ones in ``verify_det.yaml``
+and ``verify_ens.yaml`` operate on one or more verification field groups.  A verification field group
+represents one or more meteorologial fields that are operated on (e.g. verified) together in a single
+call to one of the METplus tools (such as GridStat, PointStat, GenEnsProd, and EnsembleStat), and each
+field group has associated with it an obs type against which those forecast fields are verified.  The
+set of valid VX field groups, the obs types they are associated with, and a brief description of the
+fields they include are given in :numref:`Table %s <VXFieldGroupDescsTable>`. 
+
+.. _VXFieldGroupDescsTable:
+
+.. list-table:: Valid Verification Field Groups and Descriptions
+   :widths: 20 20 60
+   :header-rows: 1
+
+   * - VX Field Group
+     - Associated Obs Type
+     - Fields Included in Group
+   * - APCP
+     - CCPA
+     - Accumulated precipitation for the accumulation intervals specified in ``VX_APCP_ACCUMS_HRS``
+   * - ASNOW
+     - NOHRSC
+     - Accumulated snowfall for the accumulation intervals specified in ``VX_APCP_ACCUMS_HRS``
+   * - REFC 
+     - MRMS
+     - Composite reflectivity
+   * - RETOP 
+     - MRMS
+     - Echo top
+   * - SFC
+     - NDAS
+     - Various surface and near-surface fields (e.g. at the surface, 2 m, 10 m, etc)
+   * - UPA
+     - NDAS
+     - Various upper-air fields (e.g. at 800 mb, 500 mb, etc)
+
+The list ``VX_FIELD_GROUPS`` in the ``verification:`` section of ``config.yaml`` specifies the VX field
+groups for which to run verification.  Thus, inclusion of a ``verify_*.yaml`` taskgroup file under the
+``rocoto: tasks: taskgroups:`` section of ``config.yaml`` does not mean that all the (meta)tasks in that
+file will necessarily be included in the workflow.  This is because, in order to avoid unwanted computation,
+only those (meta)tasks in ``verify_det.yaml`` and/or ``verify_ens.yaml`` that operate on field groups
+included in ``VX_FIELD_GROUPS`` will appear in the Rocoto XML, and only those (meta)tasks in ``verify_pre.yaml``
+that operate on obs types associated with one of the field groups in ``VX_FIELD_GROUPS`` will appear in 
+the Rocoto XML.  Thus, for example, setting
+
+.. code-block:: console
+
+   VX_FIELD_GROUPS: [ 'APCP', 'REFC', 'RETOP', 'SFC', 'UPA' ]
+
+in ``config.yaml`` and including all three taskgroups ``verify_*.yaml`` in ``rocoto: tasks: taskgroups:`` 
+will add to the Rocoto XML the VX (meta)tasks for all valid field groups except those for accumulated 
+snowfall (``'ASNOW'``) and its associated obs type (:term:`NOHRSC`).  In other words, all the (meta)tasks
+in :numref:`Table %s <VXWorkflowTasksTable>`.  will be included in the Rocoto XML except for those
+associated with the :term:`NOHRSC` obs type and the ``'ASNOW'`` field group.  Users might want to set
+``VX_FIELD_GROUPS`` in this way for example because the forecast experiment they are verifying is for a
+summer period for which ``ASNOW`` is not relevant.
+
+
+Staging Observation Files
+``````````````````````````````````
+The taskgroup in ``verify_pre.yaml`` defines a set of workflow tasks named ``get_obs_*`` --- where the ``*``
+represents any one of the supported obs types :term:`CCPA`, :term:`NOHRSC`, :term:`MRMS`, and :term:`NDAS` ---
+that will first check for the existence of the obs files required for VX at the locations on disk specified
+by the variables ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]`` in the ``verification:`` section of
+``config.yaml``.  The ``*_OBS_DIR``  are the base directories in which the obs files are or should be
+staged, and the ``OBS_*_FN_TEMPLATES[1,3,...]`` are the file name templates (with METplus time strings
+used for templating; see example below).  The ``[1,3,...]`` in ``OBS_*_FN_TEMPLATES[1,3,...]`` refer
+to the second, fourth, etc elements of ``OBS_*_FN_TEMPLATES`` and correspond to the various sets of files
+that the obs type contains.  (The first, third, etc elements, i.e. ``OBS_*_FN_TEMPLATES[0,2,...]``,
+indicate the VX field groups for which the respective sets of obs files are used to verify and should
+not be changed.) Note that ``OBS_*_FN_TEMPLATES[1,3,...]`` may include leading subdirectories and are
+relative to the obs type's ``*_OBS_DIR``.  Thus, the templates for the full paths to the obs files are
+given by
+
+.. code-block:: console
+
+   {*_OBS_DIR}/{OBS_*_FN_TEMPLATES[1,3,...]}
+
+If the obs files exist at the locations specified by these variables, then the ``get_obs_*`` tasks will
+succeed and the workflow will move on to subsequent tasks.  If one or more obs files do not exist, the
+``get_obs_*`` tasks will attempt to retrieve the required files from a data store such as NOAA HPSS and
+place them in the locations specified by ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]``.  Assuming
+that attempt is successful, the workflow will move on to subsequent tasks.  Thus:
+
+   * Users who have the obs files already available (staged) on their system only need to set ``*_OBS_DIR``
+     and ``OBS_*_FN_TEMPLATES[1,3,...]`` in ``config.yaml`` to match those staging locations and file names.  
+   
+   * Users who do not have the obs files available on their systems and do not have access to NOAA HPSS
+     need to download :term:`CCPA`, :term:`NOHRSC`, :term:`MRMS`, and/or :term:`NDAS` files manually
+     from collections of publicly available data such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
+     Then, as above, they must set ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]`` to match those
+     staging locations and file names.
+   
+   * Users who have access to a data store that hosts the necessary files (e.g. NOAA HPSS) do not need to
+     manually stage the obs data because the ``get_obs_*`` tasks will retrieve the necessary obs and place
+     them in the locations specified by ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]``.  The default
+     values of these variables are such that the files are placed under the experiment directory, but
+     users may change these if they want the retrieved files to be placed elsewhere.
+
+
+As an example, consider a case in which all four types of obs are needed for verification.  Then ``*_OBS_DIR``
+and ``OBS_*_FN_TEMPLATES`` might be set as follows:
+
+.. code-block:: console
+
+   verification:
+
+      CCPA_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ccpa
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/nohrsc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/mrms
+      NDAS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ndas
+
+      OBS_CCPA_FN_TEMPLATES: [ 'APCP', '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2' ]
+      OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW', 'sfav2_CONUS_6h_{valid?fmt=%Y%m%d%H}_grid184.grb2' ]
+      OBS_MRMS_FN_TEMPLATES: [ 'REFC', '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2',
+                               'RETOP', '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2' ]
+      OBS_NDAS_FN_TEMPLATES: [ 'SFC_UPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
+
+Now further consider the CCPA obs type.  If one of the days encompassed by the forecast(s) is 20240429,
+then the ``get_obs_ccpa`` task associated with this day will check for the existence of the set of obs
+files given by
+
+``/path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t{HH}z.01h.hrap.conus.gb2``
+
+where ``{HH}`` takes on all hours of this day at which the verification requires CCPA obs.  For example,
+if performing (deterministic or ensemble) VX on 1-hour APCP for a 3-hour forecast that starts at 06z,
+``{HH}`` will take on the values 07, 08, and 09.  Then the files that ``get_obs_ccpa`` will look for
+are:
+
+.. code-block:: console
+
+   /path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t07z.01h.hrap.conus.gb2
+   /path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t08z.01h.hrap.conus.gb2
+   /path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t09z.01h.hrap.conus.gb2
+
+If all these exist, ``get_obs_ccpa`` will simply confirm their existence and will not need to retrieve
+any files.  If not, it will try to retrieve the files from a data store such as NOAA HPSS and place them
+at the above locations.
+
+
+.. _VXStageFcstFiles:
+
+Staging Forecast Files
+``````````````````````````````````
+As noted above, the SRW App currently does not support the ability to retrieve forecast files from
+data stores.  Thus, the forecast files must either be generated by the forecast model in the SRW App,
+or they must be manually staged by the user.  Note that manually staged forecast files do not have
+to be ones generated by the SRW App; they can be outputs from another forecasting system.
+
+The locations of the forecast files are defined by the variables ``VX_FCST_INPUT_BASEDIR``,
+``FCST_SUBDIR_TEMPLATE``, and ``FCST_FN_TEMPLATE`` in the ``verification:`` section of ``config.yaml``.
+``VX_FCST_INPUT_BASEDIR`` is the base directory in which the files are located, ``FCST_SUBDIR_TEMPLATE``
+is a template specifying a set of subdirectories under ``VX_FCST_INPUT_BASEDIR``, and ``FCST_FN_TEMPLATE``
+is the file name template.  As with the obs, the templating in ``FCST_SUBDIR_TEMPLATE`` and
+``FCST_FN_TEMPLATE`` uses METplus time strings.  Thus, the full template to the forecast files
+is given by
+
+.. code-block:: console
+
+   {VX_FCST_INPUT_BASEDIR}/{FCST_SUBDIR_TEMPLATE}/{FCST_FN_TEMPLATE}
+
+If the forecast files are manually staged, then these three variables must be set such that they
+together point to the locations of the staged files.  If they are generated by the SRW App, then
+the user does not need to set these variables; they will by default be set to point to the forecast
+files.
+
+
+Summary
+``````````````
+In summary, users must take the following steps to enable VX tasks in the SRW App workflow:
+
+   #. Add the necessary VX taskgroup files ``verify_*.yaml`` to the ``rocoto: tasks: taskgroups:`` 
+      section of ``config.yaml``.  ``verify_pre.yaml`` must always be added; ``verify_det.yaml``
+      must be added to enable deterministic VX (either of a deterministic forecast or of each
+      member of an ensemble forecast); and ``verify_ens.yaml`` must be added to enable ensemble
+      VX (of an ensemble forecast as a whole).
+
+   #. If performing ensemble verification and/or deterministic verification of ensemble members
+      (i.e. if the forecast to be verified is an ensemble), in the ``global:`` section of ``config.yaml``
+      set ``DO_ENSEMBLE`` to ``True`` and ``NUM_ENS_MEMBERS`` to the number of ensemble members.
+
+   #. If manually staging the obs files (e.g. because users don't have access to NOAA HPSS), set
+      the variables ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]`` in the ``verification:`` section
+      of ``config.yaml`` to the locations of these files on disk (where the ``*`` in these variable
+      names can be any of the supported obs types).
+
+   #. If manually staging the forecast files (as opposed to generating them by running the weather
+      model in the SRW App), set the forecast file paths  to the locations of these files on disk
+      using the variables ``VX_FCST_INPUT_BASEDIR``, ``FCST_SUBDIR_TEMPLATE``, and ``FCST_FN_TEMPLATE``
+      in the ``verification:`` section of ``config.yaml``.
+
+   #. Specify the field groups to verify in the list ``VX_FIELD_GROUPS`` in the ``verification:``
+      section of ``config.yaml``.  Valid values for field groups are given in :numref:`Table %s <VXFieldGroupDescsTable>`. 
+
+After completing these steps, users can proceed to generate the experiment (see :numref:`Section %s <GenerateWorkflow>`)
+
 
 .. _GenerateWorkflow: 
 
@@ -807,87 +1059,223 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
      - Task Description
    * - plot_allvars
      - Run the plotting task and, optionally, the difference plotting task
-   
-METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. The column "taskgroup" indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` (see :numref:`Section %s <DefineWorkflow>` for more details). For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast). "Metatasks" indicate task definitions that will become more than one workflow task based on different variables, number of hours, etc., as described in the Task Description column. See :numref:`Section %s <defining_metatasks>` for more details about metatasks.
+
+The METplus verification tasks and metatasks that are included by default in ``verify_*.yaml`` are described
+in :numref:`Table %s <VXWorkflowTasksTable>`. The ``taskgroup`` entry after the name of each (meta)task indicates
+the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:``
+in order for that (meta)task to be considered for inclusion in the workflow (see :numref:`Section %s <DefineWorkflow>`
+for details). As described in  :numref:`Section %s <defining_metatasks>`, metatasks define a set of tasks in the
+workflow based on multiple values of one or more parameters such as the ensemble member index, the accumulation
+interval (for cumulative fields such as accumulated precipitation), and the name of the verificaiton field group
+(see description of ``VX_FIELD_GROUPS`` in :numref:`Section %s <GeneralVXParams>`).
 
 .. _VXWorkflowTasksTable:
 
-.. list-table:: Verification (VX) Workflow Tasks in the SRW App
-   :widths: 20 20 50
+.. list-table:: Default Verification (VX) Workflow Tasks and Metatasks in the SRW App
+   :widths: 5 95
    :header-rows: 1
 
-   * - Workflow Task
-     - ``taskgroup``
+   * - Workflow (Meta)Task (``taskgroup``)
      - Task Description
-   * - :bolditalic:`task_get_obs_ccpa`
-     - ``verify_pre.yaml``
-     - If user has staged :term:`CCPA` data for verification, checks to ensure that data exists in the specified location (``CCPA_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA :term:`HPSS`.
-   * - :bolditalic:`task_get_obs_ndas`
-     - ``verify_pre.yaml``
-     - If user has staged :term:`NDAS` data for verification, checks to ensure that data exists in the specified location (``NDAS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
-   * - :bolditalic:`task_get_obs_nohrsc`
-     - ``verify_pre.yaml``
-     - Retrieves and organizes hourly :term:`NOHRSC` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data. ``ASNOW`` should also be added to the ``VX_FIELDS`` list.
-   * - :bolditalic:`task_get_obs_mrms`
-     - ``verify_pre.yaml``
-     - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (``MRMS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
-   * - :bolditalic:`task_run_MET_Pb2nc_obs`
-     - ``verify_pre.yaml``
-     - Converts files from prepbufr to NetCDF format.
-   * - :bolditalic:`metatask_PcpCombine_obs`
-     - ``verify_pre.yaml``
-     - Derives 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h.
-   * - :bolditalic:`metatask_check_post_output_all_mems`
-     - ``verify_pre.yaml``
-     - Ensures that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
-   * - :bolditalic:`metatask_PcpCombine_fcst_APCP_all_accums_all_mems`
-     - ``verify_pre.yaml``
-     - Derives accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
-   * - :bolditalic:`metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems`
-     - ``verify_pre.yaml``
-     - Derives accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
-   * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
-     - ``verify_det.yaml``
-     - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
-   * - :bolditalic:`metatask_GridStat_NOHRSC_all_accums_all_mems` 
-     - ``verify_det.yaml``
-     - Runs METplus grid-to-grid verification for 6-h and 24-h (i.e., daily) accumulated snow. In log files, tasks will be named like ``run_MET_GridStat_vx_ASNOW##h_mem###``.
-   * - :bolditalic:`metatask_GridStat_MRMS_all_mems`
-     - ``verify_det.yaml``
-     - Runs METplus grid-to-grid verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_REFC_mem###`` or ``run_MET_GridStat_vx_RETOP_mem###``.
-   * - :bolditalic:`metatask_PointStat_NDAS_all_mems`
-     - ``verify_det.yaml``
-     - Runs METplus grid-to-point verification for surface and upper-air variables. In log files, tasks will be named like ``run_MET_PointStat_vx_SFC_mem###`` or ``run_MET_PointStat_vx_UPA_mem###``.
-   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_CCPA` :raw-html:`<br/> <br/>`
-       (formerly *VX_ENSGRID_##h*)
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-grid ensemble verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_APCP##h`` or ``run_MET_GenEnsProd_vx_APCP##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
-   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_NOHRSC`
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-grid ensemble verification for 6-h and 24-h (i.e., daily) accumulated snow. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_ASNOW##h`` or ``run_MET_GenEnsProd_vx_ASNOW##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
-   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_MRMS` :raw-html:`<br/> <br/>`
-       (formerly *VX_ENSGRID_[REFC|RETOP]*)
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-grid ensemble verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GenEnsProd_vx_[REFC|RETOP]`` or ``run_MET_EnsembleStat_vx_[REFC|RETOP]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``. 
-   * - :bolditalic:`metatask_GridStat_CCPA_ensmeanprob_all_accums` :raw-html:`<br/> <br/>`
-       (formerly *VX_ENSGRID_MEAN_##h* and *VX_ENSGRID_PROB_##h*)
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-grid verification for (1) ensemble mean 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation and (2) 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_APCP##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_APCP##h``, where ``##h`` is 01h, 03h, 06h, or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
-   * - :bolditalic:`metatask_GridStat_NOHRSC_ensmeanprob_all_accums`
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-grid verification for (1) ensemble mean 6-h and 24h (i.e., daily) accumulated snow and (2) 6-h and 24h (i.e., daily) accumulated snow probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_ASNOW##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_ASNOW##h``, where ``##h`` is 06h or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
-   * - :bolditalic:`metatask_GridStat_MRMS_ensprob` :raw-html:`<br/> <br/>`
-       (formerly *VX_ENSGRID_PROB_[REFC|RETOP]*)
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-grid verification for ensemble probabilities for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_ensprob_[REFC|RETOP]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
-   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_NDAS` :raw-html:`<br/> <br/>`
-       (formerly *VX_ENSPOINT*)
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-point ensemble verification for surface and upper-air variables. In log files, tasks will be named like ``run_MET_GenEnsProd_vx_[SFC|UPA]`` or ``run_MET_EnsembleStat_vx_[SFC|UPA]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
-   * - :bolditalic:`metatask_PointStat_NDAS_ensmeanprob` :raw-html:`<br/> <br/>`
-       (formerly *VX_ENSPOINT_[MEAN|PROB]*)
-     - ``verify_ens.yaml``
-     - Runs METplus grid-to-point verification for (1) ensemble mean surface and upper-air variables and (2) ensemble probabilities for surface and upper-air variables. In log files, tasks will be named like ``run_MET_PointStat_vx_ensmean_[SFC|UPA]`` or ``run_MET_PointStat_vx_ensprob_[SFC|UPA]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
+
+   * - :bolditalic:`task_get_obs_ccpa` (``verify_pre.yaml``)
+     - Checks for existence of staged :term:`CCPA` obs files at locations specified by ``CCPA_OBS_DIR``
+       and ``OBS_CCPA_FN_TEMPLATES``.  If any files do not exist, it attempts to retrieve all the files
+       from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
+       in the workflow only if ``'APCP'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`task_get_obs_nohrsc` (``verify_pre.yaml``)
+     - Checks for existence of staged :term:`NOHRSC` obs files at locations specified by ``NOHRSC_OBS_DIR``
+       and ``OBS_NOHRSC_FN_TEMPLATES``.  If any files do not exist, it attempts to retrieve all the files
+       from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
+       in the workflow only if ``'ASNOW'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`task_get_obs_mrms` (``verify_pre.yaml``)
+     - Checks for existence of staged :term:`MRMS` obs files at locations specified by ``MRMS_OBS_DIR``
+       and ``OBS_MRMS_FN_TEMPLATES``.  If any files do not exist, it attempts to retrieve all the files
+       from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
+       in the workflow only if ``'REFC'`` and/or ``'RETOP'`` are included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`task_get_obs_ndas` (``verify_pre.yaml``)
+     - Checks for existence of staged :term:`NDAS` obs files at locations specified by ``NDAS_OBS_DIR``
+       and ``OBS_NDAS_FN_TEMPLATES``.  If any files do not exist, it attempts to retrieve all the files
+       from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
+       in the workflow only if `'SFC'`` and/or ``'UPA'`` are included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`task_run_MET_Pb2nc_obs_NDAS` (``verify_pre.yaml``)
+     - Converts NDAS obs prepbufr files to NetCDF format.
+
+   * - :bolditalic:`metatask_PcpCombine_APCP_all_accums_obs_CCPA` (``verify_pre.yaml``)
+     - Set of tasks that generate NetCDF files containing observed APCP for the accumulation intervals
+       specified in ``VX_APCP_ACCUMS_HRS``.  Files for accumulation intervals larger than the one
+       provided in the obs are obtained by adding APCP values over multiple obs accumulation intervals,
+       e.g. if the obs contain 1-hour accumulations and 3-hr accumulation is specified in ``VX_APCP_ACCUMS_HRS``,
+       then groups of 3 successive 1-hour APCP values in the obs are added to obtain the 3-hour values.
+       In rocoto, the tasks under this metatask are named ``run_MET_PcpCombine_APCP{accum_intvl}h_obs_CCPA``,
+       where ``{accum_intvl}`` is the accumulation interval in hours (e.g. ``01``, ``03``, ``06``, etc)
+       for which the task is being run.  This metatask is included in the workflow only if ``'APCP'`` is
+       included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC` (``verify_pre.yaml``)
+     - Set of tasks that generate NetCDF files containing observed ASNOW for the accumulation intervals
+       specified in ``VX_ASNOW_ACCUMS_HRS``.  Files for accumulation intervals larger than the one
+       provided in the obs are obtained by adding ASNOW values over multiple obs accumulation intervals,
+       e.g. if the obs contain 6-hour accumulations and 24-hr accumulation is specified in ``VX_ASNOW_ACCUMS_HRS``,
+       then groups of 4 successive 6-hour ASNOW values in the obs are added to obtain the 24-hour values.
+       In rocoto, the tasks under this metatask are named ``run_MET_PcpCombine_ASNOW{accum_intvl}h_obs_NOHRSC``,
+       where ``{accum_intvl}`` is the accumulation interval in hours (e.g. ``06``, ``24``, etc) for which
+       the task is being run.  This metatask is included in the workflow only if ``'ASNOW'`` is included in
+       ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_check_post_output_all_mems` (``verify_pre.yaml``)
+     - Set of tasks that ensure that the post-processed forecast files required for verification exist in
+       the locations specified by ``VX_FCST_INPUT_BASEDIR``, ``FCST_SUBDIR_TEMPLATE``, and ``FCST_FN_TEMPLATE``.
+       In rocoto, the tasks under this metatask are named ``check_post_output_mem{mem_indx}``, where ``{mem_indx}``
+       is the index of the ensemble forecast member.  This takes on the values ``001``, ``002``, ... for an
+       ensemble of forecasts or just ``000`` for a single deterministic forecast.  This metatask is included
+       in the workflow if at least one other verification task or metatask is included.
+
+   * - :bolditalic:`metatask_PcpCombine_APCP_all_accums_all_mems` (``verify_pre.yaml``)
+     - Set of tasks that generate NetCDF files containing forecast APCP for the accumulation intervals
+       specified in ``VX_APCP_ACCUMS_HRS``.  Files for accumulation intervals larger than the one
+       provided in the forecasts are obtained by adding APCP values over multiple forecast accumulation
+       intervals, e.g. if the forecasts contain 1-hour accumulations and 3-hr accumulation is specified
+       in ``VX_APCP_ACCUMS_HRS``, then groups of 3 successive 1-hour APCP values in the forecasts are
+       added to obtain the 3-hour values.  In rocoto, the tasks under this metatask are named
+       ``run_MET_PcpCombine_APCP{accum_intvl}h_fcst_mem{mem_indx}``, where ``{accum_intvl}`` and
+       ``{mem_indx}`` are the accumulation interval (in hours, e.g. ``01``, ``03``, ``06``, etc) and
+       the ensemble forecast member index (or just ``000`` for a single deterministic forecast) for
+       which the task is being run.  This metatask is included in the workflow only if ``'APCP'`` is
+       included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_PcpCombine_ASNOW_all_accums_all_mems` (``verify_pre.yaml``)
+     - Set of tasks that generate NetCDF files containing forecast ASNOW for the accumulation intervals
+       specified in ``VX_ASNOW_ACCUMS_HRS``.  Files for accumulation intervals larger than the one
+       provided in the forecasts are obtained by adding ASNOW values over multiple forecast accumulation
+       intervals, e.g. if the forecasts contain 1-hour accumulations and 6-hr accumulation is specified
+       in ``VX_ASNOW_ACCUMS_HRS``, then groups of 6 successive 1-hour ASNOW values in the forecasts are
+       added to obtain 6-hour values.  In rocoto, the tasks under this metatask are named
+       ``run_MET_PcpCombine_ASNOW{accum_intvl}h_fcst_mem{mem_indx}``, where ``{accum_intvl}`` and
+       ``{mem_indx}`` are the accumulation interval (in hours, e.g. ``06``, ``24``, etc) and the ensemble
+       forecast member index (or just ``000`` for a single deterministic forecast) for which the task is
+       being run.  This metatask is included in the workflow only if ``'ASNOW'`` is included in
+       ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GridStat_APCP_all_accums_all_mems` (``verify_det.yaml``)
+     - Set of tasks that run grid-to-grid verification of accumulated precipitation (represented by the
+       verification field group ``APCP``) for the intervals specified in ``VX_APCP_ACCUMS_HRS``.  In rocoto,
+       the tasks under this metatask are named ``run_MET_GridStat_vx_APCP{accum_intvl}h_mem{mem_indx}``,
+       where ``{accum_intvl}`` and ``{mem_indx}`` are the accumulation interval (in hours, e.g. ``01``,
+       ``03``, ``06``, etc) and the ensemble forecast member index (or just ``000`` for a single deterministic
+       forecast) for which the task is being run.  This metatask is included in the workflow only if ``'APCP'``
+       is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GridStat_ASNOW_all_accums_all_mems` (``verify_det.yaml``)
+     - Set of tasks that run grid-to-grid verification of accumulated snowfall (represented by the verification
+       field group ``ASNOW``) for the intervals specified in ``VX_ASNOW_ACCUMS_HRS``.  In rocoto, the tasks under
+       this metatask are named ``run_MET_GridStat_vx_ASNOW{accum_intvl}h_mem{mem_indx}``, where ``{accum_intvl}``
+       and ``{mem_indx}`` are the accumulation interval (in hours, e.g. ``06``, ``24``, etc) and the ensemble
+       forecast member index (or just ``000`` for a single deterministic forecast) for which the task is being
+       run.  This metatask is included in the workflow only if ``'ASNOW'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GridStat_REFC_RETOP_all_mems` (``verify_det.yaml``)
+     - Set of tasks that run grid-to-grid verification of :term:`composite reflectivity` (represented by
+       the verification field group ``REFC``) and :term:`echo top` (represented by the verification field
+       group ``RETOP``).  In rocoto, the tasks under this metatask are named ``run_MET_GridStat_vx_{field_group}_mem{mem_indx}``,
+       where ``field_group`` and ``{mem_indx}`` are the field group (in this case either ``REFC`` or ``RETOP``)
+       and the ensemble forecast member index (or just ``000`` for a single deterministic forecast) for which
+       the task is being run.  The tasks for ``REFC`` are included in the workflow only if ``'REFC'`` is
+       included in ``VX_FIELD_GROUPS``, and the ones for ``RETOP`` are included only if ``'RETOP'`` is included
+       in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_PointStat_SFC_UPA_all_mems` (``verify_det.yaml``)
+     - Set of tasks that run grid-to-point verification of surface fields (represented by the verification field
+       group ``SFC``) and upper-air fields (represented by the verification field group ``UPA``).  In rocoto,
+       the tasks under this metatask are named ``run_MET_PointStat_vx_{field_group}_mem{mem_indx}``, where
+       ``field_group`` and ``{mem_indx}`` are the field group (in this case either ``SFC`` or ``UPA``) and the
+       ensemble forecast member index (or just ``000`` for a single deterministic forecast) for which the task
+       is being run.  The tasks for the surface fields are included in the workflow only if ``'SFC'`` is included
+       in ``VX_FIELD_GROUPS``, and the ones for the upper-air fields are included only if ``'UPA'`` is included
+       in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_APCP_all_accums` (``verify_ens.yaml``)
+     - Set of tasks that run :term:`MET`'s ``GenEnsProd`` and ``EnsembleStat`` tools on APCP for the intervals
+       specified in ``VX_APCP_ACCUMS_HRS``.  In rocoto, the tasks under this metatask that run ``GenEnsProd``
+       are named ``run_MET_GenEnsProd_vx_APCP{accum_intvl}h``, and the ones that run `EnsembleStat`` are
+       named ``run_MET_EnsembleStat_vx_APCP{accum_intvl}h``, where ``{accum_intvl}`` is the accumulation
+       interval (in hours, e.g. ``01``, ``03``, ``06``, etc) for which the tasks are being run.  This metatask
+       is included in the workflow only if ``DO_ENSEMBLE`` is set to ``True`` in ``config.yaml`` and ``'APCP'``
+       is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_ASNOW_all_accums` (``verify_ens.yaml``)
+     - Set of tasks that run :term:`MET`'s ``GenEnsProd`` and ``EnsembleStat`` tools on ASNOW for the intervals
+       specified in ``VX_ASNOW_ACCUMS_HRS``.  In rocoto, the tasks under this metatask that run ``GenEnsProd``
+       are named ``run_MET_GenEnsProd_vx_ASNOW{accum_intvl}h`` and the ones that run `EnsembleStat`` are
+       named ``run_MET_EnsembleStat_vx_ASNOW{accum_intvl}h``, where ``{accum_intvl}`` is the accumulation
+       interval (in hours, e.g. ``06``, ``24``, etc) for which the tasks are being run.  This metatask will be
+       included in the workflow only if ``DO_ENSEMBLE`` is set to ``True`` in ``config.yaml`` and ``'ASNOW'``
+       is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_REFC_RETOP` (``verify_ens.yaml``)
+     - Set of tasks that run :term:`MET`'s ``GenEnsProd`` and ``EnsembleStat`` tools on REFC (:term:`composite
+       reflectivity`) and RETOP (:term:`echo top`).  In rocoto, the tasks under this metatask that run
+       ``GenEnsProd`` are named ``run_MET_GenEnsProd_vx_{field_group}``, and the ones that run `EnsembleStat``
+       are named ``run_MET_EnsembleStat_vx_{field_group}``, where ``{field_group}`` is the field group (in
+       this case either ``REFC`` or ``RETOP``) for which the tasks are being run.  The tasks for ``REFC`` are
+       included in the workflow only if ``DO_ENSEMBLE`` is set to ``True`` in ``config.yaml`` and ``'REFC'``
+       is included in ``VX_FIELD_GROUPS``, and the ones for ``RETOP`` are included only if ``DO_ENSEMBLE`` is
+       set to ``True`` in ``config.yaml`` and ``'RETOP'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_SFC_UPA` (``verify_ens.yaml``)
+     - Set of tasks that run :term:`MET`'s ``GenEnsProd`` and ``EnsembleStat`` tools on surface fields (represented
+       by the verification field group ``SFC``) and upper-air fields (represented by the verification field group
+       ``UPA``).  In rocoto, the tasks under this metatask that run ``GenEnsProd`` are named ``run_MET_GenEnsProd_vx_{field_group}``,
+       and the ones that run `EnsembleStat`` are named ``run_MET_EnsembleStat_vx_{field_group}``, where ``{field_group}``
+       is the field group (in this case either ``SFC`` or ``UPA``) for which the tasks are being run.  The tasks for
+       ``SFC`` are included in the workflow only if ``DO_ENSEMBLE`` is set to ``True`` in ``config.yaml`` and ``'SFC'``
+       is included in ``VX_FIELD_GROUPS``, and the ones for ``UPA`` are included only if ``DO_ENSEMBLE`` is set to
+       ``True`` in ``config.yaml`` and ``'UPA'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GridStat_APCP_all_accums_ensmeanprob` (``verify_ens.yaml``)
+     - Set of tasks that run grid-to-grid verification of the ensemble mean of APCP and grid-to-grid probabilistic
+       verification of the ensemble of APCP forecasts as a whole.  In rocoto, the tasks under this metatask for
+       ensemble mean verification are named ``run_MET_GridStat_vx_APCP{accum_intvl}h_ensmean``, and the ones for
+       ensemble probabilistic verification are named ``run_MET_GridStat_vx_APCP{accum_intvl}h_ensprob``, where
+       ``{accum_intvl}`` is the accumulation interval (in hours, e.g. ``01``, ``03``, ``06``, etc) for which the
+       tasks are being run.  This metatask is included in the workflow only if ``DO_ENSEMBLE`` is set to ``True``
+       in ``config.yaml`` and ``'APCP'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GridStat_ASNOW_all_accums_ensmeanprob` (``verify_ens.yaml``)
+     - Set of tasks that run grid-to-grid verification of the ensemble mean of ASNOW and grid-to-grid probabilistic
+       verification of the ensemble of ASNOW forecasts as a whole.  In rocoto, the tasks under this metatask for
+       ensemble mean verification are named ``run_MET_GridStat_vx_ASNOW{accum_intvl}h_ensmean``, and the ones for
+       ensemble probabilistic verification are named ``run_MET_GridStat_vx_ASNOW{accum_intvl}h_ensprob``, where
+       ``{accum_intvl}`` is the accumulation interval (in hours, e.g. ``01``, ``03``, ``06``, etc) for which the
+       tasks are being run.  These tasks will be included in the workflow only if ``DO_ENSEMBLE`` is set to ``True``
+       in ``config.yaml`` and ``'ASNOW'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_GridStat_REFC_RETOP_ensprob` (``verify_ens.yaml``)
+     - Set of tasks that run grid-to-grid probabilistic verification of the ensemble of :term:`composite reflectivity`
+       (represented by the verification field group ``REFC``) and :term:`echo top` (represented by the field group
+       ``RETOP``).  (Note that there is no grid-to-grid verification of the ensemble mean of these quantities.)
+       In rocoto, the tasks under this metatask are named ``run_MET_GridStat_vx_{field_group}_ensprob``, where
+       ``{field_group}`` is the field group (in this case either ``REFC`` or ``RETOP``) for which the task is
+       being run.  The task for ``REFC`` is included in the workflow only if ``DO_ENSEMBLE`` is set to ``True``
+       in ``config.yaml`` and ``'REFC'`` is included in ``VX_FIELD_GROUPS``, and the one for ``RETOP`` is included 
+       only if ``DO_ENSEMBLE`` is set to ``True`` in ``config.yaml`` and ``'RETOP'`` is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_PointStat_SFC_UPA_ensmeanprob` (``verify_ens.yaml``)
+     - Set of tasks that run grid-to-grid verification of the ensemble mean of surface fields (represented by the
+       verification field group ``SFC``) and upper-air fields (represented by the verification field group ``UPA``)
+       as well as grid-to-grid probabilistic verification of the ensemble of the surface and upper-air field
+       forecasts as a whole.  In rocoto, the tasks under this metatask for ensemble mean verification are named
+       ``run_MET_PointStat_vx_{field_group}_ensmean``, and the ones for ensemble probabilistic verification are
+       named ``run_MET_PointStat_vx_{field_group}_ensprob``, where ``{field_group}`` is the field group (in this
+       case either ``SFC`` or ``UPA``) on which the task is being run.  The tasks for ``SFC`` are included in the
+       workflow only if ``DO_ENSEMBLE`` is set to ``True`` in ``config.yaml`` and ``'SFC'`` is included in
+       ``VX_FIELD_GROUPS``, and the ones for ``UPA`` are included only if ``DO_ENSEMBLE`` is set to ``True`` in
+       ``config.yaml`` and ``'UPA'`` is included in ``VX_FIELD_GROUPS``.
+
 
 .. _Run:
 
@@ -1181,7 +1569,7 @@ Each task should finish with error code 0. For example:
    
    End exregional_get_extrn_mdl_files.sh at Wed Nov 16 18:08:19 UTC 2022 with error code 0 (time elapsed: 00:00:01)
 
-Check the batch script output file in your experiment directory for a “SUCCESS” message near the end of the file.
+Check the batch script output file in your experiment directory for a "SUCCESS" message near the end of the file.
 
 .. _RegionalWflowTasks:
 

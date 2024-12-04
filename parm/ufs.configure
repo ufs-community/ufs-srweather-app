@@ -19,14 +19,14 @@ EARTH_attributes::
 
 # ATM #
 ATM_model:                      fv3
-ATM_petlist_bounds:             -1 -1
+ATM_petlist_bounds:             0 {{ pe_member01_m1 }}
 ATM_attributes::
   Verbosity = 0
 ::
 
 # AQM #
 AQM_model:                      aqm
-AQM_petlist_bounds:             -1 -1
+AQM_petlist_bounds:             0 {{ aqm_pe_member01_m1 }}
 AQM_attributes::
   Verbosity = 0
   Diagnostic = 0
@@ -45,8 +45,21 @@ runSeq::
 {% else %}
 # EARTH #
 EARTH_component_list: ATM
- ATM_model:            fv3
- runSeq::
-   ATM
- ::
+EARTH_attributes::
+  Verbosity = 0
+::
+
+# ATM #
+ATM_model:                      fv3
+ATM_petlist_bounds:             0 {{ pe_member01_m1 }}
+ATM_omp_num_threads:            {{ atm_omp_num_threads }}
+ATM_attributes::
+  Verbosity = 0
+  Diagnostic = 0
+::
+
+# Run Sequence #
+runSeq::
+  ATM
+::
 {% endif %}

@@ -53,7 +53,7 @@ verification:
   REMOVE_RAW_OBS_NDAS: false
   REMOVE_RAW_OBS_NOHRSC: false
   #
-  OBS_NDAS_FN_TEMPLATES: [ 'ADPSFCandADPUPA', 'gdas/{valid?fmt=%Y%m%d}/gdas.t{valid?fmt=%H}z.prepbufr.nr' ]
+  OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', 'gdas/{valid?fmt=%Y%m%d}/gdas.t{valid?fmt=%H}z.prepbufr.nr' ]
   #
   VX_FCST_MODEL_NAME: 'gfs'
   VX_CONFIG_DET_FN: 'vx_configs/vx_config_det.obs_gdas.model_gfs.yaml'
@@ -63,4 +63,4 @@ verification:
   FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- verification.VX_FCST_MODEL_NAME }}.t00z.pgrb2.0p25.f{lead?fmt=%HHH}_a${ACCUM_HH}h.nc'
   #
   VX_FCST_OUTPUT_INTVL_HRS: 6
-  VX_FIELD_GROUPS: [ "ADPSFC" ]
+  VX_FIELD_GROUPS: [ "SFC" ]

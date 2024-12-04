@@ -59,4 +59,4 @@ verification:
   VX_FCST_MODEL_NAME: 'NSSL-MPAS-HN'
   VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.linked/{{- verification.VX_FCST_MODEL_NAME }}'
   FCST_FN_TEMPLATE: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%H?shift=${time_lag}}.grib2'
-  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${VAR}_a${ACCUM_HH}h.nc'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${FIELD_GROUP}_a${ACCUM_HH}h.nc'

@@ -58,5 +58,5 @@ verification:
   REMOVE_RAW_OBS_NOHRSC: false
   #
   VX_FCST_MODEL_NAME: 'Michigan_Ontario_snow_8km'
-  VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
+  VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
   VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.linked/SRW'

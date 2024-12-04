@@ -46,6 +46,7 @@ task_get_extrn_lbcs:
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
 task_run_fcst:
+  OMP_NUM_THREADS_RUN_FCST: 1
   DT_ATMOS: 180
   LAYOUT_X: 50
   LAYOUT_Y: 34

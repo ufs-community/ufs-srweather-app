@@ -60,4 +60,4 @@ verification:
   NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/NDAS_obs'
   NOHRSC_OBS_DIR: '{{ workflow.EXPTDIR }}/NOHRSC_obs'
   VX_FCST_MODEL_NAME: Michigan_Ontario_snow_8km
-  VX_FIELD_GROUPS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA", "ASNOW" ]
+  VX_FIELD_GROUPS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "ASNOW" ]

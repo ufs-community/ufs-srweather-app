@@ -21,7 +21,7 @@ REFC:
 RETOP:
     RETOP%%EchoTop18:
         L0%%Z500: ['ge20', 'ge30', 'ge40', 'ge50']
-ADPSFC:
+SFC:
     TMP:
         Z2: ['ge268', 'ge273', 'ge278', 'ge293', 'ge298', 'ge303']
     DPT:
@@ -34,7 +34,7 @@ ADPSFC:
         L0: ['lt1609', 'lt8045', 'ge8045']
     HGT%%CEILING:
         L0: ['lt152', 'lt305', 'lt914']
-ADPUPA:
+UPA:
     TMP:
         P850: ['ge288', 'ge293', 'ge298']
         P700: ['ge273', 'ge278', 'ge283']

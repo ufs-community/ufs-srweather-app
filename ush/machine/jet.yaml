@@ -7,7 +7,7 @@ platform:
   TEST_NDAS_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ndas/proc
   TEST_NOHRSC_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
   DOMAIN_PREGEN_BASEDIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
-  PARTITION_DEFAULT: sjet,vjet,kjet,xjet
+  PARTITION_DEFAULT: vjet,kjet,xjet
   QUEUE_DEFAULT: batch
   PARTITION_FCST: xjet
   QUEUE_FCST: batch
@@ -49,9 +49,9 @@ rocoto:
   tasks:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        cores:
         native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
-        nodes:
+        nodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}:ppn={{ task_run_fcst.PPN_RUN_FCST // 1 }}'
         nnodes:
         nodesize:
         ppn:

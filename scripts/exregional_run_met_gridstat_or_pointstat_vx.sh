@@ -69,8 +69,8 @@ Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs the METplus ${MetplusToolName}
-tool to perform deterministic verification of the specified field (VAR)
-for a single forecast.
+tool to perform deterministic verification of the specified field group 
+(FIELD_GROUP) for a single forecast.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -94,11 +94,11 @@ FIELDNAME_IN_FCST_INPUT=""
 FIELDNAME_IN_MET_OUTPUT=""
 FIELDNAME_IN_MET_FILEDIR_NAMES=""
 
-# Note that ACCUM_HH will not be defined for the REFC, RETOP, ADPSFC, and
-# ADPUPA field groups.
+# Note that ACCUM_HH will not be defined for the REFC, RETOP, SFC, and
+# UPA field groups.
 set_vx_params \
   obtype="${OBTYPE}" \
-  field="$VAR" \
+  field_group="${FIELD_GROUP}" \
   accum_hh="${ACCUM_HH:-}" \
   outvarname_grid_or_point="grid_or_point" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
@@ -200,7 +200,7 @@ elif [ "${grid_or_point}" = "point" ]; then
 
   if [ "${OBTYPE}" = "NDAS" ]; then
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-    OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCandADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
+    OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
   elif [ "${OBTYPE}" = "AERONET" ]; then
     FIELDNAME_IN_MET_FILEDIR_NAMES="AERONET_AOD"
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
@@ -295,7 +295,7 @@ export LOGDIR
 #
 if [ -z "${VX_LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of forecast hours for which to run METplus is empty:
+The list of lead hours for which to run METplus is empty:
   VX_LEADHR_LIST = [${VX_LEADHR_LIST}]"
 fi
 #
@@ -391,7 +391,7 @@ settings="\
 'accum_hh': '${ACCUM_HH:-}'
 'accum_no_pad': '${ACCUM_NO_PAD:-}'
 'metplus_templates_dir': '${METPLUS_CONF:-}'
-'input_field_group': '${VAR:-}'
+'input_field_group': '${FIELD_GROUP:-}'
 'input_level_fcst': '${FCST_LEVEL:-}'
 'input_thresh_fcst': '${FCST_THRESH:-}'
 #

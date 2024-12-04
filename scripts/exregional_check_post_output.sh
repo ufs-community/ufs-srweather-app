@@ -11,8 +11,6 @@
 #    CDATE
 #    ENSMEM_INDX
 #    GLOBAL_VAR_DEFNS_FP
-#    METPLUS_ROOT (used by ush/set_vx_fhr_list.py)
-#    VAR
 #    METPLUS_ROOT (used by ush/set_leadhrs.py)
 #
 # Experiment variables

@@ -50,13 +50,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Load the python environment for the workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. Then, run:
 
-      .. code-block:: console
-         
-         source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
-         module use /path/to/ufs-srweather-app/modulefiles
-         module load wflow_<platform>
-
-      where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
+      .. include:: ../../doc-snippets/load-env.rst
+      
+      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
 
       .. code-block:: console
 

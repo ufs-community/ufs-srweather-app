@@ -98,7 +98,7 @@ FIELDNAME_IN_MET_FILEDIR_NAMES=""
 
 set_vx_params \
   obtype="${OBTYPE}" \
-  field="$VAR" \
+  field_group="${FIELD_GROUP}" \
   accum_hh="${ACCUM_HH}" \
   outvarname_grid_or_point="grid_or_point" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
@@ -194,10 +194,10 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   if [ "${OBTYPE}" = "AIRNOW" ]; then
     PCP_COMBINE_METHOD="USER_DEFINED"
 
-    if [ "${VAR}" = "PM25" ]; then
+    if [ "${FIELD_GROUP}" = "PM25" ]; then
     # Need to combine two fields (different PM types) and convert units from forecast files to create PM25 equivalent to obs
       PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62010; convert(x)=x*1e9;' {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=0; convert(x)=x*1e9;'"
-    elif [ "${VAR}" = "PM10" ]; then
+    elif [ "${FIELD_GROUP}" = "PM10" ]; then
     # for PM10, command is just a passthrough
       PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} -field 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=2; convert(x)=x*1e9;'"
     fi
@@ -210,7 +210,7 @@ elif [ "${FCST_OR_OBS}" = "OBS" ]; then
 
   OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}${slash_obs_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-  fn_template=$(eval echo \${OBS_${OBTYPE}_${VAR}_FN_TEMPLATE_PCPCOMBINE_OUTPUT})
+  fn_template=$(eval echo \${OBS_${OBTYPE}_${FIELD_GROUP}_FN_TEMPLATE_PCPCOMBINE_OUTPUT})
   OUTPUT_FN_TEMPLATE=$( eval echo ${fn_template} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
@@ -405,7 +405,7 @@ settings="\
   'output_accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'metplus_templates_dir': '${METPLUS_CONF:-}'
-  'input_field_group': '${VAR:-}'
+  'input_field_group': '${FIELD_GROUP:-}'
   'input_level_fcst': '${FCST_LEVEL:-}'
   'input_thresh_fcst': '${FCST_THRESH:-}'
 #

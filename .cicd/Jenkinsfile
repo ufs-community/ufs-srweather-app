@@ -12,9 +12,9 @@ pipeline {
     parameters {
         // Allow job runner to filter based on platform
         // Use the line below to enable all PW clusters
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable the PW AWS cluster
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')

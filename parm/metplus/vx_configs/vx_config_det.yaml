@@ -57,7 +57,7 @@ REFC:
 RETOP:
     RETOP%%EchoTop18:
         L0%%Z500: ['ge20', 'ge30', 'ge40', 'ge50']
-ADPSFC:
+SFC:
     TMP:
         Z2: []
     DPT:
@@ -90,7 +90,7 @@ ADPSFC:
         L0%%Z0: ['ge1.0%%ge164&&le166']
     CICEP%%PRWE:
         L0%%Z0: ['ge1.0%%ge174&&le176']
-ADPUPA:
+UPA:
     TMP:
         P1000: &adpupa_tmp_threshes
                []

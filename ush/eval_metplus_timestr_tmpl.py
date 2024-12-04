@@ -52,7 +52,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
     parser.add_argument("-i", "--init_time", help="Initial date in YYYYMMDDHH[mmss] format", type=str, default='')
-    parser.add_argument("-f", "--lhr", help="Forecast hour", type=int, required=True)
+    parser.add_argument("-l", "--lhr", help="Lead hour", type=int, required=True)
     parser.add_argument("-tl", "--time_lag", help="Hours of time lag for a time-lagged ensemble member", type=int, default=0)
     parser.add_argument("-ft", "--fn_template", help="Template for file names to search; see ??? for details on template settings", type=str, default='')
 

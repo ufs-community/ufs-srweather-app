@@ -1058,7 +1058,7 @@ For each workflow task, certain parameter values must be passed to the job sched
       For more information, see the `Intel Development Reference Guide <https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-10/thread-affinity-interface.html>`__. 
 
 ``OMP_NUM_THREADS_RUN_FCST``: (Default: 2)
-   The number of OpenMP threads to use for parallel regions. Corresponds to the ``atmos_nthreads`` value in ``model_configure``.
+   The number of OpenMP threads to use for parallel regions. Corresponds to the ``ATM_omp_num_threads`` value in ``ufs.configure``.
 
 ``OMP_STACKSIZE_RUN_FCST``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
@@ -1124,12 +1124,12 @@ Write-Component (Quilting) Parameters
 ``PRINT_ESMF``: (Default: false)
    Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory). Valid values: ``True`` | ``False``
 
-``PE_MEMBER01``: (Default: ``'{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'``)
+``PE_MEMBER01``: (Default: ``'{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) if QUILTING else OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X)}}'``)
    The number of MPI processes required by the forecast. When QUILTING is true, it is calculated as: 
    
    .. math::
       
-      LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group 
+      OMP\_NUM\_THREADS\_RUN\_FCST * (LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group)
 
 ``WRTCMP_write_groups``: (Default: "")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.
@@ -1607,11 +1607,12 @@ Non-default parameters for verification tasks are set in the ``verification:`` s
       * ``mm`` refers to the 2-digit valid minutes of the hour
       * ``SS`` refers to the two-digit valid seconds of the hour
 
+.. _GeneralVXParams:
 
 General VX Parameters
 ---------------------------------
 
-``VX_FIELD_GROUPS``: (Default: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA" ])
+``VX_FIELD_GROUPS``: (Default: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ])
   The groups of fields (some of which may consist of only a single field) on which
   to run verification.  
 
@@ -1620,7 +1621,7 @@ General VX Parameters
   HPSS for retrospective cases before March 2020, by default ``ASNOW`` is not
   included ``VX_FIELD_GROUPS``, but it may be added to this list in order to
   include the verification tasks for ``ASNOW`` in the workflow.  Valid values:
-  ``"APCP"`` | ``"ASNOW"`` | ``"REFC"`` | ``"RETOP"`` | ``"ADPSFC"`` | ``"ADPUPA"``
+  ``"APCP"`` | ``"ASNOW"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"``
 
 ``VX_APCP_ACCUMS_HRS``: (Default: [ 1, 3, 6, 24 ])
    The accumulation intervals (in hours) to include in the verification of
@@ -1658,12 +1659,15 @@ VX Parameters for Observations
 -------------------------------------
 
 .. note::
+
    The observation types that the SRW App can currently retrieve (if necessary)
    and use in verification are:
+
       * CCPA (Climatology-Calibrated Precipitation Analysis)
       * NOHRSC (National Operational Hydrologic Remote Sensing Center)
       * MRMS (Multi-Radar Multi-Sensor)
       * NDAS (NAM Data Assimilation System)
+
    The script ``ush/get_obs.py`` contains further details on the files and
    directory structure of each obs type.
 
@@ -1716,7 +1720,7 @@ VX Parameters for Observations
      ``OBS_NDAS_FN_TEMPLATES``:
         .. code-block:: console
 
-           [ 'ADPSFCandADPUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
+           [ 'SFCandUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
 
    File name templates for various obs types.  These are meant to be used
    in METplus configuration files and thus contain METplus time formatting
@@ -1843,11 +1847,12 @@ VX Parameters for Observations
    NOHRSC observations.  These files will contain observed accumulated
    snowfall for various accumulaton intervals.
 
-``OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'${OBS_NDAS_FN_TEMPLATES[1]}.nc'``)
+``OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'${OBS_NDAS_FN_TEMPLATES[1]}.nc'``)
    METplus template for the names of the NetCDF files generated by the
-   worfklow verification tasks that call METplus's Pb2nc tool on NDAS
-   observations.  These files will contain the observed ADPSFC or ADPUPA
-   fields in NetCDF format (instead of NDAS's native prepbufr format).
+   worfklow verification tasks that call METplus's Pb2nc tool on the 
+   prepbufr files in NDAS observations.  These files will contain the
+   observed surface (SFC) and upper-air (UPA) fields in NetCDF format
+   (instead of NDAS's native prepbufr format).
 
 ``NUM_MISSING_OBS_FILES_MAX``: (Default: 2)
    For verification tasks that need observational data, this specifies

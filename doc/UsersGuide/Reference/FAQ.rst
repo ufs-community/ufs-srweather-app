@@ -281,12 +281,7 @@ How can I run a new experiment?
 
 To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the |wflow_env| environment:
 
-.. code-block:: console
-   
-   source /path/to/etc/lmod-setup.sh/or/lmod-setup.csh <platform>
-   module use /path/to/modulefiles
-   module load wflow_<platform>
-
+.. include:: ../../doc-snippets/load-env.rst
 Follow any instructions output by the console (e.g., |activate|).
 
 Then, users can configure a new experiment by updating the experiment parameters in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
