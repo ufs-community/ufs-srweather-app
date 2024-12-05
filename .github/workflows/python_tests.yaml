@@ -35,6 +35,7 @@ jobs:
           micromamba activate srw_app
           export PYTHONPATH=$(pwd)/ush
           pylint --ignore-imports=yes tests/test_python/
+          pylint tests/WE2E
           pylint ush/create_*.py
           pylint ush/generate_FV3LAM_wflow.py
           pylint ush/set_fv3nml*.py

@@ -39,7 +39,7 @@ from check_python_version import check_python_version
 
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
-        ushdir,
+        ushdir: str,
         config: str = "config.yaml",
         logfile: str = "log.generate_FV3LAM_wflow",
         debug: bool = False) -> str:
