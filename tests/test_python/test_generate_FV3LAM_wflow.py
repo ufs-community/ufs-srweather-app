@@ -27,7 +27,7 @@ class Testing(unittest.TestCase):
 
         # run workflows in separate process to avoid conflict between community and nco settings
         def run_workflow(USHdir, logfile):
-            p = Process(target=generate_FV3LAM_wflow, args=(USHdir, logfile))
+            p = Process(target=generate_FV3LAM_wflow, args=(USHdir,"config.yaml",logfile))
             p.start()
             p.join()
             exit_code = p.exitcode
@@ -38,6 +38,15 @@ class Testing(unittest.TestCase):
         USHdir = os.path.join(test_dir, "..", "..", "ush")
         logfile = "log.generate_FV3LAM_wflow"
         sed = get_env_var("SED")
+
+        # create a build settings file if needed
+        EXECdir = os.path.join(USHdir, "..", "exec")
+        build_settings_file = os.path.join(EXECdir, "build_settings.yaml")
+        if not os.path.exists(build_settings_file):
+            os.makedirs(EXECdir, exist_ok=True)
+            with open(build_settings_file, 'w', encoding='utf-8') as build_settings:
+                build_settings.write('Machine: linux\n')
+                build_settings.write('Application:\n')
 
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")

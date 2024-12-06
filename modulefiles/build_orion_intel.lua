@@ -5,7 +5,7 @@ the MSU machine Orion using intel-oneapi-compilers/2021.9.0
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Orion ]===])
 
-prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.6.0/envs/upp-addon-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core")
 
 load("stack-intel/2021.9.0")
 load("stack-intel-oneapi-mpi/2021.9.0")
@@ -20,6 +20,8 @@ load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
 
 setenv("CFLAGS","-diag-disable=10441")
 setenv("FFLAGS","-diag-disable=10441")
+
+setenv("FC", "mpiifort")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")

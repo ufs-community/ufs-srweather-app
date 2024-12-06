@@ -1,0 +1,23 @@
+# UFS Short Range Weather App Configuration Summary
+#===================================================
+
+# General
+#---------
+SRW_Version:     @SRWA_VERSION@
+SRW_hash:        @GIT_HASH@
+Machine:         @machine@
+Configured_On:   @CONFIG_DATE@
+Host_System:     @host_cpu@-@host_vendor@-@host_os@
+Build_Directory: @abs_top_builddir@
+Install_Prefix:  @prefix@
+Application:     @application@
+# Compiling Options
+#-------------------
+C_Compiler:      @CC_VERSION@
+CFLAGS:          @CFLAGS@
+CPPFLAGS:        @CPPFLAGS@
+LDFLAGS:         @LDFLAGS@
+Shared_Library:  @enable_shared@
+Static_Library:  @enable_static@
+Extra_libraries: @LIBS@
+

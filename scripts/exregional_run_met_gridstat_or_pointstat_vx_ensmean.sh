@@ -249,7 +249,7 @@ fi
 # First, set the base file names.
 #
 metplus_config_tmpl_bn="${MetplusToolName}_ensmean"
-metplus_config_bn="${MetplusToolName}_ensmean_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${CDATE}"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${CDATE}_ensmean"
 metplus_log_bn="${metplus_config_bn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.

@@ -45,7 +45,7 @@ verification:
   CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
   NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
   MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
-  NDAS_OBS_DIR: "/scratch2/BMC/fv3lam/Gerard.Ketefian/obs_for_ai_tests"
+  NDAS_OBS_DIR: "{{ platform.TEST_GDAS_OBS_DIR }}"
   # Do not remove raw obs files to be able to verify that only the necessary
   # raw files are fetched from HPSS (if it's necessary to fetch obs files).
   REMOVE_RAW_OBS_CCPA: false
@@ -53,11 +53,11 @@ verification:
   REMOVE_RAW_OBS_NDAS: false
   REMOVE_RAW_OBS_NOHRSC: false
   #
-  OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', 'gdas/{valid?fmt=%Y%m%d}/gdas.t{valid?fmt=%H}z.prepbufr.nr' ]
+  OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', '{valid?fmt=%Y%m%d}/gdas.t{valid?fmt=%H}z.prepbufr.nr' ]
   #
   VX_FCST_MODEL_NAME: 'gfs'
   VX_CONFIG_DET_FN: 'vx_configs/vx_config_det.obs_gdas.model_gfs.yaml'
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_ai_tests'
+  VX_FCST_INPUT_BASEDIR: '{{- platform.TEST_EXTRN_MDL_SOURCE_BASEDIR }}'
   FCST_SUBDIR_TEMPLATE: '{{- verification.VX_FCST_MODEL_NAME }}.{init?fmt=%Y%m%d}/{init?fmt=%H}/atmos'
   FCST_FN_TEMPLATE: '{{- verification.VX_FCST_MODEL_NAME }}.t00z.pgrb2.0p25.f{lead?fmt=%HHH}'
   FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- verification.VX_FCST_MODEL_NAME }}.t00z.pgrb2.0p25.f{lead?fmt=%HHH}_a${ACCUM_HH}h.nc'

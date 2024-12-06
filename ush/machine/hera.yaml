@@ -2,10 +2,12 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 40
   SCHED: slurm
+  WE2E_TEST_DATA: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop
   TEST_CCPA_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_NOHRSC_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
   TEST_MRMS_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/ndas/proc
-  TEST_NOHRSC_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
+  TEST_GDAS_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/gdas
   DOMAIN_PREGEN_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: hera
   QUEUE_DEFAULT: batch
@@ -28,6 +30,7 @@ platform:
   TEST_PREGEN_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  #TEST_VX_FCST_INPUT_BASEDIR: '{{ "/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.final/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
   TEST_VX_FCST_INPUT_BASEDIR: '{{ "/scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
   FIXaer: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_aer
   FIXgsm: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_am

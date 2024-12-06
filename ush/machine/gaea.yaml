@@ -2,6 +2,7 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 128
   SCHED: slurm
+  WE2E_TEST_DATA: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop
   TEST_CCPA_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/ccpa/proc
   TEST_MRMS_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/ndas/proc

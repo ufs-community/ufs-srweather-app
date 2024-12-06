@@ -112,6 +112,7 @@ If non-default parameters are selected for the variables in this section, they s
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
+
 Machine-Dependent Parameters
 -------------------------------
 These parameters vary depending on machine. On :srw-wiki:`Level 1 and 2 <Supported-Platforms-and-Compilers>` systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
@@ -304,9 +305,6 @@ Pre-Processing File Separator Parameters
 
 Set File Name Parameters
 ----------------------------
-
-``EXPT_CONFIG_FN``: (Default: "config.yaml")
-   Name of the user-specified configuration file for the forecast experiment.
 
 ``CONSTANTS_FN``: (Default: "constants.yaml")
    Name of the file containing definitions of various mathematical, physical, and SRW App constants.
@@ -990,8 +988,14 @@ FVCOM Parameters
 ``FVCOM_FILE``: (Default: "fvcom.nc")
    Name of the file located in ``FVCOM_DIR`` that has :term:`FVCOM` data interpolated to the FV3-LAM grid. This file will be copied later to a new location, and the name will be changed to ``fvcom.nc`` if a name other than ``fvcom.nc`` is selected.
 
-Vertical Coordinate File Parameter
+Vertical Coordinate Parameters
 ------------------------------------
+
+``LEVP``: (Default: 65)
+   Number of vertical levels in the atmosphere. In order to change this
+   number, the user will additionally need to create a vertical coordinate
+   distribution file; this process is described in :numref:`Section %s <VerticalLevels>`
+   This value should be the same in both ``make_ics`` and ``make_lbcs``.
 
 ``VCOORD_FILE``: (Default: ``"{{ workflow.FIXam }}/global_hyblev.l65.txt"``)
    Full path to the file used to set the vertical coordinates in FV3. This file should be the same in both ``make_ics`` and ``make_lbcs``.
@@ -1010,8 +1014,14 @@ Non-default parameters for the ``make_lbcs`` task are set in the ``task_make_lbc
 ``OMP_STACKSIZE_MAKE_LBCS``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
-Vertical Coordinate File Parameter
+Vertical Coordinate Parameters
 ------------------------------------
+
+``LEVP``: (Default: 65)
+   Number of vertical levels in the atmosphere. In order to change this
+   number, the user will additionally need to create a vertical coordinate
+   distribution file; this process is described in :numref:`Section %s <VerticalLevels>` 
+   This value should be the same in both ``make_ics`` and ``make_lbcs``.
 
 ``VCOORD_FILE``: (Default: ``"{{ workflow.FIXam }}/global_hyblev.l65.txt"``)
    Full path to the file used to set the vertical coordinates in FV3. This file should be the same in both ``make_ics`` and ``make_lbcs``.
@@ -1592,7 +1602,7 @@ Non-default parameters for verification tasks are set in the ``verification:`` s
 
 .. note::
   The verification tasks in the SRW App are based on the :ref:`METplus <MetplusComponent>`
-  verification software developed at the Developmental Testbed Center (:ref:`DTC`).  
+  verification software developed at the Developmental Testbed Center (:term:`DTC`).  
   :ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. 
   Full documentation for METplus is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
 
@@ -2046,6 +2056,117 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 
 ``NEXUS_GFS_SFC_ARCHV_DIR``:  (Default: "/NCEPPROD/hpssprod/runhistory")
    Path to archive directory for gfs surface files on HPSS.
+
+.. _fire-parameters:
+
+Community Fire Behavior Model Parameters
+========================================
+
+Non-default parameters for the Community Fire Behavior Model (CFBM) in SRW are set in the ``fire:`` section of the ``config.yaml`` file.
+
+``UFS_FIRE``: (Default: false)
+   Flag for turning on CFBM fire simulation
+
+``FIRE_INPUT_DIR``: (Default: "")
+   Directory where fire input file (geo_em.d01.nc) can be found
+
+``DT_FIRE``: (Default: 0.5)
+   The fire behavior component’s integration timestep in seconds
+
+``OUTPUT_DT_FIRE``: (Default: 300)
+   The fire behavior component’s output timestep in seconds
+
+``FIRE_NUM_TASKS``: (Default: 0)
+   Number of MPI tasks assigned to the FIRE_BEHAVIOR component. Currently only 1 task is supported.
+
+.. note::
+   The following options control namelist values in the ``&fire`` section of the Community Fire
+   Behavior Model. See the :fire-ug:`CFBM Users Guide <Configuration.html#fire>` for more information.
+
+``FIRE_PRINT_MSG``: (Default: 0)
+   Debug print level for the weather model fire core. Levels greater than 1 will print extra
+   messages to the log file at run time.
+
+     0: no extra prints
+
+     1: Extra prints
+
+     2: More extra prints
+
+     3: Even more extra prints
+
+``FIRE_WIND_HEIGHT``: (Default: 5.0)
+   Height to interpolate winds to for calculating fire spread rate
+
+``FIRE_ATM_FEEDBACK``: (Default: 0.0)
+   Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
+   Intermediate values will vary the amount of forcing provided from the fire to the dynamical core.
+
+``FIRE_VISCOSITY``: (Default: 0.4)
+  Artificial viscosity in level set method. Maximum value of 1. Required for ``FIRE_UPWINDING=0``
+
+``FIRE_UPWINDING``: (Default: 9)
+   Upwinding scheme used for calculating the normal spread of the fire front. More detailed descriptions
+   of these options can be found in the :fire-ug:`CFBM Users Guide <Configuration.html#fire>`. 
+
+     0 = Central Difference
+
+     1 = Standard
+
+     2 = Godunov
+
+     3 = ENO1
+
+     4 = Sethian
+
+     5 = 2nd-order Sethian
+
+     6 = WENO3
+
+     7 = WENO5
+
+     8 = Hybrid WENO3/ENO1
+
+     9 = Hybrid WENO5/ENO1
+
+``FIRE_LSM_ZCOUPLING`` (Default: false)
+   When true, uses ``FIRE_LSM_ZCOUPLING_REF`` instead of ``FIRE_WIND_HEIGHT`` as a reference height
+   to calculate the logarithmic surface layer wind profile
+
+``FIRE_LSM_ZCOUPLING_REF`` (Default: 60.0)
+   Reference height from which the velocity at FIRE_WIND_HEIGHT is calculated using a logarithmic profile
+
+
+``FIRE_NUM_IGNITIONS`` (Default: 1)
+   Number of fire ignitions.
+
+.. note::
+   If ``FIRE_NUM_IGNITIONS > 1``, the following variables should be lists with one entry for each ignition
+
+``FIRE_IGNITION_ROS`` (Default: 0.0)
+   Ignition rate of spread (Rothermel parameterization)
+
+``FIRE_IGNITION_START_LAT`` (Default: 40.609)
+   Latitude for start of ignition(s)
+
+``FIRE_IGNITION_START_LON`` (Default: -105.879)
+   Longitude for start of ignition(s)
+
+``FIRE_IGNITION_END_LAT`` (Default: 40.609)
+   Latitude for end of ignition(s)
+  
+``FIRE_IGNITION_END_LON`` (Default: -105.879)
+   Longitude for end of ignition(s)
+
+``FIRE_IGNITION_RADIUS`` (Default: 250)
+   Radius of ignition area in meters
+
+``FIRE_IGNITION_START_TIME`` (Default: 6480)
+   Start time of ignition(s) in seconds (counting from the beginning of the simulation)
+
+``FIRE_IGNITION_START_TIME`` (Default: 7000)
+   End time of ignition(s) in seconds (counting from the beginning of the simulation)
+
 
 Rocoto Parameters
 ===================

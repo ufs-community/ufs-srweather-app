@@ -30,10 +30,6 @@ jobs:
           cache-downloads: true
           cache-environment: true
 
-      - name: Checkout externals
-        run: |
-          ./manage_externals/checkout_externals ufs-weather-model
-
       - name: Lint the python code
         run: |
           micromamba activate srw_app
@@ -44,17 +40,22 @@ jobs:
           pylint ush/set_fv3nml*.py
           pylint ush/update_input_nml.py
 
+      - name: Checkout externals
+        run: |
+          ./manage_externals/checkout_externals ufs-weather-model
+
       - name: Run python unittests
         run: |
           # exclude test_retrieve_data that is tested in functional test
           micromamba activate srw_app
           export UNIT_TEST=True
           export PYTHONPATH=$(pwd)/ush
-          python -m unittest -b tests/test_python/*.py
+          python -m unittest tests/test_python/*.py
 
       - name: Run python functional tests
         run: |
           micromamba activate srw_app
           export CI=true
           export PYTHONPATH=${PWD}/ush
-          python3 -m unittest -b tests/test_python/test_retrieve_data.py
+          python3 -m unittest tests/test_python/test_retrieve_data.py
+

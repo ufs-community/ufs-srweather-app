@@ -157,7 +157,7 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
       ACCUM_HH: '01'
       FCST_LEVEL: 'all'
       FCST_THRESH: 'all'
-    walltime: 02:30:00
+    walltime: 04:15:00
     dependency:
       metataskdep_check_post_output:
          <<: *check_post_output

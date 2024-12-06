@@ -79,7 +79,7 @@ cd ${workspace}
 # Activate workflow environment
 module load wflow_${platform,,}
 # Deactivate conflicting conda env on GCP
-[[ "${SRW_PLATFORM}" =~ "gclusternoaa" ]] && conda deactivate
+[[ "${platform}" == "noaacloud" ]] && conda deactivate
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but would not necessarily block workflow tests
 conda activate srw_app

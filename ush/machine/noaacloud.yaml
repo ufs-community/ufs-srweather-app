@@ -2,6 +2,7 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: '{{ 44 if (user.ACCOUNT == "cz-epic") else 36 if (user.ACCOUNT == "ca-epic") else 28 }}'
   SCHED: slurm
+  WE2E_TEST_DATA: /contrib/EPIC/UFS_SRW_data/develop
   TEST_CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/ccpa/proc
   TEST_MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/ndas/proc

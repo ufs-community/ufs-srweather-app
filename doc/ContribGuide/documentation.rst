@@ -70,3 +70,53 @@ Please follow these guidelines when contributing to the documentation:
         .. code-block:: python
 
            n = 88
+
+Troubleshooting Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the SRW App documentation Makefile (``ufs-srweather-app/doc/Makefile``), the ``-W`` option causes documentation builds to fail when there are errors or warnings in the build. 
+This ensures that the documentation remains up-to-date and notifies developers of any new issues (like failing links). However, the build will fail when it hits the first error without showing subsequent errors. 
+When troubleshooting, it can be useful to see all warnings and errors. 
+To see all warnings and errors, comment out the ``-W`` flag in ``SPHINXOPTS`` in the Makefile and build the documentation by running ``make doc`` from the ``doc`` directory. 
+
+Technical Documentation Guidelines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Technical (API-like) documentation is generated for any Python scripts in the ``ush`` or ``tests/WE2E`` directories. 
+When developers change Python files in these directories, they need to update the Python docstrings (i.e., comments in ``"""triple quotes"""``) to reflect the changes they made. 
+Each Python script should include: 
+
+   * A summary of the script's purpose/functionality
+      
+      * Should start with a verb, e.g., "checks" or "loads" or "initializes"
+
+   * Docstrings for each method (except methods like ``_parse_args`` that start with an underscore). These docstrings should include:
+
+      * A description of what the method does (starting with a verb, e.g., "checks" or "parses")
+      * A list of method parameters, or ``Args:``, with a definition and expected data type for each
+      * A return statement (``Returns:``) -- if applicable
+      * List of exceptions (``Raises:``) -- if applicable
+
+.. note:: 
+   
+   Python does not have truly private methods, but methods that start with an underscore are the closest equivalent. In the SRW App, the underscore signals that this method is only accessed by the script within which it is called. 
+
+After updating the docstrings, developers need to update the corresponding RST files. 
+To do this successfully, developers must have *sphinx>=7.4.0* installed on their system. To update the RST files, run: 
+
+.. code-block:: console
+
+   cd ufs-srweather-app/doc/TechDoc
+   sphinx-apidoc -fM --remove-old -o ./ush ../../ush
+   sphinx-apidoc -fM --remove-old -o ./tests/WE2E ../../tests/WE2E
+
+.. note:: 
+
+   Developers who do not have *sphinx>=7.4.0* installed may issue the following commands from ``ufs-srweather-app/doc/TechDoc`` before running the sphinx-apidoc commands above: 
+
+   .. code-block:: console
+
+      rm -rf ush
+      rm -rf tests/WE2E
+   
+   This will delete current RST files before recreating them with the ``sphinx-apidoc`` command based on the current contents of ``ush`` and ``tests/WE2E``. This step is necessary because the ``--remove-old`` flag does not work with earlier versions of sphinx. 

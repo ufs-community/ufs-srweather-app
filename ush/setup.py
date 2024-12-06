@@ -462,6 +462,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     user_config_fp = os.path.join(USHdir, user_config_fn)
     expt_config, do_vx = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
 
+    # Load build settings as a dictionary; will be used later to make sure the build is consistent with the user settings
+    build_config_fp = os.path.join(expt_config["user"].get("EXECdir"), "build_settings.yaml")
+    build_config = load_config_file(build_config_fp)
+    logger.debug(f"Read build configuration from {build_config_fp}\n{build_config}")
+
+    # Fail if build machine and config machine are inconsistent
+    if build_config["Machine"].upper() != expt_config["user"]["MACHINE"]:
+        logger.critical("ERROR: Machine in build settings file != machine specified in config file")
+        logger.critical(f"build machine: {build_config['Machine']}")
+        logger.critical(f"config machine: {expt_config['user']['MACHINE']}")
+        raise ValueError("Check config settings for correct value for 'machine'")
+
     # Set up some paths relative to the SRW clone
     expt_config["user"].update(set_srw_paths(USHdir, expt_config))
 
@@ -776,10 +788,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         vx_metatasks_all_by_obtype["NDAS"] \
         = ["task_get_obs_ndas",
            "task_run_MET_Pb2nc_obs_NDAS",
-           "metatask_PointStat_SFC_all_mems",
-           "metatask_PointStat_UPA_all_mems",
-           "metatask_GenEnsProd_EnsembleStat_NDAS",
-           "metatask_PointStat_NDAS_ensmeanprob"]
+           "metatask_PointStat_SFC_UPA_all_mems",
+           "metatask_GenEnsProd_EnsembleStat_SFC_UPA",
+           "metatask_PointStat_SFC_UPA_ensmeanprob"]
 
         vx_field_groups_all_by_obtype["AERONET"] = ["AOD"]
         vx_metatasks_all_by_obtype["AERONET"] \
@@ -933,8 +944,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
 
 
-    # Make sure the vertical coordinate file for both make_lbcs and
-    # make_ics is the same.
+    # Make sure the vertical coordinate file and LEVP for both make_lbcs and make_ics is the same.
     if ics_vcoord := expt_config.get("task_make_ics", {}).get("VCOORD_FILE") != \
             (lbcs_vcoord := expt_config.get("task_make_lbcs", {}).get("VCOORD_FILE")):
          raise ValueError(
@@ -948,6 +958,20 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
              make_lbcs:
                VCOORD_FILE: {lbcs_vcoord}
+             """
+         )
+    if ics_levp := expt_config.get("task_make_ics", {}).get("LEVP") != \
+            (lbcs_levp := expt_config.get("task_make_lbcs", {}).get("LEVP")):
+         raise ValueError(
+             f"""
+             The number of vertical levels LEVP must be set to the same value for both the
+             make_ics task and the make_lbcs tasks. They are currently set to:
+
+             make_ics:
+               LEVP: {ics_levp}
+
+             make_lbcs:
+               LEVP: {lbcs_levp}
              """
          )
 
@@ -1030,7 +1054,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             num_cycles = len(set_cycle_dates(
                 date_first_cycl,
                 date_last_cycl,
-                cycl_incr))
+                cycl_intvl_dt))
 
             if num_cycles != len(fcst_len_cycl):
               logger.error(f""" The number of entries in FCST_LEN_CYCL does
@@ -1686,6 +1710,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["SDF_USES_THOMPSON_MP"] = has_tag_with_value(ccpp_suite_xml, "scheme", "mp_thompson")
 
     if workflow_config["SDF_USES_THOMPSON_MP"]:
+    
         logger.debug(f'Selected CCPP suite ({workflow_config["CCPP_PHYS_SUITE"]}) uses Thompson MP')
         logger.debug(f'Setting up links for additional fix files')
 
@@ -1707,10 +1732,62 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         logger.debug(f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}')
 
 
+    # -----------------------------------------------------------------------
+    #
+    # Check that UFS FIRE settings are correct and consistent
+    #
+    # -----------------------------------------------------------------------
+    fire_conf = expt_config["fire"]
+    if fire_conf["UFS_FIRE"]:
+        if build_config["Application"]!="ATMF":
+            raise Exception("UFS_FIRE == True but UFS SRW has not been built for fire coupling; see users guide for details")
+        fire_input_file=os.path.join(fire_conf["FIRE_INPUT_DIR"],"geo_em.d01.nc")
+        if not os.path.isfile(fire_input_file):
+            raise FileNotFoundError(
+                dedent(
+                    f"""
+                The fire input file (geo_em.d01.nc) does not exist in the specified directory:
+                {fire_conf["FIRE_INPUT_DIR"]}
+                Check that the specified path is correct, and that the file exists and is readable
+                """
+                )
+            )
+        if fire_conf["FIRE_NUM_TASKS"] < 1:
+            raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
+        elif fire_conf["FIRE_NUM_TASKS"] > 1:
+            raise ValueError("FIRE_NUM_TASKS > 1 not yet supported")
+
+        if fire_conf["FIRE_NUM_IGNITIONS"] > 5:
+            raise ValueError(f"Only 5 or fewer fire ignitions supported")
+
+        if fire_conf["FIRE_NUM_IGNITIONS"] > 1:
+            # These settings all need to be lists for multiple fire ignitions
+            each_fire = ["FIRE_IGNITION_ROS", "FIRE_IGNITION_START_LAT", "FIRE_IGNITION_START_LON",
+                         "FIRE_IGNITION_END_LAT", "FIRE_IGNITION_END_LON", "FIRE_IGNITION_RADIUS",
+                         "FIRE_IGNITION_START_TIME", "FIRE_IGNITION_END_TIME"]
+            for setting in each_fire:
+                if not isinstance(fire_conf[setting], list):
+                    logger.critical(f"{fire_conf['FIRE_NUM_IGNITIONS']=}")
+                    logger.critical(f"{fire_conf[setting]=}")
+                    raise ValueError(f"For FIRE_NUM_IGNITIONS > 1, {setting} must be a list of the same length")
+                if len(fire_conf[setting]) != fire_conf["FIRE_NUM_IGNITIONS"]:
+                    logger.critical(f"{fire_conf['FIRE_NUM_IGNITIONS']=}")
+                    logger.critical(f"{fire_conf[setting]=}")
+                    raise ValueError(f"For FIRE_NUM_IGNITIONS > 1, {setting} must be a list of the same length")
+
+        if fire_conf["FIRE_ATM_FEEDBACK"] > 0.0:
+            raise ValueError("FIRE_ATM_FEEDBACK > 0 (two-way coupling) not supported in UFS yet")
+
+        if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
+            raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
+    else:
+        if fire_conf["FIRE_NUM_TASKS"] > 0:
+            logger.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
+            fire_conf["FIRE_NUM_TASKS"] = 1
     #
     # -----------------------------------------------------------------------
     #
-    # Generate var_defns.sh file in the EXPTDIR. This file contains all
+    # Generate var_defns.yaml file in the EXPTDIR. This file contains all
     # the user-specified settings from expt_config.
     #
     # -----------------------------------------------------------------------

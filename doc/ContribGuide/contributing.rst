@@ -12,7 +12,7 @@ Fork and PR Overview
 Contributions to the ``ufs-srweather-app`` project are made via a :github-docs:`Fork<pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks>` and :github-docs:`Pull Request (PR)<pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>` model. GitHub provides a thorough description of this contribution model in their `Contributing to a project` :github-docs:`Quickstart<get-started/exploring-projects-on-github/contributing-to-a-project>`, but the steps, with respect to ``ufs-srweather-app`` contributions, can be summarized as:
 
 #. :github-docs:`Create an issue <issues/tracking-your-work-with-issues/using-issues/creating-an-issue>` to document proposed changes.
-#. :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository>` the :srw-repo:`ufs-srweather-app repository<>` into your personal GitHub account.
+#. :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#creating-your-own-copy-of-a-project>` the :srw-repo:`ufs-srweather-app repository<>` into your personal GitHub account.
 #. :github-docs:`Clone<get-started/exploring-projects-on-github/contributing-to-a-project>` your fork onto your development system.
 #. :github-docs:`Create a branch<get-started/exploring-projects-on-github/contributing-to-a-project#creating-a-branch-to-work-on>` in your clone for your changes. All development should take place on a branch, *not* on ``develop``. 
 #. :github-docs:`Make, commit, and push changes<get-started/exploring-projects-on-github/contributing-to-a-project#making-and-pushing-changes>` in your clone / to your fork. 
@@ -25,7 +25,7 @@ Development and Testing Process
 =================================
 
 #. **Create issue:** Open an :srw-repo:`issue <issues/new/choose>` in the ``ufs-srweather-app`` to document proposed changes. See :ref:`Opening an Issue <open-issue>` for detailed instructions.
-#. **Fork & Clone the SRW App:** :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository>` the :srw-repo:`ufs-srweather-app repository<>` into your personal GitHub account and :github-docs:`clone<get-started/exploring-projects-on-github/contributing-to-a-project>` your fork onto your development system if you have not already done so.
+#. **Fork & Clone the SRW App:** :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#creating-your-own-copy-of-a-project>` the :srw-repo:`ufs-srweather-app repository<>` into your personal GitHub account and :github-docs:`clone<get-started/exploring-projects-on-github/contributing-to-a-project>` your fork onto your development system if you have not already done so.
 #. **Create a branch:** in your clone for your changes. All development should take place on a branch, not on ``develop``. Branches should be named as follows, where ``[name]`` is a one-word description of the branch:
 
    * ``bugfix/[name]``: Fixes a demonstrably incorrect portion of code

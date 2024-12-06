@@ -2,6 +2,7 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 68
   SCHED: slurm
+  WE2E_TEST_DATA: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop
   DOMAIN_PREGEN_BASEDIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/FV3LAM_pregen
   PARTITION_DEFAULT: normal
   QUEUE_DEFAULT: normal

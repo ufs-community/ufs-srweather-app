@@ -6,7 +6,13 @@ import logging
 
 sys.path.append("../../ush")
 
-from python_utils import load_config_file
+try:
+    from python_utils import load_config_file
+except ModuleNotFoundError:
+    print("\n\nERROR: Could not load python utilities.")
+    print('Note that this script can only be run in the SRW App from the directory:')
+    print("ufs-srweather-app/tests/WE2E\n\n")
+    raise
 
 from check_python_version import check_python_version
 
@@ -68,9 +74,13 @@ if __name__ == "__main__":
     else:
         raise ValueError(f'Bad arguments; run {__file__} -h for more information')
 
-    # Calculate core hours and update yaml
-    expts_dict = calculate_core_hours(expts_dict)
-    write_monitor_file(yaml_file,expts_dict)
+    if expts_dict:
+        # Calculate core hours and update yaml
+        expts_dict = calculate_core_hours(expts_dict)
+        write_monitor_file(yaml_file,expts_dict)
 
-    #Call function to print summary
-    print_WE2E_summary(expts_dict, args.debug)
+        #Call function to print summary
+        print_WE2E_summary(expts_dict, args.debug)
+    else:
+        logging.error(f'No experiments found in provided directory {args.expt_dir}')
+

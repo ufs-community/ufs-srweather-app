@@ -1,0 +1,25 @@
+name: Doc Tests
+on:
+  push:
+  pull_request:
+    branches:
+      - develop
+      - 'release/*'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
+jobs:
+  doc_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check tech docs
+        run: .github/scripts/check_tech_doc.sh
+      - name: Build documentation
+        run: |
+          cd doc
+          make doc

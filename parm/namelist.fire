@@ -1,0 +1,28 @@
+ &time
+ dt = 0.5
+ interval_output = 300
+/
+
+ &atm
+ interval_atm = 1
+ kde = 65
+ /
+
+ &fire
+ fire_num_ignitions             =          1,
+ fire_ignition_ros1             =       0.05,
+ fire_ignition_start_lat1       =     40.609,  
+ fire_ignition_start_lon1       =   -105.879,    
+ fire_ignition_end_lat1         =     40.609,  
+ fire_ignition_end_lon1         =   -105.879,    
+ fire_ignition_radius1          =        250,
+ fire_ignition_start_time1      =       6480,
+ fire_ignition_end_time1        =       7000,
+ fire_wind_height = 5.0,           ! height to interpolate winds to for calculating fire spread rate 
+ fire_print_msg = 1,               ! 1 print fire debugging messages
+ fire_atm_feedback = 1.0,          ! real, multiplier for heat fluxes, 1.=normal, 0.=turn off two-way coupling 
+ fire_viscosity = 0.4,             ! artificial viscosity in level set method (max 1, needed with fire_upwinding=0)
+ fire_upwinding = 9,               ! 0=none, 1=standard, 2=godunov, 3=eno, 4=sethian
+ fire_lsm_zcoupling             =     .false.,
+ fire_lsm_zcoupling_ref         =       60.0,
+/

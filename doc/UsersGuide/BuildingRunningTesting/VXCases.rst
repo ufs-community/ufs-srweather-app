@@ -262,7 +262,8 @@ Point STAT Files
 
 The Point-Stat files contain continuous variables like temperature, pressure, and wind speed. A description of the Point-Stat file can be found :ref:`here <met:point-stat>` in the MET documentation. 
 
-The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`_ and `MBIAS <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixC.html#multiplicative-bias>`_ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found :ref:`here <met:point_stat-output>`.
+The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the Root Mean Squared Error (`RMSE <https://metplus.readthedocs.io/en/latest/Users_Guide/statistics_list.html#statistics-list-p-r>`_) and Magnitude &
+Multiplicative bias (`MBIAS <https://metplus.readthedocs.io/en/latest/Users_Guide/statistics_list.html#statistics-list-g-m>`_) statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found :ref:`here <met:point_stat-output>`.
 
 To narrow down the variable field even further, users can focus on these weather variables: 
 

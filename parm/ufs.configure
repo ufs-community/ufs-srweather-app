@@ -3,63 +3,47 @@
 #############################################
 
 # ESMF #
-{%- if print_esmf %}
-logKindFlag:            ESMF_LOGKIND_MULTI
-{%- else %}
-logKindFlag:            ESMF_LOGKIND_MULTI_ON_ERROR
-{%- endif %}
+logKindFlag:            {{ logKindFlag }}
 globalResourceControl:  true
 
-{% if cpl_aqm  %}
 # EARTH #
-EARTH_component_list: ATM AQM
+EARTH_component_list: {{ EARTH_cl }}
 EARTH_attributes::
   Verbosity = 0
 ::
 
 # ATM #
 ATM_model:                      fv3
-ATM_petlist_bounds:             0 {{ pe_member01_m1 }}
+ATM_petlist_bounds:             {{ ATM_pb }}{{
+ATM_omp_num_threads_line }}
 ATM_attributes::
-  Verbosity = 0
+  Verbosity = 0{{
+ATM_diag_line }}
 ::
 
+{% if cpl_aqm  %}
 # AQM #
 AQM_model:                      aqm
-AQM_petlist_bounds:             0 {{ aqm_pe_member01_m1 }}
+AQM_petlist_bounds:             {{ AQM_pb }}
 AQM_attributes::
   Verbosity = 0
   Diagnostic = 0
 ::
-
-# Run Sequence #
-runSeq::
-  @{{ dt_atmos }}
-    ATM phase1
-    ATM -> AQM
-    AQM
-    AQM -> ATM
-    ATM phase2
-  @
-::
-{% else %}
-# EARTH #
-EARTH_component_list: ATM
-EARTH_attributes::
-  Verbosity = 0
-::
-
-# ATM #
-ATM_model:                      fv3
-ATM_petlist_bounds:             0 {{ pe_member01_m1 }}
-ATM_omp_num_threads:            {{ atm_omp_num_threads }}
-ATM_attributes::
-  Verbosity = 0
+{% endif %}
+{% if ufs_fire %}
+# FIRE #
+FIRE_model:                     fire_behavior
+FIRE_petlist_bounds:            {{ FIRE_pb }}
+FIRE_attributes::
+  Verbosity = high
   Diagnostic = 0
 ::
+{% endif %}
 
 # Run Sequence #
 runSeq::
-  ATM
+{% for line in runseq -%}
+{{ line }}
+{%- endfor %}
 ::
-{% endif %}
+

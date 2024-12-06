@@ -59,4 +59,4 @@ verification:
   #
   VX_FCST_MODEL_NAME: 'Michigan_Ontario_snow_8km'
   VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/fv3lam/Gerard.Ketefian/forecasts_for_SRW_WE2E_tests.linked/SRW'
+  VX_FCST_INPUT_BASEDIR: '{{- "/".join([platform.TEST_VX_FCST_INPUT_BASEDIR, "..", "custom_ESGgrid_Michigan_Ontario_8km"]) }}'

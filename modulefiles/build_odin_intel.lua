@@ -45,6 +45,8 @@ load("sigio")
 load("w3emc")
 load("wgrib2")
 
+setenv("FC", "ftn")
+
 setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_CXX_COMPILER","CC")
 setenv("CMAKE_Fortran_COMPILER","ftn")

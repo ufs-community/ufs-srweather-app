@@ -5,7 +5,7 @@ the NOAA RDHPC machine Gaea C5 using Intel-2023.1.0
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Gaea C5 ]===])
 
-prepend_path("MODULEPATH","/ncrc/proj/epic/spack-stack/spack-stack-1.6.0/envs/upp-addon-env/install/modulefiles/Core")
+prepend_path("MODULEPATH","/ncrc/proj/epic/spack-stack/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core")
 stack_intel_ver=os.getenv("stack_intel_ver") or "2023.2.0"
 load(pathJoin("stack-intel", stack_intel_ver))
 

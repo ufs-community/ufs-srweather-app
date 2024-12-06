@@ -8,11 +8,19 @@ project(ufs-srweather-app VERSION 1.0 LANGUAGES C CXX Fortran)
 find_package(MPI REQUIRED COMPONENTS C CXX Fortran)
 
 # Set extended version info.
-SET(SRWA_VERSION_MAJOR 1)
-SET(SRWA_VERSION_MINOR 0)
+SET(SRWA_VERSION_MAJOR 2)
+SET(SRWA_VERSION_MINOR 2)
 SET(SRWA_VERSION_PATCH 0)
 SET(SRWA_VERSION_NOTE "-development")
 SET(SRWA_VERSION ${SRWA_VERSION_MAJOR}.${SRWA_VERSION_MINOR}.${SRWA_VERSION_PATCH}${SRWA_VERSION_NOTE})
+
+# Get the latest abbreviated commit hash of the working branch
+execute_process(
+    COMMAND git log -1 --format=%h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    OUTPUT_VARIABLE GIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
 # A function used to create autotools-style 'yes/no' definitions.
 # If a variable is set, it 'yes' is returned. Otherwise, 'no' is
@@ -55,7 +63,7 @@ if(NOT DEFINED CMAKE_INSTALL_BINDIR)
 endif()
 
 #####
-# Configure and print the ufs-srweather-app.settings file.
+# Configure and print the build settings file.
 #####
 
 # Determine the configure date.
@@ -92,10 +100,12 @@ SET(host_vendor "${osname}")
 SET(host_os "${osrel}")
 SET(abs_top_builddir "${CMAKE_CURRENT_BINARY_DIR}")
 SET(abs_top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
+SET(application "${APP}")
+SET(machine "${BUILD_MACHINE}")
 
 SET(CC_VERSION "${CMAKE_C_COMPILER}")
 
-# Set values for .settings file.
+# Set values for build settings file.
 SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
 SET(CPPFLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_CPP_FLAGS_${CMAKE_BUILD_TYPE}}")
 SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
@@ -107,27 +117,27 @@ is_enabled(BUILD_SHARED_LIBS enable_shared)
 is_enabled(STATUS_PARALLEL HAS_PARALLEL)
 
 # Generate file from template.
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/ufs_srweather_app.settings.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app.settings"
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sorc/build_settings_template.yaml"
+  "${CMAKE_CURRENT_BINARY_DIR}/build_settings.yaml"
   @ONLY)
 
 # Read in settings file, print out.
 # Avoid using system-specific calls so that this
 # might also work on Windows.
-FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app.settings"
+FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/build_settings.yaml"
   UFS-SRWEATHER-APP_SETTINGS)
 MESSAGE(${UFS-SRWEATHER-APP_SETTINGS})
 
-# Install ufs_srweather_app.settings file into same location
+# Install build settings file into same location
 # as the app.
-INSTALL(FILES "${CMAKE_BINARY_DIR}/ufs_srweather_app.settings"
+INSTALL(FILES "${CMAKE_BINARY_DIR}/build_settings.yaml"
   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 #####
 # Create 'ufs_srweather_app_meta.h' include file.
 #####
 configure_file(
-  ufs_srweather_app_meta.h.in
+  sorc/ufs_srweather_app_meta.h.in
   ufs_srweather_app_meta.h @ONLY)
 
 FILE(COPY "${CMAKE_CURRENT_BINARY_DIR}/ufs_srweather_app_meta.h" DESTINATION include)

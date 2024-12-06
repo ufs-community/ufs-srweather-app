@@ -41,26 +41,28 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     archive hour to 24.
 
     Args:
-        obtype:
-        The observation type.  A string.
 
-        arcv_intvl_hrs:
-        Time interval (in hours) between archive files.  An integer.  For example,
-        if the obs files are bundled into 6-hourly archives, then this will be
-        set to 6.  This must be between 1 and 24 and must divide evenly into 24.
+        obtype (str):
+            The observation type.
 
-        hod:
-        The hour of the day.  An integer.  This must be between 0 and 23.  For
-        cumulative fields (CCPA and NOHRSC), hour 0 is treated as that of the
-        next day, i.e. as the 24th hour of the current day.
+        arcv_intvl_hrs (int):
+            Time interval (in hours) between archive files.  For example, if the obs
+            files are bundled into 6-hourly archives, then this will be set to 6.  This
+            must be between 1 and 24 and must divide evenly into 24.
+
+        hod (int):
+            The hour of the day.  This must be between 0 and 23.  For cumulative fields
+            (CCPA and NOHRSC), hour 0 is treated as that of the next day, i.e. as the
+            24th hour of the current day.
 
     Returns:
-        arcv_hr:
-        The hour since the start of day corresponding to the archive file containing
-        the obs file for the given hour of day.  An integer.
+        arcv_hr (int):
+            The hour since the start of day corresponding to the archive file containing
+            the obs file for the given hour of day.
     """
 
     valid_obtypes = ['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW']
+
     if obtype not in valid_obtypes:
         msg = dedent(f"""
             The specified observation type is not supported:
@@ -124,23 +126,24 @@ def get_obs(config, obtype, yyyymmdd_task):
     This script checks for the existence of obs files of the specified type
     at the locations specified by variables in the SRW App's configuration
     file.  If one or more of these files do not exist, it retrieves them from
-    a data store (using the retrieve_data.py script and as specified by the
-    configuration file parm/data_locations.yml for that script) and places
+    a data store (using the ``retrieve_data.py`` script and as specified by the
+    configuration file ``parm/data_locations.yml`` for that script) and places
     them in the locations specified by the App's configuration variables,
     renaming them if necessary.
 
     Args:
-        config:
-        The final configuration dictionary (obtained from var_defns.yaml).
+        config (dict):
+            The final configuration dictionary (obtained from ``var_defns.yaml``).
 
-        obtype:
-        The observation type.  A string.
+        obtype (str):
+            The observation type.
 
-        yyyymmdd_task:
-        The date for which obs may be needed.  A datetime object.
+        yyyymmdd_task (datetime.datetime):
+            The date for which obs may be needed.
 
     Returns:
-        True if all goes well.
+        True (bool):
+            If all goes well.
 
 
     Detailed Description:
@@ -162,15 +165,19 @@ def get_obs(config, obtype, yyyymmdd_task):
     obtain all available obs for the current day.
 
 
-    CCPA (Climatology-Calibrated Precipitation Analysis) precipitation
-    accumulation obs:
-    ----------
+    CCPA (Climatology-Calibrated Precipitation Analysis) precipitation accumulation obs
+    -----------------------------------------------------------------------------------
     For CCPA, the archive interval is 6 hours, i.e. the obs files are bundled
     into 6-hourly archives.  The archives are organized such that each one
     contains 6 files, so that the obs availability interval is
 
-      obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
-                          = 1 hr/file
+    .. math::
+
+       \\begin{align*}
+             \\qquad \\text{obs_avail_intvl_hrs}
+         & = (\\text{24 hrs})/[(\\text{4 archives}) \\times (\\text{6 files/archive})] \\hspace{50in} \\\\
+         & = \\text{1 hr/file}
+       \\end{align*}
 
     i.e. there is one obs file for each hour of the day containing the
     accumulation over that one hour.  The archive corresponding to hour 0
@@ -196,15 +203,19 @@ def get_obs(config, obtype, yyyymmdd_task):
     errors if getting CCPA obs at these times.
 
 
-    NOHRSC (National Operational Hydrologic Remote Sensing Center) snow
-    accumulation observations:
-    ----------
+    NOHRSC (National Operational Hydrologic Remote Sensing Center) snow accumulation observations
+    ---------------------------------------------------------------------------------------------
     For NOHRSC, the archive interval is 24 hours, i.e. the obs files are
     bundled into 24-hourly archives.  The archives are organized such that
     each one contains 4 files, so that the obs availability interval is
 
-      obs_avail_intvl_hrs = (24 hrs)/[(1 archive)*(4 files/archive)]
-                          = 6 hr/file
+    .. math::
+
+       \\begin{align*}
+             \\qquad \\text{obs_avail_intvl_hrs}
+         & = (\\text{24 hrs})/[(\\text{1 archive}) \\times (\\text{4 files/archive})] \\hspace{50in} \\\\
+         & = \\text{6 hr/file}
+       \\end{align*}
 
     i.e. there is one obs file for each 6-hour interval of the day containing
     the accumulation over those 6 hours.  The 4 obs files within each archive
@@ -222,8 +233,8 @@ def get_obs(config, obtype, yyyymmdd_task):
     In other cases, the sequence we loop over will be a subset of [0, 24].
 
 
-    MRMS (Multi-Radar Multi-Sensor) radar observations:
-    ----------
+    MRMS (Multi-Radar Multi-Sensor) radar observations
+    --------------------------------------------------
     For MRMS, the archive interval is 24 hours, i.e. the obs files are
     bundled into 24-hourly archives.  The archives are organized such that
     each contains gzipped grib2 files for that day that are usually only a
@@ -233,16 +244,21 @@ def get_obs(config, obtype, yyyymmdd_task):
     This effectively sets the obs availability interval for MRMS to one
     hour, i.e.
 
-      obs_avail_intvl_hrs = 1 hr/file
+    .. math::
+
+       \\begin{align*}
+             \\qquad \\text{obs_avail_intvl_hrs}
+         & = \\text{1 hr/file} \\hspace{50in} \\\\
+       \\end{align*}
 
     i.e. there is one obs file for each hour of the day containing values
     at that hour (but only after filtering in time; also see notes for
-    MRMS_OBS_AVAIL_INTVL_HRS in config_defaults.yaml).  Thus, to obtain the
-    obs at all hours of the day, we only need to extract files from one
-    archive.  Thus, in the simplest case in which the observation retrieval
-    times include all hours of the current task's day at which obs files
-    are available and none of the obs files for this day already exist on
-    disk, the sequence of archive hours over which we loop will be just
+    ``MRMS_OBS_AVAIL_INTVL_HRS`` in ``config_defaults.yaml``).  Thus, to
+    obtain the obs at all hours of the day, we only need to extract files
+    from one archive.  Thus, in the simplest case in which the observation
+    retrieval times include all hours of the current task's day at which obs
+    files are available and none of the obs files for this day already exist
+    on disk, the sequence of archive hours over which we loop will be just
     [0].  Note that:
 
     * For cases in which MRMS data are not needed for all hours of the day,
@@ -256,19 +272,19 @@ def get_obs(config, obtype, yyyymmdd_task):
       and extract two different archive files (one per field).
 
 
-    NDAS (NAM Data Assimilation System) conventional observations:
-    ----------
+    NDAS (NAM Data Assimilation System) conventional observations
+    -------------------------------------------------------------
     For NDAS, the archive interval is 6 hours, i.e. the obs files are
     bundled into 6-hourly archives.  The archives are organized such that
     each one contains 7 files (not say 6).  The archive associated with
     time yyyymmddhh_arcv contains the hourly files at
 
-      yyyymmddhh_arcv - 6 hours
-      yyyymmddhh_arcv - 5 hours
-      ...
-      yyyymmddhh_arcv - 2 hours
-      yyyymmddhh_arcv - 1 hours
-      yyyymmddhh_arcv - 0 hours
+      | yyyymmddhh_arcv - 6 hours
+      | yyyymmddhh_arcv - 5 hours
+      | ...
+      | yyyymmddhh_arcv - 2 hours
+      | yyyymmddhh_arcv - 1 hours
+      | yyyymmddhh_arcv - 0 hours
 
     These are known as the tm06, tm05, ..., tm02, tm01, and tm00 files,
     respectively.  Thus, the tm06 file from the current archive, say the
@@ -281,8 +297,13 @@ def get_obs(config, obtype, yyyymmdd_task):
     the one at tm00, effectively resulting in 6 files per archive for NDAS
     obs.  The obs availability interval is then
 
-      obs_avail_intvl_hrs = (24 hrs)/[(4 archives)*(6 files/archive)]
-                          = 1 hr/file
+    .. math::
+
+       \\begin{align*}
+             \\qquad \\text{obs_avail_intvl_hrs}
+         & = (\\text{24 hrs})/[(\\text{4 archives}) \\times (\\text{6 files/archive})] \\hspace{50in} \\\\
+         & = \\text{1 hr/file}
+       \\end{align*}
 
     i.e. there is one obs file for each hour of the day containing values
     at that hour.  The archive corresponding to hour 0 of the current day
@@ -303,12 +324,12 @@ def get_obs(config, obtype, yyyymmdd_task):
     sequence we loop over will be a subset of [6, 12, 18, 24].
 
     AERONET Aerosol Optical Depth (AOD) observations:
-    ----------
+    -------------------------------------------------
     For AERONET, the archive interval is 24 hours. There is one archive per day
     containing a single text file that contains all of the day's observations.
 
     AIRNOW Air Quality Particulate Matter (PM25, PM10) observations:
-    ----------
+    -------------------------------------------------------------
     For AIRNOW, the archive interval is 24 hours. There is one archive per day
     containing one text file per hour that contains all the observation for that
     hour.

@@ -1,0 +1,60 @@
+metadata:
+  description: >-
+    Tests the UFS_FIRE capability for a single fire with one-way (ATM-->FIRE) coupling
+user:
+  RUN_ENVIR: community
+workflow:
+  CCPP_PHYS_SUITE: FV3_HRRR
+  PREDEF_GRID_NAME: SUBCONUS_CO_3km
+  DATE_FIRST_CYCL: '2020081318'
+  DATE_LAST_CYCL: '2020081318'
+  FCST_LEN_HRS: 3 # 27 hours of LBCs staged on Derecho
+  PREEXISTING_DIR_METHOD: rename
+task_get_extrn_ics:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_NAME_ICS: HRRR
+  FV3GFS_FILE_FMT_ICS: grib2
+  EXTRN_MDL_FILES_ICS:
+    - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
+task_get_extrn_lbcs:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_FILES_LBCS:
+    - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
+  EXTRN_MDL_NAME_LBCS: HRRR
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  LBC_SPEC_INTVL_HRS: 3
+  FV3GFS_FILE_FMT_LBCS: grib2
+task_run_fcst:
+  QUILTING: true
+  PRINT_ESMF: True
+  OMP_NUM_THREADS_RUN_FCST: 1
+task_plot_allvars:
+  COMOUT_REF: ""
+fire:
+  UFS_FIRE: True
+  FIRE_NUM_TASKS: 1
+  FIRE_INPUT_DIR: '{{ platform.WE2E_TEST_DATA }}/UFS_FIRE/{{ workflow.DATE_FIRST_CYCL }}'
+  DT_FIRE: 0.5
+  OUTPUT_DT_FIRE: 300
+  FIRE_NUM_IGNITIONS: 1
+  FIRE_IGNITION_ROS: 0.05
+  FIRE_IGNITION_START_LAT: 40.609
+  FIRE_IGNITION_START_LON: -105.879
+  FIRE_IGNITION_END_LAT: 40.609
+  FIRE_IGNITION_END_LON: -105.879
+  FIRE_IGNITION_RADIUS: 250
+  FIRE_IGNITION_START_TIME: 6480
+  FIRE_IGNITION_END_TIME: 7000
+  FIRE_WIND_HEIGHT: 5.0
+  FIRE_PRINT_MSG: 0
+  FIRE_ATM_FEEDBACK: 0.0
+  FIRE_VISCOSITY: 0.4
+  FIRE_UPWINDING: 9
+  FIRE_LSM_ZCOUPLING: False
+  FIRE_LSM_ZCOUPLING_REF: 60.0
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+

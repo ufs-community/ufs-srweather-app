@@ -29,3 +29,4 @@ class Testing(unittest.TestCase):
         set_env_var("DIAG_TABLE_TMPL_FP", diag_table_tmpl_fp)
         set_env_var("CRES", "C48")
         set_env_var("CDATE", "2021010106")
+        set_env_var("UFS_FIRE", False)

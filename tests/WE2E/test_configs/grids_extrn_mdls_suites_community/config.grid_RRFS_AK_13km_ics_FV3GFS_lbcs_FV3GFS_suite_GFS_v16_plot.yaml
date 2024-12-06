@@ -22,5 +22,7 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
   USE_USER_STAGED_EXTRN_FILES: true
+task_run_fcst:
+  OMP_NUM_THREADS_RUN_FCST: 1
 task_plot_allvars:
   PLOT_DOMAINS: ["regional"]

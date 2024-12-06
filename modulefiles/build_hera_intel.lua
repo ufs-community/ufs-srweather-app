@@ -8,7 +8,7 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Hera ]===])
 prepend_path("MODULEPATH","/contrib/sutils/modulefiles")
 load("sutils")
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.6.0/envs/upp-addon-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.6.0/envs/fms-2024.01/install/modulefiles/Core")
 
 stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
 load(pathJoin("stack-intel", stack_intel_ver))
@@ -27,6 +27,8 @@ load("srw_common")
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
+
+setenv("FC", "mpiifort")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")

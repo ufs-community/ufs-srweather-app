@@ -53,7 +53,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         expt_details.append('')
         expt_details.append('-'*REPORT_WIDTH)
         expt_details.append(f'Detailed summary of experiment {expt}')
-        expt_details.append(f"in directory {expts_dict[expt]['expt_dir']}")
+        expt_details.append(f"in directory {os.path.abspath(expts_dict[expt]['expt_dir'])}")
         expt_details.append(f'{" "*TASK_COLUMN_WIDTH}| Status    | Walltime   | Core hours used')
         expt_details.append('-'*REPORT_WIDTH)
 
@@ -123,6 +123,12 @@ def create_expts_dict(expt_dir: str):
         # Look for FV3LAM_wflow.xml to indicate directories with experiments in them
         fullpath = os.path.join(expt_dir, item)
         if not os.path.isdir(fullpath):
+            # If user is providing an experiment subdir directly, print a warning
+            if item == "FV3LAM_wflow.xml":
+                msg = "WARNING: found a rocoto XML in the provided directory!\n"
+                msg += "This script will only look for experiments in subdirectories\n"
+                msg += f"of the provided directory {expt_dir}\n"
+                logging.warning(msg)
             continue
         xmlfile = os.path.join(expt_dir, item, 'FV3LAM_wflow.xml')
         if os.path.isfile(xmlfile):
@@ -169,8 +175,8 @@ def calculate_core_hours(expts_dict: dict) -> dict:
             # Cycle is last 12 characters, task name is rest (minus separating underscore)
             taskname = task[:-13]
             # Handle task names that have ensemble and/or fhr info appended with regex
-            taskname = re.sub('_mem\d{3}', '', taskname)
-            taskname = re.sub('_f\d{3}', '', taskname)
+            taskname = re.sub(r'_mem\d{3}', '', taskname)
+            taskname = re.sub(r'_f\d{3}', '', taskname)
             nnodes_var = f'NNODES_{taskname.upper()}'
             if nnodes_var in vdf:
                 nnodes = vdf[nnodes_var]

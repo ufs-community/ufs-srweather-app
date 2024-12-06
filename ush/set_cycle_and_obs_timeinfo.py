@@ -13,29 +13,29 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
     This file defines a function that returns a list containing the starting
     times of all the cycles in the experiment.
 
-    If return_type is set to "string" (the default value), the returned list
-    contains strings in the format 'YYYYMMDDHH'.  If it is set to "datetime",
+    If return_type is set to 'string' (the default value), the returned list
+    contains strings in the format 'YYYYMMDDHH'.  If it is set to 'datetime',
     the returned list contains a set of datetime objects.
 
     Args:
-        start_time_first_cycl:
-        Starting time of first cycle; a datetime object.
+        start_time_first_cycl (datetime.datetime):
+            Starting time of first cycle.
 
-        start_time_last_cycl:
-        Starting time of last cycle; a datetime object.
+        start_time_last_cycl (datetime.datetime):
+            Starting time of last cycle.
 
-        cycl_intvl:
-        Time interval between cycle starting times; a timedelta object.
+        cycl_intvl (datetime.timedelta):
+            Time interval between cycle start times.
 
-        return_type:
-        String that specifies the type of the returned list.
+        return_type (str):
+            Type of the returned list.  Can be 'string' or 'datetime'.
 
     Returns:
-        all_cdates:
-        Either a list of strings in the format 'YYYYMMDDHH' or a list of datetime
-        objects containing the cycle starting times, where 'YYYY' is the four-
-        digit year, 'MM is the two-digit month, 'DD'' is the two-digit day-of-
-        month, and 'HH' is the two-digit hour-of-day.
+        all_cdates (list):
+            Either a list of strings in the format 'YYYYMMDDHH' or a list of datetime
+            objects containing the cycle starting times, where 'YYYY' is the four-
+            digit year, 'MM is the two-digit month, 'DD' is the two-digit day-of-
+            month, and 'HH' is the two-digit hour-of-day.
     """
 
     print_input_args(locals())
@@ -58,7 +58,7 @@ def set_cycle_dates(start_time_first_cycl, start_time_last_cycl, cycl_intvl,
         all_cdates.append(cdate)
         cdate += cycl_intvl
 
-    if return_type == "string":
+    if return_type == 'string':
         all_cdates = [datetime.strftime(cdate, "%Y%m%d%H") for cdate in all_cdates]
 
     return all_cdates
@@ -107,27 +107,27 @@ def check_temporal_consistency_cumul_fields(
     to verify for that field.
 
     Args:
-        vx_config:
-        The verification configuration dictionary.
+        vx_config (dict):
+            The verification configuration dictionary.
 
-        cycle_start_times:
-        List containing the starting times of the cycles in the experiment;
-        each list element is a datetime object.
+        cycle_start_times (list):
+            List containing the starting times of the cycles in the experiment; each
+            list element is a datetime object.
 
-        fcst_len:
-        The length of each forecast; a timedelta object.
+        fcst_len (datetime.timedelta):
+            The length of each forecast; a timedelta object.
 
-        fcst_output_intvl:
-        Time interval between forecast output times; a timedelta object.
+        fcst_output_intvl (datetime.timedelta):
+            Time interval between forecast output times; a timedelta object.
 
     Returns:
-        vx_config:
-        An updated version of the verification configuration dictionary.
+        vx_config (dict):
+            An updated version of the verification configuration dictionary.
 
-        fcst_obs_matched_times_all_cycles_cumul:
-        Dictionary containing the times (in YYYYMMDDHH string format) at
-        which various field/accumlation combinations are output and at
-        which the corresponding obs type is also available.
+        fcst_obs_matched_times_all_cycles_cumul (dict):
+            Dictionary containing the times (in YYYYMMDDHH string format) at
+            which various field/accumlation combinations are output and at
+            which the corresponding obs type is also available.
     """
 
     # Set dictionary containing all field groups that consist of cumulative
@@ -357,27 +357,27 @@ def set_fcst_output_times_and_obs_days_all_cycles(
     accumulation interval smaller than this are obviously not allowed).
 
     Args:
-        cycle_start_times:
-        List containing the starting times of the cycles in the experiment;
-        each list element is a datetime object.
+        cycle_start_times (list):
+            List containing the starting times of the cycles in the experiment; each
+            list element is a datetime object.
 
-        fcst_len:
-        The length of each forecast; a timedelta object.
+        fcst_len (datetime.timedelta):
+            The length of each forecast.
 
-        fcst_output_intvl:
-        Time interval between forecast output times; a timedelta object.
+        fcst_output_intvl (datetime.timedelta):
+            Time interval between forecast output times.
 
     Returns:
-        fcst_output_times_all_cycles:
-        Dictionary containing a list of forecast output times over all cycles for
-        instantaneous fields and a second analogous list for cumulative fields.
-        Each element of these lists is a string of the form 'YYYYMMDDHH'.
+        fcst_output_times_all_cycles (dict):
+            Dictionary containing a list of forecast output times over all cycles for
+            instantaneous fields and a second analogous list for cumulative fields.
+            Each element of these lists is a string of the form 'YYYYMMDDHH'.
 
-        obs_days_all_cycles:
-        Dictionary containing a list of observation days (i.e. days on which
-        observations are needed to perform verification) over all cycles for
-        instantaneous fields and a second analogous list for cumulative fields.
-        Each element of these lists is a string of the form 'YYYYMMDD'.
+        obs_days_all_cycles (dict):
+            Dictionary containing a list of observation days (i.e. days on which
+            observations are needed to perform verification) over all cycles for
+            instantaneous fields and a second analogous list for cumulative fields.
+            Each element of these lists is a string of the form 'YYYYMMDD'.
     """
 
     # Get the number of forecast output times per cycle/forecast.
@@ -498,25 +498,25 @@ def set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles):
     in-between days on which obs are not needed.
 
     Args:
-        obs_days_all_cycles:
-        A list of strings of the form 'YYYYMMDD', with each string representing
-        a day on which observations are needed.  Note that the list must be
-        sorted, i.e. the days must be increasing in time, but there may be
-        gaps between days.
+        obs_days_all_cycles (list):
+            A list of strings of the form 'YYYYMMDD', with each string representing
+            a day on which observations are needed.  Note that the list must be sorted,
+            i.e. the days must be increasing in time, but there may be gaps between
+            days.
 
     Returns:
-        cycledefs_all_obs_days:
-        A list of strings, with each string being a ROCOTO-style cycledef of
-        the form
-
-          '{yyyymmdd_start}0000 {yyyymmdd_end}0000 24:00:00'
-
-        where {yyyymmdd_start} is the starting day of the first cycle in the
-        cycledef and {yyyymmdd_end} is the starting day of the last cycle (note
-        that the minutes and hours in these cycledef stirngs are always set to
-        '00').  For example, an element of the output list may be:
-
-          '202404290000 202405010000 24:00:00'
+        cycledefs_all_obs_days (list):
+            A list of strings, with each string being a ROCOTO-style cycledef of the
+            form
+            
+                '{yyyymmdd_start}0000 {yyyymmdd_end}0000 24:00:00'
+            
+            where {yyyymmdd_start} is the starting day of the first cycle in the
+            cycledef and {yyyymmdd_end} is the starting day of the last cycle (note
+            that the minutes and hours in these cycledef stirngs are always set to
+            '00').  For example, an element of the output list may be:
+            
+                '202404290000 202405010000 24:00:00'
     """
 
     # To enable arithmetic with dates, convert input sting list of observation
@@ -585,31 +585,31 @@ def get_obs_retrieve_times_by_day(
     The elements of each list are formatted as 'YYYYMMDDHH'.
 
     Args:
-        vx_config:
-        The verification configuration dictionary.
+        vx_config (dict):
+            The verification configuration dictionary.
 
-        cycle_start_times:
-        List containing the starting times of the cycles in the experiment;
-        each list element is a datetime object.
+        cycle_start_times (list):
+            List containing the starting times of the cycles in the experiment; each
+            list element is a datetime object.
 
-        fcst_len:
-        The length of each forecast; a timedelta object.
+        fcst_len (datetime.timedelta):
+            The length of each forecast.
 
-        fcst_output_times_all_cycles:
-        Dictionary containing a list of forecast output times over all cycles for
-        instantaneous fields and a second analogous list for cumulative fields.
-        Each element of these lists is a string of the form 'YYYYMMDDHH'.
+        fcst_output_times_all_cycles (dict):
+            Dictionary containing a list of forecast output times over all cycles for
+            instantaneous fields and a second analogous list for cumulative fields.
+            Each element of these lists is a string of the form 'YYYYMMDDHH'.
 
-        obs_days_all_cycles:
-        Dictionary containing a list of observation days (i.e. days on which
-        observations are needed to perform verification) over all cycles for
-        instantaneous fields and a second analogous list for cumulative fields.
-        Each element of these lists is a string of the form 'YYYYMMDD'.
+        obs_days_all_cycles (dict):
+            Dictionary containing a list of observation days (i.e. days on which
+            observations are needed to perform verification) over all cycles for
+            instantaneous fields and a second analogous list for cumulative fields.
+            Each element of these lists is a string of the form 'YYYYMMDD'.
 
     Returns:
-        obs_retrieve_times_by_day:
-        Dictionary of dictionaries containing times at which each type of obs is
-        needed on each obs day.
+        obs_retrieve_times_by_day (dict):
+            Dictionary of dictionaries containing times at which each type of obs is
+            needed on each obs day.
     """
 
     # Convert string contents of input dictionaries to datetime objects.

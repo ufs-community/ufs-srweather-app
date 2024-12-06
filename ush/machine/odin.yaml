@@ -2,6 +2,7 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 24
   SCHED: slurm
+  WE2E_TEST_DATA: /scratch/ywang/UFS_SRW_App/develop
   DOMAIN_PREGEN_BASEDIR: /scratch/ywang/UFS_SRW_App/develop/FV3LAM_pregen
   PARTITION_DEFAULT: workq
   QUEUE_DEFAULT: workq
