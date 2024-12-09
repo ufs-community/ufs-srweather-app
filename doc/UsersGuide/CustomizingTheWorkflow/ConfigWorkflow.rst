@@ -2142,7 +2142,7 @@ Non-default parameters for the Community Fire Behavior Model (CFBM) in SRW are s
    to calculate the logarithmic surface layer wind profile
 
 ``FIRE_LSM_ZCOUPLING_REF`` (Default: 60.0)
-   Reference height from which the velocity at FIRE_WIND_HEIGHT is calculated using a logarithmic profile
+   Reference height from which the velocity at ``FIRE_WIND_HEIGHT`` is calculated using a logarithmic profile
 
 
 ``FIRE_NUM_IGNITIONS`` (Default: 1)
@@ -2151,7 +2151,7 @@ Non-default parameters for the Community Fire Behavior Model (CFBM) in SRW are s
 .. note::
    If ``FIRE_NUM_IGNITIONS > 1``, the following variables should be lists with one entry for each ignition
 
-``FIRE_IGNITION_ROS`` (Default: 0.5)
+``FIRE_IGNITION_ROS`` (Default: 0.05)
    Ignition rate of spread (Rothermel parameterization)
 
 ``FIRE_IGNITION_START_LAT`` (Default: 40.609)
