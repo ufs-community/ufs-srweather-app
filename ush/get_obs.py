@@ -603,7 +603,7 @@ def get_obs(config, obtype, yyyymmdd_task):
 
     # Whether to remove raw observations after processed directories have
     # been created from them.
-    remove_raw_obs = vx_config[f'REMOVE_RAW_OBS_{obtype}']
+    remove_raw_obs = vx_config[f'REMOVE_RAW_OBS_DIRS']
 
     # Base directory that will contain the archive subdirectories in which
     # the files extracted from each archive (tar) file will be placed.  We
