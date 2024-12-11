@@ -206,7 +206,27 @@ elif [ "${grid_or_point}" = "point" ]; then
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
     OBS_INPUT_FN_TEMPLATE="${OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT}"
   elif [ "${OBTYPE}" = "AIRNOW" ]; then
-    FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
+    # It's very annoying that the names for specifying Airnow format are slightly different
+    # for ASCII2NC and Pointstat. This logic deals with that.
+    if [ -z "${AIRNOW_INPUT_FORMAT}" ]; then
+      if [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}"  == *"HourlyData"* ]]; then
+        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY"
+      elif [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}" == *"HourlyAQObs"* ]]; then
+        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
+      else
+        print_err_msg_exit "Invalid AIRNOW_INPUT_FORMAT=${AIRNOW_INPUT_FORMAT}"
+      fi
+    else
+      if [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourly" ]]; then
+        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY"
+      elif [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourlyaqobs" ]]; then
+        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
+      else
+        print_err_msg_exit "Could not automatically determine format of Airnow observations;\
+check your filenames (OBS_AIRNOW_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE})
+or manually set variable AIRNOW_INPUT_FORMAT"
+      fi
+    fi
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
     OBS_INPUT_FN_TEMPLATE="${OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT}"
   else
@@ -430,6 +450,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+#TEMPORARILY POINTING TO BETA RELEASE
+MET_ROOT=/contrib/met/12.0.0-beta6
+MET_INSTALL_DIR=${MET_ROOT}
+MET_BIN_EXEC=${MET_INSTALL_DIR}/bin
+MET_BASE=${MET_INSTALL_DIR}/share/met
+METPLUS_ROOT=/contrib/METplus/METplus-6.0.0-beta6
+METPLUS_PATH=${METPLUS_ROOT}
+MET_ROOT=/contrib/met/12.0.0-beta6
+#TEMPORARILY POINTING TO BETA RELEASE
+
 print_info_msg "$VERBOSE" "
 Calling METplus to run MET's ${metplus_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 ${METPLUS_PATH}/ush/run_metplus.py \
