@@ -211,8 +211,8 @@ AOD:
     AOTK%%AOD:
         L0%%L550: []
 PM25:
-    MASSDEN%%PM2.5:
+    PM25%%PM2.5:
         Z8%%A1: []
 PM10:
-    MASSDEN%%PM10:
+    PM10%%PM10:
         Z8%%A1: []

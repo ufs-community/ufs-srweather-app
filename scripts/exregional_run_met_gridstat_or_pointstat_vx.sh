@@ -201,10 +201,14 @@ elif [ "${grid_or_point}" = "point" ]; then
   if [ "${OBTYPE}" = "NDAS" ]; then
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
     OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
+    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+    FCST_INPUT_FN_TEMPLATE="${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE}"
   elif [ "${OBTYPE}" = "AERONET" ]; then
     FIELDNAME_IN_MET_FILEDIR_NAMES="AERONET_AOD"
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
     OBS_INPUT_FN_TEMPLATE="${OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT}"
+    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+    FCST_INPUT_FN_TEMPLATE="${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE}"
   elif [ "${OBTYPE}" = "AIRNOW" ]; then
     # It's very annoying that the names for specifying Airnow format are slightly different
     # for ASCII2NC and Pointstat. This logic deals with that.
@@ -227,14 +231,15 @@ check your filenames (OBS_AIRNOW_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE})
 or manually set variable AIRNOW_INPUT_FORMAT"
       fi
     fi
+    ACCUM_HH='01'
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
     OBS_INPUT_FN_TEMPLATE="${OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT}"
+    # The forecast input for Airnow obs is the output from PcP combine
+    FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
+    FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   else
     print_err_msg_exit "Invalid OBTYPE for PointStat: ${OBTYPE}"
   fi
-
-  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-  FCST_INPUT_FN_TEMPLATE="${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE}"
 
 fi
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
@@ -330,7 +335,7 @@ fi
 # First, set the base file names.
 #
 metplus_config_tmpl_bn="GridStat_or_PointStat"
-metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${FIELD_GROUP}_${ensmem_name}"
 metplus_log_bn="${metplus_config_bn}_$CDATE"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
