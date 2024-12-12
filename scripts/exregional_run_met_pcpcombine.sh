@@ -223,8 +223,14 @@ fi
 #-----------------------------------------------------------------------
 #
 vx_intvl="$((10#${ACCUM_HH}))"
+#Airnow obs use PCP_Combine simply to combine two fields, so run for every hour
+if [ "${OBTYPE}" = "AIRNOW" ]; then
+  lhr_min=0
+else
+  lhr_min=${vx_intvl}
+fi
 VX_LEADHR_LIST=$( python3 $USHdir/set_leadhrs.py \
-  --lhr_min="${vx_intvl}" \
+  --lhr_min="${lhr_min}" \
   --lhr_max="${FCST_LEN_HRS}" \
   --lhr_intvl="${vx_intvl}" \
   --skip_check_files ) || \
