@@ -141,7 +141,7 @@ fi
 #-----------------------------------------------------------------------
 #
 rm -f fort.*
-cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp ${HOMEdir}/fix/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "

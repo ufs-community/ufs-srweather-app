@@ -82,7 +82,7 @@ user:
   # ARL_NEXUS_DIR: 
   # The path to the user's NEXUS directory. By default, NEXUS source 
   # code resides in ufs-srweather-app/sorc/arl_nexus
-  # 
+  #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""

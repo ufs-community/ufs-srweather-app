@@ -13,5 +13,10 @@ export SLASH_ENSMEM_SUBDIR=""
 export NWGES_DIR=${NWGES_BASEDIR}/${DATE_FIRST_CYCL:0:8}
 export bcgrp="00"
 export bcgrpnum="1"
+# Declare Intel library variable for Azure
+if [ ${PW_CSP} == "azure" ]; then
+    export FI_PROVIDER=tcp
+fi
+
 ${JOBSdir}/JREGIONAL_MAKE_LBCS
 

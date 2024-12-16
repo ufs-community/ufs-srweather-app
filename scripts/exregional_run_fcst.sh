@@ -509,7 +509,7 @@ create_symlink_to_file ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN} ${relative_li
 create_symlink_to_file ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN} ${relative_link_flag}
 
 if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
-  cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cp ${HOMEdir}/fix/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "

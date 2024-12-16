@@ -8,4 +8,9 @@ set -xa
 
 export CDATE=${DATE_FIRST_CYCL}
 export CYCLE_DIR=${EXPTDIR}/${CDATE}
+# Declare Intel library variable for Azure
+if [ ${PW_CSP} == "azure" ]; then
+    export FI_PROVIDER=tcp
+fi
+
 ${JOBSdir}/JREGIONAL_MAKE_SFC_CLIMO
