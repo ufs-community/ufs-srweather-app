@@ -635,7 +635,6 @@ def get_obs_retrieve_times_by_day(
        {'obtype': 'NOHRSC', 'time_type': 'cumul', 'field_groups': ['ASNOW']},
        {'obtype': 'MRMS',   'time_type': 'inst',  'field_groups': ['REFC', 'RETOP']},
        {'obtype': 'NDAS',   'time_type': 'inst',  'field_groups': ['SFC', 'UPA']},
-       {'obtype': 'NDAS',   'time_type': 'inst',  'field_groups': ['ADPSFC', 'ADPUPA']},
        {'obtype': 'AERONET',   'time_type': 'inst',  'field_groups': ['AOD']},
        {'obtype': 'AIRNOW',   'time_type': 'inst',  'field_groups': ['PM25', 'PM10']}
       ]
@@ -664,7 +663,6 @@ def get_obs_retrieve_times_by_day(
     # We refer to these times as the vx comparison times.
     vx_compare_times_by_day = dict()
     for obs_dict in obs_info:
-
         obtype = obs_dict['obtype']
         obs_time_type = obs_dict['time_type']
 
@@ -826,7 +824,6 @@ def get_obs_retrieve_times_by_day(
     # but grouped by cycle start date, regroup them by day and save results
     # in obs_retrieve_times_by_day.
     for obs_dict in obs_info:
-
         obtype = obs_dict['obtype']
         obs_time_type = obs_dict['time_type']
 
