@@ -48,10 +48,7 @@ verification:
   NDAS_OBS_DIR: "{{ platform.TEST_GDAS_OBS_DIR }}"
   # Do not remove raw obs files to be able to verify that only the necessary
   # raw files are fetched from HPSS (if it's necessary to fetch obs files).
-  REMOVE_RAW_OBS_CCPA: false
-  REMOVE_RAW_OBS_MRMS: false
-  REMOVE_RAW_OBS_NDAS: false
-  REMOVE_RAW_OBS_NOHRSC: false
+  REMOVE_RAW_OBS_DIRS: false
   #
   OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', '{valid?fmt=%Y%m%d}/gdas.t{valid?fmt=%H}z.prepbufr.nr' ]
   #

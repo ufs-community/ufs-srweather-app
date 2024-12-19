@@ -52,10 +52,7 @@ verification:
   NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
   # Do not remove raw obs files to be able to verify that only the necessary
   # raw files are fetched from HPSS.
-  REMOVE_RAW_OBS_CCPA: false
-  REMOVE_RAW_OBS_MRMS: false
-  REMOVE_RAW_OBS_NDAS: false
-  REMOVE_RAW_OBS_NOHRSC: false
+  REMOVE_RAW_OBS_DIRS: false
   #
   VX_FCST_MODEL_NAME: 'Michigan_Ontario_snow_8km'
   VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
