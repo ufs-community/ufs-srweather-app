@@ -16,14 +16,6 @@ from python_utils import (
     load_yaml_config,
 )
 from mrms_pull_topofhour import mrms_pull_topofhour
-try:
-    sys.path.append(os.environ['METPLUS_ROOT'])
-except:
-    print("\nERROR ERROR ERROR\n")
-    print("Environment variable METPLUS_ROOT must be set to use this script\n")
-    raise
-from metplus.util import string_template_substitution as sts
-
 
 def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     """
@@ -982,6 +974,15 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
+
+    # We import METPLUS after parse_args so that we can still call the script with -h
+    try:
+        sys.path.append(os.environ['METPLUS_ROOT'])
+    except:
+        print("\nERROR ERROR ERROR\n")
+        print("Environment variable METPLUS_ROOT must be set to use this script\n")
+        raise
+    from metplus.util import string_template_substitution as sts
 
     # Set up logging.
     # If the name/path of a log file has been specified in the command line
