@@ -42,7 +42,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
          ./devbuild.sh --platform=<machine_name>
 
-      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaea-c5`` | ``gaea-c6`` | ``hera`` | ``hercules`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` | ``wcoss2``
+      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaea`` | ``gaea-c6`` | ``hera`` | ``hercules`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` | ``wcoss2``
 
       For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach instead. 
 
@@ -77,7 +77,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       .. code-block:: console
          
          user:
-           MACHINE: gaea-c5
+           MACHINE: gaea
            ACCOUNT: hfv3gfs
          workflow:
            EXPT_SUBDIR: run_basic_srw
