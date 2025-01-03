@@ -236,7 +236,7 @@ FV3_HRRR_gf:
     oz_phys_2015: true
     pdfcld: false
     plume_wind_eff : 1
-    plumerisefire_frq : 60
+    plumerisefire_frq : 30
     pre_rad: false
     print_diff_pgr: true
     prslrd0: 0.0
@@ -245,11 +245,12 @@ FV3_HRRR_gf:
     rrfs_sd : false
     rrfs_smoke_debug : false
     satmedmf: false
+    sc_factor: 1.0
     seas_opt : 0
     sfclay_compute_flux: true
     shal_cnv: false
     smoke_conv_wet_coef : [0.5, 0.5, 0.5]
-    smoke_forecast: 1
+    hwp_method: 1
     swhtr: true
     thsfc_loc: false
     trans_trac: true
