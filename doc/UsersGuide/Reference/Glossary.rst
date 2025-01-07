@@ -178,7 +178,7 @@ Glossary
 
    NCEP
       National Centers for Environmental Prediction (NCEP) is an arm of the National Weather Service
-      consisting of nine centers. More information can be found at https://www.ncep.noaa.gov.
+      consisting of nine centers. More information can be found at https://www.weather.gov/ncep/.
 
    NCEPLIBS
       The software libraries created and maintained by :term:`NCEP` that are required for running 
