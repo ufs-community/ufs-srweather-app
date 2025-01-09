@@ -329,10 +329,10 @@ set -eu
 # automatically determine compiler
 if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
-    jet|hera|gaea) COMPILER=intel ;;
+    hera|gaea-c6) COMPILER=intel ;;
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
-    cheyenne) COMPILER=intel ;;
+    derecho) COMPILER=intel ;;
     macos|singularity) COMPILER=gnu ;;
     odin|noaacloud) COMPILER=intel ;;
     *)
