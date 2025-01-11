@@ -1,7 +1,7 @@
 metadata:
   description: config for Smoke and Dust, RRFS_CONUS_3km
 user:
-  MACHINE: [hera/orion/hercules]
+  MACHINE: [hera/orion/hercules/gaea-c6]
   ACCOUNT: [account name]
 platform:
   EXTRN_MDL_DATA_STORES: disk
@@ -40,6 +40,7 @@ task_get_extrn_ics:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAP_DATA_SD/${yyyymmddhh} # hera
 #  EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/epic/SRW-AQM_DATA/input_model_data/RAP/${yyyymmddhh} # orion/hercules
+#  EXTRN_MDL_SOURCE_BASEDIR_ICS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmddhh} # gaea-c6
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 6
@@ -47,6 +48,7 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAP_DATA_SD/${yyyymmddhh} # hera
 #  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/epic/SRW-AQM_DATA/input_model_data/RAP/${yyyymmddhh} # orion/hercules
+#  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmddhh}  # gaea-c6
 task_make_ics:
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
 task_make_lbcs:
