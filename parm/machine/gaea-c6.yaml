@@ -10,12 +10,11 @@ platform:
   PARTITION_DEFAULT: batch
   PARTITION_FCST: batch
   PARTITION_HPSS: eslogin_c6
-  RUN_CMD_FCST: srun --export=ALL
+  RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL -n $nprocs
   RUN_CMD_PRDGEN: srun --export=ALL -n $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL -n $nprocs
-  RUN_CMD_NEXUS: srun --export=ALL -n $nprocs
   RUN_CMD_NEXUS: srun --export=ALL -n $nprocs
   SCHED_NATIVE_CMD: -M c6 --export=NONE
   SCHED_NATIVE_CMD_HPSS: -M es --export=NONE
