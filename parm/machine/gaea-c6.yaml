@@ -69,7 +69,7 @@ rocoto:
     metatask_run_ensemble:
       task_forecast_mem#mem#:
         cores:
-        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_FORECAST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
+        native: '--cpus-per-task {{ task_forecast.OMP_NUM_THREADS_FORECAST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
         nodes: '{{ task_forecast.NNODES_FORECAST // 1 }}:ppn={{ task_forecast.PPN_FORECAST // 1 }}'
         nnodes:
         nodesize:

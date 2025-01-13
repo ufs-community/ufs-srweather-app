@@ -118,6 +118,11 @@ if [ "${task_name}" = "smoke_dust" ]; then
     # Esmpy/ESMF segfaults when running through conda. Use a manually built esmpy v8.3.1 and local Python modules.
     module load py-xarray py-pyyaml py-netcdf4
     export PYTHONPATH=/work/noaa/epic/bwkoziol/main_aqm/esmf/src/addon/ESMPy/src:$PYTHONPATH
+  elif [ "${machine}" = "gaea-c6" ]; then
+    module unload python
+    module use /ncrc/proj/epic/miniconda3/modulefiles
+    module load miniconda3/4.12.0
+    conda activate /ncrc/home1/Chan-hoo.Jeon/main_aqm_pyenv
   fi
   set -u
 fi
