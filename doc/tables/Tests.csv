@@ -52,8 +52,8 @@ yes,yes,grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_GFS_v16,RRFS_CONUS_25km,FV3_
 ,yes,pregen_grid_orog_sfc_climo,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,6,17,
 ,yes,specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2021061500,6,6,19,
 ,yes,specify_template_filenames,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,6,28,
-,hera/jet/orion/gaea,get_from_AWS_ics_GEFS_lbcs_GEFS_fmt_grib2_2022040400_ensemble_2mems,RRFS_CONUS_3km,FV3_HRRR,GEFS,GEFS,2022040400,6,805,45,
-,hera/jet/orion/gaea,get_from_NOMADS_ics_FV3GFS_lbcs_FV3GFS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,*2 days ago*,6,12,40,Retrieves online data and runs a forecast valid 00z 2 days previous to the test date
+,hera/jet/orion/gaea/gaea-c6,get_from_AWS_ics_GEFS_lbcs_GEFS_fmt_grib2_2022040400_ensemble_2mems,RRFS_CONUS_3km,FV3_HRRR,GEFS,GEFS,2022040400,6,805,45,
+,hera/jet/orion/gaea/gaea-c6,get_from_NOMADS_ics_FV3GFS_lbcs_FV3GFS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,*2 days ago*,6,12,40,Retrieves online data and runs a forecast valid 00z 2 days previous to the test date
 ,hera/jet,custom_ESGgrid_Great_Lakes_snow_8km,*custom*,FV3_RAP,RAP,RAP,2023021700,6,,,
 ,hera/jet,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_grib2_2019061200,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061200,6,6,19,
 ,hera/jet,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_nemsio_2019061200,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061200,6,10,23,

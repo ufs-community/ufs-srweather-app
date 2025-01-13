@@ -42,7 +42,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
          ./devbuild.sh --platform=<machine_name>
 
-      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaea`` | ``hera`` | ``hercules`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` | ``wcoss2``
+      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaea`` | ``gaea-c6`` | ``hera`` | ``hercules`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` | ``wcoss2``
 
       For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach instead. 
 
@@ -72,7 +72,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       
       Users will need to open the ``config.yaml`` file and adjust the experiment parameters in it to suit the needs of their experiment (e.g., date, grid, physics suite). At a minimum, users need to modify the ``MACHINE`` parameter. In most cases, users will need to specify the ``ACCOUNT`` parameter and the location of the experiment data (see :numref:`Section %s <Data>` for Level 1 system default locations). 
 
-      For example, a user on Gaea might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Gaea using prestaged system data and :term:`cron` to automate the workflow: 
+      For example, a user on Gaea-C5 might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Gaea-C5 using prestaged system data and :term:`cron` to automate the workflow: 
 
       .. code-block:: console
          

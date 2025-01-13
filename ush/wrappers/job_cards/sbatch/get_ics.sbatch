@@ -28,3 +28,7 @@ $USHdir/load_modules_run_task.sh "get_extrn_ics" $JOBSdir/JREGIONAL_GET_EXTRN_MD
 # Gaea differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=es --partition=eslogin_c5 --export=NONE
+
+# Gaea-c6 differences:
+##SBATCH --qos=normal
+##SBATCH --clusters=es --partition=eslogin_c6 --export=NONE
