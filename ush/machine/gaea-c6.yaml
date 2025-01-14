@@ -12,14 +12,16 @@ platform:
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
   REMOVE_MEMORY: True
+  PARTITION_DEFAULT: batch
+  PARTITION_FCST: batch
   PARTITION_HPSS: eslogin_c6
   RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL -n $nprocs
   RUN_CMD_PRDGEN: srun --export=ALL -n $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL -n $nprocs
-  SCHED_NATIVE_CMD: --clusters=c6 --partition=batch --export=NONE
-  SCHED_NATIVE_CMD_HPSS: --clusters=es --partition=eslogin_c6 --export=NONE
+  SCHED_NATIVE_CMD: --clusters=c6 --export=NONE
+  SCHED_NATIVE_CMD_HPSS: --clusters=es --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data
   TEST_PREGEN_BASEDIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/FV3LAM_pregen
