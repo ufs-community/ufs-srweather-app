@@ -126,7 +126,7 @@ case "${CCPP_PHYS_SUITE}" in
        [ "${EXTRN_MDL_NAME_LBCS}" = "RRFS" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
       if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
-        varmap_file="GSDphys_var_map_smoke.txt"
+        varmap_file="GSDphys_smoke_var_map.txt"
       else
         varmap_file="GSDphys_var_map.txt"
       fi
