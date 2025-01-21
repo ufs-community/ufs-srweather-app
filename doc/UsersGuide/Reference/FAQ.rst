@@ -224,7 +224,7 @@ Users should note that the Continue option may not work as expected for changes 
 
 A convenience script, ``devclean.sh``, is also available. This script can be used to remove build artifacts in cases where something goes wrong with the build or where changes have been made to the source code and the executables need to be rebuilt. Users can run this script by entering either ``./devclean.sh --clean`` or ``./devclean.sh -a``. Following this step, they can rerun the ``devbuild.sh`` script to rebuild the SRW App. Running ``./devclean.sh -h`` will list additional options available. 
 
-See `SRW Discussion #990 <https://github.com/ufs-community/ufs-srweather-app/discussions/1007>`__ for the question that inspired this FAQ.
+See `SRW Discussion #1007 <https://github.com/ufs-community/ufs-srweather-app/discussions/1007>`__ for the question that inspired this FAQ.
 
 If I log out of my system after building the SRW App and want to return to work later, where do I start?
 =========================================================================================================
@@ -233,6 +233,7 @@ If you logged out before building the SRW App, you can `restart your work from t
 
 If you already built the SRW App, you can simply reload the conda environment and then pick up where you left off:
 
+.. code-block:: console
    source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
 
    module use /path/to/ufs-srweather-app/modulefiles
