@@ -102,7 +102,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp -p ${PARMsrw}/upp_parm/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp -p ${FIXsrw}/fix_upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -114,7 +114,7 @@ else
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_config_fp="${PARMsrw}/upp_parm/postxconfig-NT-AQM.txt"
   else
-    post_config_fp="${PARMsrw}/upp_parm/postxconfig-NT-fv3lam_rrfs.txt"
+    post_config_fp="${PARMsrw}/upp_parm/postxconfig-NT-rrfs.txt"
   fi
   print_info_msg "
 ====================================================================

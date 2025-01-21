@@ -546,6 +546,7 @@ if [ "${BUILD_UPP}" = "on" ]; then
     rm -rf ${HOME_DIR}/parm/upp_parm
   fi
   cp -rp ${SORC_DIR}/UPP/parm ${HOME_DIR}/parm/upp_parm
+  cp -rp ${SORC_DIR}/UPP/fix ${HOME_DIR}/fix/fix_upp
 fi
 if [ "${BUILD_NEXUS}" = "on" ]; then
   if [ -d "${HOME_DIR}/parm/nexus_config" ]; then
