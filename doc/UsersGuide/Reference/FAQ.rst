@@ -211,29 +211,28 @@ See `SRW Discussion #990 <https://github.com/ufs-community/ufs-srweather-app/dis
 How do I change the number of vertical levels in the SRW App?
 ==============================================================
 
-The predefined grids included with the SRW App are configured to run with 65 levels by default. However, advanced users may wish to vary the number of vertical levels in the grids they are using, and documentation has recently been added explaining how to do this! Users can check out the 'Limited Area Model Grid <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/CustomizingTheWorkflow/LAMGrids.html#changing-the-number-of-vertical-levels>'__ chapter for instructions.
+The predefined grids included with the SRW App are configured to run with 65 levels by default. However, advanced users may wish to vary the number of vertical levels in the grids they are using, and documentation has recently been added explaining how to do this! Users can check out the `Limited Area Model Grid <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/CustomizingTheWorkflow/LAMGrids.html#changing-the-number-of-vertical-levels>`__ chapter for instructions.
 
 After modifying one of the SRW App executables, how can I rebuild the executable?
 ==================================================================================
 
-When users make changes to one of the SRW App executables, they can rerun the ''devbuild.sh'' script using the command ''./devbuild.sh --platform=<machine_name>''. This will eventually bring up three options: [R]emove, [C]ontinue, or [Q]uit.
+When users make changes to one of the SRW App executables, they can rerun the ``devbuild.sh`` script using the command ``./devbuild.sh --platform=<machine_name>``. This will eventually bring up three options: ``[R]emove, [C]ontinue, or [Q]uit``.
 
-The Continue option will recompile the modified routines and rebuild only the affected executables. The Remove option provides a clean build; it completely removes the existing build directory and rebuilds all executables from scratch instead of reusing the existing build where possible. The build log files for the CMake and Make step will appear in ufs-srweather-app/build/log.cmake and ufs-srweather-app/build/log.make; any errors encountered should be detailed in those files.
+The Continue option will recompile the modified routines and rebuild only the affected executables. The Remove option provides a clean build; it completely removes the existing build directory and rebuilds all executables from scratch instead of reusing the existing build where possible. The build log files for the CMake and Make step will appear in ``ufs-srweather-app/build/log.cmake`` and ``ufs-srweather-app/build/log.make``; any errors encountered should be detailed in those files.
 
-Users should note that the Continue option may not work as expected for changes to CCPP because the ccpp_prebuild.py script will not be rerun. It is typically best to recompile the model entirely in this case by selecting the Remove option for a clean build.
+Users should note that the Continue option may not work as expected for changes to CCPP because the ``ccpp_prebuild.py`` script will not be rerun. It is typically best to recompile the model entirely in this case by selecting the Remove option for a clean build.
 
-A convenience script, devclean.sh, is also available. This script can be used to remove build artifacts in cases where something goes wrong with the build or where changes have been made to the source code and the executables need to be rebuilt. Users can run this script by entering either ''./devclean.sh --clean''' or ''./devclean.sh -a''. Following this step, they can rerun the ''devbuild.sh'' script to rebuild the SRW App. Running ''./devclean.sh -h'' will list additional options available. 
+A convenience script, ``devclean.sh``, is also available. This script can be used to remove build artifacts in cases where something goes wrong with the build or where changes have been made to the source code and the executables need to be rebuilt. Users can run this script by entering either ``./devclean.sh --clean`` or ``./devclean.sh -a``. Following this step, they can rerun the ``devbuild.sh`` script to rebuild the SRW App. Running ``./devclean.sh -h`` will list additional options available. 
 
-See 'SRW Discussion #1007 <https://github.com/ufs-community/ufs-srweather-app/discussions/1007>'__ for the question that inspired this FAQ.
+See `SRW Discussion #990 <https://github.com/ufs-community/ufs-srweather-app/discussions/1007>`__ for the question that inspired this FAQ.
 
 If I log out of my system after building the SRW App and want to return to work later, where do I start?
 =========================================================================================================
 
-If you logged out before building the SRW App, you can 'restart your work from the step you left off o <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/Quickstart.html#building-and-running-the-ufs-srw-application>'__ before logging out. 
+If you logged out before building the SRW App, you can `restart your work from the step you left off on <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/Quickstart.html#building-and-running-the-ufs-srw-application>`__ before logging out. 
 
 If you already built the SRW App, you can simply reload the conda environment and then pick up where you left off:
 
-.. code-block:: loggedout
    source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
 
    module use /path/to/ufs-srweather-app/modulefiles
@@ -242,7 +241,7 @@ If you already built the SRW App, you can simply reload the conda environment an
 
    conda activate srw_app
 
-For example, from here, you can 'configure a new experiment <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/RunSRW.html#general-instructions-for-all-systems>'__ (in config.yaml) or check on 'progress from an old experiment <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/RunSRW.html#run-the-workflow-using-rocoto>'__ (e.g., using rocotostat or the tail command from within the experiment directory). 
+For example, from here, you can `configure a new experiment <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/RunSRW.html#general-instructions-for-all-systems>`__ (in config.yaml) or check on `progress from an old experiment <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/RunSRW.html#run-the-workflow-using-rocoto>`__ (e.g., using rocotostat or the tail command from within the experiment directory). 
 
 I ran one experiment; how can I configure a new experiment?
 ============================================================
