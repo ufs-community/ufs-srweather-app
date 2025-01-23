@@ -2106,7 +2106,7 @@ Non-default parameters for the Community Fire Behavior Model (CFBM) in SRW are s
 ``FIRE_WIND_HEIGHT``: (Default: 5.0)
    Height to interpolate winds to for calculating fire spread rate
 
-``FIRE_ATM_FEEDBACK``: (Default: 0.0)
+``FIRE_ATM_FEEDBACK``: (Default: 1.0)
    Multiplier for heat and moisture fluxes from the fire to the atmosphere. Use 1.0 for normal
    two-way coupling. Use 0.0 for one-way coupling. Intermediate values or values greater than 1
    will vary the amount of forcing provided from the fire to the dynamical core.
