@@ -141,8 +141,9 @@ Here is one example of settings that can be specified for a UFS FIRE simulation:
      FIRE_IGNITION_RADIUS: 250
      FIRE_IGNITION_START_TIME: 6480
      FIRE_IGNITION_END_TIME: 7000
+     FIRE_ATM_FEEDBACK: 1.0
 
-In this case, a single fire (``FIRE_NUM_IGNITIONS: 1``) of radius 250 meters (``FIRE_IGNITION_RADIUS: 250``) is ignited at latitude 40.609˚N (``FIRE_IGNITION_START_LAT: 40.609``), 105.879˚W (``FIRE_IGNITION_START_LON: -105.879``) 6480 seconds after the start of the simulation (``FIRE_IGNITION_START_TIME: 6480``) with a rate of spread specified as 0.05 m/s (``FIRE_IGNITION_ROS: 0.05``). This "ignition" ends 7000 seconds after the start of the simulation (``FIRE_IGNITION_END_TIME: 7000``), after which the fire behavior is completely governed by the physics of the fire behavior model (integrated every 0.5 seconds as specified by ``OUTPUT_DT_FIRE``), the input fuel conditions, and the simulated atmospheric conditions.
+In this case, a single fire (``FIRE_NUM_IGNITIONS: 1``) of radius 250 meters (``FIRE_IGNITION_RADIUS: 250``) is ignited at latitude 40.609˚N (``FIRE_IGNITION_START_LAT: 40.609``), 105.879˚W (``FIRE_IGNITION_START_LON: -105.879``) 6480 seconds after the start of the simulation (``FIRE_IGNITION_START_TIME: 6480``) with a rate of spread specified as 0.05 m/s (``FIRE_IGNITION_ROS: 0.05``). This "ignition" ends 7000 seconds after the start of the simulation (``FIRE_IGNITION_END_TIME: 7000``), after which the fire behavior is completely governed by the physics of the fire behavior model (integrated every 0.5 seconds as specified by ``OUTPUT_DT_FIRE``), the input fuel conditions, and the simulated atmospheric conditions. This simulated fire will feed back heat and moisture flux to the dynamical core, multiplied by a factor set by the user (``FIRE_ATM_FEEDBACK``).
 
 The CFBM creates output files in :term:`netCDF` format, with the naming scheme ``fire_output_YYYY-MM-DD_hh:mm:ss.nc``. In this case the output files are written every 30 minutes (``OUTPUT_DT_FIRE: 1800``).
 
@@ -251,7 +252,7 @@ Run the WE2E tests:
 You can also run each test individually if needed:
 
    $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q -t UFS_FIRE_one-way-coupled
-   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q -t UFS_FIRE_multifire_one-way-coupled 
+   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q -t UFS_FIRE_multifire_two-way-coupled
 
 
 
