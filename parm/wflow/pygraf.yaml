@@ -1,0 +1,35 @@
+# Worflow file for running pygraf on Hera
+
+task_run_pygraf:
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
+  envars: &default_envars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    fhr: '#fhr#'
+    LOGDIR: !cycstr "&LOGDIR;"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    PYGRAF_DIR: "&PYGRAF_DIR;"
+    OUTDIR: !cycstr "&FCST_DIR;/pygraf"
+    VX_FCST_INPUT_BASEDIR: '{{ verification.VX_FCST_INPUT_BASEDIR }}'
+    CAPTION: '{{ pygraf.caption }}'
+    RESOLUTION: '{{ pygraf.resolution }}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 24
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 01:00:00
+
+  command: !cycstr '&LOAD_MODULES_RUN_TASK; "pygraf" "&USHdir;/run_pygraf.sh"'
+  dependency:
+    and:
+      metataskdep_check_post_output: &check_post_output
+        attrs:
+          metatask: check_post_output_all_mems
+

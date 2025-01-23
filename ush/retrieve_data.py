@@ -191,7 +191,7 @@ def wget_file(url):
     # -c continue previous attempt
     # -T timeout seconds
     # -t number of tries
-    cmd = f"wget -q -c -T 15 -t 2 {url}"
+    cmd = f"wget -c -T 15 -t 2 '{url}'"
     logging.debug(f"Running command: \n {cmd}")
     try:
         subprocess.run(
@@ -1234,9 +1234,17 @@ def parse_args(argv):
          only",
     )
 
-    # Make modifications/checks for given values
-
+    # Print executed command if debug=True
     args = parser.parse_args(argv)
+
+    message='CALLING ./retrieve_data.py'
+
+    for key, value in vars(args).items():
+        message+=f' --{key}={value}'
+
+    print(message)
+
+    # Make modifications/checks for given values
 
     # convert range arguments if necessary 
     args.fcst_hrs = arg_list_to_range(args.fcst_hrs)

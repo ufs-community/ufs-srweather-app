@@ -241,12 +241,32 @@ RRFS:
     protocol: htar
     file_names: &rrfs_file_names
       anl:
-        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus.grib2
+        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.grib2
       fcst:
-        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus.grib2
+        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.grib2
   aws:
     protocol: wget
     url: https://noaa-rrfs-pds.s3.amazonaws.com/rrfs_a/rrfs_a.{yyyymmdd}/{hh}/control/
+    file_names:
+      <<: *rrfs_file_names
+
+RRFS_retro:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.2/2023/07/{dd}
+      - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.4/2024/05/{dd}
+      - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.3/2024/01/{dd}
+    archive_internal_dir:
+      - rrfs.{yyyymmdd}/{hh}
+    archive_file_names:
+      - grib2_ctrl_{yyyymmdd}{hh}.tar
+    file_names:
+      <<: *rrfs_file_names
+  aws:
+    protocol: download
+    url: https://noaa-rrfs-pds.s3.amazonaws.com/retro_output_final/summer/rrfs.{yyyymmdd}/{hh}
     file_names:
       <<: *rrfs_file_names
 

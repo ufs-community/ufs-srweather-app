@@ -57,6 +57,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
+set -x
 valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC" "AERONET" "AIRNOW")
 if [[ ! ${valid_obtypes[@]} =~ ${OBTYPE} ]]; then
   print_err_msg_exit "\
@@ -71,6 +72,7 @@ cmd="\
 python3 -u ${USHdir}/get_obs.py \
 --var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
 --obtype ${OBTYPE} \
+--log_level DEBUG \
 --obs_day ${PDY}"
 print_info_msg "
 CALLING: ${cmd}"

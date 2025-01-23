@@ -23,6 +23,7 @@ rocoto:
     PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
     PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
+    PYGRAF_DIR: '{{ user.pygraf_dir }}'
     QUEUE_DEFAULT: '{{ platform.get("QUEUE_DEFAULT") }}'
     QUEUE_FCST: '{{ platform.get("QUEUE_FCST") }}'
     QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'

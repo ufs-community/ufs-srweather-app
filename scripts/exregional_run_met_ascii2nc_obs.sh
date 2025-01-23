@@ -332,6 +332,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+#TEMPORARILY POINTING TO BETA RELEASE
+MET_ROOT=/contrib/met/12.0.0-beta6
+MET_INSTALL_DIR=${MET_ROOT}
+MET_BIN_EXEC=${MET_INSTALL_DIR}/bin
+MET_BASE=${MET_INSTALL_DIR}/share/met
+METPLUS_ROOT=/contrib/METplus/METplus-6.0.0-beta6
+METPLUS_PATH=${METPLUS_ROOT}
+MET_ROOT=/contrib/met/12.0.0-beta6
+#TEMPORARILY POINTING TO BETA RELEASE
 print_info_msg "$VERBOSE" "
 Calling METplus to run MET's ${metplus_tool_name} tool on observations of type: ${OBTYPE}"
 ${METPLUS_PATH}/ush/run_metplus.py \

@@ -99,6 +99,8 @@ user:
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ user.SORCdir }}/arl_nexus'
 
+  pygraf_dir: /scratch2/BMC/fv3lam/kavulich/smoke_verif/production/pygraf
+
 #----------------------------
 # PLATFORM config parameters
 #-----------------------------
@@ -410,6 +412,7 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
+
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -3196,3 +3199,14 @@ fire:
   FIRE_IGNITION_START_TIME: 6480
   FIRE_IGNITION_END_TIME: 7000
 
+pygraf:
+  caption: "plot"
+  resolution: 150
+
+rocoto:
+  attrs: ""
+  cycledefs: ""
+  entities: ""
+  log: ""
+  tasks:
+    taskgroups: ""
