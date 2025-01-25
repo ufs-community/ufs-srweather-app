@@ -234,12 +234,10 @@ If you logged out before building the SRW App, you can `restart your work from t
 If you already built the SRW App, you can simply reload the conda environment and then pick up where you left off:
 
 .. code-block:: console
+   
    source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
-
    module use /path/to/ufs-srweather-app/modulefiles
-
    module load wflow_<platform>
-
    conda activate srw_app
 
 For example, from here, you can `configure a new experiment <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/RunSRW.html#general-instructions-for-all-systems>`__ (in config.yaml) or check on `progress from an old experiment <https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/RunSRW.html#run-the-workflow-using-rocoto>`__ (e.g., using rocotostat or the tail command from within the experiment directory). 
