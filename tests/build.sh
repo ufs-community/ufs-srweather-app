@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #=======================================================================
 # Description:  This script runs a build test for the
 #               UFS Short-Range Weather App. The executables

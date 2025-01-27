@@ -2881,8 +2881,9 @@ fire:
   #   3: Even more extra prints
   #  
   # FIRE_ATM_FEEDBACK
-  # Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
-  # Intermediate values will vary the amount of forcing provided from the fire to the dynamical core
+  # Multiplier for heat and moisture fluxes from the fire to the atmosphere. Use 1.0 for normal
+  # two-way coupling. Use 0.0 for one-way coupling. Intermediate values or values greater than 1
+  # will vary the amount of forcing provided from the fire to the dynamical core.
   #
   # FIRE_VISCOSITY
   # Artificial viscosity in level set method. Maximum 1, required for FIRE_UPWINDING=0
@@ -2937,7 +2938,7 @@ fire:
 
   FIRE_WIND_HEIGHT: 5.0
   FIRE_PRINT_MSG: 0
-  FIRE_ATM_FEEDBACK: 0.0
+  FIRE_ATM_FEEDBACK: 1.0
   FIRE_VISCOSITY: 0.4
   FIRE_UPWINDING: 9
   FIRE_LSM_ZCOUPLING: False
