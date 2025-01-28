@@ -279,15 +279,16 @@ def generate_FV3LAM_wflow(
         )
         cp_vrfy(expt_config["workflow"]["CCPP_PHYS_SUITE_IN_CCPP_FP"], expt_config["workflow"]["CCPP_PHYS_SUITE_FP"])
 
-    # If UFS_FIRE, update FIELD_TABLE
-        field_table_append = """# smoke tracer for UFS_FIRE
+        # If UFS_FIRE, update FIELD_TABLE
+        if expt_config['fire'].get('UFS_FIRE'):
+            field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        with open(FIELD_TABLE_FP, "a+", encoding='UTF-8') as file:
-            file.write(field_table_append)
+            with open(expt_config["workflow"]["FIELD_TABLE_FP"], "a+", encoding='UTF-8') as file:
+                file.write(field_table_append)
 
         #
         # Copy the field dictionary file from its location in the
