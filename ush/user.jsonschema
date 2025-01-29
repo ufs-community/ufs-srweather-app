@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "additionalProperties": true,
+    "properties": {
+      "user": {
+        "additionalProperties": true,
+        "properties": {
+          "MACHINE": {
+            "enum": [
+              "DERECHO",
+              "GAEA",
+              "HERA",
+              "HERCULES",
+              "JET",
+              "LINUX",
+              "MACOS",
+              "NOAACLOUD",
+              "ORION",
+              "SINGULARITY",
+              "STAMPEDE",
+              "WCOSS2"
+            ],
+            "type": "string"
+          },
+        "type": "object"
+        }
+      }
+    }
+  }
+}
