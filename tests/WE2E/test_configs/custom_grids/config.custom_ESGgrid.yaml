@@ -31,7 +31,8 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  DT_ATMOS: 40
+  envvars:
+    DT_ATMOS: 40
   LAYOUT_X: 8
   LAYOUT_Y: 12
   BLOCKSIZE: 13

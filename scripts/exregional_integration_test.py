@@ -86,9 +86,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--fcst_inc",
-        default="1",
+        default=1,
         help="Increment of forecast in hours.",
         required=False,
+        type=int,
     )
     parser.add_argument(
         "--debug",

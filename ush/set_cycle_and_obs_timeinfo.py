@@ -508,14 +508,14 @@ def set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles):
         cycledefs_all_obs_days (list):
             A list of strings, with each string being a ROCOTO-style cycledef of the
             form
-            
+
                 '{yyyymmdd_start}0000 {yyyymmdd_end}0000 24:00:00'
-            
+
             where {yyyymmdd_start} is the starting day of the first cycle in the
             cycledef and {yyyymmdd_end} is the starting day of the last cycle (note
             that the minutes and hours in these cycledef stirngs are always set to
             '00').  For example, an element of the output list may be:
-            
+
                 '202404290000 202405010000 24:00:00'
     """
 

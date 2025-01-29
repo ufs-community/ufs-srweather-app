@@ -126,7 +126,7 @@
                   "NAM",
                   "RAP",
                   "RRFS",
-                  "UFS-CASE-STUDY",
+                  "UFS-CASE-STUDY"
                 ],
                 "type": "string"
               },
@@ -139,6 +139,8 @@
                 "type": "string"
               },
             "type": "object"
+            }
+          },
           "USE_USER_STAGED_EXTRN_FILES": {
             "type": "boolean"
           }
@@ -159,7 +161,7 @@
                   "NAM",
                   "RAP",
                   "RRFS",
-                  "UFS-CASE-STUDY",
+                  "UFS-CASE-STUDY"
                 ],
                 "type": "string"
               },

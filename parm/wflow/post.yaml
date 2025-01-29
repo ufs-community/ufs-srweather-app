@@ -25,7 +25,7 @@ default_task_post: &default_task
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: "{{ task_run_post.upp.execution.batchargs.nodes }}:ppn={{ task_run_post.upp.execution.batchargs.tasks_per_node }}"
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "None" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
   walltime: '{{ task_run_post.upp.execution.batchargs.walltime }}'
 

@@ -115,7 +115,7 @@ metatask_GenEnsProd_EnsembleStat_REFC_RETOP:
       OBTYPE: 'MRMS'
       FCST_LEVEL: 'L0'
       FCST_THRESH: 'all'
-      walltime: "{{ verification_resources.execution.ensemble.genensprod.default.walltime }}"
+    walltime: "{{ verification_resources.execution.ensemble.genensprod.default.walltime }}"
     dependency:
       and:
         metataskdep_check_post_output: &check_post_output

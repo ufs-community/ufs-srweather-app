@@ -20,7 +20,7 @@ default_aqm_task: &default_aqm
         value:  "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
 task_pre_post_stat:

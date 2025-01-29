@@ -37,8 +37,8 @@ sections=(
   workflow
   global
   cpl_aqm_parm
-  task_point_source
-  task_run_fcst
+  task_point_source.envvars
+  task_run_fcst.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

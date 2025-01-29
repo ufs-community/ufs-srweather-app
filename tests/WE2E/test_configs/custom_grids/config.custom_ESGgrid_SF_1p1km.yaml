@@ -41,7 +41,12 @@ task_make_ics:
         nodes: 16
         tasks_per_node: 12
 task_run_fcst:
-  DT_ATMOS: 15
+  envvars:
+    DT_ATMOS: 15
+  fv3:
+    execution:
+      batchargs:
+        walltime: 02:30:00
   LAYOUT_X: 24
   LAYOUT_Y: 24
   BLOCKSIZE: 35
@@ -59,10 +64,6 @@ task_run_fcst:
   WRTCMP_ny: 557
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
-  fv3:
-    execution:
-      batchargs:
-        walltime: 02:30:00
 task_run_post:
   envvars:
     POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_SF_Bay_Area

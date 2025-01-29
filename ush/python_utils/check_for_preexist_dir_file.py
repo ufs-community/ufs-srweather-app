@@ -43,7 +43,7 @@ def check_for_preexist_dir_file(path, method):
         elif method in ("rename", "reuse"):
             now = datetime.now()
             suffix = now.strftime("_old_%Y%m%d_%H%M%S")
-            new_path = path + suffix
+            new_path = path.parent / (path.name + suffix)
             log_info(
                 f"""
                 Specified directory or file already exists:

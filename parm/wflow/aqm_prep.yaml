@@ -22,20 +22,20 @@ default_aqm_task: &default_aqm
     cyc:
       cyclestr:
         value:  "@H"
-    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
     subcyc:
       cyclestr:
         value:  "@M"
+    nprocs: !int '{{ parent.nnodes * parent.ppn }}'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
 task_nexus_gfs_sfc:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "nexus_gfs_sfc" "&HOMEdir;/jobs/JSRW_NEXUS_GFS_SFC"'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
-  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") else "" }}'
+  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") }}'
   join:
     cyclestr:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -128,7 +128,7 @@ task_point_source:
       datadep_grid:
         attrs:
           age: 00:00:00:05
-        value: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+        value: '{{ task_make_grid.envvars.GRID_DIR }}/make_grid_task_complete.txt'
       streq:
         left: staged_grid
         right: '{{ "staged_grid" if not rocoto.get("tasks", {}).get("task_make_grid") }}'

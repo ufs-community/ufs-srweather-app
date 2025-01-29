@@ -33,11 +33,11 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-section=(
+sections=(
   user
   nco
   workflow
-  task_make_sfc_climo
+  task_make_sfc_climo.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

@@ -20,7 +20,7 @@ default_task: &default_task
         value: "&LOGDIR;"
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "None" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
 task_get_extrn_ics:
@@ -32,14 +32,14 @@ task_get_extrn_ics:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
-    nprocs: !int '{{ task_get_extrn_ics.execution.batchargs.cores }}'
+    nprocs: !int '{{ task_get_extrn_ics.execution.batchargs.cores // 1 }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 4G
   native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD}}'
-  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") else "None" }}'
-  cores: !int '{{ task_get_extrn_ics.execution.batchargs.cores }}'
+  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") }}'
+  cores: !int '{{ task_get_extrn_ics.execution.batchargs.cores // 1 }}'
   queue: '&QUEUE_HPSS;'
   walltime: '{{ task_get_extrn_ics.execution.batchargs.walltime }}'
   dependency:
@@ -69,14 +69,14 @@ task_get_extrn_lbcs:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
-    nprocs: !int '{{ task_get_extrn_lbcs.execution.batchargs.cores }}'
+    nprocs: !int '{{ task_get_extrn_lbcs.execution.batchargs.cores // 1 }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 4G
-  cores: !int '{{ task_get_extrn_lbcs.execution.batchargs.cores }}'
+  cores: !int '{{ task_get_extrn_lbcs.execution.batchargs.cores // 1 }}'
   native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD }}'
-  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") else "None" }}'
+  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") }}'
   queue: '&QUEUE_HPSS;'
   walltime: '{{ task_get_extrn_lbcs.execution.batchargs.walltime }}'
   dependency:
@@ -109,11 +109,11 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      nprocs: !int '{{ task_make_ics.chgres_cube.execution.batchargs.nodes * task_make_ics.chgres_cube.execution.batchargs.tasks_per_node }}'
+      nprocs: !int '{{ task_make_ics.chgres_cube.execution.batchargs.nodes * task_make_ics.chgres_cube.execution.batchargs.tasks_per_node // 1 }}'
     join:
       cyclestr:
         value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nodes: '{{ task_make_ics.chgres_cube.execution.batchargs.nodes }}:ppn={{ task_make_ics.chgres_cube.execution.batchargs.tasks_per_node }}'
+    nodes: '{{ task_make_ics.chgres_cube.execution.batchargs.nodes // 1 }}:ppn={{ task_make_ics.chgres_cube.execution.batchargs.tasks_per_node }}'
     walltime: '{{ task_make_ics.chgres_cube.execution.batchargs.walltime }}'
     dependency:
       and: &make_ics_deps
@@ -124,7 +124,7 @@ metatask_run_ensemble:
           datadep_grid:
             attrs:
               age: 00:00:00:05
-            value: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+            value: '{{ task_make_grid.envvars.GRID_DIR }}/make_grid_task_complete.txt'
           streq:
             left: staged_grid
             right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
@@ -132,7 +132,7 @@ metatask_run_ensemble:
           datadep_orog:
             attrs:
               age: 00:00:00:05
-            value: '{{ task_make_orog.rundir }}/make_orog_task_complete.txt'
+            value: '{{ task_make_orog.envvars.OROG_DIR }}/make_orog_task_complete.txt'
           streq:
             left: staged_orog
             right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
@@ -140,7 +140,7 @@ metatask_run_ensemble:
           datadep_sfc_climo:
             attrs:
               age: 00:00:00:05
-            value: '{{ task_make_sfc_climo.sfc_climo_gen.rundir }}/make_sfc_climo_task_complete.txt'
+            value: '{{ task_make_sfc_climo.envvars.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
           streq:
             left: staged_sfc_climo
             right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
@@ -156,11 +156,11 @@ metatask_run_ensemble:
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
       bcgrp: '00'
       bcgrpnum: '1'
-      nprocs: !int '{{ task_make_lbcs.chgres_cube.execution.batchargs.nodes * task_make_lbcs.chgres_cube.execution.batchargs.tasks_per_node }}'
+      nprocs: !int '{{ task_make_lbcs.chgres_cube.execution.batchargs.nodes * task_make_lbcs.chgres_cube.execution.batchargs.tasks_per_node // 1 }}'
     join:
       cyclestr:
         value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nodes: '{{ task_make_lbcs.chgres_cube.execution.batchargs.nodes }}:ppn={{ task_make_lbcs.chgres_cube.execution.batchargs.tasks_per_node }}'
+    nodes: '{{ task_make_lbcs.chgres_cube.execution.batchargs.nodes // 1 }}:ppn={{ task_make_lbcs.chgres_cube.execution.batchargs.tasks_per_node }}'
     walltime: '{{ task_make_lbcs.chgres_cube.execution.batchargs.walltime }}'
     dependency:
       and:
@@ -175,11 +175,11 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      nprocs: !int '{{ task_run_fcst.PE_MEMBER01 }}'
+      nprocs: !int '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
     join:
       cyclestr:
         value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    partition: '{{ "&PARTITION_FCST;" if platform.get("PARTITION_FCST") else "None" }}'
+    partition: '{{ "&PARTITION_FCST;" if platform.get("PARTITION_FCST") }}'
     queue: '&QUEUE_FCST;'
     nodes: '{{ task_run_fcst.fv3.execution.batchargs.nodes // 1 }}:ppn={{ task_run_fcst.fv3.execution.batchargs.tasks_per_node // 1 }}'
     walltime: '{{ task_run_fcst.fv3.execution.batchargs.walltime }}'

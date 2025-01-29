@@ -24,7 +24,7 @@ default_task_verify_det: &default_task_verify_det
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{{ "2G" if user.MACHINE not in ["NOAACLOUD"] }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   cores: !int '{{ verification_resources.execution.cores }}'
   queue: '&QUEUE_DEFAULT;'
 
@@ -169,7 +169,7 @@ metatask_PointStat_SFC_UPA_all_mems:
               age: 00:00:00:30
             # Check that the flag files that indicate that the Pb2NC tasks are
             # complete are all present before launching any PointStat task.
-            text: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
+            value: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_INST|length %}
                    {%- set indent = "      " %}
                    {%- set indent_p2 = indent + "  " %}
                    {%- for n in range(0, num_obs_days) %}

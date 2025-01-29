@@ -36,7 +36,10 @@ def create_symlink_to_file(target, symlink, relative=True):
               symlink = '{symlink}'"""
         )
 
-    if not os.path.exists(target):
+    target = Path(target)
+    symlink = Path(symlink)
+
+    if not target.exists():
         print_err_msg_exit(
             f"""
             Cannot create symlink to specified target file because the latter does
@@ -45,6 +48,12 @@ def create_symlink_to_file(target, symlink, relative=True):
         )
 
     if relative:
-        symlink = Path(symlink).relative_to(Path(target))
+        # Find the relative path from the target to its symbolic link name
+        target = os.path.relpath(target, symlink.parent)
 
-    Path(target).symlink_to(symlink)
+    # The Path becomes symbolic link to the target
+    if symlink.exists():
+        symlink.unlink()
+    symlink.symlink_to(target)
+    if not symlink.exists():
+        print_err_msg_exit(f"broken link {str(symlink)} to target {str(target)}")

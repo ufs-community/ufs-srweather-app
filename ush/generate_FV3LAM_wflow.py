@@ -19,7 +19,8 @@ from string import Template
 from textwrap import dedent
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
-from uwtools.api.template import render
+from uwtools.api import rocoto as uwrocoto
+
 
 from python_utils import (
     list_to_str,
@@ -83,42 +84,19 @@ def generate_FV3LAM_wflow(
     # -----------------------------------------------------------------------
     #
     wflow_xml_fn = expt_config["workflow"]["WFLOW_XML_FN"]
-    wflow_xml_fp = os.path.join(
-        expt_config["workflow"]["EXPTDIR"],
-        wflow_xml_fn,
-    )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Create a multiline variable that consists of a yaml-compliant string
-    # specifying the values that the jinja variables in the template rocoto
-    # XML should be set to.  These values are set either in the user-specified
-    # workflow configuration file (config) or in the setup() function
-    # called above.  Then call the python script that generates the XML.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
+    wflow_xml_fp = Path(expt_config["workflow"]["EXPTDIR"],wflow_xml_fn)
 
-        template_xml_fp = os.path.join(
-            expt_config["user"]["PARMdir"],
-            wflow_xml_fn,
-        )
+    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
 
         log_info(
             f"""
             Creating rocoto workflow XML file (WFLOW_XML_FP):
               WFLOW_XML_FP = '{wflow_xml_fp}'"""
         )
-
-        #
-        # Call the python script to generate the experiment's XML file
-        #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        render(
-            input_file = template_xml_fp,
-            output_file = wflow_xml_fp,
-            values_src = rocoto_yaml_fp,
+        uwrocoto.realize(
+            config=rocoto_yaml_fp,
+            output_file=wflow_xml_fp,
             )
     #
     # -----------------------------------------------------------------------
@@ -191,7 +169,7 @@ def generate_FV3LAM_wflow(
             verbose=debug,
         )
 
-        Path(FIXgsm).symlink_to(FIXam, target_is_directory=True)
+        Path(FIXam).symlink_to(FIXgsm, target_is_directory=True)
     else:
 
         log_info(
@@ -231,12 +209,12 @@ def generate_FV3LAM_wflow(
         fixclim = Path(FIXclim)
         fixclim.mkdir(parents=True, exist_ok=True)
 
-        merra_files = glob(Path(FIXaer, "merra2.aerclim*.nc"))
-        optics_files = glob(Path(FIXlut, "optics*.dat"))
+        merra_files = glob(Path(FIXaer, "merra2.aerclim*.nc").as_posix())
+        optics_files = glob(Path(FIXlut, "optics*.dat").as_posix())
         for fpath in merra_files + optics_files:
             path = Path(fpath)
             if SYMLINK_FIX_FILES:
-                path.symlink_to(fixclim / path.name)
+                (fixclim / path.name).symlink_to(path)
             else:
                 shutil.copy(path, fixclim / path.name)
     #
@@ -538,8 +516,8 @@ def generate_FV3LAM_wflow(
 
     physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
     base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
-    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
-    base_namelist.update_values(settings)
+    base_namelist.update_from(physics_cfg[CCPP_PHYS_SUITE])
+    base_namelist.update_from(settings)
     for sect, values in base_namelist.copy().items():
         if not values:
             del base_namelist[sect]
@@ -547,7 +525,7 @@ def generate_FV3LAM_wflow(
         for k, v in values.copy().items():
             if v is None:
                 del base_namelist[sect][k]
-    base_namelist.dump(FV3_NML_FP)
+    base_namelist.dump(Path(FV3_NML_FP))
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying

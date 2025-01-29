@@ -13,6 +13,8 @@ import logging
 import os
 import re
 import sys
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
 from textwrap import dedent
 
@@ -37,6 +39,7 @@ from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 
 from uwtools.api.config import get_ini_config, get_yaml_config, validate
+from uwtools.api.template import render
 
 
 def load_config_for_setup(ushdir, default_config_path, user_config_path):
@@ -215,7 +218,7 @@ def set_srw_paths(expt_config):
         )
 
     return {
-        "UFS_WTHR_MDL_DIR": ufs_wthr_mdl_dir,
+        "UFS_WTHR_MDL_DIR": (str(ufs_wthr_mdl_dir)),
     }
 
 
@@ -291,6 +294,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             **set_srw_paths(expt_config),
         }
     )
+    expt_config.dereference()
 
     #
     # -----------------------------------------------------------------------
@@ -444,7 +448,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             _remove_tag(rocoto_tasks, "partition")
 
     # When not running subhourly post, remove those tasks, if they exist
-    if not expt_config["task_run_post"]["SUB_HOURLY_POST"]:
+    if not expt_config["task_run_post"]["envvars"]["SUB_HOURLY_POST"]:
         post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
         post_meta.pop("metatask_run_sub_hourly_post", None)
         post_meta.pop("metatask_sub_hourly_last_hour_post", None)
@@ -452,6 +456,9 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     date_first_cycl = workflow_config["DATE_FIRST_CYCL"]
     date_last_cycl = workflow_config["DATE_LAST_CYCL"]
     incr_cycl_freq = workflow_config["INCR_CYCL_FREQ"]
+
+    date_first_cycl_dt = datetime.datetime.strptime(date_first_cycl, "%Y%m%d%H")
+    date_last_cycl_dt = datetime.datetime.strptime(date_last_cycl, "%Y%m%d%H")
     cycl_intvl_dt = datetime.timedelta(hours=incr_cycl_freq)
     fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
     #
@@ -478,7 +485,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         # Generate a list containing the starting times of the cycles.
         cycle_start_times = set_cycle_dates(
-            date_first_cycl, date_last_cycl, cycl_intvl_dt, return_type="datetime"
+            date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt, return_type="datetime"
         )
 
         # Call function that runs the consistency checks on the vx parameters.
@@ -502,7 +509,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # -----------------------------------------------------------------------
         #
         cycle_start_times = set_cycle_dates(
-            date_first_cycl, date_last_cycl, cycl_intvl_dt, return_type="datetime"
+            date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt, return_type="datetime"
         )
         #
         # -----------------------------------------------------------------------
@@ -543,10 +550,14 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             obs_days_all_cycles["cumul"]
         )
 
-        rocoto_config["cycledefs"]["cycledefs_obs_days_inst"] = cycledefs_obs_days_inst
-        rocoto_config["cycledefs"][
-            "cycledefs_obs_days_cumul"
-        ] = cycledefs_obs_days_cumul
+        rocoto_config["cycledef"].append({
+            "attrs": {"group": "cycledefs_obs_days_inst" },
+            "spec": cycledefs_obs_days_inst[0],
+            })
+        rocoto_config["cycledef"].append({
+            "attrs": {"group": "cycledefs_obs_days_cumul" },
+            "spec": cycledefs_obs_days_cumul[0],
+            })
         #
         # -----------------------------------------------------------------------
         #
@@ -736,8 +747,8 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                 )
 
     # Make sure the vertical coordinate file and LEVP for both make_lbcs and make_ics is the same.
-    make_ics_config = expt_config["task_make_ics"]
-    make_lbcs_config = expt_config["task_make_ics"]
+    make_ics_config = expt_config["task_make_ics"]["envvars"]
+    make_lbcs_config = expt_config["task_make_ics"]["envvars"]
     if ics_vcoord := make_ics_config["VCOORD_FILE"] != (
         lbcs_vcoord := make_lbcs_config["VCOORD_FILE"]
     ):
@@ -776,28 +787,14 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
+    expt_config.dereference()
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
     ccpp_physics_suite = workflow_config["CCPP_PHYS_SUITE"]
-
-    # Warn if user has specified a large timestep inappropriately
     hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
-    if ccpp_physics_suite in hires_ccpp_suites:
-        dt_atmos = fcst_config["envvars"]["DT_ATMOS"]
-        if dt_atmos > 40:
-            logger.warning(
-                dedent(
-                    f"""
-                WARNING: CCPP suite {ccpp_physics_suite} requires short
-                time step regardless of grid resolution. The user-specified value
-                DT_ATMOS = {dt_atmos}
-                may result in CFL violations or other errors!
-                """
-                )
-            )
 
     # Gather the pre-defined grid parameters, if needed
-    if predef_grid := workflow_config["PREDEF_GRID_NAME"] != "":
+    if (predef_grid := workflow_config["PREDEF_GRID_NAME"]) != "":
         grid_params = set_predef_grid_params(
             ushdir,
             predef_grid,
@@ -842,6 +839,21 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
     run_envir = expt_config["user"]["RUN_ENVIR"]
 
+    # Warn if user has specified a large timestep inappropriately
+    if ccpp_physics_suite in hires_ccpp_suites:
+        dt_atmos = fcst_config["envvars"]["DT_ATMOS"]
+        if dt_atmos > 40:
+            logger.warning(
+                dedent(
+                    f"""
+                WARNING: CCPP suite {ccpp_physics_suite} requires short
+                time step regardless of grid resolution. The user-specified value
+                DT_ATMOS = {dt_atmos}
+                may result in CFL violations or other errors!
+                """
+                )
+            )
+
     # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
         fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
@@ -851,7 +863,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             # Also allow for the possibility that the user is running
             # cycles for less than a day:
             num_cycles = len(
-                set_cycle_dates(date_first_cycl, date_last_cycl, cycl_intvl_dt)
+                set_cycle_dates(date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt)
             )
 
             if num_cycles != len(fcst_len_cycl):
@@ -881,8 +893,8 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         # add one forecast entry per cycle per day
         for hour in long_cycles:
-            first = date_first_cycl.replace(hour=hour).strftime("%Y%m%d%H%S")
-            last = date_last_cycl.replace(hour=hour).strftime("%Y%m%d%H%S")
+            first = date_first_cycl_dt.replace(hour=hour).strftime("%Y%m%d%H%S")
+            last = date_last_cycl_dt.replace(hour=hour).strftime("%Y%m%d%H%S")
             spec = f"{first} {last} 24:00:00"
 
             rocoto_config["cycledef"].append(
@@ -891,7 +903,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
     # check the availability of restart intervals for restart capability of forecast
     do_fcst_restart = fcst_config["envvars"]["DO_FCST_RESTART"]
-    lbc_spec_intvl_hrs = get_extrn_lbcs["envvars"]["LBC_SPEC_INTVL_HRS"]
+    lbc_spec_intvl_hrs = get_extrn_lbcs["LBC_SPEC_INTVL_HRS"]
     if do_fcst_restart:
         restart_interval = fcst_config["envvars"]["RESTART_INTERVAL"]
         restart_hrs = []
@@ -970,7 +982,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     for val in vlist:
         if not fcst_config.get(val):
             raise ValueError(msg.format(val=val))
-    if not fcst_config["envvars"]["DT_ATMOS"]:
+    if not isinstance(fcst_config["envvars"]["DT_ATMOS"], int):
         raise ValueError(msg.format(val="envvars.DT_ATMOS"))
 
     #
@@ -1160,7 +1172,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         # Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is
         # evenly divisible by the forecast model's main time step DT_ATMOS.
-        dt_atmos = fcst_config["DT_ATMOS"]
+        dt_atmos = fcst_config["envvars"]["DT_ATMOS"]
         rem = dt_subhourly_post_mnts * 60 % dt_atmos
         if rem != 0:
             raise ValueError(
@@ -1486,13 +1498,14 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     fire_conf = expt_config["fire"]
-    if fire_conf["UFS_FIRE"]:
+    fire_conf_vars = fire_conf["envvars"]
+    if fire_conf_vars["UFS_FIRE"]:
         if build_config["Application"] != "ATMF":
             raise ValueError(
                 ("UFS_FIRE == True but UFS SRW has not been built for fire coupling;",
                 "see users guide for details")
             )
-        fire_input_file = os.path.join(fire_conf["FIRE_INPUT_DIR"], "geo_em.d01.nc")
+        fire_input_file = Path(fire_conf_vars["FIRE_INPUT_DIR"], "geo_em.d01.nc")
         if not Path(fire_input_file).is_file():
             raise FileNotFoundError(
                 dedent(
@@ -1576,6 +1589,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     # Final failsafe before writing rocoto yaml to ensure we don't have any invalid dicts
     # (e.g. metatasks with no tasks, tasks with no associated commands)
     clean_rocoto_dict(expt_config["rocoto"]["tasks"])
+    expt_config.dereference()
 
     rocoto_yaml_fp = Path(workflow_config["ROCOTO_YAML_FP"])
     rocoto_yaml = get_yaml_config({"workflow": expt_config["rocoto"]})
@@ -1585,11 +1599,38 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     del var_defns_cfg["rocoto"]
 
     # Fixup a couple of data types:
-    for dates in ("DATE_FIRST_CYCL", "DATE_LAST_CYCL"):
-        var_defns_cfg["workflow"][dates] = var_defns_cfg["workflow"][dates].strftime(
-            "%Y%m%d%H%M"
-        )
     var_defns_cfg.dump(Path(global_var_defns_fp))
+
+    # Run render on the Rocoto YAML to check for unrendered values.
+    # Quit and report on any found.
+    with StringIO() as buffer:
+        logger = logging.getLogger()
+        handler = logging.StreamHandler(buffer)
+        handler.setLevel(logging.INFO)
+        logger.addHandler(handler)
+        xml_config_str = render(input_file=rocoto_yaml_fp, values_needed=True)
+        values_needed = buffer.getvalue().split("\n")[1:]
+        logger.removeHandler(handler)
+    uwtags = ("!bool", "!float", "!int")
+    not_rendered = any(v for v in values_needed if v.strip() != "jobname") or \
+            any(tag in xml_config_str for tag in uwtags)
+    if not_rendered:
+        # Regex to match '{{' or '{%' but not '{{ jobname }}', as the rocoto
+        # tool adds jobname for each task. Also matches UW-supported tags.
+        pattern = r"({{(?! jobname )|{%.*?%})|!bool|!float|!int"
+        line_not_ok = lambda l: any(m for m in re.finditer(pattern, l))
+        unrendered_lines = [l.strip() for l in xml_config_str.split("\n") if line_not_ok(l)]
+        msg = f"""
+        Jinja expressions remain in the XML configuration file.
+
+        {str(rocoto_yaml_fp)}
+
+        They include:
+
+        {'\n'.join(unrendered_lines)}
+        """
+        raise ValueError(msg)
+
 
     #
     # -----------------------------------------------------------------------

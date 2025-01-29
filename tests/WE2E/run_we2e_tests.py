@@ -182,33 +182,35 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = get_yaml_config(test)
 
-        if test_cfg.get("user") is None:
-            test_cfg["user"] = {}
-        test_cfg["user"].update({"MACHINE": machine})
-        test_cfg["user"].update({"ACCOUNT": args.account})
-        if run_envir:
-            test_cfg["user"].update({"RUN_ENVIR": run_envir})
-        # if platform section was not in input config, initialize as empty dict
-        if "platform" not in test_cfg:
-            test_cfg["platform"] = {}
-        test_cfg["platform"].update({"BUILD_MOD_FN": args.modulefile})
-        test_cfg["workflow"].update({"COMPILER": args.compiler})
-        if args.expt_basedir:
-            test_cfg["workflow"].update({"EXPT_BASEDIR": args.expt_basedir})
-        test_cfg["workflow"].update({"EXPT_SUBDIR": test_name})
-        if args.exec_subdir:
-            test_cfg["workflow"].update({"EXEC_SUBDIR": args.exec_subdir})
-        if args.launch == "cron":
-            test_cfg["workflow"].update({"USE_CRON_TO_RELAUNCH": True})
-        if args.cron_relaunch_intvl_mnts:
-            test_cfg["workflow"].update(
-                {"CRON_RELAUNCH_INTVL_MNTS": args.cron_relaunch_intvl_mnts}
-            )
-        if args.debug_tests:
-            test_cfg["workflow"].update({"DEBUG": args.debug_tests})
-        if args.verbose_tests:
-            test_cfg["workflow"].update({"VERBOSE": args.verbose_tests})
+        test_config_updates = {
+            "user": {
+                "MACHINE": machine,
+                "ACCOUNT": args.account,
+            },
+            "platform": {
+                "BUILD_MOD_FN": args.modulefile,
+            },
+            "workflow": {
+                "COMPILER": args.compiler,
+                "CRON_RELAUNCH_INTVL_MNTS": args.cron_relaunch_intvl_mnts,
+                "EXPT_SUBDIR": test_name,
+                "USE_CRON_TO_RELAUNCH": args.launch == "cron",
+                },
+        }
 
+        if run_envir:
+            test_config_updates["user"].update({"RUN_ENVIR": run_envir})
+
+        workflow = test_config_updates["workflow"]
+        # Adds an item to the dict only if it has a value
+        update = lambda k, v: v and workflow.update({k: v})
+        update("CRON_RELAUNCH_INTVL_MNTS", args.cron_relaunch_intvl_mnts)
+        update("DEBUG", args.debug_tests)
+        update("EXPT_BASEDIR", args.expt_basedir)
+        update("EXEC_SUBDIR", args.exec_subdir)
+        update("VERBOSE", args.verbose_tests)
+
+        test_cfg.update_from(test_config_updates)
         logging.debug(
             f"Overwriting WE2E-test-specific settings for test \n{test_name}\n"
         )
@@ -241,12 +243,12 @@ def run_we2e_tests(homedir, args) -> None:
         if args.compiler == "gnu":
             # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
             if "task_run_post" in test_cfg:
-                test_cfg["task_run_post"].update({"NUMX": 1})
+                test_cfg["task_run_post"]["envvars"]["NUMX"] = 1
                 logging.info(
                     "NUMX has been reset to 1 due to issues encountered with GNU compilers"
                 )
             if "task_run_fcst" in test_cfg:
-                test_cfg["task_run_fcst"].update({"ITASKS": 1})
+                test_cfg["task_run_fcst"]["ITASKS"] = 1
                 logging.info(
                     "ITASKS has been reset to 1 due to issues encountered with GNU compilers"
                 )
@@ -256,8 +258,7 @@ def run_we2e_tests(homedir, args) -> None:
             "based on specified command-line arguments:\n"
         )
         logging.debug(print(test_cfg))
-        with open(Path(ushdir, "config.yaml"), "w", encoding="utf-8") as f:
-            f.writelines(print((test_cfg)))
+        test_cfg.dump(Path(ushdir, "config.yaml"))
 
         logging.info(f"Calling workflow generation function for test {test_name}\n")
         if args.quiet:
@@ -266,8 +267,8 @@ def run_we2e_tests(homedir, args) -> None:
         expt_dir = generate_FV3LAM_wflow(
             ushdir=str(ushdir),
             config="config.yaml",
+            logfile=f"{str(ushdir)}/log.generate_FV3LAM_wflow",
             debug=args.debug,
-            logfile=f"{ushdir}/log.generate_FV3LAM_wflow",
         )
         if args.quiet:
             if args.debug:
@@ -436,14 +437,15 @@ def check_task_get_extrn_bcs(
         raise ValueError("ics_or_lbcs must be set to 'lbcs' or 'ics'")
 
     # Make our lives easier by shortening some dictionary calls
-    cfg_bcs = cfg[f"task_get_extrn_{ics_or_lbcs}"]["envvars"]
+    cfg_bcs = cfg[f"task_get_extrn_{ics_or_lbcs}"]
+    cfg_bcs_vars = cfg_bcs["envvars"]
 
     # If the task is turned off explicitly, do nothing and return
     # To turn off that task, taskgroups is included without the
     # coldstart group, or task_get_extrn_{ics_or_lbcs} is included
     # without a value
-    taskgroups = cfg.get("rocoto", {}).get("taskgroups")
-    if taskgroups is not None and "coldstart.yaml" not in taskgroups:
+    taskgroups = cfg.get("workflow", {}).get("taskgroups")
+    if taskgroups is not None and not any("coldstart.yaml" in g for g in taskgroups):
         return cfg_bcs
     rocoto_tasks = cfg.get("rocoto", {}).get("tasks", {})
     if rocoto_tasks.get(f"task_get_extrn_{ics_or_lbcs}", "NA") is None:
@@ -452,7 +454,7 @@ def check_task_get_extrn_bcs(
     i_or_l = ics_or_lbcs.upper()
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if not cfg_bcs.get("USE_USER_STAGED_EXTRN_FILES"):
+    if not cfg_bcs_vars["USE_USER_STAGED_EXTRN_FILES"]:
         logging.debug(
             "USE_USER_STAGED_EXTRN_FILES not specified or False in "
             f"task_get_extrn_{ics_or_lbcs} section of config"
@@ -462,7 +464,7 @@ def check_task_get_extrn_bcs(
     # If EXTRN_MDL_SYSBASEDIR_* is "set_to_non_default_location_in_testing_script", replace with
     # test value from machine file
     if (
-        cfg_bcs.get(f"EXTRN_MDL_SYSBASEDIR_{i_or_l}")
+        cfg_bcs_vars.get(f"EXTRN_MDL_SYSBASEDIR_{i_or_l}")
         == "set_to_non_default_location_in_testing_script"
     ):
         if f"TEST_ALT_EXTRN_MDL_SYSBASEDIR_{i_or_l}" in mach["platform"]:
@@ -473,7 +475,7 @@ def check_task_get_extrn_bcs(
                     f"TEST_ALT_EXTRN_MDL_SYSBASEDIR_{i_or_l} from machine "
                     "file does not exist or is not a directory"
                 )
-            cfg_bcs[f"EXTRN_MDL_SYSBASEDIR_{i_or_l}"] = basedir
+            cfg_bcs_vars[f"EXTRN_MDL_SYSBASEDIR_{i_or_l}"] = basedir
         else:
             raise KeyError(
                 "Non-default input file location "
@@ -503,20 +505,20 @@ def check_task_get_extrn_bcs(
     model_name_key = f"EXTRN_MDL_NAME_{i_or_l}"
     file_format_key = f"FV3GFS_FILE_FMT_{i_or_l}"
     basedir_key = f"EXTRN_MDL_SOURCE_BASEDIR_{i_or_l}"
-    if cfg_bcs[model_name_key] == "FV3GFS":
-        if file_format_key not in cfg_bcs:
-            cfg_bcs[file_format_key] = dflt[f"task_get_extrn_{ics_or_lbcs}"][
+    if cfg_bcs_vars[model_name_key] == "FV3GFS":
+        if file_format_key not in cfg_bcs_vars:
+            cfg_bcs_vars[file_format_key] = dflt[f"task_get_extrn_{ics_or_lbcs}"]["envvars"].get(
                 file_format_key
-            ]
-        cfg_bcs[basedir_key] = Path(
+            )
+        cfg_bcs_vars[basedir_key] = Path(
             basedir,
-            f"{cfg_bcs[model_name_key]}",
-            f"{cfg_bcs[file_format_key]}",
+            f"{cfg_bcs_vars[model_name_key]}",
+            f"{cfg_bcs_vars[file_format_key]}",
             "${yyyymmddhh}",
         ).as_posix()
     else:
-        cfg_bcs[basedir_key] = Path(
-            basedir, f"{cfg_bcs[model_name_key]}", "${yyyymmddhh}"
+        cfg_bcs_vars[basedir_key] = Path(
+            basedir, f"{cfg_bcs_vars[model_name_key]}", "${yyyymmddhh}"
         ).as_posix()
 
     return cfg_bcs
@@ -558,7 +560,7 @@ if __name__ == "__main__":
     check_python_version()
 
     # Get the "Home" directory, two levels above this one
-    srw_dir = Path(__file__).absolute().parent.parent
+    srw_dir = Path(__file__).absolute().parent.parent.parent
     LOGFILE = "log.run_WE2E_tests"
 
     # Parse arguments

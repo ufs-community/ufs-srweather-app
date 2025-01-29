@@ -33,7 +33,12 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 6
     USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  DT_ATMOS: 60
+  envvars:
+    DT_ATMOS: 60
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:00:00
   LAYOUT_X: 6
   LAYOUT_Y: 6
   BLOCKSIZE: 32
@@ -51,10 +56,6 @@ task_run_fcst:
   WRTCMP_ny: 145
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
-  fv3:
-    execution:
-      batchargs:
-        walltime: 01:00:00
 task_run_post:
   envvars:
     POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Indian_Ocean

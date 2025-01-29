@@ -34,7 +34,7 @@ sections=(
   user
   nco
   workflow
-  task_make_orog
+  task_make_orog.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

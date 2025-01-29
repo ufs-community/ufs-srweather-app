@@ -37,7 +37,7 @@ sections=(
   workflow
   global
   cpl_aqm_parm
-  task_bias_correction_o3
+  task_bias_correction_o3.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

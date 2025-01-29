@@ -89,15 +89,15 @@ user:
 
   HOMEdir: '{{ user.HOMEdir }}'
   USHdir: '{{ user.USHdir }}'
-  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
-  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
-  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
-  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
-  MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
-  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
-  METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
+  SCRIPTSdir: '{{ user.HOMEdir }}/scripts'
+  JOBSdir: '{{ user.HOMEdir }}/jobs'
+  SORCdir: '{{ user.HOMEdir }}/sorc'
+  PARMdir: '{{ user.HOMEdir }}/parm'
+  MODULESdir: '{{ user.HOMEdir }}/modulefiles'
+  EXECdir: '{{ user.HOMEdir }}/{{ workflow.EXEC_SUBDIR }}'
+  METPLUS_CONF: '{{ user.PARMdir }}/metplus'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
-  ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
+  ARL_NEXUS_DIR: '{{ user.SORCdir }}/arl_nexus'
 
 #----------------------------
 # PLATFORM config parameters
@@ -425,6 +425,15 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # How to make links. Relative links by default. Empty string for
+  # absolute paths in links.
+  #
+  #-----------------------------------------------------------------------
+  #
+  RELATIVE_LINK_FLAG: "--relative"
+  #
+  #-----------------------------------------------------------------------
+  #
   # Set cron-associated parameters.  Definitions:
   #
   # USE_CRON_TO_RELAUNCH:
@@ -447,7 +456,7 @@ workflow:
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   CRONTAB_LINE: ""
-  LOAD_MODULES_RUN_TASK_FP: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'
+  LOAD_MODULES_RUN_TASK_FP: '{{ user.USHdir }}/load_modules_run_task.sh'
 
   #
   #-----------------------------------------------------------------------
@@ -482,7 +491,7 @@ workflow:
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: 'experiment'
   EXEC_SUBDIR: 'exec'
-  EXPTDIR: '{{ workflow.EXPT_BASEDIR }}/{{ workflow.EXPT_SUBDIR] }}'
+  EXPTDIR: '{{ workflow.EXPT_BASEDIR }}/{{ workflow.EXPT_SUBDIR }}'
   WFLOW_FLAG_FILES_DIR: '{{ workflow.EXPTDIR }}/wflow_flag_files'
   #
   #-----------------------------------------------------------------------
@@ -584,16 +593,16 @@ workflow:
   RGNL_GRID_NML_FN: "regional_grid.nml"
 
   FV3_NML_FN: "input.nml"
-  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
+  FV3_NML_BASE_SUITE_FN: "{{ workflow.FV3_NML_FN }}.FV3"
   FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
+  FV3_NML_BASE_ENS_FN: "{{ workflow.FV3_NML_FN }}.base_ens"
   FV3_EXEC_FN: "ufs_model"
 
   DATA_TABLE_FN: "data_table"
   DIAG_TABLE_FN: "diag_table"
   FIELD_TABLE_FN: "field_table"
-  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
-  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
+  DIAG_TABLE_TMPL_FN: 'diag_table.{{ workflow.CCPP_PHYS_SUITE }}'
+  FIELD_TABLE_TMPL_FN: 'field_table.{{ workflow.CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
   UFS_CONFIG_FN: "ufs.configure"
   AQM_RC_FN: "aqm.rc"
@@ -631,17 +640,16 @@ workflow:
   #  
   #-----------------------------------------------------------------------
   #
-
-  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
-  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
-  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
-  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
-  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
-  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
-  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
-  UFS_CONFIG_TMPL_FP: '{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'
-  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
-  FIRE_NML_BASE_FP: '{{ [user.PARMdir, FIRE_NML_FN]|path_join }}'
+  FV3_NML_BASE_SUITE_FP: '{{ user.PARMdir }}/{{ workflow.FV3_NML_BASE_SUITE_FN }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ user.PARMdir }}/{{ workflow.FV3_NML_YAML_CONFIG_FN }}'
+  FV3_NML_BASE_ENS_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_BASE_ENS_FN }}'
+  DATA_TABLE_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.DATA_TABLE_FN }}'
+  DIAG_TABLE_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.DIAG_TABLE_TMPL_FN }}'
+  FIELD_TABLE_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.FIELD_TABLE_TMPL_FN }}'
+  MODEL_CONFIG_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.MODEL_CONFIG_FN }}'
+  UFS_CONFIG_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.UFS_CONFIG_FN }}'
+  AQM_RC_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.AQM_RC_TMPL_FN }}'
+  FIRE_NML_BASE_FP: '{{ user.PARMdir }}/{{ workflow.FIRE_NML_FN }}'
 
   # 
   #-----------------------------------------------------------------------
@@ -711,12 +719,12 @@ workflow:
   # 
   #-----------------------------------------------------------------------
   #
-  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
-  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
-  UFS_CONFIG_FP: '{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'
-  FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
-  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
-  FIRE_NML_FP: '{{ [EXPTDIR, FIRE_NML_FN]|path_join }}'
+  DATA_TABLE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.DATA_TABLE_FN }}'
+  FIELD_TABLE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FIELD_TABLE_FN }}'
+  UFS_CONFIG_FP: '{{ workflow.EXPTDIR }}/{{ workflow.UFS_CONFIG_FN }}'
+  FV3_NML_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_FN }}'
+  FV3_NML_STOCH_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_FN }}_stoch'
+  FIRE_NML_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FIRE_NML_FN }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -726,10 +734,10 @@ workflow:
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
 
-  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
-  ROCOTO_YAML_FP: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}'
-  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
-  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
+  GLOBAL_VAR_DEFNS_FP: '{{ workflow.EXPTDIR }}/{{ workflow.GLOBAL_VAR_DEFNS_FN }}'
+  ROCOTO_YAML_FP: '{{ workflow.EXPTDIR }}/{{ workflow.ROCOTO_YAML_FN }}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ user.USHdir }}/{{ workflow.WFLOW_LAUNCH_SCRIPT_FN }}'
+  WFLOW_LAUNCH_LOG_FP: '{{ workflow.EXPTDIR }}/{{ workflow.WFLOW_LAUNCH_LOG_FN }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -760,13 +768,13 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR }}'
-  FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
-  FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
-  FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
+  FIXdir: '{{ workflow.EXPTDIR }}'
+  FIXam: '{{ workflow.FIXdir }}/fix_am'
+  FIXclim: '{{ workflow.FIXdir }}/fix_clim'
+  FIXlam: '{{ workflow.FIXdir }}/fix_lam'
 
   THOMPSON_MP_CLIMO_FN: "Thompson_MP_MONTHLY_CLIMO.nc"
-  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'
+  THOMPSON_MP_CLIMO_FP: '{{ workflow.FIXam }}/{{ workflow.THOMPSON_MP_CLIMO_FN }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -798,10 +806,10 @@ workflow:
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
-  CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
-  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
-  CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
-  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics", "SFC_Models", "Land", "Noahmp"] |path_join }}'
+  CCPP_PHYS_SUITE_FN: 'suite_{{ workflow.CCPP_PHYS_SUITE }}.xml'
+  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'
+  CCPP_PHYS_SUITE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.CCPP_PHYS_SUITE_FN }}'
+  CCPP_PHYS_DIR: '{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/physics/physics/SFC_Models/Land/Noahmp'
   #
   #-----------------------------------------------------------------------
   #
@@ -822,8 +830,8 @@ workflow:
   #-----------------------------------------------------------------------
   #
   FIELD_DICT_FN: "fd_ufs.yaml"
-  FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
-  FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
+  FIELD_DICT_IN_UWM_FP: '{{ user.UFS_WTHR_MDL_DIR }}/tests/parm/{{ workflow.FIELD_DICT_FN }}'
+  FIELD_DICT_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FIELD_DICT_FN }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -932,7 +940,7 @@ workflow:
   # than one day the entries must include the length of each cycle to be
   # run. By default, it is set to a 1-item list containing the standard
   # fcst length.
-  #
+  
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -940,8 +948,8 @@ workflow:
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
   FCST_LEN_CYCL:
-    - '{{ FCST_LEN_HRS }}'
-  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
+    - !int '{{ workflow.FCST_LEN_HRS }}'
+  LONG_FCST_LEN: !int '{{ workflow.FCST_LEN_CYCL|max if workflow.FCST_LEN_HRS < 0 else workflow.FCST_LEN_HRS }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1130,7 +1138,7 @@ task_make_grid:
   execution:
     batchargs:
       nodes: 1
-      cores: 24
+      tasks_per_node: 24
       walltime: 00:20:00
   envvars:
     # This section is a placeholder and will be removed with make_grid
@@ -1147,7 +1155,7 @@ task_make_grid:
     # 
     #-----------------------------------------------------------------------
     # 
-    GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks.get("task_make_grid") else "" }}'
+    GRID_DIR: '{{ workflow.EXPTDIR + "/grid" if rocoto.tasks.get("task_make_grid")}}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1364,13 +1372,13 @@ task_make_orog:
         nodes: 1
         tasks_per_node: 24
         walltime: 00:20:00
-      threads: !int '{{ task_make_orog.OMP_NUM_THREADS_MAKE_OROG }}'
+      threads: !int '{{ task_make_orog.envvars.OMP_NUM_THREADS_MAKE_OROG }}'
 
   envvars:
     KMP_AFFINITY_MAKE_OROG: "disabled"
     OMP_NUM_THREADS_MAKE_OROG: 6
     OMP_STACKSIZE_MAKE_OROG: "2048m"
-    OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks.get("task_make_orog") else "" }}'
+    OROG_DIR: '{{ workflow.EXPTDIR + "/orog" if rocoto.tasks.get("task_make_orog") }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1400,7 +1408,7 @@ task_make_sfc_climo:
   envvars:
     # This section is a placeholder and will be removed with make_sfc_climo
     # integration
-    SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks.get("task_make_sfc_climo") else "" }}'
+    SFC_CLIMO_DIR: '{{ workflow.EXPTDIR + "/sfc_climo" if rocoto.tasks.get("task_make_sfc_climo") }}'
 
 #----------------------------
 # EXTRN ICS config parameters
@@ -1547,7 +1555,7 @@ task_get_extrn_lbcs:
   envvars:
     EXTRN_MDL_NAME_LBCS: "FV3GFS"
     LBC_SPEC_INTVL_HRS: 6
-    EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
+    EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if task_get_extrn_lbcs.envvars.EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
     FV3GFS_FILE_FMT_LBCS: "nemsio"
     #
     #-----------------------------------------------------------------------
@@ -1591,9 +1599,9 @@ task_make_ics:
     execution:
       batchargs:
         nodes: 4
-        tasks_per_node: 24
+        tasks_per_node: 12
         walltime: 00:30:00
-      threads: !int '{{ task_make_ics.OMP_NUM_THREADS_MAKE_ICS }}'
+      threads: !int '{{ task_make_ics.envvars.OMP_NUM_THREADS_MAKE_ICS }}'
   #-----------------------------------------------------------------------
   # KMP_AFFINITY_MAKE_ICS: 
   # Intel Thread Affinity Interface for the make_ics task. 
@@ -1653,7 +1661,7 @@ task_make_ics:
     FVCOM_DIR: ""
     FVCOM_FILE: "fvcom.nc"
     VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
-  LEVP: 65
+    LEVP: 65
 
 #----------------------------
 # MAKE LBCS config parameters
@@ -1663,9 +1671,9 @@ task_make_lbcs:
     execution:
       batchargs:
         nodes: 4
-        tasks_per_node: 24
+        tasks_per_node: 12
         walltime: 00:30:00
-      threads: !int '{{ task_make_lbcs.OMP_NUM_THREADS_MAKE_ICS }}'
+      threads: !int '{{ task_make_lbcs.envvars.OMP_NUM_THREADS_MAKE_ICS }}'
   #------------------------------------------------------------------------
   #
   # KMP_AFFINITY_MAKE_LBCS: 
@@ -1699,7 +1707,7 @@ task_run_fcst:
         nodes: !int '{{ (task_run_fcst.PE_MEMBER01 + task_run_fcst.fv3.execution.batchargs.tasks_per_node - 1) // task_run_fcst.fv3.execution.batchargs.tasks_per_node }}'
         tasks_per_node: !int '{{ platform.NCORES_PER_NODE // task_run_fcst.fv3.execution.threads }}'
         walltime: 04:30:00
-      threads: !int '{{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST }}'
+      threads: !int '{{ task_run_fcst.envvars.OMP_NUM_THREADS_RUN_FCST }}'
   #------------------------------------------------------------------------
   #
   # NNODES_RUN_FCST: 
@@ -1709,17 +1717,13 @@ task_run_fcst:
   # PPN_RUN_FCST: 
   # Processes per node for the forecast task. 
   #
-  # FV3_EXEC_FP: 
-  # Full path to the forecast model executable.
-  #
   # IO_LAYOUT_Y: 
   # Specifies how many MPI ranks to use in the Y direction for 
   # input/output (I/O). (X direction is assumed to be 1.)
   #
   #------------------------------------------------------------------------
-  NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
-  PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
-  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
+  NNODES_RUN_FCST: !int '{{ (task_run_fcst.PE_MEMBER01 + task_run_fcst.PPN_RUN_FCST - 1) // task_run_fcst.PPN_RUN_FCST }}'
+  PPN_RUN_FCST: !int '{{ platform.NCORES_PER_NODE // task_run_fcst.envvars.OMP_NUM_THREADS_RUN_FCST }}'
   IO_LAYOUT_Y: 1
   #
   #-----------------------------------------------------------------------
@@ -1748,6 +1752,9 @@ task_run_fcst:
   # OMP_STACKSIZE_RUN_FCST:
   # Controls the size of the stack for threads created by the OpenMP 
   # implementation.
+  #
+  # FV3_EXEC_FP: 
+  # Full path to the forecast model executable.
   #
   # DT_ATMOS:
   # The main forecast model integration time step.  As described in the 
@@ -1800,6 +1807,7 @@ task_run_fcst:
     KMP_AFFINITY_RUN_FCST: "scatter"
     OMP_NUM_THREADS_RUN_FCST: 2    # ATM_omp_num_threads in ufs.configure
     OMP_STACKSIZE_RUN_FCST: "1024m"
+    FV3_EXEC_FP: '{{ user.EXECdir }}/{{ workflow.FV3_EXEC_FN }}'
     DT_ATMOS: !int ""
     FHROT: 0
     RESTART_INTERVAL: 0
@@ -1841,9 +1849,9 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  LAYOUT_X: '{{ LAYOUT_X }}'
-  LAYOUT_Y: '{{ LAYOUT_Y }}'
-  BLOCKSIZE: '{{ BLOCKSIZE }}'
+  LAYOUT_X: !int '{{ task_run_fcst.LAYOUT_X }}'
+  LAYOUT_Y: !int '{{ task_run_fcst.LAYOUT_Y }}'
+  BLOCKSIZE: !int '{{ task_run_fcst.BLOCKSIZE }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1951,12 +1959,12 @@ task_run_fcst:
   #
   QUILTING: true
 
-  PE_MEMBER01: '{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if QUILTING else OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X) + fire.FIRE_NUM_TASKS }}'
+  PE_MEMBER01: !int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + fire.FIRE_NUM_TASKS }}'
 
   WRTCMP_write_groups: ""
   WRTCMP_write_tasks_per_group: ""
 
-  WRTCMP_output_grid: "''"
+  WRTCMP_output_grid: ""
   WRTCMP_cen_lon: ""
   WRTCMP_cen_lat: ""
   WRTCMP_lon_lwr_left: ""
@@ -1991,7 +1999,7 @@ task_run_post:
         nodes: 1
         tasks_per_node: 24
         walltime: 00:15:00
-      threads: !int '{{ task_run_post.OMP_NUM_THREADS_RUN_POST }}'
+      threads: !int '{{ task_run_post.envvars.OMP_NUM_THREADS_RUN_POST }}'
   #-----------------------------------------------------------------------
   #-----------------------------------------------------------------------
   # KMP_AFFINITY_RUN_POST: 
@@ -2161,20 +2169,21 @@ task_plot_allvars:
   #    community mode: $PDY$cyc/postprd
   # We don't do this inside the code, so that we can compare nco vs com runs.
   #-------------------------------------------------------------------------
-  COMOUT_REF: ""
-  #------------------------------
-  # Plot fcts start and increment
-  #------------------------------
-  PLOT_FCST_START: 0
-  PLOT_FCST_INC: 3
-  #-----------------------------------
-  # By default the end is FCST_LEN_HRS
-  #-----------------------------------
-  PLOT_FCST_END: ""
-  #------------------------------------------------------------------------------
-  # Domains to plot. Currently supported are either "conus" or "regional" or both
-  #-------------------------------------------------------------------------------
-  PLOT_DOMAINS: ["conus"]
+  envvars:
+    COMOUT_REF: ""
+    #------------------------------
+    # Plot fcts start and increment
+    #------------------------------
+    PLOT_FCST_START: 0
+    PLOT_FCST_INC: 3
+    #-----------------------------------
+    # By default the end is FCST_LEN_HRS
+    #-----------------------------------
+    PLOT_FCST_END: !int "{{ workflow.FCST_LEN_HRS }}"
+    #------------------------------------------------------------------------------
+    # Domains to plot. Currently supported are either "conus" or "regional" or both
+    #-------------------------------------------------------------------------------
+    PLOT_DOMAINS: ["conus"]
 
 #-----------------------------
 # NEXUS_EMISSION config parameters
@@ -2197,7 +2206,7 @@ task_nexus_emission:
   # OMP_STACKSIZE_NEXUS_EMISSION: 
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
-  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
   NNODES_NEXUS_EMISSION: 4
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
@@ -2297,10 +2306,6 @@ global:
   # A list of names for the ensemble member names following the format
   # mem001, mem002, etc.
   #
-  # FV3_NML_ENSMEM_FPS:
-  # Paths to the ensemble member corresponding namelists in the
-  # experiment directory
-  #
   # ENS_TIME_LAG_HRS:
   # Time lag (in hours) to use for each ensemble member. For a deterministic
   # forecast, this is a one-element array. Default values of array elements
@@ -2310,9 +2315,8 @@ global:
   #
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
-  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
-  FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-  ENS_TIME_LAG_HRS: '[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
+  ENSMEM_NAMES: '{% for m in range(global.NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
+  ENS_TIME_LAG_HRS: '[ {% for m in range([1,global.NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
   #
   #-----------------------------------------------------------------------
   #
@@ -2522,7 +2526,7 @@ verification:
   # Template for base (i.e. top-level) directory in which METplus will place
   # its output.
   #
-  VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
+  VX_OUTPUT_BASEDIR: '{{ "$COMOUT/metout" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'
   #
   # METplus-Specific Parameters
   # -------------------------------
@@ -2675,10 +2679,10 @@ verification:
   #   python dictionaries to bash variables.
   #
   OBS_CCPA_FN_TEMPLATES: [ 'APCP',
-                           '{%- set obs_avail_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
+                           '{%- set obs_avail_intvl_hrs = "%02d" % verification.CCPA_OBS_AVAIL_INTVL_HRS %}
                             {{- "{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z." ~ obs_avail_intvl_hrs ~ "h.hrap.conus.gb2" }}' ]
   OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW',
-                             '{%- set obs_avail_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
+                             '{%- set obs_avail_intvl_hrs = "%d" % verification.NOHRSC_OBS_AVAIL_INTVL_HRS %}
                               {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2" }}' ]
   OBS_MRMS_FN_TEMPLATES: [ 'REFC', '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2',
                            'RETOP', '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2' ]
@@ -2745,7 +2749,7 @@ verification:
   # This is used in forming the names of the verification output files and
   # is also included in the contents of those files.
   #
-  VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}'
   #
   # VX_FCST_OUTPUT_INTVL_HRS:
   # The forecast output interval (in hours) to assume for verification
@@ -2762,31 +2766,19 @@ verification:
   # containing the forecast files to use as inputs to the verification
   # tasks.
   #
-  VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
+  VX_FCST_INPUT_BASEDIR: '{{ "$COMOUT/../.." if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'
   #
   # FCST_SUBDIR_TEMPLATE:
   # METplus template for the name of the subdirectory containing forecast
   # files to use as inputs to the verification tasks.
-  # 
-  FCST_SUBDIR_TEMPLATE: '{%- if user.RUN_ENVIR == "nco" %}
-                           {{- "${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}" }}
-                         {%- else %}
-                           {{- "{init?fmt=%Y%m%d%H?shift=-${time_lag}}" }}
-                           {%- if global.DO_ENSEMBLE %}
-                             {{- "/${ensmem_name}" }}
-                           {%- endif %}
-                           {{- "/postprd" }}
-                         {%- endif %}'
+  #
+  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{{ "/${ensmem_name}" if global.DO_ENSEMBLE }}/postprd{% endif %}'
   #
   # FCST_FN_TEMPLATE:
   # METplus template for the names of the forecast files to use as inputs
   # to the verification tasks.
   # 
-  FCST_FN_TEMPLATE: '{{- "${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z" }}
-                     {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
-                       {{- ".${ensmem_name}" }}
-                     {%- endif %}
-                     {{- ".prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2" }}'
+  FCST_FN_TEMPLATE: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.grib2'
   #
   # FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT:
   # METplus template for the names of the NetCDF files generated by the
@@ -2794,11 +2786,7 @@ verification:
   # forecast output.  These files will contain forecast accumulated
   # precipitation in NetCDF format for various accumulation intervals.
   #
-  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- "${NET_default}.t{init?fmt=%H}z" }}
-                                       {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
-                                         {{- ".${ensmem_name}" }}
-                                       {%- endif %}
-                                       {{- ".prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${FIELD_GROUP}_a${ACCUM_HH}h.nc" }}'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${NET_default}.t{init?fmt=%H}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.f{lead?fmt=%HHH}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}_${VAR}_a${ACCUM_HH}h.nc'
   #
   # VX_NDIGITS_ENSMEM_NAMES:
   # Number of digits to assume/use in the forecast ensemble member identifier

@@ -22,7 +22,7 @@ default_task_prep: &default_task
       cyclestr:
         value: "&LOGDIR;"
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "None" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
 task_make_grid:
@@ -30,19 +30,19 @@ task_make_grid:
   command: '&LOAD_MODULES_RUN_TASK; "make_grid" "&JOBSdir;/JREGIONAL_MAKE_GRID"'
   envars:
     <<: *default_envars
-    nprocs: '{{ task_make_grid.execution.nodes * task_make_grid.execution.tasks_per_node }}'
+    nprocs: '{{ task_make_grid.execution.batchargs.nodes * task_make_grid.execution.batchargs.tasks_per_node }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  nodes: '{{ task_make_grid.execution.nodes }}:ppn={{ task_make_grid.execution.tasks_per_node }}'
-  walltime: "{{ task_make_grid.execution.walltime }}"
+  nodes: '{{ task_make_grid.execution.batchargs.nodes }}:ppn={{ task_make_grid.execution.batchargs.tasks_per_node }}'
+  walltime: "{{ task_make_grid.execution.batchargs.walltime }}"
 
 task_make_orog:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK; "make_orog" "&JOBSdir;/JREGIONAL_MAKE_OROG"'
   envars:
     <<: *default_envars
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    nprocs: '{{ task_make_orog.orog.execution.batchargs.nodes * task_make_orog.orog.execution.batchargs.tasks_per_node }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -60,7 +60,7 @@ task_make_orog:
       datadep:
         attrs:
           age: 00:00:00:05
-        value: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+        value: '{{ task_make_grid.envvars.GRID_DIR }}/make_grid_task_complete.txt'
 
 task_make_sfc_climo:
   <<: *default_task
@@ -71,7 +71,7 @@ task_make_sfc_climo:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   nodes: "{{ task_make_sfc_climo.sfc_climo_gen.execution.batchargs.nodes }}:ppn={{ task_make_sfc_climo.sfc_climo_gen.execution.batchargs.tasks_per_node }}"
-  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") else "" }}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   walltime: "{{ task_make_sfc_climo.sfc_climo_gen.execution.batchargs.walltime }}" 
   dependency:
     and:
@@ -88,4 +88,4 @@ task_make_sfc_climo:
         datadep:
           attrs:
             age: 00:00:00:05
-          value: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+          value: '{{ task_make_orog.envvars.OROG_DIR }}/make_orog_task_complete.txt'

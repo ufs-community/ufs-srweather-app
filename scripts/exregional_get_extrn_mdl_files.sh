@@ -240,9 +240,9 @@ fi
 mkdir -p ${EXTRN_MDL_STAGING_DIR}
 
 if [ $RUN_ENVIR = "nco" ]; then
-    EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.yaml"
+    EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
-    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.yaml"
+    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 cmd="
 python3 -u ${USHdir}/retrieve_data.py \
