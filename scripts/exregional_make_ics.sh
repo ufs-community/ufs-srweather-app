@@ -93,6 +93,7 @@ sections=(
   workflow
   global
   cpl_aqm_parm
+  smoke_dust_parm
   constants
   task_get_extrn_ics.envvars
   task_make_ics.envvars
@@ -206,11 +207,16 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
   "FV3_HRRR" | \
+  "FV3_HRRR_gf" | \
   "FV3_RAP" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "RRFS" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
-      varmap_file="GSDphys_var_map.txt"
+      if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+        varmap_file="GSDphys_smoke_var_map.txt"
+      else
+        varmap_file="GSDphys_var_map.txt"
+      fi
     elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "UFS-CASE-STUDY" ] || \
@@ -738,7 +744,7 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] || [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
   COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
   if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     data_trans_path="${COMOUT}"
@@ -748,7 +754,11 @@ if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   cp -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
   cp -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
   cp -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-  cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+    cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+  else
+    cp -p gfs.bndy.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+  fi
 else
   mv out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
   mv out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc

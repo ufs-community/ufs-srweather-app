@@ -30,6 +30,10 @@ done
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 
+# Gaea-c6 differences:
+##SBATCH --qos=normal
+##SBATCH --clusters=c6 --partition=batch --export=NONE
+
 # Jet     differences:
 ##SBATCH --partition=sjet,vjet,kjet,xjet
 

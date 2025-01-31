@@ -1,0 +1,15 @@
+name: srw_sd
+channels:
+  - conda-forge
+  - ufs-community
+dependencies:
+  - esmpy=*=mpi_mpich*
+  - mpi4py
+  - pydantic
+  - netcdf4=1.6.*=mpi_mpich*
+  - numpy=1.23.*
+  - pylint=2.17*
+  - pytest=7.2*
+  - scipy=1.10.*
+  - uwtools=2.3*
+  - xarray=2022.11.*

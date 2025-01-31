@@ -58,6 +58,7 @@ Building, Running, and Testing the SRW App
    * :numref:`Section %s: Tutorials <Tutorial>` walks users through different SRW App experiment cases and analysis of results. 
    * :numref:`Section %s: METplus Verification Sample Cases <VXCases>` explains how to run METplus verification as part of the workflow. 
    * :numref:`Section %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, so documentation may be behind the current state of development, which is progressing rapidly. However, this section is a starting point for those interested in AQM. 
+   * :numref:`Section %s: SRW Smoke & Dust <srw-sd>` provides information specific to smoke and dust modeling. This feature is currently only supported on Hera and Orion/Hercules, but it is a starting point for those interested in regional smoke & dust modeling. 
 
 .. hint:: 
    * To get started with the SRW App, it is recommended that users try one of the following options: 

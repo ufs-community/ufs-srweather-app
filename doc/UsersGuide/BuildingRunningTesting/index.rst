@@ -3,7 +3,6 @@ Building, Running, and Testing the SRW App
    
 .. toctree::
    :maxdepth: 3
-   
 
    Quickstart
    ContainerQuickstart
@@ -13,4 +12,5 @@ Building, Running, and Testing the SRW App
    Tutorial
    VXCases
    AQM
+   SRW-SD
    FIRE

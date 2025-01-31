@@ -6,7 +6,7 @@ load("netcdf-c/4.9.2")
 load("netcdf-fortran/4.6.1")
 load("parallelio/2.5.10")
 load("esmf/8.6.0")
-load("fms/2023.04")
+load("fms/2024.01")
 
 load("bacio/2.4.1")
 load("crtm/2.4.0.1")

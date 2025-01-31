@@ -40,12 +40,19 @@ platform:
   FIXshp: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/NaturalEarth
   FIXaqm: /scratch2/NAGAPE/epic/SRW-AQM_DATA/fix_aqm
   FIXemis: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus
+  FIXsmoke: /scratch2/NAGAPE/epic/SRW-AQM_DATA/fix_smoke
+  FIXupp: /scratch2/NAGAPE/epic/SRW-AQM_DATA/fix_upp
+  FIXcrtm: /scratch2/NAGAPE/epic/SRW-AQM_DATA/fix_crtm
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 
 cpl_aqm_parm:
   COMINfire_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/RAVE_fire
   COMINgefs_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GEFS_DATA
   NEXUS_GFS_SFC_DIR: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
+
+smoke_dust_parm:
+  COMINsmoke_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAVE_fire
 
 rocoto:
   tasks:

@@ -103,6 +103,7 @@ user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
                     r'https://glossary.ametsoc.org/.*',
+                    r'https://readthedocs.org/projects/ufs-srweather-app/',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
@@ -124,6 +125,8 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                  r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*",
                                r"https://github\.com/ufs-community/ufs\-srweather\-app/issues/.*": 
                                  r"https://github\.com/login\?return\_to\=https.*",
+                               r"https://mrms\.ncep\.noaa\.gov/data/": 
+                                 r"https://mrms\.ncep\.noaa\.gov",
                                }
 
 

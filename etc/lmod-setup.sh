@@ -47,6 +47,9 @@ elif [ "$L_MACHINE" = singularity ]; then
 elif [ "$L_MACHINE" = gaea ]; then
    module reset 
 
+elif [ "$L_MACHINE" = gaea-c6 ]; then
+   module reset 
+
 elif [ "$L_MACHINE" = derecho ]; then
    module purge
 

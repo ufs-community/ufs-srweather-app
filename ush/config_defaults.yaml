@@ -82,7 +82,7 @@ user:
   # ARL_NEXUS_DIR: 
   # The path to the user's NEXUS directory. By default, NEXUS source 
   # code resides in ufs-srweather-app/sorc/arl_nexus
-  # 
+  #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
@@ -367,6 +367,12 @@ platform:
   # FIXemis:
   # System directory where AQM emission data files are located.
   #
+  # FIXsmoke:
+  # System directory where Smoke and Dust data files are located.
+  #
+  # FIXupp:
+  # System directory where UPP fixed files are located
+  #
   # FIXcrtm:
   # System directory where CRTM fixed files are located
   #
@@ -383,6 +389,8 @@ platform:
   FIXshp: ""
   FIXaqm: ""
   FIXemis: ""
+  FIXsmoke: ""
+  FIXupp: ""
   FIXcrtm: ""
   FIXcrtmupp: ""
   #
@@ -1418,6 +1426,7 @@ task_get_extrn_ics:
     batchargs:
       cores: 1
       walltime: 01:30:00
+  envvars:
     #
     #-----------------------------------------------------------------------
     #
@@ -1443,10 +1452,9 @@ task_get_extrn_ics:
     #
     #-----------------------------------------------------------------------
     #
-  envvars:
     EXTRN_MDL_NAME_ICS: "FV3GFS"
     EXTRN_MDL_ICS_OFFSET_HRS: 0
-    FV3GFS_FILE_FMT_ICS: "nemsio"
+    FV3GFS_FILE_FMT_ICS: "netcdf"
     #
     #-----------------------------------------------------------------------
     #
@@ -1517,46 +1525,46 @@ task_get_extrn_lbcs:
     batchargs:
       cores: 1
       walltime: 01:30:00
-  #
-  #-----------------------------------------------------------------------
-  #
-  # EXTRN_MDL_NAME_LBCS:
-  # The name of the external model that will provide fields from which 
-  # lateral boundary condition (LBC) files (except for the 0-th hour LBC 
-  # file) will be generated for input into the forecast model.
-  #
-  # LBC_SPEC_INTVL_HRS:
-  # The interval (in integer hours) with which LBC files will be generated.
-  # We will refer to this as the boundary update interval.  Note that the
-  # model specified in EXTRN_MDL_NAME_LBCS must have data available at a
-  # frequency greater than or equal to that implied by LBC_SPEC_INTVL_HRS.
-  # For example, if LBC_SPEC_INTVL_HRS is set to 6, then the model must have
-  # data availble at least every 6 hours. It is up to the user to ensure 
-  # that this is the case.
-  #
-  # EXTRN_MDL_LBCS_OFFSET_HRS:
-  # Users may wish to use lateral boundary conditions from a forecast that
-  # was started earlier than the initial time for the forecast
-  # configured here. This variable indicates how many hours earlier
-  # the external model started than the forecast configured here.
-  # For example, the forecast should use lateral boundary
-  # conditions from a GFS forecast started 6 hours earlier, then
-  # EXTRN_MDL_LBCS_OFFSET_HRS: 6. Defaults to 0 except for RAP, which
-  # uses a 3 hour offset. The default value is model-dependent and is set 
-  # in ush/set_extrn_mdl_params.py.
-  #
-  # FV3GFS_FILE_FMT_LBCS:
-  # If using the FV3GFS model as the source of the LBCs (i.e., if 
-  # EXTRN_MDL_NAME_LBCS is set to "FV3GFS"), this variable specifies the 
-  # format of the model files to use when generating the LBCs.
-  #
-  #-----------------------------------------------------------------------
-  #
   envvars:
+    #
+    #-----------------------------------------------------------------------
+    #
+    # EXTRN_MDL_NAME_LBCS:
+    # The name of the external model that will provide fields from which 
+    # lateral boundary condition (LBC) files (except for the 0-th hour LBC 
+    # file) will be generated for input into the forecast model.
+    #
+    # LBC_SPEC_INTVL_HRS:
+    # The interval (in integer hours) with which LBC files will be generated.
+    # We will refer to this as the boundary update interval.  Note that the
+    # model specified in EXTRN_MDL_NAME_LBCS must have data available at a
+    # frequency greater than or equal to that implied by LBC_SPEC_INTVL_HRS.
+    # For example, if LBC_SPEC_INTVL_HRS is set to 6, then the model must have
+    # data availble at least every 6 hours. It is up to the user to ensure 
+    # that this is the case.
+    #
+    # EXTRN_MDL_LBCS_OFFSET_HRS:
+    # Users may wish to use lateral boundary conditions from a forecast that
+    # was started earlier than the initial time for the forecast
+    # configured here. This variable indicates how many hours earlier
+    # the external model started than the forecast configured here.
+    # For example, the forecast should use lateral boundary
+    # conditions from a GFS forecast started 6 hours earlier, then
+    # EXTRN_MDL_LBCS_OFFSET_HRS: 6. Defaults to 0 except for RAP, which
+    # uses a 3 hour offset. The default value is model-dependent and is set 
+    # in ush/set_extrn_mdl_params.py.
+    #
+    # FV3GFS_FILE_FMT_LBCS:
+    # If using the FV3GFS model as the source of the LBCs (i.e., if 
+    # EXTRN_MDL_NAME_LBCS is set to "FV3GFS"), this variable specifies the 
+    # format of the model files to use when generating the LBCs.
+    #
+    #-----------------------------------------------------------------------
+    #
     EXTRN_MDL_NAME_LBCS: "FV3GFS"
     LBC_SPEC_INTVL_HRS: 6
     EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if task_get_extrn_lbcs.envvars.EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
-    FV3GFS_FILE_FMT_LBCS: "nemsio"
+    FV3GFS_FILE_FMT_LBCS: "netcdf"
     #
     #-----------------------------------------------------------------------
     #
@@ -1814,7 +1822,7 @@ task_run_fcst:
     WRITE_DOPOST: false
     PRINT_ESMF: false
     DO_FCST_RESTART: false
-    USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
+    USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE in ["FV3_GFS_v15_thompson_mynn_lam3km", "FV3_HRRR_gf", "FV3_GFS_v17_p8"] }}'
 
   ITASKS: 1
   #
@@ -1987,7 +1995,6 @@ task_run_fcst:
   WRTCMP_ny: ""
   WRTCMP_dx: ""
   WRTCMP_dy: ""
-  #
 
 #----------------------------
 # POST config parameters
@@ -3018,6 +3025,40 @@ task_aqm_lbcs:
       walltime:
 
 
+#------------------------------
+# Smoke/Dust config parameters
+#------------------------------
+smoke_dust_parm:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_SMOKE_DUST:
+  # Flag turning on/off Smoke and Dust
+  #
+  # EBB_DCYCLE:
+  # 1: for retro, 2: for forecast
+  #
+  # PERSISTENCE:
+  # Flag turning on/off emissions persistence method, if off same day FRP is used
+  #
+  # COMINsmoke_default:
+  # Path to the directory containing smoke and dust files
+  #
+  # COMINrave_default:
+  # Path to the directory containing RAVE fire files
+  #
+  # SMOKE_DUST_FILE_PREFIX:
+  # Prefix of Smoke and Dust file name
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_SMOKE_DUST: false
+  EBB_DCYCLE: 1
+  PERSISTENCE: true
+  COMINsmoke_default: ""
+  COMINrave_default: ""
+  SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
+
 #----------------------------
 # UFS FIRE config parameters
 #-----------------------------
@@ -3064,8 +3105,9 @@ fire:
   #   3: Even more extra prints
   #  
   # FIRE_ATM_FEEDBACK
-  # Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
-  # Intermediate values will vary the amount of forcing provided from the fire to the dynamical core
+  # Multiplier for heat and moisture fluxes from the fire to the atmosphere. Use 1.0 for normal
+  # two-way coupling. Use 0.0 for one-way coupling. Intermediate values or values greater than 1
+  # will vary the amount of forcing provided from the fire to the dynamical core.
   #
   # FIRE_VISCOSITY
   # Artificial viscosity in level set method. Maximum 1, required for FIRE_UPWINDING=0
@@ -3120,7 +3162,7 @@ fire:
 
   FIRE_WIND_HEIGHT: 5.0
   FIRE_PRINT_MSG: 0
-  FIRE_ATM_FEEDBACK: 0.0
+  FIRE_ATM_FEEDBACK: 1.0
   FIRE_VISCOSITY: 0.4
   FIRE_UPWINDING: 9
   FIRE_LSM_ZCOUPLING: False

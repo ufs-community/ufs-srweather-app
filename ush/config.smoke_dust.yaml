@@ -1,0 +1,78 @@
+metadata:
+  description: config for Smoke and Dust, RRFS_CONUS_3km
+user:
+  RUN_ENVIR: community
+  MACHINE: [hera/orion/hercules/gaea-c6]
+  ACCOUNT: [account name]
+workflow:
+  USE_CRON_TO_RELAUNCH: false
+  CRON_RELAUNCH_INTVL_MNTS: 3
+  EXPT_SUBDIR: smoke_dust_conus3km
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
+  CCPP_PHYS_SUITE: FV3_HRRR_gf
+  DATE_FIRST_CYCL: '2019072200'
+  DATE_LAST_CYCL: '2019072206'
+  INCR_CYCL_FREQ: 6
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  DEBUG: false
+  COMPILER: intel
+  DIAG_TABLE_TMPL_FN: diag_table_smoke_dust.FV3_HRRR_gf
+  FIELD_TABLE_TMPL_FN: field_table_smoke_dust.FV3_HRRR_gf
+  DO_REAL_TIME: false
+  COLDSTART: true
+#  WARMSTART_CYCLE_DIR: '/path/to/warm/start/files'
+nco:
+  envir_default: test_smoke_dust
+  NET_default: smoke_dust
+  RUN_default: smoke_dust
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/smoke_dust.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: RAP
+  EXTRN_MDL_ICS_OFFSET_HRS: 0
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAP_DATA_SD/${yyyymmddhh} # hera
+#  EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/epic/SRW-AQM_DATA/input_model_data/RAP/${yyyymmddhh} # orion/hercules
+#  EXTRN_MDL_SOURCE_BASEDIR_ICS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmddhh} # gaea-c6
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: RAP
+  LBC_SPEC_INTVL_HRS: 6
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAP_DATA_SD/${yyyymmddhh} # hera
+#  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/epic/SRW-AQM_DATA/input_model_data/RAP/${yyyymmddhh} # orion/hercules
+#  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmddhh}  # gaea-c6
+task_make_ics:
+  LEVP: 66
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
+task_make_lbcs:
+  LEVP: 66
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
+task_run_fcst:
+  DT_ATMOS: 36
+  LAYOUT_X: 15
+  LAYOUT_Y: 20
+  BLOCKSIZE: 32
+  WRTCMP_write_tasks_per_group: 40
+  RESTART_INTERVAL: 6 12 18 24
+  QUILTING: true
+  PRINT_ESMF: false
+  DO_FCST_RESTART: false
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: conus3km
+  USE_CUSTOM_POST_CONFIG_FILE: false
+global:
+  DO_ENSEMBLE: false
+  NUM_ENS_MEMBERS: 2
+  HALO_BLEND: 20
+smoke_dust_parm:
+  DO_SMOKE_DUST: true
+  EBB_DCYCLE: 1
+  SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
+
