@@ -788,6 +788,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     #
 
     expt_config.dereference()
+    workflow_config = expt_config["workflow"]
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
     ccpp_physics_suite = workflow_config["CCPP_PHYS_SUITE"]
@@ -977,7 +978,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         "LAYOUT_Y",
         "BLOCKSIZE",
     ]
-
     msg = "Mandatory variable task_run_fcst.{val} has not been set."
     for val in vlist:
         if not fcst_config.get(val):
