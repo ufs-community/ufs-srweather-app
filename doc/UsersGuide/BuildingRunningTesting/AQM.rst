@@ -83,7 +83,7 @@ Load the python environment for the workflow:
    module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<machine>
 
-where ``<machine>``, ``hera`` or ``hercules``, ``orion``, or ``derecho``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms. 
+where ``<machine>`` is ``hera``, ``hercules``, ``orion``, or ``derecho``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms. 
 
 If the console outputs a message, the user should run the commands specified in the message. For example, if the output says: 
 
