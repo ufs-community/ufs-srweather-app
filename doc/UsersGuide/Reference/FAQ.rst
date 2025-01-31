@@ -222,7 +222,7 @@ The Continue option will recompile the modified routines and rebuild only the af
 
 Users should note that the Continue option may not work as expected for changes to CCPP because the ``ccpp_prebuild.py`` script will not be rerun. It is typically best to recompile the model entirely in this case by selecting the Remove option for a clean build.
 
-A convenience script, ``devclean.sh``, is also available. This script can be used to remove build artifacts in cases where something goes wrong with the build or where changes have been made to the source code and the executables need to be rebuilt. Users can run this script by entering either ``./devclean.sh --clean`` or ``./devclean.sh -a``. Following this step, they can rerun the ``devbuild.sh`` script to rebuild the SRW App. Running ``./devclean.sh -h`` will list additional options available. 
+A convenience script, ``devclean.sh``, is also available. This script can be used to remove build artifacts in cases where something goes wrong with the build or where changes have been made to the source code and the executables need to be rebuilt. Users can run this script by entering ``./devclean.sh -a``. Following this step, they can rerun the ``devbuild.sh`` script to rebuild the SRW App. Running ``./devclean.sh -h`` will list additional options available. 
 
 See `SRW Discussion #1007 <https://github.com/ufs-community/ufs-srweather-app/discussions/1007>`__ for the question that inspired this FAQ.
 
