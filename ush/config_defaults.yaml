@@ -367,6 +367,12 @@ platform:
   # FIXemis:
   # System directory where AQM emission data files are located.
   #
+  # FIXsmoke:
+  # System directory where Smoke and Dust data files are located.
+  #
+  # FIXupp:
+  # System directory where UPP fixed files are located
+  #
   # FIXcrtm:
   # System directory where CRTM fixed files are located
   #
@@ -383,6 +389,8 @@ platform:
   FIXshp: ""
   FIXaqm: ""
   FIXemis: ""
+  FIXsmoke: ""
+  FIXupp: ""
   FIXcrtm: ""
   FIXcrtmupp: ""
   #
@@ -1921,7 +1929,7 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
+  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_HRRR_gf" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -2834,6 +2842,40 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+
+#------------------------------
+# Smoke/Dust config parameters
+#------------------------------
+smoke_dust_parm:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_SMOKE_DUST:
+  # Flag turning on/off Smoke and Dust
+  #
+  # EBB_DCYCLE:
+  # 1: for retro, 2: for forecast
+  #
+  # PERSISTENCE:
+  # Flag turning on/off emissions persistence method, if off same day FRP is used
+  #
+  # COMINsmoke_default:
+  # Path to the directory containing smoke and dust files
+  #
+  # COMINrave_default:
+  # Path to the directory containing RAVE fire files
+  #
+  # SMOKE_DUST_FILE_PREFIX:
+  # Prefix of Smoke and Dust file name
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_SMOKE_DUST: false
+  EBB_DCYCLE: 1
+  PERSISTENCE: true
+  COMINsmoke_default: ""
+  COMINrave_default: ""
+  SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
 
 #----------------------------
 # UFS FIRE config parameters

@@ -1818,6 +1818,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
     var_defns_cfg.dump(global_var_defns_fp)
 
+    # Generate a flag file for cold start
+    if expt_config["workflow"].get("COLDSTART"):
+        coldstart_date = var_defns_cfg["workflow"]["DATE_FIRST_CYCL"]
+        fn_pass=f"task_skip_coldstart_{coldstart_date}.txt"
+        open(os.path.join(exptdir,fn_pass), 'a').close()
 
     #
     # -----------------------------------------------------------------------
