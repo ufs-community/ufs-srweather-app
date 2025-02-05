@@ -65,8 +65,6 @@ If the SRW-AQM builds correctly, users should see the standard executables liste
 
    * - Executable
      - Description
-   * - decomp-ptemis-mpi
-     - Splits the point-source emission file into subdomain based on runtime configure setting
    * - gefs2lbc_para
      - Interpolates :term:`GOCART` concentration to be lateral boundary condition for regional air quality model and outputs a layer result for checking purpose 
    * - nexus
@@ -129,13 +127,9 @@ Users may also wish to change :term:`cron`-related parameters in ``config.yaml``
      USE_CRON_TO_RELAUNCH: true
      CRON_RELAUNCH_INTVL_MNTS: 3
 
-This means that cron will submit the launch script every 3 minutes. Users may choose not to submit using cron or to submit at a different frequency. Note that users should create a crontab by running ``crontab -e`` the first time they use cron.
+In the example above, cron will submit the launch script every 3 minutes. Users may choose not to submit using cron or to submit at a different frequency. Note that users should create a crontab by running ``crontab -e`` the first time they use cron.
 
 When using the basic ``config.aqm.yaml`` experiment, the AQM pre-processing tasks are automatically turned on because ``"parm/wflow/aqm_prep.yaml"`` appears in the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM *post*-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
-
-.. attention::
-
-   The module required to run the post-processing tasks is available only on WCOSS2. Therefore, ``aqm_post.yaml`` should not be added to the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` on any other platforms.
 
 Generate the Workflow
 ------------------------
