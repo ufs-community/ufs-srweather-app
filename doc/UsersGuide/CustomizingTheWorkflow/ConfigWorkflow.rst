@@ -30,7 +30,7 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the :srw-wiki:`SRW App Wiki page <Supported-Platforms-and-Compilers>`. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` |  ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the :srw-wiki:`SRW App Wiki page <Supported-Platforms-and-Compilers>`. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C6"`` |  ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
@@ -235,6 +235,12 @@ These parameters are associated with the fixed (i.e., static) files. On :srw-wik
 
 ``FIXemis``: (Default: "")
    Path to system directory containing AQM emission data files.
+
+``FIXsmoke``: (Default: "")
+   Path to system directory containing Smoke and Dust data files.
+
+``FIXupp``: (Default: "")
+   Path to system directory containing UPP fix files.
 
 ``FIXcrtm``: (Default: "")
    Path to system directory containing CRTM fixed files. 
@@ -2065,6 +2071,31 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 ``NEXUS_GFS_SFC_ARCHV_DIR``:  (Default: "/NCEPPROD/hpssprod/runhistory")
    Path to archive directory for gfs surface files on HPSS.
 
+
+Smoke and Dust Configuration Parameters
+=====================================
+
+Non-default parameters for Smoke and Dust tasks are set in the ``smoke_dust_parm:`` section of the ``config.yaml`` file.
+
+``DO_SMOKE_DUST``: (Default: false)
+   Flag for smoke and dust tasks.
+
+``EBB_DCYCLE``: (Default: 1)
+   Options for EBB cycle (Retro: 1, Forecast: 2).
+
+``PERSISTENCE``: (Default: true)
+   Flag for emission persistence method. If false, same day FRP is used.
+
+``COMINsmoke_default``: (Default: "")
+   Path to directory containing smoke and dust data files.
+
+``COMINrave_default``: (Default: "")
+   Path to directory containing RAVE fire data files.
+
+``SMOKE_DUST_FILE_PREFIX``: (Default: SMOKE_RRFS_data)
+   Prefix of Smoke and Dust file name used for ufs_model.
+
+
 .. _fire-parameters:
 
 Community Fire Behavior Model Parameters
@@ -2106,9 +2137,10 @@ Non-default parameters for the Community Fire Behavior Model (CFBM) in SRW are s
 ``FIRE_WIND_HEIGHT``: (Default: 5.0)
    Height to interpolate winds to for calculating fire spread rate
 
-``FIRE_ATM_FEEDBACK``: (Default: 0.0)
-   Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
-   Intermediate values will vary the amount of forcing provided from the fire to the dynamical core.
+``FIRE_ATM_FEEDBACK``: (Default: 1.0)
+   Multiplier for heat and moisture fluxes from the fire to the atmosphere. Use 1.0 for normal
+   two-way coupling. Use 0.0 for one-way coupling. Intermediate values or values greater than 1
+   will vary the amount of forcing provided from the fire to the dynamical core.
 
 ``FIRE_VISCOSITY``: (Default: 0.4)
   Artificial viscosity in level set method. Maximum value of 1. Required for ``FIRE_UPWINDING=0``

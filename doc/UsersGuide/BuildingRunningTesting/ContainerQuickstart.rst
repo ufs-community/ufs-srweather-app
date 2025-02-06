@@ -76,7 +76,7 @@ On most Level 1 systems, a container named ``ubuntu22.04-intel-ue-1.6.0-srw-dev.
      - File Location
    * - Derecho [#fn]_
      - /glade/work/epicufsrt/contrib/containers
-   * - Gaea [#fn]_
+   * - Gaea-C5 [#fn]_
      - /gpfs/f5/epic/world-shared/containers
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/containers

@@ -1763,8 +1763,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                     logger.critical(f"{fire_conf[setting]=}")
                     raise ValueError(f"For FIRE_NUM_IGNITIONS > 1, {setting} must be a list of the same length")
 
-        if fire_conf["FIRE_ATM_FEEDBACK"] > 0.0:
-            raise ValueError("FIRE_ATM_FEEDBACK > 0 (two-way coupling) not supported in UFS yet")
+        if fire_conf["FIRE_ATM_FEEDBACK"] < 0.0:
+            raise ValueError("FIRE_ATM_FEEDBACK must be 0 or greater")
 
         if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
             raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
@@ -1818,6 +1818,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         var_defns_cfg["workflow"][dates] = date_to_str(var_defns_cfg["workflow"][dates])
     var_defns_cfg.dump(global_var_defns_fp)
 
+    # Generate a flag file for cold start
+    if expt_config["workflow"].get("COLDSTART"):
+        coldstart_date = var_defns_cfg["workflow"]["DATE_FIRST_CYCL"]
+        fn_pass=f"task_skip_coldstart_{coldstart_date}.txt"
+        open(os.path.join(exptdir,fn_pass), 'a').close()
 
     #
     # -----------------------------------------------------------------------

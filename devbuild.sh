@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # usage instructions
 usage () {
@@ -239,6 +239,9 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   if ! conda env list | grep -q "^srw_graphics\s" ; then
     mamba env create -n srw_graphics --file graphics_environment.yml
   fi
+  if ! conda env list | grep -q "^srw_sd\s" ; then
+    mamba env create -n srw_sd --file sd_environment.yml
+  fi
   if [ "${APPLICATION}" = "ATMAQ" ]; then
     if ! conda env list | grep -q "^srw_aqm\s" ; then
       mamba env create -n srw_aqm --file aqm_environment.yml
@@ -285,7 +288,7 @@ set -eu
 # automatically determine compiler
 if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
-    jet|hera|gaea) COMPILER=intel ;;
+    jet|hera|gaea|gaea-c6) COMPILER=intel ;;
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;

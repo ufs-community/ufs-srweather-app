@@ -1,4 +1,4 @@
-#!/bin/bash -f
+#!/usr/bin/env -S bash -f
 ###########################################################
 # get layout for given nx and ny
 # INPUT: nx, ny, number of cpu to be used (optional).
