@@ -2073,7 +2073,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 
 
 Smoke and Dust Configuration Parameters
-=====================================
+=======================================
 
 Non-default parameters for Smoke and Dust tasks are set in the ``smoke_dust_parm:`` section of the ``config.yaml`` file.
 
