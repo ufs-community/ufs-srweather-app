@@ -39,8 +39,10 @@ numfig = True
 nitpick_ignore = [('py:class', 'obj'),('py:class', 
                    'yaml.dumper.Dumper'),('py:class', 
                    'xml.etree.ElementTree'),('py:class', 'Basemap'),
-                  ('py:class', 'numpy.ndarray'),('py:class', 'pandas.Index'),
-                  ('py:class', 'xarray.DataArray'),]
+                  ('py:class', 'numpy.ndarray'),('py:class',
+                   'pandas.Index'),('py:class', 'xarray.DataArray'),
+                  ('py:class', 'netCDF4.Dataset'),('py:class',
+                   'ESMF.Field'),('py:class', 'ESMF.Grid'),]
 
 # -- General configuration ---------------------------------------------------
 
