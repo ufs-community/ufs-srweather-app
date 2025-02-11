@@ -859,6 +859,175 @@ In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloween
 
       *HRRR Plot for Composite Reflectivity*
 
+Experiment 2: Performing METplus Verication 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this experiment we will use the METplus verification framework to evaluate the accuracy of RAP and HRRR forecasts for the Halloween Storm Case. The METplus tools provide a robust and customizable way to assess forecast skill by comparing model output against observational data. This section will guide you through the steps to perform METplus verification for this case.
+
+Set Up Verification
+-----------------------
+
+Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (|latestr|). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison.
+
+.. _GetData:
+
+On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Indianapolis Severe Weather Forecast in the usual data locations (see :numref:`Section %s <DataLocations>` for a list). 
+
+On other systems, users need to download the ``HalloweenStormData.tar.gz`` file using any of the following methods:
+
+    #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/HalloweenStormData/HalloweenStormData.tar.gz
+
+    #. Download from a terminal using the AWS command line interface (CLI), if installed:
+
+      .. code-block:: console
+
+         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/HalloweenStormData/HalloweenStormData.tar.gz HalloweenStormData.tar.gz
+    
+    #. Download from a terminal using ``wget``: 
+
+      .. code-block:: console
+
+         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/HalloweenStormData/HalloweenStormData.tar.gz
+
+This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth/NaturalEarth.tgz. See the :numref:`Section %s <PlotOutput>` for more information on plotting.
+
+After downloading ``HalloweenStormData.tar.gz`` using one of the three methods above, untar the downloaded compressed archive file: 
+
+.. code-block:: console
+
+   tar xvfz HalloweenStormData.tar.gz
+
+Save the path to this file in and ``HalloweenDATA`` environment variable:
+   
+.. code-block:: console 
+
+   cd HalloweenStormData
+   export HalloweenDATA=$PWD
+
+.. note::
+
+   Users can untar the fix files and Natural Earth files by substituting those file names in the commands above.
+Load the Workflow
+^^^^^^^^^^^^^^^^^^^^
+
+To load the workflow environment, run:
+
+.. include:: ../../doc-snippets/load-env.rst
+Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
+
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. 
+
+Configure the Verification Sample Case
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once the workflow environment is loaded, copy the out-of-the-box configuration:
+
+.. code-block:: console
+
+   cd /path/to/ufs-srweather-app/ush
+   cp config.community.yaml config.yaml
+   
+where ``/path/to/ufs-srweather-app/ush`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
+   
+Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.
+
+.. code-block:: console
+
+   user:
+      MACHINE: <your_machine_name>
+      ACCOUNT: <my_account>
+   platform:
+      # Add EXTRN_MDL_DATA_STORES variable to config.yaml
+      EXTRN_MDL_DATA_STORES: aws
+   workflow:
+      USE_CRON_TO_RELAUNCH: true
+      EXPT_SUBDIR: halloweenstormHRRRMETPLUS
+      CCPP_PHYS_SUITE: FV3_RAP
+      PREDEF_GRID_NAME: RRFS_CONUScompact_13km
+      DATE_FIRST_CYCL: '2019103012'
+      DATE_LAST_CYCL: '2019103012'
+      FCST_LEN_HRS: 24
+      PREEXISTING_DIR_METHOD: rename
+      VERBOSE: true
+      # Change to gnu if using a gnu compiler; otherwise, no change
+      COMPILER: intel
+   task_get_extrn_ics:
+      # Add EXTRN_MDL_NAME_ICS and EXTRN_MDL_FILES_ICS variables to config.yaml
+      EXTRN_MDL_NAME_ICS: HRRR
+      USE_USER_STAGED_EXTRN_FILES: false
+      EXTRN_MDL_FILES_ICS:
+      -  '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+   task_get_extrn_lbcs:
+      # Add EXTRN_MDL_NAME_LBCS, USE_USER_STAGED_EXTRN_FILES, and EXTRN_MDL_FILES_LBCS variables to config.yaml
+      EXTRN_MDL_NAME_LBCS: HRRR
+      LBC_SPEC_INTVL_HRS: 3
+      USE_USER_STAGED_EXTRN_FILES: false
+      EXTRN_MDL_FILES_LBCS:
+      -  '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+   task_plot_allvars:
+     COMOUT_REF: ""
+     PLOT_FCST_INC: 6
+   verification:
+     VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
+     CCPA_OBS_DIR: /path/to/HalloweenStormData/obs_data/ccpa/proc
+     MRMS_OBS_DIR: /path/to/HalloweenStormData/obs_data/mrms/proc
+     NDAS_OBS_DIR: /path/to/HalloweenStormData/obs_data/ndas/proc
+   rocoto:
+  tasks:
+   task_get_extrn_ics:
+     walltime: 06:00:00
+   task_get_extrn_lbcs:
+     walltime: 06:00:00
+   metatask_run_ensemble:
+     task_make_lbcs_mem#mem#:
+       walltime: 06:00:00
+     task_run_fcst_mem#mem#:
+       walltime: 06:00:00
+   taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/test.yaml"]|include }}'
+
+.. hint::
+   To open the configuration file in the command line, users may run the command: 
+
+   .. code-block:: console
+
+      vi config.yaml
+         
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
+
+For additional configuration guidance, refer to the |latestr| release documentation on :ref:`configuring the SRW App <srw_v2.2.0:UserSpecificConfig>`.
+
+Generate the Experiment
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Generate the experiment by running this command from the ``ush`` directory:
+
+.. code-block:: console
+   
+   ./generate_FV3LAM_wflow.py
+
+Run the Experiment
+^^^^^^^^^^^^^^^^^^^^^
+
+Navigate (``cd``) to the experiment directory (``$EXPTDIR``) and run the launch script:
+
+.. code-block:: console
+
+   ./launch_FV3LAM_wflow.sh
+
+To see experiment progress, users should navigate to their experiment directory. The following commands allow users to launch new workflow tasks and check on experiment progress.
+
+.. code-block:: console
+
+   cd path/to/expt_dirs/halloweenstormHRRRMETPLUS
+   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+Users who prefer to automate the workflow via :term:`crontab` or who need guidance for running without the Rocoto workflow manager should refer to :numref:`Section %s <Run>` for these options. 
+
+If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/log`` to determine the problem. Then refer to :numref:`Section %s <RestartTask>` to restart a DEAD task once the problem has been resolved. For troubleshooting assistance, users are encouraged to post questions on the new SRW App `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ Q&A page. 
+
+
+
 .. _fcst5:
 
 Sample Forecast #5: Hurricane Barry
