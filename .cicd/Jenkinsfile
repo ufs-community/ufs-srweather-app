@@ -247,7 +247,7 @@ pipeline {
                                    if (${platform} == 'hera') {
                                        coverage_test_name = 'hera.${env.SRW_COMPILER}.*'
                                    } 
-                                   if (${platform} != 'gaea-6' && ${platform} != 'orion') {
+                                   if (${platform} != 'gaea-c6' && ${platform} != 'orion') {
                                        sh "echo grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0 >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/machine_suites/coverage.${coverage_test_name}"
                                    }
                                 }
