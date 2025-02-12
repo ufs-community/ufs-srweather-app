@@ -59,7 +59,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
                 }
 
@@ -103,7 +103,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'derecho', 'gaea', 'gaea-c6', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'derecho', 'gaea', 'gaea-c6', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -117,7 +117,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'derecho', 'gaea', 'gaea-c6', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'derecho', 'gaea', 'gaea-c6', 'jet', 'orion', 'hercules', 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -247,6 +247,15 @@ pipeline {
                                    if (${platform} == 'hera') {
                                        coverage_test_name = 'hera.${env.SRW_COMPILER}.*'
                                    } 
+                                   if (${platform} == 'pclusternoaav2use1') {
+                                       coverage_test_name = 'noaacloud.aws'
+                                   } 
+                                   if (${platform} == 'azclusternoaav2use1') {
+                                       coverage_test_name = 'noaacloud.azure'
+                                   } 
+                                   if (${platform} == 'gclusternoaav2usc1') {
+                                       coverage_test_name = 'noaacloud.gcp'
+                                   }
                                    if (${platform} != 'orion') {
                                        sh "echo grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0 >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/machine_suites/coverage.${coverage_test_name}"
                                    }
