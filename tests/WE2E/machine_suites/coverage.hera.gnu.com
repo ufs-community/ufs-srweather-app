@@ -5,10 +5,8 @@ grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR
 grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta
 grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS_v0
 long_fcst
-MET_verification_only_vx
 MET_ensemble_verification_only_vx_time_lag
 2019_halloween_storm
-2020_jan_cold_blast
 vx-det_long-fcst_custom-vx-config_aiml-fourcastnet
 vx-det_long-fcst_custom-vx-config_aiml-panguweather
 vx-det_long-fcst_custom-vx-config_gfs
