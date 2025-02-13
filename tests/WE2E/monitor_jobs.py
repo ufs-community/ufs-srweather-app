@@ -85,7 +85,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
 
         for expt in running_expts.copy():
             running_expts[expt] = expts_dict[expt]
-            if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']:
+            if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE','STALLED']:
                 # If start_time is in dictionary, compute total walltime
                 walltimestr = ''
                 if running_expts[expt].get("start_time",{}) and not running_expts[expt].get("walltime",{}):

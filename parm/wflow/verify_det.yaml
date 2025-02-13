@@ -48,7 +48,7 @@ metatask_GridStat_APCP_all_accums_all_mems:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
-        OBS_AVAIL_INTVL_HRS: '{{- verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
+        OBS_AVAIL_INTVL_HRS: '{{ verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
@@ -81,7 +81,7 @@ metatask_GridStat_ASNOW_all_accums_all_mems:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
-        OBS_AVAIL_INTVL_HRS: '{{- verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
+        OBS_AVAIL_INTVL_HRS: '{{ verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
       walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
@@ -110,7 +110,7 @@ metatask_GridStat_REFC_RETOP_all_mems:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
-        OBS_AVAIL_INTVL_HRS: '{{- verification.MRMS_OBS_AVAIL_INTVL_HRS }}'
+        OBS_AVAIL_INTVL_HRS: '{{ verification.MRMS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'L0'
         FCST_THRESH: 'all'
       walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
@@ -121,7 +121,7 @@ metatask_GridStat_REFC_RETOP_all_mems:
           sh_mrms_available:
             command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_mrms_*_complete.txt" -exec basename {} \; 2>/dev/null |
               grep -oE '[0-9]{8}' |
-              awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+              awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[-1] }} '($NF >= s && $NF <= e)' |
               test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length }}
           datadep_post_files_exist:
             attrs:
@@ -146,7 +146,7 @@ metatask_PointStat_SFC_UPA_all_mems:
         METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
         ENSMEM_INDX: "#mem#"
-        OBS_AVAIL_INTVL_HRS: '{{- verification.NDAS_OBS_AVAIL_INTVL_HRS }}'
+        OBS_AVAIL_INTVL_HRS: '{{ verification.NDAS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
       walltime: "{{ verification_resources.execution.deterministic.pointstat.walltime }}"
@@ -157,7 +157,7 @@ metatask_PointStat_SFC_UPA_all_mems:
           sh_pb2nc_complete:
             command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "run_met_pb2nc_obs_ndas_*_complete.txt" -exec basename {} \; 2>/dev/null |
               grep -oE '[0-9]{8}' |
-              awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+              awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
               test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_INST|length }}
           datadep_post_files_exist:
             attrs:

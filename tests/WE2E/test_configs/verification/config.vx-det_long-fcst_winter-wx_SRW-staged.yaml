@@ -36,7 +36,7 @@ task_get_extrn_lbcs:
 
 task_run_post:
   envvars:
-    POST_OUTPUT_DOMAIN_NAME: 'custom_ESGgrid_Michigan_Ontario'
+    POST_OUTPUT_DOMAIN_NAME: 'custom_esggrid_michigan_ontario'
 
 verification:
   # Base directories in which to look for obs.  If these do not exist and/or
@@ -60,4 +60,4 @@ verification:
   #
   VX_FCST_MODEL_NAME: 'Michigan_Ontario_snow_8km'
   VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
-  VX_FCST_INPUT_BASEDIR: '{{- "/".join([platform.TEST_VX_FCST_INPUT_BASEDIR, "..", "custom_ESGgrid_Michigan_Ontario_8km"]) }}'
+  VX_FCST_INPUT_BASEDIR: '{{ platform.TEST_VX_FCST_INPUT_BASEDIR ~ "/../custom_ESGgrid_Michigan_Ontario_8km" }}'

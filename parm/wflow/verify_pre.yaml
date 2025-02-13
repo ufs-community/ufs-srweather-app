@@ -122,7 +122,7 @@ metatask_PcpCombine_APCP_all_accums_obs_CCPA:
       FCST_OR_OBS: OBS
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
-      OBS_AVAIL_INTVL_HRS: '{{- verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
+      OBS_AVAIL_INTVL_HRS: '{{ verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
       METPLUSTOOLNAME: 'PCPCOMBINE'
     dependency:
       and:
@@ -134,6 +134,7 @@ metatask_PcpCombine_APCP_all_accums_obs_CCPA:
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_ccpa_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
             awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+            awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[-1] }} '($NF >= s && $NF <= e)' |
             test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length }}
 
 metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
@@ -152,7 +153,7 @@ metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
       FCST_OR_OBS: OBS
       OBTYPE: NOHRSC
       OBS_DIR: '&NOHRSC_OBS_DIR;'
-      OBS_AVAIL_INTVL_HRS: '{{- verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
+      OBS_AVAIL_INTVL_HRS: '{{ verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
       METPLUSTOOLNAME: 'PCPCOMBINE'
     walltime: "{{ verification_resources.execution.pcpcombine.obs.walltime }}"
     dependency:
@@ -164,7 +165,7 @@ metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
         sh_nohrsc_obs_available:
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_nohrsc_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
-            awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+            awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[-1] }} '($NF >= s && $NF <= e)' |
             test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length }}
 
 metatask_check_post_output_all_mems:

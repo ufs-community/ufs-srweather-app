@@ -59,6 +59,6 @@ verification:
   REMOVE_RAW_OBS_NOHRSC: false
   #
   VX_FCST_MODEL_NAME: 'NSSL-MPAS-HN'
-  VX_FCST_INPUT_BASEDIR: '{{- "/".join([platform.TEST_EXTRN_MDL_SOURCE_BASEDIR, verification.VX_FCST_MODEL_NAME]) }}'
-  FCST_FN_TEMPLATE: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%H?shift=${time_lag}}.grib2'
-  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${POST_OUTPUT_DOMAIN_NAME}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${FIELD_GROUP}_a${ACCUM_HH}h.nc'
+  VX_FCST_INPUT_BASEDIR: '{{ "%s/%s" % (platform.TEST_EXTRN_MDL_SOURCE_BASEDIR, verification.VX_FCST_MODEL_NAME) }}'
+  FCST_FN_TEMPLATE: '{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%H?shift=${time_lag}}.grib2'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}_{init?fmt=%Y%m%d%H?shift=-${time_lag}}f{lead?fmt=%HHH?shift=${time_lag}}_${FIELD_GROUP}_a${ACCUM_HH}h.nc'

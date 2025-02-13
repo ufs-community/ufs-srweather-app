@@ -134,7 +134,7 @@ metatask_GenEnsProd_EnsembleStat_REFC_RETOP:
         sh_mrms_obs_available: &all_get_obs_mrms_complete
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_mrms_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
-            awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+            awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
             test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_INST|length }}
         taskdep_genensprod:
           attrs:
@@ -172,7 +172,7 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
         sh_pb2nc_ndas_complete: &all_pb2nc_obs_ndas_complete
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "run_met_pb2nc_obs_ndas_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
-            awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+            awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
             test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_INST|length }}
         taskdep_genensprod:
           attrs:
