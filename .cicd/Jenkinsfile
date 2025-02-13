@@ -12,7 +12,7 @@ pipeline {
     parameters {
         // Allow job runner to filter based on platform
         // Use the line below to enable all PW clusters
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'gaea-c6','hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'gaea-c6','hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable the PW AWS cluster
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'gaea-c6', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'gaea-c6', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
@@ -59,7 +59,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'
                     }
                 }
 
@@ -115,7 +115,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'derecho', 'gaea', 'gaea-c6', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'derecho', 'gaea', 'gaea-c6', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -129,7 +129,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'derecho', 'gaea', 'gaea-c6', 'jet', 'orion', 'hercules', 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'derecho', 'gaea', 'gaea-c6', 'jet', 'orion', 'hercules', 'pclusternoaav2use1' , 'azclusternoaav2use1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -316,7 +316,7 @@ pipeline {
     // Uncomment the following block to re-enable PW clusters
     /*
             // Stop any Parallel Works clusters that were started during the pipeline execution
-                // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1']
+                // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1']
                 def pw_clusters = ['pclusternoaav2use1']
                 def clusters = []
 
