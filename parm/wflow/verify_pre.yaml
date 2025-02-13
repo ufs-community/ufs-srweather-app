@@ -128,25 +128,13 @@ metatask_PcpCombine_APCP_all_accums_obs_CCPA:
       and:
         datadep:
           value: "&CCPA_OBS_DIR;"
-        datadep_all_get_obs_ccpa_complete:
-          attrs:
-            age: 00:00:00:30
-          # Check that the flag files that indicate that the get_obs_ccpa tasks
-          # are complete are all present before launching any PcpCombine task.
-          value: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length %}
-                 {%- set indent = "      " %}
-                 {%- set indent_p2 = indent + "  " %}
-                 {%- for n in range(0, num_obs_days) %}
-                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_CUMUL[n] %}
-                   {%- if n == 0 %}
-                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_ccpa_" ~ yyyymmdd ~ "_complete.txt" }}
-                   {%- else %}
-                     {{- indent ~ "</datadep>\n" }}
-                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
-                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_ccpa_" ~ yyyymmdd ~ "_complete.txt" }}
-                   {%- endif %}
-                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
-                 {%- endfor %}'
+        # Check that the flag files that indicate that the get_obs_ccpa tasks
+        # are complete are all present before launching any PcpCombine task.
+        sh_ccpa_obs_available:
+          command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_ccpa_*_complete.txt" -exec basename {} \; 2>/dev/null |
+            grep -oE '[0-9]{8}' |
+            awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+            test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length }}
 
 metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
   var:
@@ -171,25 +159,13 @@ metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
       and:
         datadep:
           value: "&NOHRSC_OBS_DIR;"
-        datadep_all_get_obs_nohrsc_complete:
-          attrs:
-            age: 00:00:00:30
-          # Check that the flag files that indicate that the get_obs_nohrsc tasks
-          # are complete are all present before launching any PcpCombine task.
-          value: '{%- set num_obs_days = workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length %}
-                 {%- set indent = "      " %}
-                 {%- set indent_p2 = indent + "  " %}
-                 {%- for n in range(0, num_obs_days) %}
-                   {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_CUMUL[n] %}
-                   {%- if n == 0 %}
-                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_nohrsc_" ~ yyyymmdd ~ "_complete.txt" }}
-                   {%- else %}
-                     {{- indent ~ "</datadep>\n" }}
-                     {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
-                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/get_obs_nohrsc_" ~ yyyymmdd ~ "_complete.txt" }}
-                   {%- endif %}
-                   {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
-                 {%- endfor %}'
+        # Check that the flag files that indicate that the get_obs_nohrsc tasks
+        # are complete are all present before launching any PcpCombine task.
+        sh_nohrsc_obs_available:
+          command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_nohrsc_*_complete.txt" -exec basename {} \; 2>/dev/null |
+            grep -oE '[0-9]{8}' |
+            awk -F/ -v s={{ workflow.DATE_FIRST_CYCL[0:8] }} -v e={{ workflow.DATE_LAST_CYCL[0:8] }} '($NF >= s && $NF <= e)' |
+            test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL|length }}
 
 metatask_check_post_output_all_mems:
   var:
@@ -205,76 +181,11 @@ metatask_check_post_output_all_mems:
       ENSMEM_INDX: '#mem#'
     walltime: "{{ verification_resources.execution.check_post_output.walltime }}"
     dependency:
-      # This "or" checks that the necessary stand-alone post tasks or forecast
-      # tasks with inline post have run to generate the post files that are
-      # needed as forecast input to various verification tasks.
-      or_post_files_exist: &post_files_exist
-        # This "and" is to check whether post is being run stand-alone (i.e. outside
-        # the weather model in tasks separate from the forecast task(s)), and if
-        # so, to ensure that the stand-alone post metatask for the current member
-        # has completed for all forecast hours.
-        and_standalone_post:
-          # This "or" is to check whether a stand-alane post task exists [either for
-          # mem000 (if running a deterministic forecast) or for mem001 (if running
-          # an ensemble forecast)].  Checking for forecast hour 000 is sufficient.
-          # If so, it implies post is being run stand-alone.
-          or_post_task_exists: &post_task_exists
-            taskvalid_mem000:
-              attrs:
-                task: run_post_mem000_f000
-            taskvalid_mem001:
-              attrs:
-                task: run_post_mem001_f000
-          # We would like a dependency here on the run_post_#mem#_all_fhrs metatask,
-          # but that is apparently not possible in rocoto with a metataskvalid/
-          # metataskdep combination (currently, metataskvalid is not a defined
-          # dependency type in ROCOTO); that approach only works for tasks.  Thus,
-          # here we use jinja directives to explicitly list all the tasks in the
-          # run_post_#mem#_all_fhrs metatask.
-          #or_post_metatask:
-          #  not:
-          #    metataskvalid:
-          #      attrs:
-          #        metatask: run_post_mem#mem#_all_fhrs
-          #  metataskdep:
-          #    attrs:
-          #      metatask: run_post_mem#mem#_all_fhrs
-          taskdep:
-            attrs:
-              task: '{%- for h in range(0, workflow.LONG_FCST_LEN+1) %}
-                       {%- if h > 0 %}
-                         {{- "      <taskdep task=" }}
-                       {%- endif %}
-                       {{- "\"run_post_mem#mem#_f%03d\"" % h }}
-                       {%- if h < workflow.LONG_FCST_LEN %}
-                         {{- "/>\n" }}
-                       {%- endif %}
-                     {%- endfor %}'
-        # This "and" is to check whether post is being run inline (i.e. as part of
-        # the weather model), and if so, to ensure that the forecast task for the
-        # current member has completed.
-        and_inline_post:
-          # This "not" is to check whether a stand-alone post task DOESN'T exist
-          # [either for mem000 (if running a deterministic forecast) or for mem001
-          # (if running an ensemble forecast)].  If so, it implies that either
-          # post is being run inline (as part of the weather model) or is not being
-          # run at all.
-          not:
-            or_post_task_exists:
-              <<: *post_task_exists
-          # This "or" is to verify that either the forecast task for the current
-          # member exists and has completed, or that it doesn't exist.
-          or_run_fcst:
-            and:
-              taskvalid: &fcst_task_exists
-                attrs:
-                  task: run_fcst_mem#mem#
-              taskdep:
-                attrs:
-                  task: run_fcst_mem#mem#
-            not:
-              taskvalid:
-                <<: *fcst_task_exists
+      # Metataskdep here is for the default running standalone post tasks. When running inline post,
+      # or no forecast tasks at all, this section is replaced by logic in setup.py.
+      metataskdep:
+        attrs:
+          metatask: run_post_mem#mem#_all_fhrs
 
 metatask_PcpCombine_APCP_all_accums_all_mems:
   var:

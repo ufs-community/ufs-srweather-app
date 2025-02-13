@@ -464,6 +464,20 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+    # If running cycled experiments (AQM, for now), add a cycledef
+    #
+    # -----------------------------------------------------------------------
+    #
+    if expt_config["cpl_aqm_parm"]["CPL_AQM"]:
+        date_second_cycle = date_first_cycl_dt + cycle_intvl_dt
+
+        rocoto_config["cycledef"].append({
+            "attrs": {"group": "cycled_from_second"},
+            "spec": f"{date_second_cycle.strftime('%Y%m%d%H%S')} {date_last_cycl}00 {incr_cycl_freq}",
+            })
+    #
+    # -----------------------------------------------------------------------
+    #
     # If running vx tasks, check and possibly reset values in expt_config
     # and rocoto_config.
     #
@@ -551,11 +565,11 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         )
 
         rocoto_config["cycledef"].append({
-            "attrs": {"group": "cycledefs_obs_days_inst" },
+            "attrs": {"group": "cycledefs_obs_days_inst"},
             "spec": cycledefs_obs_days_inst[0],
             })
         rocoto_config["cycledef"].append({
-            "attrs": {"group": "cycledefs_obs_days_cumul" },
+            "attrs": {"group": "cycledefs_obs_days_cumul"},
             "spec": cycledefs_obs_days_cumul[0],
             })
         #
@@ -684,6 +698,29 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                 logging.error(msg)
                 raise ValueError(msg)
 
+        #
+        # -------------------------------------------------------------------
+        #
+        # Set dependencies for verification tasks that depend on post output
+        #
+        # -------------------------------------------------------------------
+        #
+        run_post = rocoto_config["tasks"].get("metatask_run_ens_post")
+        run_vx_check = rocoto_config["tasks"].get("metatask_check_post_output_all_mems")
+        if not run_post and run_vx_check:
+            run_vx_check["task_check_post_output_mem#mem#"]["dependency"] = {
+                "or": {
+                    "and": {
+                      "taskvalid": {"attrs": {"task": "run_fcst__mem#mem#"}},
+                      "taskdep": {"attrs": {"task": "run_fcst__mem#mem#"}},
+                    },
+                    "not": {
+                      "taskvalid": {"attrs": {"task": "run_fcst__mem#mem#"}},
+                    },
+                },
+            }
+
+
     #
     # -----------------------------------------------------------------------
     #
@@ -805,7 +842,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
         for param, value in grid_params.items():
             if param in special_vars:
-                param_val = fcst_config.get(param)
+                param_val = fcst_config["envvars"].get(param)
                 if param_val and isinstance(param_val, str) and "{{" not in param_val:
                     continue
                 if isinstance(param_val, (int, float)):

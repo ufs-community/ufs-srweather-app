@@ -454,7 +454,7 @@ def check_task_get_extrn_bcs(
     i_or_l = ics_or_lbcs.upper()
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if not cfg_bcs_vars["USE_USER_STAGED_EXTRN_FILES"]:
+    if not cfg_bcs_vars.get("USE_USER_STAGED_EXTRN_FILES"):
         logging.debug(
             "USE_USER_STAGED_EXTRN_FILES not specified or False in "
             f"task_get_extrn_{ics_or_lbcs} section of config"

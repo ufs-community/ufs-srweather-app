@@ -32,6 +32,7 @@ metatask_plot_allvars:
         fhr: '#fhr#'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
       cores: !int '{{ task_plot_allvars.execution.batchargs.cores }}'
+      exclusive: '{{ task_plot_allvars.execution.batchargs.exclusive }}'
       partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
       queue: '&QUEUE_DEFAULT;'
       walltime: '{{ task_plot_allvars.execution.batchargs.walltime }}'

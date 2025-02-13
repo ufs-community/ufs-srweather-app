@@ -24,3 +24,8 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     USE_USER_STAGED_EXTRN_FILES: true
     FV3GFS_FILE_FMT_LBCS: nemsio
+task_run_post:
+  upp:
+    execution:
+      batchargs:
+        nodes: 2

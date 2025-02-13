@@ -44,18 +44,18 @@ task_run_fcst:
   BLOCKSIZE: 32
   QUILTING: true
   WRTCMP_write_groups: 1
-  WRTCMP_write_tasks_per_group: '{{ LAYOUT_Y }}'
+  WRTCMP_write_tasks_per_group: !int '{{ LAYOUT_Y }}'
   WRTCMP_output_grid: lambert_conformal
-  WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
-  WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_cen_lon: !float '{{ task_make_grid.ESGgrid_LON_CTR }}'
+  WRTCMP_cen_lat: !float '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_lon_lwr_left: 69.6
   WRTCMP_lat_lwr_left: 33.0
-  WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_stdlat1: !float '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_stdlat2: !float '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_nx: 399
   WRTCMP_ny: 285
-  WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
-  WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
+  WRTCMP_dx: !float '{{ task_make_grid.ESGgrid_DELX }}'
+  WRTCMP_dy: !float '{{ task_make_grid.ESGgrid_DELY }}'
 task_run_post:
   envvars:
     POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_central_asia

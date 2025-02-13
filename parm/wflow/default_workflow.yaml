@@ -52,9 +52,6 @@ rocoto:
     - attrs:
         group: forecast
       spec: '{{ workflow.DATE_FIRST_CYCL }}00 {{ workflow.DATE_LAST_CYCL }}00 {{ workflow.INCR_CYCL_FREQ }}:00:00'
-    - attrs:
-        group: cycled_from_second
-      spec: '{{ "{}{:02d}00".format(workflow.DATE_FIRST_CYCL[0:8], workflow.INCR_CYCL_FREQ) if workflow.DATE_FIRST_CYCL != workflow.DATE_LAST_CYCL else workflow.DATE_FIRST_CYCL }}00 {{ workflow.DATE_LAST_CYCL }}00 {{ workflow.INCR_CYCL_FREQ }}:00:00'
   log:
     cyclestr:
       value: '&LOGDIR;/FV3LAM_wflow.{{ workflow.WORKFLOW_ID + "." if user.RUN_ENVIR == "nco" }}log'
