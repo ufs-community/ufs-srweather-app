@@ -32,6 +32,8 @@ export DATAROOT="${DATAROOT:-${PTMP}/${envir}/tmp}"
 export DCOMROOT="${DCOMROOT:-${PTMP}/${envir}/dcom}"
 export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 
+mkdir -p ${DATA_SHARE}
+
 export DBNROOT="${DBNROOT:-${DBNROOT_default}}"
 export SENDECF="${SENDECF:-${SENDECF_default}}"
 export SENDDBN="${SENDDBN:-${SENDDBN_default}}"
