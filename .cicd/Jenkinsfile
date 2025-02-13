@@ -76,6 +76,18 @@ pipeline {
         }
         */
 
+        stage('Check Nodes') {
+            steps {
+                script {
+                    build job: '/infrastructure/is_up', parameters: [string(name: 'NODE_CHOICE', value: 'pclusternoaav2use1'  ?: 'none')], wait: false
+                    build job: '/infrastructure/is_up', parameters: [string(name: 'NODE_CHOICE', value: 'azclusternoaav2use1' ?: 'none')], wait: false
+                    build job: '/infrastructure/is_up', parameters: [string(name: 'NODE_CHOICE', value: 'gclusternoaav2usc1'  ?: 'none')], wait: false
+                    sleep time: 240, unit: 'SECONDS'
+                }
+            }
+        }
+
+
         // Build and test the SRW application on all supported platforms using the supported compilers for each platform
         stage('Build and Test') {
             matrix {
