@@ -252,23 +252,23 @@ pipeline {
                                 }
                                
                                 // Update coverage suites to include skill-score we2e test 
-                                def platform = ${env.SRW_PLATFORM} 
-                                def coverage_test_name = ${platform}
+                                def platform = "${env.SRW_PLATFORM}"
+                                def coverage_test_name = "${platform}"
 
-                                if (${single_test} == 'coverage') {
-                                   if (${platform} == 'hera') {
+                                if ("${single_test}" == 'coverage') {
+                                   if ("${platform}" == 'hera') {
                                        coverage_test_name = 'hera.${env.SRW_COMPILER}.*'
                                    } 
-                                   if (${platform} == 'pclusternoaav2use1') {
+                                   if ("${platform}" == 'pclusternoaav2use1') {
                                        coverage_test_name = 'noaacloud.aws'
                                    } 
-                                   if (${platform} == 'azclusternoaav2use1') {
+                                   if ("${platform}" == 'azclusternoaav2use1') {
                                        coverage_test_name = 'noaacloud.azure'
                                    } 
-                                   if (${platform} == 'gclusternoaav2usc1') {
+                                   if ("${platform}" == 'gclusternoaav2usc1') {
                                        coverage_test_name = 'noaacloud.gcp'
                                    }
-                                   if (${platform} != 'orion') {
+                                   if ("${platform}" != 'orion') {
                                        sh "echo grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0 >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/machine_suites/coverage.${coverage_test_name}"
                                    }
                                 }
