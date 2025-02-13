@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script processes smoke and dust
+#
+#-----------------------------------------------------------------------
+#
+date
+export PS4='+ $SECONDS + '
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. ${USHdir}/source_util_funcs.sh
+for sect in user nco platform workflow global smoke_dust_parm ; do
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
+done
+set -xue
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that copies or fetches RAVE fire
+emission data files from disk, or HPSS.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Define job and jobid by default for rocoto
+#
+#-----------------------------------------------------------------------
+#
+WORKFLOW_MANAGER="${WORKFLOW_MANAGER:-rocoto}"
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  if [ "${SCHED}" = "slurm" ]; then
+    job=${SLURM_JOB_NAME}
+    pid=${SLURM_JOB_ID}
+  elif [ "${SCHED}" = "pbspro" ]; then
+    job=${PBS_JOBNAME}
+    pid=${PBS_JOBID}
+  else
+    job="task"
+    pid=$$
+  fi
+  jobid="${job}.${PDY}${cyc}.${pid}"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Create a temp working directory (DATA) and cd into it.
+#
+#-----------------------------------------------------------------------
+#
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
+mkdir -p $DATA
+cd $DATA
+#
+#-----------------------------------------------------------------------
+#
+# Define NCO environment variables and set COM type definitions.
+#
+#-----------------------------------------------------------------------
+#
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+
+[[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+if [ "${MACHINE}" = "WCOSS2" ]; then
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+else
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}}"
+  export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+fi
+
+mkdir -p ${COMOUT}
+
+export COMINsmoke="${COMINsmoke:-${COMINsmoke_default}}"
+export COMINrave="${COMINrave:-${COMINrave_default}}"
+
+# Create a teomporary share directory for RAVE interpolated data files
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/RAVE_fire_intp}"
+mkdir -p ${DATA_SHARE}
+
+# Run setpdy to initialize PDYm and PDYp variables
+export cycle="${cycle:-t${cyc}z}"
+setpdy.sh
+. ./PDY
+#
+#-----------------------------------------------------------------------
+#
+# Set sub-cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
+fi
+if [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+  export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+  export dot_ensmem=
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job.
+#
+#-----------------------------------------------------------------------
+#
+export pgmout="${DATA}/OUTPUT.$$"
+env
+
+${SCRIPTSdir}/exsrw_smoke_dust.sh
+export err=$?; err_chk
+
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Whether or not working directory DATA should be kept.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${KEEPDATA}" = "NO" ]; then
+  rm -rf ${DATA}
+fi
+date
+
