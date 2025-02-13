@@ -859,10 +859,14 @@ In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloween
 
       *HRRR Plot for Composite Reflectivity*
 
-Experiment 2: Performing METplus Verication 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Experiment 2: Performing METplus Verification 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this experiment we will use the METplus verification framework to evaluate the accuracy of RAP and HRRR forecasts for the Halloween Storm Case. The METplus tools provide a robust and customizable way to assess forecast skill by comparing model output against observational data. This section will guide you through the steps to perform METplus verification for this case.
+In this experiment, we will use the METplus verification framework to evaluate the accuracy of the HRRR forecasts for the Halloween Storm Case. The METplus tools provide a robust and customizable way to assess forecast skill by comparing model output against observational data. This section will guide you through the steps to perform METplus verification for this case.
+
+.. note::
+
+   For tutorial purposes we will only run this test using HRRR data, but users should feel free to do the same experiment with RAP data.
 
 Set Up Verification
 -----------------------
@@ -897,7 +901,7 @@ After downloading ``HalloweenStormData.tar.gz`` using one of the three methods a
 
    tar xvfz HalloweenStormData.tar.gz
 
-Save the path to this file in and ``HalloweenDATA`` environment variable:
+Save the path to this file in the ``HalloweenDATA`` environment variable:
    
 .. code-block:: console 
 
@@ -907,6 +911,7 @@ Save the path to this file in and ``HalloweenDATA`` environment variable:
 .. note::
 
    Users can untar the fix files and Natural Earth files by substituting those file names in the commands above.
+
 Load the Workflow
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -1026,9 +1031,44 @@ Users who prefer to automate the workflow via :term:`crontab` or who need guidan
 
 If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/log`` to determine the problem. Then refer to :numref:`Section %s <RestartTask>` to restart a DEAD task once the problem has been resolved. For troubleshooting assistance, users are encouraged to post questions on the new SRW App `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ Q&A page. 
 
+Compare
+----------
 
+Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can see how the forecast verified. From the ``expt_dirs`` users should navigate to their experiment (e.g., ``halloweenstormHRRRMETPLUS``). Then, navigate to the ``2019103012`` subdirectory, and finally, enter the ``metprd`` directory to view your experiment's results.
 
-.. _fcst5:
+MetPlus File Types
+^^^^^^^^^^^^^^^^^^^^
+
+For information on different file types found in the ``metprd`` directory users should reference :numref:`Section %s <AvailablePlots>`. 
+
+Analyzing HRRR Results
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this section, we will analyze how different variables were verified in the HRRR forecast. To do this users will be examining the RMSE and MBIAS scores for Temperature and Dew Point (DPT) on the surface using the ``point_stat`` file type.
+
+**Interpretation:**
+
+* A lower RMSE indicates that the model forecast value is closer to the observed value.
+* If MBIAS > 1, then the value for a given forecast variable is too high on average by (MBIAS - 1)%. If MBIAS < 1, then the forecasted value is too low on average by (1 - MBIAS)%.
+* Find column 66-68 for MBIAS and 78-80 for RMSE statistics.
+
+Temperature
+------------
+
+To begin examining the temperature variable, navigate to ``path/to/2019103012/metprd``. , use ``vi`` to open ``PointStat/``, where a menu of files will appear. Navigate using the arrow and enter keys on your. Select this file:
+
+.. code-block:: console
+
+   point_stat_FV3_GFS_v16_CONUS_25km_mem000_ADPSFC_NDAS_240000L_20191031_120000V.stat
+
+Press ``Enter`` to open this file. You will now be able to see verification data for different types of variables. 
+
+We can see that on October 31st at 2400L temperature received an MBIAS score of 1.7212 and an RMSE score of 2.38512. Looking at these scores we can conclude that for this forecast hour the temperature was overforecasted and was not close to the observed temperature.
+
+Dew Point
+----------
+
+Good news! The DPT variable can be examined within the same point_stat file, so there is no need to switch files. DPT received an MBIAS score of 1.5978 and an RMSE score of 2.51836. Looking at these scores we can see that similar to temperature, the DPT was overforecasted and not close to the observed dewpoint.
 
 Sample Forecast #5: Hurricane Barry
 =======================================
@@ -1044,7 +1084,7 @@ Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurr
    * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HurricaneBarry_Making_Landfall.jpg
-   :alt: Radar animation of Hurricane Barry making landfall. 
+   :alt: Radar animation of Hurricane Barry making landfall 
 
    *Hurricane Barry Making Landfall*
 
