@@ -1055,7 +1055,7 @@ In this section, we will analyze how different variables were verified in the HR
 Temperature
 ------------
 
-To begin examining the temperature variable, navigate to ``path/to/2019103012/metprd``. , use ``vi`` to open ``PointStat/``, where a menu of files will appear. Navigate using the arrow and enter keys on your. Select this file:
+To begin examining the temperature variable, navigate to ``path/to/2019103012/metprd``.Use ``vi`` to open ``PointStat/``, where a menu of files will appear. Navigate using the arrow and enter keys on your. Select this file:
 
 .. code-block:: console
 
