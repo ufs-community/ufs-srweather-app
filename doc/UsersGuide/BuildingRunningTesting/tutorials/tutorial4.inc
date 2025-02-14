@@ -286,13 +286,13 @@ An effective weather forecast begins with analyzing a 250mb wind chart. By using
 
 In the 250mb wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` plots are nearly identical at forecast hour f036. This shows great model agreement. Analyzing this chart we can see multiple ingredients signaling a significant severe weather event over the eastern CONUS. The first thing to notice is the placement of the jet streak along with troughing approaching the eastern US. Also notice an extreme 150KT jet max over southern Ohio further fueling severe weather. The last thing to notice is the divergence aloft present over the eastern CONUS; seeing divergence present all the way up to 250mb indicates a strong system.
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/250wind_rap_conus_f036.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst4_plots/250wind_rap_conus_f036.png
       :align: center
       :width: 75%
 
       *RAP Plot for 250mb Wind*
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/250wind_hrrr_conus_f036.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst4_plots/250wind_hrrr_conus_f036.png
       :align: center
       :width: 75%
 
@@ -306,13 +306,13 @@ The 10m wind plots allows forecasters to pick up on patterns closer to the surfa
 
 In the 10m wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` are once again very similar, which makes sense given that the 250mb wind plots are also so similar. We can see a few key features on this chart. The most important is the area of convergence taking place over the east coast which is driving the line of severe storms. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_rap_conus_f036.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst4_plots/10mwind_rap_conus_f036.png
       :align: center
       :width: 75%
 
       *RAP Plot for 10m Winds*
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/10mwind_hrrr_conus_f036.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst4_plots/10mwind_hrrr_conus_f036.png
       :align: center
       :width: 75%
 
@@ -326,13 +326,13 @@ Reflectivity images visually represent the weather based on the energy (measured
 
 In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloweenRAP`` models remain quite similar, as expected. Utilizing the reflectivity plots provides the final piece of the puzzle. From the previous analyses, we already had a good understanding of where the storms were likely to occur. Composite reflectivity serves as an additional tool, allowing us to visualize where the models predict storm placement. In this case, the strongest storms are indicated by higher dBZ values and appear to be concentrated in the NC/VA region.
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_rap_conus_f036.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst4_plots/refc_rap_conus_f036.png
       :align: center
       :width: 75%
 
       *RAP Plot for Composite Reflectivity*
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst4_plots/refc_hrrr_conus_f036.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst4_plots/refc_hrrr_conus_f036.png
       :align: center
       :width: 75%
 

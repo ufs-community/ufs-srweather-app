@@ -567,12 +567,94 @@ Navigate to the ``postprd`` directory for the date of your forecast (e.g. ``$GCB
 2m-Temperature
 ^^^^^^^^^^^^^^^^
 
+.. list-table:: 2-m Temperature by Forecast Hour
+   :widths: 25 25 25 25
+   :header-rows: 1
+
+   * - f000
+     - f012
+     - f024
+     - f036
+   * - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/2mt_regional_f000.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/2mt_regional_f012.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/2mt_regional_f024.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/2mt_regional_f036.png
+          :align: center
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/temperature_gradient.png
+   :align: center
+   :width: 50%
+
+.. COMMENT: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/2mt_regional_f000.png
+
 10m-Winds
 ^^^^^^^^^^^
+
+.. list-table:: 10-m Wind by Forecast Hour
+   :widths: 25 25 25 25
+   :header-rows: 1
+
+   * - f000
+     - f012
+     - f024
+     - f036
+   * - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/10mwind_regional_f000.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/10mwind_regional_f012.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/10mwind_regional_f024.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/10mwind_regional_f036.png
+          :align: center
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/wind_gradient.png
+   :align: center
+   :width: 50%
 
 Composite Reflectivity
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. list-table:: Composite Reflectivity by Forecast Hour
+   :widths: 25 25 25 25
+   :header-rows: 1
+
+   * - f000
+     - f012
+     - f024
+     - f036
+   * - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/refc_regional_f000.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/refc_regional_f012.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/refc_regional_f024.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/refc_regional_f036.png
+          :align: center
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/refc_gradient.png
+   :align: center
+   :width: 50%
+
 Accumulated Precipitation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. list-table:: Accumulated Precipitation by Forecast Hour
+   :widths: 25 25 25
+   :header-rows: 1
+
+   * - f012
+     - f024
+     - f036
+   * - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_regional_f012.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_regional_f024.png
+          :align: center
+     - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_regional_f036.png
+          :align: center
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_gradient.png
+   :align: center
+   :width: 50%
