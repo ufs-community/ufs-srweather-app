@@ -26,11 +26,11 @@ for (( i=0; i<=$((num_fcst_hrs)); i++ )); do
 $USHdir/load_modules_run_task.sh "run_post" $JOBSdir/JREGIONAL_RUN_POST
 done
 
-# Gaea differences:
+# Gaea-C5 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 
-# Gaea-c6 differences:
+# Gaea-C6 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 

@@ -44,10 +44,10 @@ elif [ "$L_MACHINE" = singularity ]; then
 
    module purge
 
-elif [ "$L_MACHINE" = gaea ]; then
+elif [ "$L_MACHINE" = gaeac5 ]; then
    module reset 
 
-elif [ "$L_MACHINE" = gaea-c6 ]; then
+elif [ "$L_MACHINE" = gaeac6 ]; then
    module reset 
 
 elif [ "$L_MACHINE" = derecho ]; then
