@@ -17,8 +17,6 @@ valid_vals_PREDEF_GRID_NAME: [
 "RRFS_CONUScompact_3km",
 "RRFS_AK_13km",
 "RRFS_AK_3km",
-"CONUS_25km_GFDLgrid",
-"CONUS_3km_GFDLgrid",
 "GSD_HRRR_25km",
 "AQM_NA_13km",
 "RRFS_NA_13km",
@@ -39,13 +37,12 @@ valid_vals_CCPP_PHYS_SUITE: [
 "FV3_HRRR_gf",
 "FV3_RAP"
 ] 
-valid_vals_GFDLgrid_NUM_CELLS: [48, 96, 192, 384, 768, 1152, 3072]
 valid_vals_EXTRN_MDL_NAME_ICS: ["GSMGFS", "FV3GFS", "UFS-CASE-STUDY", "GEFS", "GDAS", "RAP", "HRRR", "RRFS", "NAM"]
 valid_vals_EXTRN_MDL_NAME_LBCS: ["GSMGFS", "FV3GFS", "UFS-CASE-STUDY", "GEFS", "GDAS", "RAP", "HRRR", "RRFS", "NAM"]
 valid_vals_USE_USER_STAGED_EXTRN_FILES: [True, False]
 valid_vals_FV3GFS_FILE_FMT_ICS: ["nemsio", "grib2", "netcdf"]
 valid_vals_FV3GFS_FILE_FMT_LBCS: ["nemsio", "grib2", "netcdf"]
-valid_vals_GRID_GEN_METHOD: ["GFDLgrid", "ESGgrid"]
+valid_vals_GRID_GEN_METHOD: ["ESGgrid"]
 valid_vals_PREEXISTING_DIR_METHOD: ["delete", "rename", "reuse", "quit"]
 valid_vals_GTYPE: ["regional"]
 valid_vals_WRTCMP_output_grid: ["rotated_latlon", "lambert_conformal", "regional_latlon"]

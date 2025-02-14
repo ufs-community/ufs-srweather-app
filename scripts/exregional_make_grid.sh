@@ -33,8 +33,7 @@
 #
 # This script does the following:
 #
-#   - Create the grid, either an ESGgrid with the regional_esg_grid
-#     executable or a GFDL-type grid with the hgrid executable
+#   - Create the ESGgridgrid with the regional_esg_grid executable
 #   - Calculate the regional grid's global uniform cubed-sphere grid
 #     equivalent resolution with the global_equiv_resol executable
 #   - Use the shave executable to reduce the halo to 3 and 4 cells
@@ -64,8 +63,6 @@
 #    VERBOSE
 #
 #  task_make_grid:
-#    GFDLgrid_NUM_CELLS
-#    GFDLgrid_USE_NUM_CELLS_IN_FILENAMES
 #    GRID_DIR
 #
 #  constants:
@@ -76,11 +73,6 @@
 #  grid_params:
 #    DEL_ANGLE_X_SG
 #    DEL_ANGLE_Y_SG
-#    GFDLgrid_REFINE_RATIO
-#    IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
 #    LAT_CTR
 #    LON_CTR
 #    NEG_NX_OF_DOM_WITH_WIDE_HALO
@@ -89,7 +81,6 @@
 #    NX
 #    NY
 #    PAZI
-#    STRETCH_FAC
 #
 #-----------------------------------------------------------------------
 #
@@ -166,106 +157,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
-
-#
-#-----------------------------------------------------------------------
-#
-# Generate grid files.
-#
-# The following will create 7 grid files (one per tile, where the 7th
-# "tile" is the grid that covers the regional domain) named
-#
-#   ${CRES}_grid.tileN.nc for N=1,...,7.
-#
-# It will also create a mosaic file named ${CRES}_mosaic.nc that con-
-# tains information only about tile 7 (i.e. it does not have any infor-
-# mation on how tiles 1 through 6 are connected or that tile 7 is within
-# tile 6).  All these files will be placed in the directory specified by
-# GRID_DIR.  Note that the file for tile 7 will include a halo of width
-# NHW cells.
-#
-# Since tiles 1 through 6 are not needed to run the FV3-LAM model and are
-# not used later on in any other preprocessing steps, it is not clear
-# why they are generated.  It might be because it is not possible to di-
-# rectly generate a standalone regional grid using the make_hgrid uti-
-# lity/executable that grid_gen_scr calls, i.e. it might be because with
-# make_hgrid, one has to either create just the 6 global tiles or create
-# the 6 global tiles plus the regional (tile 7), and then for the case
-# of a regional simulation (i.e. GTYPE="regional", which is always the
-# case here) just not use the 6 global tiles.
-#
-# The grid_gen_scr script called below takes its next-to-last argument
-# and passes it as an argument to the --halo flag of the make_hgrid uti-
-# lity/executable.  make_hgrid then checks that a regional (or nested)
-# grid of size specified by the arguments to its --istart_nest, --iend_-
-# nest, --jstart_nest, and --jend_nest flags with a halo around it of
-# size specified by the argument to the --halo flag does not extend be-
-# yond the boundaries of the parent grid (tile 6).  In this case, since
-# the values passed to the --istart_nest, ..., and --jend_nest flags al-
-# ready include a halo (because these arguments are
-#
-#   ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG},
-#   ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG},
-#   ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}, and
-#   ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG},
-#
-# i.e. they include "WITH_WIDE_HALO_" in their names), it is reasonable
-# to pass as the argument to --halo a zero.  However, make_hgrid re-
-# quires that the argument to --halo be at least 1, so below, we pass a
-# 1 as the next-to-last argument to grid_gen_scr.
-#
-# More information on make_hgrid:
-# ------------------------------
-#
-# The grid_gen_scr called below in turn calls the make_hgrid executable
-# as follows:
-#
-#   make_hgrid \
-#   --grid_type gnomonic_ed \
-#   --nlon 2*${RES} \
-#   --grid_name C${RES}_grid \
-#   --do_schmidt --stretch_factor ${STRETCH_FAC} \
-#   --target_lon ${LON_CTR}
-#   --target_lat ${LAT_CTR} \
-#   --nest_grid --parent_tile 6 --refine_ratio ${GFDLgrid_REFINE_RATIO} \
-#   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-#   --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-#   --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-#   --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-#   --halo ${NH3} \
-#   --great_circle_algorithm
-#
-# This creates the 7 grid files ${CRES}_grid.tileN.nc for N=1,...,7.
-# The 7th file ${CRES}_grid.tile7.nc represents the regional grid, and
-# the extents of the arrays in that file do not seem to include a halo,
-# i.e. they are based only on the values passed via the four flags
-#
-#   --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
-#   --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
-#   --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
-#   --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG}
-#
-# According to Rusty Benson of GFDL, the flag
-#
-#   --halo ${NH3}
-#
-# only checks to make sure that the nested or regional grid combined
-# with the specified halo lies completely within the parent tile.  If
-# so, make_hgrid issues a warning and exits.  Thus, the --halo flag is
-# not meant to be used to add a halo region to the nested or regional
-# grid whose limits are specified by the flags --istart_nest, --iend_-
-# nest, --jstart_nest, and --jend_nest.
-#
-# Note also that make_hgrid has an --out_halo option that, according to
-# the documentation, is meant to output extra halo cells around the
-# nested or regional grid boundary in the file generated by make_hgrid.
-# However, according to Rusty Benson of GFDL, this flag was originally
-# created for a special purpose and is limited to only outputting at
-# most 1 extra halo point.  Thus, it should not be used.
-#
-#-----------------------------------------------------------------------
-#
-
 #
 #-----------------------------------------------------------------------
 #
@@ -276,11 +167,7 @@ fi
 # Set the name and path to the executable that generates the grid file
 # and make sure that it exists.
 #
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-  exec_fn="make_hgrid"
-elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
-  exec_fn="regional_esg_grid"
-fi
+exec_fn="regional_esg_grid"
 
 exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
@@ -297,59 +184,14 @@ cd "$DATA"
 print_info_msg "$VERBOSE" "
 Starting grid file generation..."
 #
-# Generate a GFDLgrid-type of grid.
-#
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-#
-# Set local variables needed in the call to the executable that generates
-# a GFDLgrid-type grid.
-#
-  nx_t6sg=$(( 2*GFDLgrid_NUM_CELLS ))
-  grid_name="${GRID_GEN_METHOD}"
-#
-# Call the executable that generates the grid file.  Note that this call
-# will generate a file not only the regional grid (tile 7) but also files
-# for the 6 global tiles.  However, after this call we will only need the
-# regional grid file.
-#
-  PREP_STEP
-  eval $RUN_CMD_SERIAL ${exec_fp} \
-    --grid_type gnomonic_ed \
-    --nlon ${nx_t6sg} \
-    --grid_name ${grid_name} \
-    --do_schmidt \
-    --stretch_factor ${STRETCH_FAC} \
-    --target_lon ${LON_CTR} \
-    --target_lat ${LAT_CTR} \
-    --nest_grid \
-    --parent_tile 6 \
-    --refine_ratio ${GFDLgrid_REFINE_RATIO} \
-    --istart_nest ${ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-    --jstart_nest ${JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-    --iend_nest ${IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-    --jend_nest ${JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG} \
-    --halo 1 \
-    --great_circle_algorithm ${REDIRECT_OUT_ERR} || \
-  print_err_msg_exit "\
-Call to executable (exec_fp) that generates grid files returned with
-nonzero exit code.
-  exec_fp = \"${exec_fp}\""
-  POST_STEP
-#
-# Set the name of the regional grid file generated by the above call.
-#
-  grid_fn="${grid_name}.tile${TILE_RGNL}.nc"
-#
 # Generate a ESGgrid-type of grid.
-#
-elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
 #
 # Create the namelist file read in by the ESGgrid-type grid generation
 # code in the temporary subdirectory.
 #
-  rgnl_grid_nml_fp="$DATA/${RGNL_GRID_NML_FN}"
+rgnl_grid_nml_fp="$DATA/${RGNL_GRID_NML_FN}"
 
-  print_info_msg "$VERBOSE" "
+print_info_msg "$VERBOSE" "
 Creating namelist file (rgnl_grid_nml_fp) to be read in by the grid
 generation executable (exec_fp):
   rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
@@ -361,7 +203,7 @@ generation executable (exec_fp):
 # this variable will be passed to a python script that will create the
 # namelist file.
 #
-  settings="
+settings="
 'regional_grid_nml':
   'plon': ${LON_CTR}
   'plat': ${LAT_CTR}
@@ -372,8 +214,8 @@ generation executable (exec_fp):
   'pazi': ${PAZI}
 "
 
-  # UW takes input from stdin when no -i/--input-config flag is provided
-  (cat << EOF
+# UW takes input from stdin when no -i/--input-config flag is provided
+(cat << EOF
 $settings
 EOF
 ) | uw config realize \
@@ -387,24 +229,22 @@ EOF
   Error creating regional_esg_grid namelist.
       Settings for input are:
   $settings"
- fi
+fi
 #
 # Call the executable that generates the grid file.
 #
-  PREP_STEP
-  eval $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
+PREP_STEP
+eval $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} ${REDIRECT_OUT_ERR} || \
+  print_err_msg_exit "\
 Call to executable (exec_fp) that generates a ESGgrid-type regional grid
 returned with nonzero exit code:
   exec_fp = \"${exec_fp}\""
-  POST_STEP
+POST_STEP
 #
 # Set the name of the regional grid file generated by the above call.
 # This must be the same name as in the regional_esg_grid code.
 #
-  grid_fn="regional_grid.nc"
-
-fi
+grid_fn="regional_grid.nc"
 #
 # Set the full path to the grid file generated above.  Then change location
 # to the original directory.
@@ -468,18 +308,9 @@ res_equiv=${res_equiv//$'\n'/}
 #
 #-----------------------------------------------------------------------
 #
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-  if [ $(boolify "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}") = "TRUE" ]; then
-    CRES="C${GFDLgrid_NUM_CELLS}"
-  else
-    CRES="C${res_equiv}"
-  fi
-elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
-  CRES="C${res_equiv}"
-fi
-
-  # UW takes the update values from stdin when no --update-file flag is
-  # provided. It needs --update-format to do it correctly, though.
+CRES="C${res_equiv}"
+# UW takes the update values from stdin when no --update-file flag is
+# provided. It needs --update-format to do it correctly, though.
 echo "workflow: {CRES: ${CRES}}" | uw config realize \
   --input-file $GLOBAL_VAR_DEFNS_FP \
   --update-format yaml \

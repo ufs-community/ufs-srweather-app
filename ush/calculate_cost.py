@@ -11,7 +11,6 @@ from python_utils import (
 
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
-from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 
 
 def calculate_cost(config_fn):
@@ -45,23 +44,7 @@ def calculate_cost(config_fn):
         cfg = cfg_u
 
     # number of gridpoints (nx*ny) depends on grid generation method
-    if cfg['GRID_GEN_METHOD'] == "GFDLgrid":
-        grid_params = set_gridparams_GFDLgrid(
-            lon_of_t6_ctr=cfg['GFDLgrid_LON_T6_CTR'],
-            lat_of_t6_ctr=cfg['GFDLgrid_LAT_T6_CTR'],
-            res_of_t6g=cfg['GFDLgrid_NUM_CELLS'],
-            stretch_factor=cfg['GFDLgrid_STRETCH_FAC'],
-            refine_ratio_t6g_to_t7g=cfg['GFDLgrid_REFINE_RATIO'],
-            istart_of_t7_on_t6g=cfg['GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G'],
-            iend_of_t7_on_t6g=cfg['GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G'],
-            jstart_of_t7_on_t6g=cfg['GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G'],
-            jend_of_t7_on_t6g=cfg['GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G'],
-            run_envir="community",
-            verbose=False,
-            nh4=4,
-        )
-
-    elif cfg['GRID_GEN_METHOD'] == "ESGgrid":
+    if cfg['GRID_GEN_METHOD'] == "ESGgrid":
         constants = load_config_file(os.path.join(ushdir, "constants.yaml"))
         grid_params = set_gridparams_ESGgrid(
             lon_ctr=cfg['ESGgrid_LON_CTR'],

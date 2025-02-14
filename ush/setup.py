@@ -47,7 +47,6 @@ from set_cycle_and_obs_timeinfo import \
      get_obs_retrieve_times_by_day
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
-from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
 
 def load_config_for_setup(ushdir, default_config, user_config):
@@ -1090,22 +1089,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
     grid_gen_method = workflow_config["GRID_GEN_METHOD"]
-    if grid_gen_method == "GFDLgrid":
-        grid_params = set_gridparams_GFDLgrid(
-            lon_of_t6_ctr=grid_config["GFDLgrid_LON_T6_CTR"],
-            lat_of_t6_ctr=grid_config["GFDLgrid_LAT_T6_CTR"],
-            res_of_t6g=grid_config["GFDLgrid_NUM_CELLS"],
-            stretch_factor=grid_config["GFDLgrid_STRETCH_FAC"],
-            refine_ratio_t6g_to_t7g=grid_config["GFDLgrid_REFINE_RATIO"],
-            istart_of_t7_on_t6g=grid_config["GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G"],
-            iend_of_t7_on_t6g=grid_config["GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G"],
-            jstart_of_t7_on_t6g=grid_config["GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G"],
-            jend_of_t7_on_t6g=grid_config["GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G"],
-            verbose=verbose,
-            nh4=expt_config["constants"]["NH4"],
-            run_envir=run_envir,
-        )
-    elif grid_gen_method == "ESGgrid":
+    if grid_gen_method == "ESGgrid":
         grid_params = set_gridparams_ESGgrid(
             lon_ctr=grid_config["ESGgrid_LON_CTR"],
             lat_ctr=grid_config["ESGgrid_LAT_CTR"],
@@ -1121,7 +1105,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
         errmsg = dedent(
             f"""
-            Valid values of GRID_GEN_METHOD are GFDLgrid and ESGgrid.
+            Valid value of GRID_GEN_METHOD is ESGgrid.
             The value provided is:
               GRID_GEN_METHOD = {grid_gen_method}
             """

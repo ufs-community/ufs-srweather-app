@@ -536,8 +536,6 @@ Grid Generation Parameters
 
    * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at :srw-wiki:`Purser_UIFCW_2023.pdf`.
 
-   * ``"GFDLgrid"``: The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
-
 .. attention::
 
    If the experiment uses a **predefined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to the name of a valid predefined grid), then ``GRID_GEN_METHOD`` will be reset to the value of ``GRID_GEN_METHOD`` for that grid. This will happen regardless of whether ``GRID_GEN_METHOD`` is assigned a value in the experiment configuration file; any value assigned will be overwritten.
@@ -565,8 +563,6 @@ Predefined Grid Parameters
    **Other valid values include:**
 
    | ``"AQM_NA_13km"``
-   | ``"CONUS_25km_GFDLgrid"`` 
-   | ``"CONUS_3km_GFDLgrid"``
    | ``"GSD_HRRR_25km"``
    | ``"RRFS_AK_13km"``
    | ``"RRFS_AK_3km"`` 
@@ -772,65 +768,6 @@ The following parameters must be set if using the "ESGgrid" method to generate a
 
 ``ESGgrid_PAZI``: (Default: "")
    The rotational parameter for the "ESGgrid" (in degrees).
-
-GFDLgrid Settings
----------------------
-
-The following parameters must be set if using the "GFDLgrid" method to generate a regional grid (i.e., when ``GRID_GEN_METHOD: "GFDLgrid"``, see :numref:`Section %s <GridGen>`). If a different ``GRID_GEN_METHOD`` is used, these parameters will be ignored. When using a predefined grid with ``GRID_GEN_METHOD: "GFDLgrid"``, the values in this section will be set automatically to the assigned values for that grid. 
-
-Note that the regional grid is defined with respect to a "parent" global cubed-sphere grid. Thus, all the parameters for a global cubed-sphere grid must be specified even though the model equations are integrated only on the regional grid. Tile 6 has arbitrarily been chosen as the tile to use to orient the global parent grid on the sphere (Earth). For convenience, the regional grid is denoted as "tile 7" even though it is embedded within tile 6 (i.e., it doesn't extend beyond the boundary of tile 6). Its exact location within tile 6 is determined by specifying the starting and ending i- and j-indices of the regional grid on tile 6, where ``i`` is the grid index in the x direction and ``j`` is the grid index in the y direction. All of this information is set in the variables below. 
-
-``GFDLgrid_LON_T6_CTR``: (Default: "")
-   Longitude of the center of tile 6 (in degrees).
-
-``GFDLgrid_LAT_T6_CTR``: (Default: "")
-   Latitude of the center of tile 6 (in degrees).
-
-``GFDLgrid_NUM_CELLS``: (Default: "")
-   Number of grid cells in either of the two horizontal directions (x and y) on each of the six tiles of the parent global cubed-sphere grid. Valid values: ``48`` | ``96`` | ``192`` | ``384`` | ``768`` | ``1152`` | ``3072``
-
-   To give an idea of what these values translate to in terms of grid cell size in kilometers, we list below the approximate grid cell size on a uniform global grid having the specified value of ``GFDLgrid_NUM_CELLS``, where by "uniform" we mean with Schmidt stretch factor ``GFDLgrid_STRETCH_FAC: "1"`` (although in regional applications ``GFDLgrid_STRETCH_FAC`` will typically be set to a value greater than ``"1"`` to obtain a smaller grid size on tile 6):
-
-         +---------------------+--------------------+
-         | GFDLgrid_NUM_CELLS  | Typical Cell Size  |
-         +=====================+====================+
-         |  48                 |     200 km         |
-         +---------------------+--------------------+
-         |  96                 |     100 km         |
-         +---------------------+--------------------+
-         | 192                 |      50 km         |
-         +---------------------+--------------------+
-         | 384                 |      25 km         |
-         +---------------------+--------------------+
-         | 768                 |      13 km         |
-         +---------------------+--------------------+
-         | 1152                |      8.5 km        |
-         +---------------------+--------------------+
-         | 3072                |      3.2 km        |
-         +---------------------+--------------------+
-
-      Note that these are only typical cell sizes. The actual cell size on the global grid tiles varies somewhat as we move across a tile and is also dependent on ``GFDLgrid_STRETCH_FAC``, which modifies the shape and size of the tile.
-
-``GFDLgrid_STRETCH_FAC``: (Default: "")
-   Stretching factor used in the Schmidt transformation applied to the parent cubed-sphere grid. Setting the Schmidt stretching factor to a value greater than 1 shrinks tile 6, while setting it to a value less than 1 (but still greater than 0) expands it. The remaining 5 tiles change shape as necessary to maintain global coverage of the grid.
-
-``GFDLgrid_REFINE_RATIO``: (Default: "")
-   Cell refinement ratio for the regional grid. It refers to the number of cells in either the x or y direction on the regional grid (tile 7) that abut one cell on its parent tile (tile 6).
-
-``GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G``: (Default: "")
-   i-index on tile 6 at which the regional grid (tile 7) starts.
-
-``GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G``: (Default: "")
-   i-index on tile 6 at which the regional grid (tile 7) ends.
-
-``GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G``: (Default: "")
-   j-index on tile 6 at which the regional grid (tile 7) starts.
-
-``GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G``: (Default: "")
-   j-index on tile 6 at which the regional grid (tile 7) ends.
-
-``GFDLgrid_USE_NUM_CELLS_IN_FILENAMES``: (Default: "")
-   Flag that determines the file naming convention to use for grid, orography, and surface climatology files (or, if using pregenerated files, the naming convention that was used to name these files). These files usually start with the string ``"C${RES}_"``, where ``RES`` is an integer. In the global forecast model, ``RES`` is the number of points in each of the two horizontal directions (x and y) on each tile of the global grid (defined here as ``GFDLgrid_NUM_CELLS``). If this flag is set to true, ``RES`` will be set to ``GFDLgrid_NUM_CELLS`` just as in the global forecast model. If it is set to false, we calculate (in the grid generation task) an "equivalent global uniform cubed-sphere resolution" --- call it ``RES_EQUIV`` --- and then set ``RES`` equal to it. ``RES_EQUIV`` is the number of grid points in each of the x and y directions on each tile that a global UNIFORM (i.e., stretch factor of 1) cubed-sphere grid would need to have in order to have the same average grid size as the regional grid. This is a more useful indicator of the grid size because it takes into account the effects of ``GFDLgrid_NUM_CELLS``, ``GFDLgrid_STRETCH_FAC``, and ``GFDLgrid_REFINE_RATIO`` in determining the regional grid's typical grid size, whereas simply setting ``RES`` to ``GFDLgrid_NUM_CELLS`` doesn't take into account the effects of ``GFDLgrid_STRETCH_FAC`` and ``GFDLgrid_REFINE_RATIO`` on the regional grid's resolution. Nevertheless, some users still prefer to use ``GFDLgrid_NUM_CELLS`` in the file names, so we allow for that here by setting this flag to true.
 
 .. _make-orog:
  
@@ -1136,7 +1073,7 @@ Write-Component (Quilting) Parameters
 -----------------------------------------
 
 .. note::
-   The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in :ref:`Section 4.2.3 <ufs-wm:model_configureFile>` of the UFS Weather Model documentation. 
+   The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in :ref:`Section 4.2.3 <ufs-wm:model_configureFile>` of the UFS Weather Model documentation. 
 
 ``QUILTING``: (Default: true)
 

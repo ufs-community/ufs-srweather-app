@@ -62,11 +62,6 @@
 #    OMP_STACKSIZE_MAKE_OROG
 #    OROG_DIR
 #
-#  task_make_grid:
-#    GFDLgrid_NUM_CELLS
-#    GFDLgrid_STRETCH_FAC
-#    GFDLgrid_REFINE_RATIO
-#
 #  constants:
 #    NH0
 #    NH4
@@ -89,7 +84,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow constants grid_params task_make_grid task_make_orog task_make_grid ; do
+for sect in user nco platform workflow constants grid_params task_make_grid task_make_orog ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 
@@ -344,26 +339,7 @@ fi
 #
 # Note that the orography filtering code assumes that the regional grid
 # is a GFDLgrid type of grid; it is not designed to handle ESGgrid type
-# regional grids.  If the flag "regional" in the orography filtering
-# namelist file is set to .TRUE. (which it always is will be here; see
-# below), then filtering code will first calculate a resolution (i.e.
-# number of grid points) value named res_regional for the assumed GFDLgrid
-# type regional grid using the formula
-#
-#   res_regional = res*stretch_fac*real(refine_ratio)
-#
-# Here res, stretch_fac, and refine_ratio are the values passed to the
-# code via the namelist.  res and stretch_fac are assumed to be the
-# resolution (in terms of number of grid points) and the stretch factor
-# of the (GFDLgrid type) regional grid's parent global cubed-sphere grid,
-# and refine_ratio is the ratio of the number of grid cells on the regional
-# grid to a single cell on tile 6 of the parent global grid.  After
-# calculating res_regional, the code interpolates/extrapolates between/
-# beyond a set of (currently 7) resolution values for which the four
-# filtering parameters (n_del2_weak, cd4, max_slope, peak_fac) are provided
-# (by GFDL) to obtain the corresponding values of these parameters at a
-# resolution of res_regional.  These interpolated/extrapolated values are
-# then used to perform the orography filtering.
+# regional grids.
 #
 # To handle ESGgrid type grids, we set res in the namelist to the
 # orography filtering code the equivalent global uniform cubed-sphere
@@ -376,28 +352,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-
-# Note:
-# It is also possible to use the equivalent global uniform cubed-sphere
-# resolution when filtering on a GFDLgrid type grid by setting the namelist
-# parameters as follows:
-#
-#  res="${CRES:1}"
-#  stretch_fac="1" (or "0.999" if "1" makes it crash)
-#  refine_ratio="1"
-#
-# Really depends on what EMC wants to do.
-
-  res="${GFDLgrid_NUM_CELLS}"
-  refine_ratio="${GFDLgrid_REFINE_RATIO}"
-
-elif [ "${GRID_GEN_METHOD}" = "ESGgrid" ]; then
-
-  res="${CRES:1}"
-  refine_ratio="1"
-
-fi
+res="${CRES:1}"
+refine_ratio="1"
 #
 # Set the name and path to the executable and make sure that it exists.
 #
