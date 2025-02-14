@@ -250,31 +250,7 @@ pipeline {
                                         }
                                     }
                                 }
-                               
-                                // Update coverage suites to include skill-score we2e test 
-                                def platform = env.SRW_PLATFORM
-                                def coverage_test_name = platform
-                                echo "platform: ${platform}"
-                                echo "ctn: ${coverage_test_name}"
-                                if (single_test == 'coverage') {
-                                   if ("${platform}" == 'hera') {
-                                       coverage_test_name = 'hera.${env.SRW_COMPILER}.*'
-                                   } 
-                                   if (platform == 'pclusternoaav2use1') {
-                                       coverage_test_name = "noaacloud.aws"
-                                       echo "In Func: ${coverage_test_name}"
-                                   } 
-                                   if ("${platform}" == 'azclusternoaav2use1') {
-                                       coverage_test_name = 'noaacloud.azure'
-                                   } 
-                                   if ("${platform}" == 'gclusternoaav2usc1') {
-                                       coverage_test_name = 'noaacloud.gcp'
-                                   }
-                                   if ("${platform}" != 'orion') {
-                                       sh "echo grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0 >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/machine_suites/coverage.${coverage_test_name}"
-                                   }
-                                }
-                                echo "ctn: ${coverage_test_name}"
+
                                 sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests} SRW_WE2E_SINGLE_TEST=${single_test}" + ' bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_test.sh"'
 
                                 }
