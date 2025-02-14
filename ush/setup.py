@@ -148,7 +148,12 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
         default_config.update_from(cfg)
 
     # Dereference all Jinja expressions
-    default_config.dereference()
+    default_config.dereference(
+        context={
+            "today": datetime.date.today(),
+            "timedelta": datetime.timedelta,
+            }
+        )
 
     # Validate experiment config against schema
     schema = ushdir / "experiment.jsonschema"
@@ -557,21 +562,24 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         #
         # -----------------------------------------------------------------------
         #
+
         cycledefs_obs_days_inst = set_rocoto_cycledefs_for_obs_days(
             obs_days_all_cycles["inst"]
         )
+        for spec in cycledefs_obs_days_inst:
+             rocoto_config["cycledef"].append({
+                 "attrs": {"group": "cycledefs_obs_days_inst"},
+                 "spec": spec,
+                 })
+
         cycledefs_obs_days_cumul = set_rocoto_cycledefs_for_obs_days(
             obs_days_all_cycles["cumul"]
         )
-
-        rocoto_config["cycledef"].append({
-            "attrs": {"group": "cycledefs_obs_days_inst"},
-            "spec": cycledefs_obs_days_inst[0],
-            })
-        rocoto_config["cycledef"].append({
-            "attrs": {"group": "cycledefs_obs_days_cumul"},
-            "spec": cycledefs_obs_days_cumul[0],
-            })
+        for spec in cycledefs_obs_days_cumul:
+             rocoto_config["cycledef"].append({
+                 "attrs": {"group": "cycledefs_obs_days_cumul"},
+                 "spec": spec,
+                 })
         #
         # -----------------------------------------------------------------------
         #
