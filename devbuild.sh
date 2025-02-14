@@ -239,6 +239,9 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   if ! conda env list | grep -q "^srw_graphics\s" ; then
     mamba env create -n srw_graphics --file graphics_environment.yml
   fi
+  if ! conda env list | grep -q "^srw_sd\s" ; then
+    mamba env create -n srw_sd --file sd_environment.yml
+  fi
   if [ "${APPLICATION}" = "ATMAQ" ]; then
     if ! conda env list | grep -q "^srw_aqm\s" ; then
       mamba env create -n srw_aqm --file aqm_environment.yml

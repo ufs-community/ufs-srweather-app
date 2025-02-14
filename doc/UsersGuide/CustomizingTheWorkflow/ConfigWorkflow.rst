@@ -236,6 +236,12 @@ These parameters are associated with the fixed (i.e., static) files. On :srw-wik
 ``FIXemis``: (Default: "")
    Path to system directory containing AQM emission data files.
 
+``FIXsmoke``: (Default: "")
+   Path to system directory containing Smoke and Dust data files.
+
+``FIXupp``: (Default: "")
+   Path to system directory containing UPP fix files.
+
 ``FIXcrtm``: (Default: "")
    Path to system directory containing CRTM fixed files. 
 
@@ -2064,6 +2070,31 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 
 ``NEXUS_GFS_SFC_ARCHV_DIR``:  (Default: "/NCEPPROD/hpssprod/runhistory")
    Path to archive directory for gfs surface files on HPSS.
+
+
+Smoke and Dust Configuration Parameters
+=====================================
+
+Non-default parameters for Smoke and Dust tasks are set in the ``smoke_dust_parm:`` section of the ``config.yaml`` file.
+
+``DO_SMOKE_DUST``: (Default: false)
+   Flag for smoke and dust tasks.
+
+``EBB_DCYCLE``: (Default: 1)
+   Options for EBB cycle (Retro: 1, Forecast: 2).
+
+``PERSISTENCE``: (Default: true)
+   Flag for emission persistence method. If false, same day FRP is used.
+
+``COMINsmoke_default``: (Default: "")
+   Path to directory containing smoke and dust data files.
+
+``COMINrave_default``: (Default: "")
+   Path to directory containing RAVE fire data files.
+
+``SMOKE_DUST_FILE_PREFIX``: (Default: SMOKE_RRFS_data)
+   Prefix of Smoke and Dust file name used for ufs_model.
+
 
 .. _fire-parameters:
 
