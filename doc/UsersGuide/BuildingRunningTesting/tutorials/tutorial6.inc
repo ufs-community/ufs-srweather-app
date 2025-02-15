@@ -22,27 +22,29 @@ In this case, the polar vortex stretched far south bringing cold, dry air to the
 
 Preliminary Steps
 -------------------
-It is suggested that users create a directory on their system where they will store data and run their forecast. In this example, we make a directory called ``blizzard`` and navigate into it: 
+It is recommended that users create a directory on their system where they will store data and run their forecast. In this example, we make a directory called ``blizzard`` and navigate into it: 
 
 .. code-block:: console
 
    mkdir blizzard
    cd blizzard
    
-Users can save the location of the this directory in an environment variable such as $GCB (for Gulf Coast Blizzard). This makes it easier to navigate between directories later. For example:
+Users can save the location of the this directory in an environment variable such as ``$GCB`` (for Gulf Coast Blizzard). This makes it easier to navigate between directories later. For example:
 
 .. code-block:: console
 
    export GCB=/path/to/blizzard
+
+where ``/path/to/`` is replaced with the full path to the ``blizzard`` directory on the user's system.
 
 Data
 -------
 
 Users can set up a forecast for a weather case of their choice using data downloaded from a publicly available source. The SRW App requires:
 
-   * Fix files -- Static datasets containing climatological information, terrain, and land use data
-   * Initial and boundary conditions files
-   * Natural Earth Shapefiles (optional) for use in plotting tasks 
+   * **Fix files** -- Static datasets containing climatological information, terrain, and land use data
+   * **Initial and boundary conditions files**
+   * **Natural Earth Shapefiles** (optional) for use in plotting tasks 
 
 Fix Files
 ^^^^^^^^^^
@@ -54,6 +56,8 @@ Fix files are publicly available in the `SRW App Data Bucket <https://registry.o
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz
    tar -xzf fix_data.tgz
 
+.. COMMENT: Update path for SRW v3.0.0 release
+
 Initial and Boundary Conditions Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -63,18 +67,16 @@ IC and LBC data must be in ``NetCDF``, ``grib2``, or ``nemsio`` format. There ar
 
 When choosing data, users should consider the type of weather they are trying to model, the size of the domain they plan to use, and the compute resources available to them. This will help to determine what grid resolution is most appropriate. There is more information on regional (or "limited area model") grids available in :numref:`Section %s <LAMGrids>`. 
 
-When modeling severe weather, it is preferable to use a high-resolution (~1-4km) grid along with physics suites and data designed for these convection-allowing scales. Therefore, we downloaded High-Resolution Rapid Refresh (HRRR) data for this case. According to NOAA, "`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_ is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation."
+When modeling severe weather, it is preferable to use a high-resolution (~1-4km) grid along with physics suites and data designed for these convection-allowing scales. Therefore, High-Resolution Rapid Refresh (HRRR) data were downloaded for this case. According to NOAA, "`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_ is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model, initialized by 3km grids with 3km radar assimilation."
 
-To download data for this case, we first created a directory named ``data`` (in our ``$GCB`` directory) and placed the ``get_data.py`` script in there:
+To download data for this case, users can create a directory named ``data`` (in ``$GCB`` or an equivalent directory) and place the ``get_data.py`` script in there:
 
 .. code-block:: console
 
    mkdir data
    cd data
 
-We then used a :srw-wiki:`utility script <Tutorial/get_data.py>` to download HRRR data from the `Planetary Computer <https://planetarycomputer.microsoft.com/dataset/storage/noaa-hrrr>`_ site.  
-
-Users can download the utility script with ``wget`` or copy paste the contents of the script into a file on their system. 
+Users can download the ``get_data.py`` :srw-wiki:`utility script <Tutorial/get_data.py>` with ``wget`` or copy-paste the contents of the script into a file on their system to download recent HRRR data from the `Planetary Computer <https://planetarycomputer.microsoft.com/dataset/storage/noaa-hrrr>`_ site. 
 
 .. code-block:: console
 
@@ -104,13 +106,13 @@ Call the script with the ``-h`` option to see usage information:
 
 Users are welcome to adapt the script to work for other data sources, such as RAP or GFS data. 
 
-Then we ran the following command to download the data:
+When creating this experiment, the following command was used to download the data:
 
 .. code-block:: console
 
    python3 get_data.py -p wrfprsf -d 2025012100 -f 0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48
 
-Users will need to adjust this command for the specific date(s) and forecast hours they need for their experiment. We provide the data for the Gulf Coast Blizzard experiment in the `SRW Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ and on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). Users can retrieve this data from the SRW bucket by running:
+Users will need to adjust this command for the specific date(s) and forecast hours they need for their experiment. Although the Gulf Coast Blizzard data is no longer available via Planetary Computer, it has been added to the `SRW Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ and placed on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). Users can retrieve this data from the SRW App data bucket by running:
 
 .. code-block:: console
 
@@ -135,7 +137,7 @@ The full set of Natural Earth shapefiles can also be downloaded from the `Natura
 Download the SRW App
 ---------------------
 
-Navigate to the working directory. For example:
+To start an experiment, navigate to your working directory. For example:
 
 .. code-block:: console
 
@@ -158,23 +160,23 @@ This process will likely take 20-30 min. Users who do not have access to a :srw-
 Create a Regional Grid
 ------------------------
 
-The SRW App already contains several predefined grids, which are well-tested with the supported physics and data sources. While these are a great start for new users, they cover a narrow set of possible grid configurations. Depending on their goals, users may be interested in creating their own custom grid. :numref:`Section %s <UserDefinedGrid>` explains how to create a custom Extended Schmidt Gnomonic grid (ESGgrid), which is the supported grid type for the SRW App. For this example, we created a grid centered over New Orleans, LA (NOLA), which is located at 29.9509 N, 90.0758 W (29.9509, -90.0758). We thank our colleagues at the Developmental Testbed Center (DTC) for their `guidance on this process <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_. 
+The SRW App already contains several predefined grids, which are well-tested with the supported physics and data sources. While these are a great start for new users, they cover a narrow set of possible grid configurations. Depending on their goals, users may be interested in creating their own custom grid. :numref:`Section %s <UserDefinedGrid>` explains how to create a custom Extended Schmidt Gnomonic grid (ESGgrid), which is the supported grid type for the SRW App. For this example, we created a grid centered over New Orleans, LA (NOLA), which is located at 29.9509º N, 90.0758º W (29.9509, -90.0758). We thank our colleagues at the Developmental Testbed Center (DTC) for their `guidance on this process <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_. 
 
 For a custom ESGgrid, users must define three sets of parameters:
 
-   * ESG grid parameters
-   * Computational parameters
-   * Write-component grid parameters
+   #. ESG grid parameters
+   #. Computational parameters
+   #. Write-component grid parameters
 
 .. note::
 
    Users can define the custom grid directly in ``config.yaml``, but in this tutorial, we demonstrate how to add the grid to the set of predefined grids so that it can be reused across multiple experiments. 
 
-First, users must choose a name for the grid. In this example, the grid is named ``SUBCONUS_NOLA_3km``, which describes the domain as being smaller than the continental United States (CONUS), centered over New Orleans, and at a 3-km resolution. Descriptive names are encouraged but not required. 
+First, users must choose a name for the grid. In this example, the grid is named ``SUBCONUS_NOLA_3km``, which describes the domain as being smaller than the continental United States (CONUS), centered over New Orleans, LA, and at a 3-km resolution. Descriptive names are encouraged but not required. 
 
 Users must:
 
-* Add the grid name to the list of valid grid names in ``ufs-srweather-app/ush/valid_param_vals.yaml``. For example:
+#. Add the grid name to the list of valid grid names in ``ufs-srweather-app/ush/valid_param_vals.yaml``. For example:
 
    .. code-block:: console
       :emphasize-lines: 10
@@ -191,7 +193,7 @@ Users must:
       "SUBCONUS_NOLA_3km"
       ]
    
-* Add a stanza describing the parameters for the new grid in ``ufs-srweather-app/ush/predef_grid_params.yaml``. For example: 
+#. Add a stanza describing the parameters for the new grid in ``ufs-srweather-app/ush/predef_grid_params.yaml``. For example: 
 
    .. code-block:: console
 
@@ -230,11 +232,9 @@ Users must:
 
 * ``GRID_GEN_METHOD: "ESGgrid"``: This will generate a regional version of the :srw-wiki:`Extended Schmidt Gnomonic (ESG) grid <Purser_UIFCW_2023.pdf>`, which is the supported grid type for the SRW App.
 * ``ESGgrid_LON_CTR`` and ``ESGgrid_LAT_CTR``: The longitude and latitude for the center of the grid. 
-* ``ESGgrid_DELX`` and ``ESGgrid_DELY``: Grid cell size (in meters) in the x (west-to-east) and y (south-to-north) directions. For a 3-km grid, this value is always 3000 (i.e., 3km). 
-* ``ESGgrid_NX`` and ``ESGgrid_NY``: The number of grid cells in the x and y directions.
-   .. COMMENT: How do you pick this? Are there limitations?
-* ``ESGgrid_PAZI: 0.0``
-   .. COMMENT: What is this?
+* ``ESGgrid_DELX`` and ``ESGgrid_DELY``: Grid cell size (in meters) in the x- (west-to-east) and y- (south-to-north) directions. For a 3-km grid, this value is always 3000 (i.e., 3km). 
+* ``ESGgrid_NX`` and ``ESGgrid_NY``: The number of grid cells in the x and y directions. This setting will be based on how much area the grid should cover. For example, a grid that is approximately 1200km wide by 1200km tall would have ``ESGgrid_NX`` and ``ESGgrid_NY`` values of approximately 400 (1200km/3km per cell). 
+* ``ESGgrid_PAZI``: The rotation of the grid from true north (in degrees). This can usually be set to zero. 
 * ``ESGgrid_WIDE_HALO_WIDTH``: Number of :term:`halo` points around the grid with a "wide" halo. This parameter can always be set to ``6`` regardless of the other grid parameters.
 
 **Computational Parameters** 
@@ -249,31 +249,41 @@ Users must:
 
 * ``BLOCKSIZE:`` Machine-dependent parameter that does not have a default value.
 
-   .. COMMENT: Then why is it set here instead of in machine files? How do we pick a good blcoksize? 
+   .. COMMENT: Then why is it set here instead of in machine files? How do we pick a good blocksize? 
 
 **Quilting Parameters**
 
 Certain quilting parameters will be the same as the ESGgrid parameters. For example: 
 
 * Set ``WRTCMP_cen_lon`` and ``WRTCMP_cen_lat`` to the longitude and latitude for the center of the grid (same as ``ESGgrid_LON_CTR`` and ``ESGgrid_LAT_CTR``). 
-* Set ``WRTCMP_dx`` and ``WRTCMP_dy`` to the grid cell size (in meters) in the x (west-to-east) and y (south-to-north) directions (same as ``ESGgrid_DELX`` and ``ESGgrid_DELY``). 
+* Set ``WRTCMP_dx`` and ``WRTCMP_dy`` to the grid cell size (in meters) in the x- (west-to-east) and y- (south-to-north) directions (same as ``ESGgrid_DELX`` and ``ESGgrid_DELY``). 
 
 Additionally, adjust the following parameters:
 
-* ``WRTCMP_write_groups: 1``
-* ``WRTCMP_write_tasks_per_group: 5``
-* ``WRTCMP_output_grid:`` The type of write-component grid. This can generally be set to ``"lambert_conformal"``.
-
-   .. COMMENT: Will anything else work?
-
-* ``WRTCMP_stdlat1`` and ``WRTCMP_stdlat2``: The first and second standard latitudes associated with a Lambert conformal coordinate system. For simplicity, use the latitude of the center of the ESGgrid for both.
+* ``WRTCMP_write_groups:`` Each write group consists of a set of dedicated :term:`MPI` processes that writes the fields on the write-component grid to a file on disk while the forecast continues to run on a separate set of processes. This value can usually be set to 1 but may need to be increased for grids with more grid points. 
+* ``WRTCMP_write_tasks_per_group:`` The number of MPI processes per group. For the Gulf Coast Blizzard case, this can be set to 5, but it may need to be increased for larger grids with more grid points (larger domain or higher resolution). 
+* ``WRTCMP_output_grid:`` The type of write-component grid. This can generally be set to ``"lambert_conformal"``. 
+* ``WRTCMP_stdlat1`` and ``WRTCMP_stdlat2``: The first and second standard latitudes associated with a Lambert conformal coordinate system. For simplicity, use the latitude of the center of the ESGgrid for both. Using off-center standard latitude values will skew the write-component grid to the east or west, somewhat similar to ``ESGgrid_PAZI``.
 * ``WRTCMP_nx`` and ``WRTCMP_ny``: To ensure that the write-component grid lies completely within the ESG grid, set these to ~95% of ``ESGgrid_NX`` and ``ESGgrid_NY``, respectively. 
 
+Then, calculate the values of ``WRTCMP_lon_lwr_left`` and ``WRTCMP_lat_lwr_left``. According to the `DTC guidance <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_, "approximate values (from a linearization that is more accurate the smaller the horizontal extent of the grid) for these quantities can be obtained using the formulas (for reference)":
 
-Calculate:
+:math:`WRTCMP\_lon\_lwr\_left = WRTCMP\_cen\_lon - (degs\_per\_meter/(2*cos\_phi\_ctr))*WRTCMP\_nx*WRTCMP\_dx`
+:math:`WRTCMP\_lat\_lwr\_left = WRTCMP\_cen\_lat - (degs\_per\_meter/2)*WRTCMP\_ny*WRTCMP\_dy`
+
+where: 
+
+   * :math:`pi\_geom ≈ 3.14`
+   * :math:`radius\_Earth ≈ 6371000m`
+   * :math:`cos\_phi\_ctr = cos((180/pi\_geom)*WRTCMP\_lat\_lwr\_left)`
+   * :math:`degs\_per\_meter = 180/(pi\_geom*radius\_Earth)`
+
+For the NOLA grid, this comes out to:
 
 * ``WRTCMP_lon_lwr_left:`` -93.59904184257404
 * ``WRTCMP_lat_lwr_left:`` 27.29340465451015
+
+
 
 
 The quilting parameters are used to remap output fields from the native ESG grid onto the write-component grid and then write the remapped grids to a file using a dedicated set of MPI processes.
