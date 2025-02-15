@@ -771,7 +771,7 @@ The following parameters must be set if using the "ESGgrid" method to generate a
    A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell-wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that users eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
 
 ``ESGgrid_PAZI``: (Default: "")
-   The rotational parameter for the "ESGgrid" (in degrees).
+   The rotational parameter for the "ESGgrid" (in degrees). It represents the rotation of the grid from true north. 
 
 GFDLgrid Settings
 ---------------------
@@ -2073,7 +2073,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 
 
 Smoke and Dust Configuration Parameters
-=====================================
+========================================
 
 Non-default parameters for Smoke and Dust tasks are set in the ``smoke_dust_parm:`` section of the ``config.yaml`` file.
 
