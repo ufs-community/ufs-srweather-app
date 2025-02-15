@@ -390,7 +390,7 @@ The last line is primarily needed for the MacOS platforms.
 Install ``uwtools``
 ^^^^^^^^^^^^^^^^^^^^
 
-The :uw:`UW Tools documentation <https://uwtools.readthedocs.io/en/stable/sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. 
+The :uw:`UW Tools documentation <sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. 
 
 For convenience, a suggested procedure is included below for users who do not have ``uwtools`` or ``conda`` installed. However, in the event of problems, refer to the UW Tools documentation and forums. 
 
