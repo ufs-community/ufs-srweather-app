@@ -83,10 +83,11 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
+    exptdir = expt_config["workflow"]["EXPTDIR"]
     wflow_xml_fn = expt_config["workflow"]["WFLOW_XML_FN"]
-    wflow_xml_fp = Path(expt_config["workflow"]["EXPTDIR"],wflow_xml_fn)
+    wflow_xml_fp = Path(exptdir, wflow_xml_fn)
 
-    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
+    if (wflow_manager := expt_config["platform"]["WORKFLOW_MANAGER"]) == "rocoto":
 
         log_info(
             f"""
@@ -106,7 +107,6 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    exptdir = expt_config["workflow"]["EXPTDIR"]
     wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
     wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
     log_info(
@@ -149,44 +149,43 @@ def generate_FV3LAM_wflow(
     # TODO: Reference all these variables in their respective
     # dictionaries, instead.
     import_vars(dictionary=flatten_dict(expt_config))
-    export_vars(source_dict=flatten_dict(expt_config))
-
-    # pylint: disable=undefined-variable
-    if USE_CRON_TO_RELAUNCH:
+    workflow_config = expt_config["workflow"]
+    if workflow_config["USE_CRON_TO_RELAUNCH"]:
         add_crontab_line(called_from_cron=False,machine=expt_config["user"]["MACHINE"],
-                         crontab_line=expt_config["workflow"]["CRONTAB_LINE"],
+                         crontab_line=workflow_config["CRONTAB_LINE"],
                          exptdir=exptdir,debug=debug)
 
     #
     # Copy or symlink fix files
     #
-    if SYMLINK_FIX_FILES:
+    platform_config = expt_config["platform"]
+    fixgsm = platform_config["FIXgsm"]
+    fixam = workflow_config["FIXam"]
+    fixgsm_files_to_copy_to_fixam = expt_config["fixed_files"]["FIXgsm_FILES_TO_COPY_TO_FIXam"]
+    if symlink_fix_files := workflow_config["SYMLINK_FIX_FILES"]:
         log_info(
             f"""
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = '{FIXgsm}'
-              FIXam = '{FIXam}'""",
+              FIXgsm = '{fixgsm}'
+              FIXam = '{fixam}'""",
             verbose=debug,
         )
 
-        Path(FIXam).symlink_to(FIXgsm, target_is_directory=True)
+        Path(fixam).symlink_to(fixgsm, target_is_directory=True)
     else:
 
         log_info(
             f"""
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = '{FIXgsm}'
-              FIXam = '{FIXam}'""",
+              FIXgsm = '{fixgsm}'
+              FIXam = '{fixam}'""",
             verbose=debug,
         )
 
-        check_for_preexist_dir_file(FIXam, "delete")
-        Path(FIXam, "fix_co2_proj").mkdir(parents=True, exist_ok=True)
-
-        num_files = len(FIXgsm_FILES_TO_COPY_TO_FIXam)
-        for i in range(num_files):
-            fn = f"{FIXgsm_FILES_TO_COPY_TO_FIXam[i]}"
-            shutil.copy(Path(FIXgsm, fn), Path(FIXam, fn))
+        check_for_preexist_dir_file(fixam, "delete")
+        Path(fixam, "fix_co2_proj").mkdir(parents=True, exist_ok=True)
+        for fixfile in fixgsm_files_to_copy_to_fixam:
+            shutil.copy(Path(fixgsm, fixfile), Path(fixam, fixfile))
     #
     # -----------------------------------------------------------------------
     #
@@ -194,26 +193,29 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    if USE_MERRA_CLIMO:
+    if expt_config["task_run_fcst"]["envvars"]["USE_MERRA_CLIMO"]:
+        fixaer = platform_config["FIXaer"]
+        fixlut = platform_config["FIXlut"]
+        fixclim = workflow_config["FIXclim"]
         log_info(
             f"""
             Copying MERRA2 aerosol climatology data files from system directory
             (FIXaer/FIXlut) to a subdirectory (FIXclim) in the experiment directory:
-              FIXaer = '{FIXaer}'
-              FIXlut = '{FIXlut}'
-              FIXclim = '{FIXclim}'""",
+              FIXaer = '{fixaer}'
+              FIXlut = '{fixlut}'
+              FIXclim = '{fixclim}'""",
             verbose=debug,
         )
 
-        check_for_preexist_dir_file(FIXclim, "delete")
-        fixclim = Path(FIXclim)
+        check_for_preexist_dir_file(fixclim, "delete")
+        fixclim = Path(fixclim)
         fixclim.mkdir(parents=True, exist_ok=True)
 
-        merra_files = glob(Path(FIXaer, "merra2.aerclim*.nc").as_posix())
-        optics_files = glob(Path(FIXlut, "optics*.dat").as_posix())
+        merra_files = glob(Path(fixaer, "merra2.aerclim*.nc").as_posix())
+        optics_files = glob(Path(fixlut, "optics*.dat").as_posix())
         for fpath in merra_files + optics_files:
             path = Path(fpath)
-            if SYMLINK_FIX_FILES:
+            if symlink_fix_files:
                 (fixclim / path.name).symlink_to(path)
             else:
                 shutil.copy(path, fixclim / path.name)
@@ -235,14 +237,14 @@ def generate_FV3LAM_wflow(
         Copying the template data table file to the experiment directory...""",
         verbose=debug,
     )
-    shutil.copy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
+    shutil.copy(workflow_config["DATA_TABLE_TMPL_FP"], workflow_config["DATA_TABLE_FP"])
 
     log_info(
         """
         Copying the template field table file to the experiment directory...""",
         verbose=debug,
     )
-    shutil.copy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
+    shutil.copy(workflow_config["FIELD_TABLE_TMPL_FP"], workflow_config["FIELD_TABLE_FP"])
 
     #
     # Copy the CCPP physics suite definition file from its location in the
@@ -255,7 +257,7 @@ def generate_FV3LAM_wflow(
         the forecast model directory structure to the experiment directory...""",
         verbose=debug,
     )
-    shutil.copy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
+    shutil.copy(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"], workflow_config["CCPP_PHYS_SUITE_FP"])
     #
     # Copy the field dictionary file from its location in the
     # clone of the FV3 code repository to the experiment directory (EXPT-
@@ -268,7 +270,7 @@ def generate_FV3LAM_wflow(
         directory...""",
         verbose=debug,
     )
-    shutil.copy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
+    shutil.copy(workflow_config["FIELD_DICT_IN_UWM_FP"], workflow_config["FIELD_DICT_FP"])
     #
     # -----------------------------------------------------------------------
     #
@@ -276,10 +278,11 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
+    fv3_nml_fp = workflow_config["FV3_NML_FP"]
     log_info(
         f"""
         Setting parameters in weather model's namelist file (FV3_NML_FP):
-        FV3_NML_FP = '{FV3_NML_FP}'""",
+        FV3_NML_FP = '{fv3_nml_fp}'""",
         verbose=debug,
     )
     #
@@ -288,18 +291,13 @@ def generate_FV3LAM_wflow(
     # the number of cell vertices in the x and y directions on the regional
     # grid.
     #
-    npx = NX + 1
-    npy = NY + 1
-    #
-    # Set npz, which is just LEVP minus 1.
-    npz = LEVP - 1
     #
     # For the physics suites that use RUC LSM, set the parameter kice to 9,
     # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
     #
     kice = None
-    if SDF_USES_RUC_LSM:
+    if sdf_uses_ruc_lsm := workflow_config["SDF_USES_RUC_LSM"]:
         kice = 9
     #
     # Set lsoil, which is the number of input soil levels provided in the
@@ -316,9 +314,11 @@ def generate_FV3LAM_wflow(
     # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
     #
     lsoil = 4
-    if EXTRN_MDL_NAME_ICS in ("HRRR", "RAP") and SDF_USES_RUC_LSM:
+    if expt_config["task_get_extrn_ics"]["envvars"]["EXTRN_MDL_NAME_ICS"] in ("HRRR", "RAP") \
+        and sdf_uses_ruc_lsm:
         lsoil = 9
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
+    ccpp_phys_suite = workflow_config["CCPP_PHYS_SUITE"]
+    if ccpp_phys_suite == "FV3_GFS_v15_thompson_mynn_lam3km":
         lsoil = ""
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -340,15 +340,15 @@ def generate_FV3LAM_wflow(
     #
     settings = {}
     settings["atmos_model_nml"] = {
-        "blocksize": BLOCKSIZE,
-        "ccpp_suite": CCPP_PHYS_SUITE,
+        "blocksize": expt_config["task_run_fcst"]["BLOCKSIZE"],
+        "ccpp_suite": ccpp_phys_suite,
     }
 
     fv_core_nml_dict = {}
     fv_core_nml_dict.update({
-        "target_lon": LON_CTR,
-        "target_lat": LAT_CTR,
-        "nrows_blend": HALO_BLEND,
+        "target_lon": expt_config["grid_params"]["LON_CTR"],
+        "target_lat": expt_config["grid_params"]["LAT_CTR"],
+        "nrows_blend": expt_config["global"]["HALO_BLEND"],
         #
         # Question:
         # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
@@ -357,15 +357,17 @@ def generate_FV3LAM_wflow(
         # to something like 0.9999, but is it ok to set it to that here in the
         # FV3 namelist file?
         #
-        "stretch_fac": STRETCH_FAC,
-        "npx": npx,
-        "npy": npy,
-        "layout": [LAYOUT_X, LAYOUT_Y],
-        "bc_update_interval": LBC_SPEC_INTVL_HRS,
-        "npz": npz,
+        "stretch_fac": expt_config["grid_params"]["STRETCH_FAC"],
+        "npx": expt_config["grid_params"]["NX"] + 1,
+        "npy": expt_config["grid_params"]["NY"] + 1,
+        "layout": [expt_config["task_run_fcst"]["LAYOUT_X"],
+            expt_config["task_run_fcst"]["LAYOUT_Y"]],
+        "bc_update_interval": expt_config["task_get_extrn_lbcs"]["envvars"]["LBC_SPEC_INTVL_HRS"],
+        "npz": expt_config["task_make_lbcs"]["LEVP"] - 1,
     })
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
-        if CPL_AQM:
+    cpl_aqm = expt_config["cpl_aqm_parm"]["CPL_AQM"]
+    if ccpp_phys_suite == "FV3_GFS_v15p2":
+        if cpl_aqm:
             fv_core_nml_dict.update({
                 "dnats": 5
             })
@@ -373,8 +375,8 @@ def generate_FV3LAM_wflow(
             fv_core_nml_dict.update({
                 "dnats": 1
             })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":
-        if CPL_AQM:
+    elif ccpp_phys_suite == "FV3_GFS_v16":
+        if cpl_aqm:
             fv_core_nml_dict.update({
                 "hord_tr": 8,
                 "dnats": 5,
@@ -384,8 +386,8 @@ def generate_FV3LAM_wflow(
             fv_core_nml_dict.update({
                 "dnats": 1
             })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v17_p8":
-        if CPL_AQM:
+    elif ccpp_phys_suite == "FV3_GFS_v17_p8":
+        if cpl_aqm:
             fv_core_nml_dict.update({
                 "dnats": 4
             })
@@ -400,16 +402,16 @@ def generate_FV3LAM_wflow(
     gfs_physics_nml_dict.update({
         "kice": kice or None,
         "lsoil": lsoil or None,
-        "print_diff_pgr": PRINT_DIFF_PGR,
+        "print_diff_pgr": expt_config["global"]["PRINT_DIFF_PGR"],
     })
 
-    if DO_SMOKE_DUST:
+    if expt_config["smoke_dust_parm"]["DO_SMOKE_DUST"]:
         gfs_physics_nml_dict.update({
-            "ebb_dcycle": EBB_DCYCLE,
+            "ebb_dcycle": expt_config["smoke_dust_parm"]["EBB_DCYCLE"],
             "rrfs_sd": True,
     })
 
-    if CPL_AQM:
+    if cpl_aqm:
         gfs_physics_nml_dict.update({
             "cplaqm": True,
             "cplocn2atm": False,
@@ -444,14 +446,14 @@ def generate_FV3LAM_wflow(
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        with open(FIELD_TABLE_FP, "a+", encoding='UTF-8') as file:
+        with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding='UTF-8') as file:
             file.write(field_table_append)
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
     # Update levp in external_ic_nml; this should be the only variable that needs changing
 
-    settings["external_ic_nml"] = {"levp": LEVP}
+    settings["external_ic_nml"] = {"levp": expt_config['task_make_lbcs']['LEVP']}
 
     #
     # Add to "settings" the values of those namelist variables that specify
@@ -463,29 +465,29 @@ def generate_FV3LAM_wflow(
     # in the FIXam directory.  Here, we loop through this array and process
     # each element to construct each line of "settings".
     #
-    dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
-    if DO_ENSEMBLE:
+    dummy_run_dir = os.path.join(exptdir, "any_cyc")
+    if expt_config["global"]["DO_ENSEMBLE"]:
         dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
 
     regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-    num_nml_vars = len(FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING)
+    mapping = expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]
+    num_nml_vars = len(mapping)
     namsfc_dict = {}
     for i in range(num_nml_vars):
 
-        mapping = f"{FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[i]}"
-        tup = find_pattern_in_str(regex_search, mapping)
+        tup = find_pattern_in_str(regex_search, mapping[i])
         nml_var_name = tup[0]
         FIXam_fn = tup[1]
 
         fp = '""'
         if FIXam_fn:
-            fp = os.path.join(FIXam, FIXam_fn)
+            fp = os.path.join(fixam, FIXam_fn)
             #
             # If not in NCO mode, for portability and brevity, change fp so that it
             # is a relative path (relative to any cycle directory immediately under
             # the experiment directory).
             #
-            if RUN_ENVIR != "nco":
+            if expt_config["user"]["RUN_ENVIR"] != "nco":
                 fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant
@@ -500,7 +502,7 @@ def generate_FV3LAM_wflow(
     #
     # Use netCDF4 when running the North American 3-km domain due to file size.
     #
-    if PREDEF_GRID_NAME == "RRFS_NA_3km":
+    if workflow_config["PREDEF_GRID_NAME"] == "RRFS_NA_3km":
         settings["fms2_io_nml"] = {"netcdf_default_format": "netcdf4"}
 
     settings_str = cfg_to_yaml_str(settings)
@@ -520,9 +522,9 @@ def generate_FV3LAM_wflow(
     # -----------------------------------------------------------------------
     #
 
-    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
-    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
-    base_namelist.update_from(physics_cfg[CCPP_PHYS_SUITE])
+    physics_cfg = get_yaml_config(workflow_config["FV3_NML_YAML_CONFIG_FP"])
+    base_namelist = get_nml_config(workflow_config["FV3_NML_BASE_SUITE_FP"])
+    base_namelist.update_from(physics_cfg[ccpp_phys_suite])
     base_namelist.update_from(settings)
     for sect, values in base_namelist.copy().items():
         if not values:
@@ -531,7 +533,7 @@ def generate_FV3LAM_wflow(
         for k, v in values.copy().items():
             if v is None:
                 del base_namelist[sect][k]
-    base_namelist.dump(Path(FV3_NML_FP))
+    base_namelist.dump(Path(fv3_nml_fp))
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -558,6 +560,9 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
+
+    export_vars(source_dict=expt_config["global"])
+    # pylint: disable=undefined-variable
     settings = {}
     settings["gfs_physics_nml"] = {
         "do_shum": DO_SHUM,
@@ -661,12 +666,13 @@ def generate_FV3LAM_wflow(
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
         realize(
-            input_config=FV3_NML_FP,
+            input_config=fv3_nml_fp,
             input_format="nml",
-            output_file=FV3_NML_STOCH_FP,
+            output_file=worklflow_config["FV3_NML_STOCH_FP"],
             output_format="nml",
             update_config=get_nml_config(settings),
             )
+    # pylint: enable=undefined-variable
     #
     #-----------------------------------------------------------------------
     #
@@ -735,7 +741,7 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    shutil.copy(os.path.join(ushdir, config), EXPTDIR)
+    shutil.copy(os.path.join(ushdir, config), exptdir)
 
     #
     # -----------------------------------------------------------------------
@@ -747,18 +753,19 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    if WORKFLOW_MANAGER == "rocoto":
-        wflow_db_fn = f"{os.path.splitext(WFLOW_XML_FN)[0]}.db"
-        rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
-        rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
+    if wflow_manager == "rocoto":
+        wflow_db_fn = f"{os.path.splitext(wflow_xml_fn)[0]}.db"
+        rocotorun_cmd = f"rocotorun -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
+        rocotostat_cmd = f"rocotostat -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
 
+        cron_relaunch_intvl_mnts = workflow_config["CRON_RELAUNCH_INTVL_MNTS"]
         # pylint: disable=line-too-long
         log_info(
             f"""
             To launch the workflow, change location to the experiment directory
             (EXPTDIR) and issue the rocotrun command, as follows:
 
-              > cd {EXPTDIR}
+              > cd {exptdir}
               > {rocotorun_cmd}
 
             To check on the status of the workflow, issue the rocotostat command
@@ -776,20 +783,20 @@ def generate_FV3LAM_wflow(
                the rocotorun command must be issued immediately before issuing the
                rocotostat command.
 
-            For automatic resubmission of the workflow (say every {CRON_RELAUNCH_INTVL_MNTS} minutes), the
+            For automatic resubmission of the workflow (say every {cron_relaunch_intvl_mnts} minutes), the
             following line can be added to the user's crontab (use 'crontab -e' to
             edit the cron table):
 
-            */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+            */{cron_relaunch_intvl_mnts} * * * * cd {exptdir} && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
             """
         )
         # pylint: enable=line-too-long
 
     # If we got to this point everything was successful: move the log
     # file to the experiment directory.
-    shutil.move(logfile, EXPTDIR)
+    shutil.move(logfile, exptdir)
 
-    return EXPTDIR
+    return exptdir
 
 
 def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
@@ -873,7 +880,7 @@ if __name__ == "__main__":
 
             Experiment generation completed.  The experiment directory is:
 
-              EXPTDIR='{EXPTDIR}'
+              EXPTDIR='{expt_dir}'
 
         ========================================================================
         """

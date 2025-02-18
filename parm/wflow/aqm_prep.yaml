@@ -25,7 +25,6 @@ default_aqm_task: &default_aqm
     subcyc:
       cyclestr:
         value:  "@M"
-    nprocs: !int '{{ parent.nnodes * parent.ppn }}'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
@@ -72,12 +71,12 @@ metatask_nexus_emission:
     join:
       cyclestr:
         value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nodes: '{{ task_nexus_emission.NNODES_NEXUS_EMISSION }}:ppn={{ task_nexus_emission.PPN_NEXUS_EMISSION }}'
-    walltime: '{{ task_nexus_emission.WALLTIME_NEXUS_EMISSION }}'
+    nodes: '{{ task_nexus_emission.execution.batchargs.nodes }}:ppn={{ task_nexus_emission.execution.batchargs.tasks_per_node }}'
+    walltime: '{{ task_nexus_emission.execution.batchargs.walltime }}'
     envars:
       <<: *default_vars
       nspt: "#nspt#"
-      nprocs: '{{ task_nexus_emission.NNODES_NEXUS_EMISSION * task_nexus_emission.PPN_NEXUS_EMISSION }}'
+      nprocs: '{{ task_nexus_emission.execution.batchargs.nodes * task_nexus_emission.execution.batchargs.tasks_per_node }}'
     dependency:
       taskdep:
         attrs:
@@ -219,10 +218,11 @@ task_aqm_lbcs:
   join:
     cyclestr:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  walltime: '{{ task_aqm_lbcs.execution.batchargs.walltime }}'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_aqm_lbcs.execution.batchargs.nodes * task_aqm_lbcs.execution.batchargs.cores }}'
-  nodes: '{{ task_aqm_lbcs.execution.batchargs.nodes }}:ppn={{ task_aqm_lbcs.execution.batchargs.cores }}'
+    nprocs: '{{ task_aqm_lbcs.execution.batchargs.nodes * task_aqm_lbcs.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_aqm_lbcs.execution.batchargs.nodes }}:ppn={{ task_aqm_lbcs.execution.batchargs.tasks_per_node }}'
   dependency:
     taskdep:
       attrs:

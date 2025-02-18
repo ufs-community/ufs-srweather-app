@@ -19,7 +19,7 @@ sections=(
   constants
   fixed_files
   grid_params
-  task_bias_correction_o3
+  task_bias_correction_o3.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

@@ -2213,58 +2213,81 @@ task_nexus_emission:
   # OMP_STACKSIZE_NEXUS_EMISSION: 
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
-  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
-  NNODES_NEXUS_EMISSION: 4
-  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
-  OMP_NUM_THREADS_NEXUS_EMISSION: 2
-  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+  execution:
+    batchargs:
+      memory: 2G
+      nodes: 4
+      tasks_per_node: !int '{{ platform.NCORES_PER_NODE // task_nexus_emission.envvars.OMP_NUM_THREADS_NEXUS_EMISSION }}'
+      walltime: 01:00:00
+    threads: !int '{{ task_nexus_emission.envvars.OMP_NUM_THREADS_NEXUS_EMISSON }}'
+  envvars:
+    KMP_AFFINITY_NEXUS_EMISSION: "scatter"
+    OMP_NUM_THREADS_NEXUS_EMISSION: 2
+    OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
 
 #-----------------------------
 # POINT_SOURCE config parameters
 #-----------------------------
 task_point_source:
-  #-------------------------------------------------------------------------------
-  # PT_SRC_SUBDIR:
-  # Sub-directory structure of point source data under FIXemis.
-  # Full path: FIXemis/PT_SRC_SUBDIR
-  #-------------------------------------------------------------------------------
-  PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"  
+  execution:
+    batchargs:
+      cores: 1
+      walltime: 00:30:00
+  envvars:
+    #-------------------------------------------------------------------------------
+    # PT_SRC_SUBDIR:
+    # Sub-directory structure of point source data under FIXemis.
+    # Full path: FIXemis/PT_SRC_SUBDIR
+    #-------------------------------------------------------------------------------
+    PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"  
 
 #----------------------------
 # BIAS_CORRECTION_O3 config parameters
 #-----------------------------
 task_bias_correction_o3:
-  #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_O3: 
-  # Intel Thread Affinity Interface for the bias_correction_o3 task. 
-  # 
-  # OMP_NUM_THREADS_BIAS_CORRECTION_O3: 
-  # The number of OpenMP threads to use for parallel regions.
-  # 
-  # OMP_STACKSIZE_BIAS_CORRECTION_O3: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
-  #-------------------------------------------------------------------------------
-  KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
-  OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
-  OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
+  execution:
+    batchargs:
+      cores: 1
+      memory: 120G
+      walltime: 00:30:00
+  envvars:
+    #-------------------------------------------------------------------------------
+    # KMP_AFFINITY_BIAS_CORRECTION_O3: 
+    # Intel Thread Affinity Interface for the bias_correction_o3 task. 
+    # 
+    # OMP_NUM_THREADS_BIAS_CORRECTION_O3: 
+    # The number of OpenMP threads to use for parallel regions.
+    # 
+    # OMP_STACKSIZE_BIAS_CORRECTION_O3: 
+    # Controls the size of the stack for threads created by the OpenMP implementation.
+    #-------------------------------------------------------------------------------
+    KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
+    OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
+    OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
 
 #----------------------------
 # BIAS_CORRECTION_PM25 config parameters
 #-----------------------------
 task_bias_correction_pm25:
-  #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_PM25: 
-  # Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
-  # 
-  # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 
-  # The number of OpenMP threads to use for parallel regions.
-  # 
-  # OMP_STACKSIZE_BIAS_CORRECTION_PM25: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
-  #-------------------------------------------------------------------------------
-  KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
-  OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
-  OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
+  execution:
+    batchargs:
+      cores: 1
+      memory: 120G
+      walltime: 00:30:00
+  envvars:
+    #-------------------------------------------------------------------------------
+    # KMP_AFFINITY_BIAS_CORRECTION_PM25: 
+    # Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
+    # 
+    # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 
+    # The number of OpenMP threads to use for parallel regions.
+    # 
+    # OMP_STACKSIZE_BIAS_CORRECTION_PM25: 
+    # Controls the size of the stack for threads created by the OpenMP implementation.
+    #-------------------------------------------------------------------------------
+    KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
+    OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
+    OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
 # global config parameters
@@ -2953,77 +2976,75 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
 # AQM Task Resources
+task_pre_post_stat:
+  execution:
+    batchargs:
+      cores: 1
+      walltime: 00:30:00
 task_post_stat_o3:
   execution:
     batchargs:
-      tasks_per_node: 
-      nodes:
-      walltime:
+      cores: 1
+      memory: 120G
+      walltime: 00:30:00
 task_post_stat_pm25:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
-task_bias_correction_o3:
-  execution:
-    batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
-task_bias_correction_pm25:
-  execution:
-    batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
+      cores: 1
+      memory: 120G
+      walltime: 00:30:00
 task_nexus_gfs_sfc:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
-task_nexus_emission:
-  execution:
-    batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
+      cores: 1
+      memory: 2G
+      walltime: 00:30:00
 task_nexus_post_split:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
-task_point_source:
+      cores: 1
+      walltime: 00:30:00
+task_fire_emission:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
+      cores: 1
+      memory: 2G
+      walltime: 00:30:00
 task_aqm_ics_ext:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
+      cores: 1
+      memory: 64G
+      walltime: 00:30:00
 task_aqm_ics:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
+      cores: 1
+      memory: 64G
+      walltime: 00:30:00
 task_aqm_lbcs:
   execution:
     batchargs:
-      tasks_per_node:
-      nodes:
-      walltime:
+      nodes: 1
+      tasks_per_node: 24
+      walltime: 00:30:00
 
 
 #------------------------------
 # Smoke/Dust config parameters
 #------------------------------
+task_smoke_dust:
+  execution:
+    batchargs:
+      cores: 1
+      memory: 120G
+      walltime: 00:30:00
+task_prepstart:
+  execution:
+    batchargs:
+      cores: 1
+      memory: 120G
+      walltime: 00:30:00
 smoke_dust_parm:
   #
   #-----------------------------------------------------------------------

@@ -19,7 +19,7 @@ sections=(
   constants
   fixed_files
   grid_params
-  task_nexus_emission
+  task_nexus_emission.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
