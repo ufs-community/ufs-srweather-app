@@ -1151,9 +1151,9 @@ task_make_grid:
   envvars:
     # This section is a placeholder and will be removed with make_grid
     # integration
-    GFDLgrid_NUM_CELLS: !int "{{ task_make_grid.GFDLgrid_NUM_CELLS // 1 }}"
+    GFDLgrid_NUM_CELLS: "{{ task_make_grid.GFDLgrid_NUM_CELLS // 1 }}"
     GFDLgrid_USE_NUM_CELLS_IN_FILENAMES: !bool "{{ task_make_grid.GFDLgrid_USE_NUM_CELLS_IN_FILENAMES }}"
-    GFDLgrid_REFINE_RATIO: !float "{{ task_make_grid.GFDLgrid_REFINE_RATIO / 1.0 }}"
+    GFDLgrid_REFINE_RATIO: "{{ task_make_grid.GFDLgrid_REFINE_RATIO / 1.0 }}"
     #
     #-----------------------------------------------------------------------
     #

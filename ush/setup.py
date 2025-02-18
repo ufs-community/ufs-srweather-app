@@ -79,7 +79,7 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
 
     # Check user config against experiment schema
     schema = ushdir / "user.jsonschema"
-    valid = validate(schema_file=schema, config=user_config)
+    valid = validate(schema_file=schema, config_data=user_config)
 
     if not valid:
         logging.error("User configuration is not valid against schema")
@@ -152,12 +152,13 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
         context={
             "today": datetime.date.today(),
             "timedelta": datetime.timedelta,
+            **default_config,
             }
         )
 
     # Validate experiment config against schema
     schema = ushdir / "experiment.jsonschema"
-    valid = validate(schema_file=schema, config=default_config)
+    valid = validate(schema_file=schema, config_data=default_config)
 
     if not valid:
         logging.error("Experiment configuration is not valid against schema")
@@ -1689,7 +1690,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # Validate experiment config against schema
     schema = Path(ushdir) / "experiment.jsonschema"
-    valid = validate(schema_file=schema, config=var_defns_cfg)
+    valid = validate(schema_file=schema, config_data=var_defns_cfg)
 
     if not valid:
         logging.error("Experiment configuration is not valid against schema")

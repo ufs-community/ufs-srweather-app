@@ -131,6 +131,8 @@ metatask_PcpCombine_APCP_all_accums_obs_CCPA:
         # Check that the flag files that indicate that the get_obs_ccpa tasks
         # are complete are all present before launching any PcpCombine task.
         sh_ccpa_obs_available:
+          attrs:
+            shell: /bin/bash
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_ccpa_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
             awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[-1] }} '($NF >= s && $NF <= e)' |
@@ -162,6 +164,8 @@ metatask_PcpCombine_ASNOW_all_accums_obs_NOHRSC:
         # Check that the flag files that indicate that the get_obs_nohrsc tasks
         # are complete are all present before launching any PcpCombine task.
         sh_nohrsc_obs_available:
+          attrs:
+            shell: /bin/bash
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_nohrsc_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
             awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_CUMUL[-1] }} '($NF >= s && $NF <= e)' |

@@ -132,6 +132,8 @@ metatask_GenEnsProd_EnsembleStat_REFC_RETOP:
     dependency:
       and:
         sh_mrms_obs_available: &all_get_obs_mrms_complete
+          attrs:
+            shell: /bin/bash
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "get_obs_mrms_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
             awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
@@ -170,6 +172,8 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
         # Check that the flag files that indicate that the Pb2NC tasks
         # are complete are all present before launching any PcpCombine task.
         sh_pb2nc_ndas_complete: &all_pb2nc_obs_ndas_complete
+          attrs:
+            shell: /bin/bash
           command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "run_met_pb2nc_obs_ndas_*_complete.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
             awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
