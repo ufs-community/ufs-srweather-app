@@ -321,7 +321,7 @@ def get_obs(config, obtype, yyyymmdd_task):
     containing a single text file that contains all of the day's observations.
 
     AIRNOW Air Quality Particulate Matter (PM25, PM10) observations:
-    -------------------------------------------------------------
+    ----------------------------------------------------------------
     For AIRNOW, the archive interval is 24 hours. There is one archive per day
     containing one text file per hour that contains all the observation for that
     hour.
