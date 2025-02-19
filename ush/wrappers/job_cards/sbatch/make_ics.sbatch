@@ -33,9 +33,5 @@ $USHdir/load_modules_run_task.sh "make_ics" $JOBSdir/JREGIONAL_MAKE_ICS
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 #export nprocs='48'
 
-# Jet     differences:
-##SBATCH --partition=sjet,vjet,kjet,xjet
-#export nprocs='48'
-
 # Orion   differences:
 ##SBATCH --partition=orion

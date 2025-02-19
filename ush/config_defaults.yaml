@@ -1419,7 +1419,7 @@ task_get_extrn_ics:
   #
   # EXTRN_MDL_SYSBASEDIR_ICS:
   # A known location of a real data stream on a given platform. This is typically 
-  # a real-time data stream as on Hera, Jet, or WCOSS. External model files 
+  # a real-time data stream as on Hera or WCOSS. External model files 
   # for generating ICs on the native grid should be accessible via this data stream. 
   # The way the full path containing these files is constructed depends on the 
   # user-specified external model for ICs, i.e. EXTRN_MDL_NAME_ICS.
