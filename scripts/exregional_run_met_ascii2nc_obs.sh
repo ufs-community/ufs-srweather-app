@@ -107,19 +107,7 @@ if [ "${OBTYPE}" = "AERONET" ]; then
 elif [ "${OBTYPE}" = "AIRNOW" ]; then
   OBS_INPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATES[1]}
   OUTPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT}
-  if [ -z "${AIRNOW_INPUT_FORMAT}" ]; then
-    if [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}" == *"HourlyData"* ]]; then
-      ASCII2NC_INPUT_FORMAT=airnowhourly
-    elif [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}" == *"HourlyAQObs"* ]]; then
-      ASCII2NC_INPUT_FORMAT=airnowhourlyaqobs
-    else
-      print_err_msg_exit "Could not automatically determine format of Airnow observations;\
-check your filenames (OBS_AIRNOW_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE})
-or manually set variable AIRNOW_INPUT_FORMAT"
-    fi
-  else
-    ASCII2NC_INPUT_FORMAT=${AIRNOW_INPUT_FORMAT}
-  fi
+  ASCII2NC_INPUT_FORMAT=${AIRNOW_INPUT_FORMAT}
 else
   print_err_msg_exit "\nNo filename template set for OBTYPE \"${OBTYPE}\"!"
 fi

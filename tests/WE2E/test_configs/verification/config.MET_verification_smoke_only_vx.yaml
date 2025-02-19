@@ -8,7 +8,7 @@ workflow:
   CCPP_PHYS_SUITE: FV3_RAP
   DATE_FIRST_CYCL: '2024011100'
   DATE_LAST_CYCL: '2024011100'
-  FCST_LEN_HRS: 24
+  FCST_LEN_HRS: 18
   PREEXISTING_DIR_METHOD: rename
 rocoto:
   tasks:
@@ -22,14 +22,6 @@ verification:
   VX_FCST_INPUT_BASEDIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/RRFS
   FCST_SUBDIR_TEMPLATE: ''
   FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
-  # Because these files are retrieved from HPSS and not AWS, they have slightly different filenames
-  OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
-  AIRNOW_INPUT_FORMAT: airnowhourlyaqobs
-#  CCPA_OBS_DIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/staged_case/CCPA_obs
-#  MRMS_OBS_DIR:  /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/staged_case/MRMS_obs
-#  NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/ndas'
-#  AERONET_OBS_DIR: '{{ workflow.EXPTDIR }}/aeronet'
-#  AIRNOW_OBS_DIR: '{{ workflow.EXPTDIR }}/airnow'
   NDAS_OBS_DIR:    /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/ndas
   AERONET_OBS_DIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/aeronet
   AIRNOW_OBS_DIR:  /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/airnow

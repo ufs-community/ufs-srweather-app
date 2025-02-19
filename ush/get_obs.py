@@ -463,8 +463,14 @@ def get_obs(config, obtype, yyyymmdd_task):
         arcv_intvl_hrs = 24
     elif obtype == 'NDAS':
         arcv_intvl_hrs = 6
-    elif obtype == 'AERONET' or obtype == 'AIRNOW':
+    elif obtype == 'AERONET':
         arcv_intvl_hrs = 24
+    elif obtype == 'AIRNOW':
+        if vx_config[f'OBS_DATA_STORE_AIRNOW'] == 'hpss':
+            arcv_intvl_hrs = 24
+        else:
+            arcv_intvl_hrs = 1
+
     arcv_intvl = dt.timedelta(hours=arcv_intvl_hrs)
 
     # Number of obs files within each archive.
@@ -729,18 +735,19 @@ def get_obs(config, obtype, yyyymmdd_task):
             # obs-day dependent) and then call the retrieve_data.py script.
             os.chdir(basedir_raw)
 
-            # Pull obs from HPSS.  This will get all the obs files in the current
-            # archive and place them in the raw archive directory.
+            # Pull obs from HPSS or AWS based on OBS_DATA_STORE* setting.
+
             #
             # Note that for the specific case of NDAS obs, this will get all 7 obs
             # files in the current archive, although we will make use of only 6 of
             # these (we will not use the tm00 file).
+
             parmdir = config['user']['PARMdir']
             args = ['--debug', \
                     '--file_set', 'obs', \
                     '--config', os.path.join(parmdir, 'data_locations.yml'), \
                     '--cycle_date', yyyymmddhh_arcv_str, \
-                    '--data_stores', 'hpss', \
+                    '--data_stores', vx_config[f'OBS_DATA_STORE_{obtype}'], \
                     '--data_type', obtype + '_obs', \
                     '--output_path', arcv_dir_raw, \
                     '--summary_file', 'retrieve_data.log']
@@ -866,8 +873,10 @@ def get_obs(config, obtype, yyyymmdd_task):
                             if os.path.isfile(badfile):
                                 shutil.move(badfile, os.path.join(arcv_dir_raw, fn_raw))
                         elif obtype == 'AIRNOW':
-                            fn_raw = f'HourlyAQObs_{yyyymmddhh_str}.dat'
-
+                            if vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourlyaqobs':
+                                fn_raw = f'HourlyAQObs_{yyyymmddhh_str}.dat'
+                            elif vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourly':
+                                fn_raw = f'HourlyData_{yyyymmddhh_str}.dat'
                         fp_raw = os.path.join(arcv_dir_raw, fn_raw)
 
                         # Special logic for AERONET pulled from http: internet archives result

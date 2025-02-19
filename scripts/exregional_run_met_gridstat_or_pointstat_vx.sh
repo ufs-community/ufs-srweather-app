@@ -212,24 +212,12 @@ elif [ "${grid_or_point}" = "point" ]; then
   elif [ "${OBTYPE}" = "AIRNOW" ]; then
     # It's very annoying that the names for specifying Airnow format are slightly different
     # for ASCII2NC and Pointstat. This logic deals with that.
-    if [ -z "${AIRNOW_INPUT_FORMAT}" ]; then
-      if [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}"  == *"HourlyData"* ]]; then
-        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY"
-      elif [[ "${OBS_AIRNOW_FN_TEMPLATES[1]}" == *"HourlyAQObs"* ]]; then
-        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
-      else
-        print_err_msg_exit "Invalid AIRNOW_INPUT_FORMAT=${AIRNOW_INPUT_FORMAT}"
-      fi
+    if [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourly" ]]; then
+      FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY"
+    elif [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourlyaqobs" ]]; then
+      FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
     else
-      if [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourly" ]]; then
-        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY"
-      elif [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourlyaqobs" ]]; then
-        FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
-      else
-        print_err_msg_exit "Could not automatically determine format of Airnow observations;\
-check your filenames (OBS_AIRNOW_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE})
-or manually set variable AIRNOW_INPUT_FORMAT"
-      fi
+      print_err_msg_exit "Invalid AIRNOW_INPUT_FORMAT: ${AIRNOW_INPUT_FORMAT}"
     fi
     ACCUM_HH='01'
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
@@ -357,6 +345,7 @@ vx_config_dict=$(<"${vx_config_fp}")
 # included in the yaml-formatted variable "settings" below.
 vx_config_dict=$( printf "%s\n" "${vx_config_dict}" | sed 's/^/    /' )
 #
+#
 #-----------------------------------------------------------------------
 #
 # Generate the METplus configuration file from its jinja template.
@@ -448,6 +437,12 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
+# Ugly hack to deal with different obs variable name (PM25 -->PM2.5) for
+# data retrieved from AWS
+if [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourly" ]]; then
+  sed -i -e 's/OBS_VAR1_NAME = PM25/OBS_VAR1_NAME = PM2.5/g' ${metplus_config_fp}
+fi
+
 #
 #-----------------------------------------------------------------------
 #

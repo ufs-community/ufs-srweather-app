@@ -2465,8 +2465,8 @@ verification:
   NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
   MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
   NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
-  AERONET_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/aeronet/proc"
-  AIRNOW_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/airnow/proc"
+  AERONET_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/aeronet"
+  AIRNOW_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/airnow"
   #
   # OBS_[CCPA|NOHRSC|MRMS|NDAS]_FN_TEMPLATES:
   # File name templates for various obs types.  These are meant to be used
@@ -2567,10 +2567,10 @@ verification:
                            'RETOP', '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2' ]
   OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
   OBS_AERONET_FN_TEMPLATES: [ 'AOD', '{valid?fmt=%Y%m%d}/{valid?fmt=%Y%m%d}.lev15' ]
-  # NOTE: for files retrieved from HPSS (see AIRNOW_DATA_STORES variable), the 
+  # NOTE: for files retrieved from AWS (see OBS_DATA_STORE variable), the
   # default value should be replaced with
-  # '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat'
-  OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat' ]
+  # '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat'
+  OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
   #
   # REMOVE_RAW_OBS_DIRS
   # Flag specifying whether to remove the "raw" observation directories
@@ -2608,18 +2608,24 @@ verification:
   OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT: 'hourly_airnow_obs_{valid?fmt=%Y%m%d%H}.nc'
   #
   # AIRNOW_INPUT_FORMAT:
-  # Observation format for ASCII Airnow observations. Valid options are AIRNOW_HOURLY_AQOBS and
-  # AIRNOW_HOURLY; for more information see the METplus users guide: 
+  # Observation format for ASCII Airnow observations. Observations retrieved from HPSS are in
+  # "airnowhourlyaqobs" format, observations retrieved from AWS are generally in "airnowhourly" format.
+  # For more information see the METplus users guide: 
   # https://met.readthedocs.io/en/latest/Users_Guide/reformat_point.html#ascii2nc-tool
-  # If not specified or set to a blank string, will attempt to determine its value based on the
-  # value of OBS_AIRNOW_FN_TEMPLATE
+
+  AIRNOW_INPUT_FORMAT: "airnowhourlyaqobs"
+
   #
-  # OBS_DATA_STORES:
+  # OBS_DATA_STORE*:
   # Location(s) to retrieve observation data from. Valid values are "aws" and/or "hpss", see
   # parm/data_locations.yaml for info on these data stores.
   # 
-  AIRNOW_INPUT_FORMAT: ""
-  OBS_DATA_STORES: aws
+  OBS_DATA_STORE_CCPA: hpss
+  OBS_DATA_STORE_NOHRSC: hpss
+  OBS_DATA_STORE_MRMS: hpss
+  OBS_DATA_STORE_NDAS: hpss
+  OBS_DATA_STORE_AERONET: hpss
+  OBS_DATA_STORE_AIRNOW: hpss
 
   #
   # OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT: 
