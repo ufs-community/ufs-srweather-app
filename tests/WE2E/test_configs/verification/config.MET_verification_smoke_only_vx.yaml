@@ -1,13 +1,13 @@
 metadata:
   description: |-
     This test checks the capability of the workflow to run verification tasks
-    for smoke data (AERONET AOD and AIRNOW PM).
+    for smoke data (AERONET AOD and AIRNOW PM). Also does SFC and NOHRSC snow verification
 user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_RAP
-  DATE_FIRST_CYCL: '2023121700'
-  DATE_LAST_CYCL: '2023121700'
+  DATE_FIRST_CYCL: '2024011100'
+  DATE_LAST_CYCL: '2024011100'
   FCST_LEN_HRS: 24
   PREEXISTING_DIR_METHOD: rename
 rocoto:
@@ -18,16 +18,19 @@ rocoto:
         walltime: 01:00:00
 verification:
   VX_FCST_MODEL_NAME: RRFS_smoke_test
-  VX_FIELD_GROUPS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "AOD", "PM25"]
-#  VX_FIELD_GROUPS: [ "AOD", "PM25", "PM10" ]
-  VX_FCST_INPUT_BASEDIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/smoke_vx/fcst
-  FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}'
-  FCST_FN_TEMPLATE: 'rrfs.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.conus_3km.grib2'
+  VX_FIELD_GROUPS: [ "SFC", "AOD", "PM25", "PM10"]
+  VX_FCST_INPUT_BASEDIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/RRFS
+  FCST_SUBDIR_TEMPLATE: ''
+  FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
+  # Because these files are retrieved from HPSS and not AWS, they have slightly different filenames
   OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
   AIRNOW_INPUT_FORMAT: airnowhourlyaqobs
-  CCPA_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/CCPA_obs
-  MRMS_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/MRMS_obs
-  NDAS_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/NDAS_obs
-  AERONET_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/AERONET_obs/
-  AIRNOW_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/rebase_june/staged_case/AIRNOW_obs/
+#  CCPA_OBS_DIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/staged_case/CCPA_obs
+#  MRMS_OBS_DIR:  /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/staged_case/MRMS_obs
+#  NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/ndas'
+#  AERONET_OBS_DIR: '{{ workflow.EXPTDIR }}/aeronet'
+#  AIRNOW_OBS_DIR: '{{ workflow.EXPTDIR }}/airnow'
+  NDAS_OBS_DIR:    /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/ndas
+  AERONET_OBS_DIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/aeronet
+  AIRNOW_OBS_DIR:  /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/airnow
 
