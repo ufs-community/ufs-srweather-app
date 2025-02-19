@@ -6,7 +6,7 @@ Usage: source etc/lmod-setup.csh PLATFORM
 
 OPTIONS:
    PLATFORM - name of machine you are building on
-      (e.g. cheyenne | hera | jet | orion | hercules | wcoss2 )
+      (e.g. cheyenne | hera | orion | hercules | wcoss2 )
 EOF_USAGE
    exit 1
 else
@@ -37,10 +37,10 @@ else if ( "$L_MACHINE" == singularity ) then
 
    module purge
 
-else if ( "$L_MACHINE" == gaea ) then
+else if ( "$L_MACHINE" == gaeac5 ) then
    module reset
 
-else if ( "$L_MACHINE" == gaea-c6 ) then
+else if ( "$L_MACHINE" == gaeac6 ) then
    module reset
 
 else if ( "$L_MACHINE" == derecho ) then
