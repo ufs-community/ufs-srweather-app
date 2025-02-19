@@ -8,9 +8,19 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files \
-  task_run_post ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+  constants
+  fixed_files
+  task_run_post
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -344,7 +354,6 @@ vx_config_dict=$(<"${vx_config_fp}")
 # Indent each line of vx_config_dict so that it is aligned properly when
 # included in the yaml-formatted variable "settings" below.
 vx_config_dict=$( printf "%s\n" "${vx_config_dict}" | sed 's/^/    /' )
-#
 #
 #-----------------------------------------------------------------------
 #

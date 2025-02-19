@@ -8,7 +8,16 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+)
+for sect in ${sections[*]} ; do
   constants fixed_files ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -49,7 +58,6 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-set -x
 get_metplus_tool_name \
   METPLUSTOOLNAME="${METPLUSTOOLNAME}" \
   outvarname_metplus_tool_name="metplus_tool_name" \
