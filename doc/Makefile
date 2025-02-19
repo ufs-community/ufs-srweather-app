@@ -1,6 +1,6 @@
 # Makefile for Sphinx documentation
 
-SPHINXOPTS    = -a -n -W
+SPHINXOPTS    = -a -n -W --keep-going
 SPHINXBUILD   = sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = build
