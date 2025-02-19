@@ -19,10 +19,10 @@ rocoto:
 verification:
   VX_FCST_MODEL_NAME: RRFS_smoke_test
   VX_FIELD_GROUPS: [ "SFC", "AOD", "PM25", "PM10"]
-  VX_FCST_INPUT_BASEDIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/RRFS
+  VX_FCST_INPUT_BASEDIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/PR_prep/WE2E_test_data/RRFS
   FCST_SUBDIR_TEMPLATE: ''
   FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
-  NDAS_OBS_DIR:    /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/ndas
-  AERONET_OBS_DIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/aeronet
-  AIRNOW_OBS_DIR:  /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/airnow
+  NDAS_OBS_DIR:    /scratch2/BMC/fv3lam/kavulich/smoke_verif/PR_prep/WE2E_test_data/ndas
+  AERONET_OBS_DIR: /scratch2/BMC/fv3lam/kavulich/smoke_verif/PR_prep/WE2E_test_data/aeronet
+  AIRNOW_OBS_DIR:  /scratch2/BMC/fv3lam/kavulich/smoke_verif/PR_prep/WE2E_test_data/airnow
 
