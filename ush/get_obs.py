@@ -322,9 +322,10 @@ def get_obs(config, obtype, yyyymmdd_task):
 
     AIRNOW Air Quality Particulate Matter (PM25, PM10) observations:
     ----------------------------------------------------------------
-    For AIRNOW, the archive interval is 24 hours. There is one archive per day
+    For AIRNOW, the HPSS archive interval is 24 hours. There is one archive per day
     containing one text file per hour that contains all the observation for that
     hour.
+    When retrieved from AWS, the interval is 1 hour.
     """
 
     # Convert obtype to upper case to simplify code below.

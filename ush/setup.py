@@ -1783,7 +1783,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     else:
         if fire_conf["FIRE_NUM_TASKS"] > 0:
             logger.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
-            fire_conf["FIRE_NUM_TASKS"] = 1
+            fire_conf["FIRE_NUM_TASKS"] = 0
     #
     # -----------------------------------------------------------------------
     #
