@@ -863,7 +863,11 @@ that attempt is successful, the workflow will move on to subsequent tasks.  Thus
      :term:`AIRNOW` files manually from collections of publicly available data.
      Then, as above, they must set ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]`` to match those
      staging locations and file names.
-   
+
+.. note::
+   AIRNOW observations can be retrieved from AWS in addition to HPSS, but this requires changing some default settings.
+   See ``ush/config_defaults.yaml`` or :numref:`Section %s <GeneralVXParams>` for more details. 
+
    * Users who have access to a data store that hosts the necessary files (e.g. NOAA HPSS) do not need to
      manually stage the obs data because the ``get_obs_*`` tasks will retrieve the necessary obs and place
      them in the locations specified by ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]``.  By default,
