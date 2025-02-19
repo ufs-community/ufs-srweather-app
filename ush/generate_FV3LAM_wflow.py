@@ -342,6 +342,7 @@ def generate_FV3LAM_wflow(
     # in the flattened expt_config dictionary
     # TODO: Reference all these variables in their respective
     # dictionaries, instead.
+    # pylint: disable=undefined-variable
     import_vars(dictionary=flatten_dict(expt_config))
     export_vars(source_dict=flatten_dict(expt_config))
     settings = {}
@@ -437,7 +438,6 @@ def generate_FV3LAM_wflow(
 
     settings["nam_sfcperts"] = nam_sfcperts_dict
 
-    settings_str = cfg_to_yaml_str(settings)
     #
     #-----------------------------------------------------------------------
     #
@@ -578,6 +578,15 @@ def generate_FV3LAM_wflow(
     return EXPTDIR
 
 def setup_fv3_namelist(expt_config,debug):
+    """
+    Updates parameters specific to the FV3ATM namelist for the run_fcst step.
+
+    Args:
+        expt_dict (dict): The full experiment configuration dictionary
+        debug    (bool): Enable extra output for debugging
+    Returns:
+        EXPTDIR (str) : The full path of the directory where this experiment has been generated
+    """
 
     # From here on out, going back to setting variables for everything
     # in the flattened expt_config dictionary
@@ -585,6 +594,8 @@ def setup_fv3_namelist(expt_config,debug):
     # dictionaries, instead.
     import_vars(dictionary=flatten_dict(expt_config))
     export_vars(source_dict=flatten_dict(expt_config))
+
+    # pylint: disable=undefined-variable
 
     log_info(
         f"""
@@ -600,7 +611,7 @@ def setup_fv3_namelist(expt_config,debug):
     kice = None
     if SDF_USES_RUC_LSM:
         kice = 9
-    #     
+    #
     # Set lsoil, which is the number of input soil levels provided in the
     # chgres_cube output NetCDF file.  This is the same as the parameter
     # nsoill_out in the namelist file for chgres_cube.  [On the other hand,
@@ -610,7 +621,7 @@ def setup_fv3_namelist(expt_config,debug):
     # lsoil as the one used to set nsoill_out in exregional_make_ics.sh.
     # See that script for details.
     #
-    # NOTE: 
+    # NOTE:
     # May want to remove lsoil from FV3.input.yml (and maybe input.nml.FV3).
     # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
     #
@@ -875,7 +886,6 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    # pylint: disable=undefined-variable
     # Note workflow generation completion
     log_info(
         f"""
@@ -883,7 +893,7 @@ if __name__ == "__main__":
 
             Experiment generation completed.  The experiment directory is:
 
-              EXPTDIR='{EXPTDIR}'
+              EXPTDIR='{expt_dir}'
 
         ========================================================================
         """
