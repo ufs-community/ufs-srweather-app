@@ -55,7 +55,6 @@ extensions = [
     'sphinx.ext.extlinks',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
-    'sphinxcontrib.napoleon',
     'sphinxcontrib.bibtex',
 ]
 
