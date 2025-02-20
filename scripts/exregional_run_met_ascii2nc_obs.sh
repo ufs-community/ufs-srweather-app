@@ -18,7 +18,6 @@ sections=(
   cpl_aqm_parm
 )
 for sect in ${sections[*]} ; do
-  constants fixed_files ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

@@ -245,7 +245,8 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    if dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst"):
+    if ( dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") or
+       dict_find(expt_config["rocoto"]["tasks"], "task_make_grid") ):
         log_info(
             """
             Copying templates of various input files to the experiment directory...""",
