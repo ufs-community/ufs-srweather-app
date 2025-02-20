@@ -284,7 +284,7 @@ add_module_names = False
 
 napoleon_numpy_docstring = False
 napoleon_google_docstring = True
-napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of multiple values
+napoleon_custom_sections = ('Returns', 'params_style') # Allows return of multiple values
 
 
 # -- Options for intersphinx extension ---------------------------------------
