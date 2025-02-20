@@ -66,7 +66,7 @@ Build the Container
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
 
-On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.img`` has already been built at the following locations:
+On most Level 1 systems, a container named ``ubuntu22.04-intel-ue-1.6.0-srw-dev.img`` has already been built at the following locations:
 
 .. list-table:: Locations of pre-built containers
    :widths: 20 50
@@ -82,35 +82,34 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.
      - /scratch1/NCEPDEV/nems/role.epic/containers
    * - Jet
      - /mnt/lfs5/HFIP/hfv3gfs/role.epic/containers
-   * - NOAA Cloud
+   * - NOAA Cloud [#fn]_
      - /contrib/EPIC/containers
-   * - Orion/Hercules [#fn]_
+   * - Orion/Hercules
      - /work/noaa/epic/role-epic/contrib/containers
 
 .. [#fn] On these systems, container testing shows inconsistent results. 
 
 .. note::
-   * On Gaea, Singularity/Apptainer is only available on the C5 partition, and therefore container use is only supported on Gaea C5. 
    * The NOAA Cloud containers are accessible only to those with EPIC resources. 
 
 Users can simply set an environment variable to point to the container: 
 
 .. code-block:: console
 
-   export img=/path/to/ubuntu20.04-intel-ue-1.4.1-srw-dev.img
+   export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev.img
 
 Users may convert the container ``.img`` file to a writable sandbox:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-intel-srwapp $img
+   singularity build --sandbox ubuntu22.04-intel-ue-1.6.0-srw-dev $img
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
 .. code-block:: console
 
    INFO:    Starting build...
-   INFO:    Verifying bootstrap image ubuntu20.04-intel-ue-1.4.1-srw-dev.img
+   INFO:    Verifying bootstrap image ubuntu22.04-intel-ue-1.6.0-srw-dev.img
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
@@ -123,7 +122,7 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
+   sudo singularity build --sandbox ubuntu22.04-intel-ue-1.6.0-srw-dev docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-dev
 
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
@@ -132,13 +131,13 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
 
    .. code-block:: console
 
-      sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.2.0
+      sudo singularity build --sandbox ubuntu20.04-intel-srwapp-release-public-v2.2.0 docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.2.0
 
 For easier reference, users can set an environment variable to point to the container: 
 
 .. code-block:: console
 
-   export img=/path/to/ubuntu20.04-intel-srwapp
+   export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev
 
 .. _RunContainer:
 
@@ -173,11 +172,11 @@ The list of directories printed will be similar to this:
 
 .. code-block:: console
 
-   bin      discover       lfs   lib     media  run         singularity    usr
-   boot     environment    lfs1  lib32   mnt    sbin        srv            var
-   contrib  etc            lfs2  lib64   opt    scratch     sys            work
-   data     glade          lfs3  libx32  proc   scratch1    tmp
-   dev      home           lfs4  lustre  root   scratch2    u
+   autofs	 dev	      gpfs	  lfs2	 lib64	 ncrc  sbin	    srv			      u
+   bin	 discover     home	  lfs3	 libx32  opt   scratch	    sw			      usr
+   boot	 environment  host_lib64  lfs4	 lustre  proc  scratch1     sys			      usw
+   contrib  etc	      lfs	  lib	 media	 root  scratch2     third-party-programs.txt  var
+   data	 glade	      lfs1	  lib32  mnt	 run   singularity  tmp			      work
 
 Users can run ``exit`` to exit the shell. 
 
@@ -201,77 +200,58 @@ Generate the Forecast Experiment
 =================================
 To generate the forecast experiment, users must:
 
-#. :ref:`Activate the workflow <SetUpPythonEnvC>`
+#. :ref:`Stage the container <SetUpCont>`
 #. :ref:`Set experiment parameters to configure the workflow <SetUpConfigFileC>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
 The first two steps depend on the platform being used and are described here for Level 1 platforms. Users will need to adjust the instructions to match their machine configuration if their local machine is a Level 2-4 platform. 
 
-.. _SetUpPythonEnvC:
+.. _SetUpCont:
 
-Activate the Workflow
+Stage the Container 
 ------------------------
 
-Copy the container's modulefiles to the local working directory so that the files can be accessed outside of the container:
-
-.. code-block:: console
-
-   singularity exec -B /<local_base_dir>:/<container_dir> $img cp -r /opt/ufs-srweather-app/modulefiles .
-
-After this command runs, the local working directory should contain the ``modulefiles`` directory. 
-
-To activate the workflow, run the following commands: 
-
-.. code-block:: console
-
-   module use /path/to/modulefiles
-   module load wflow_<platform>
-
-where: 
-
-   * ``/path/to/modulefiles`` is replaced with the actual path to the modulefiles on the user's local system (often ``$PWD/modulefiles``), and 
-   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
-
-The ``wflow_<platform>`` modulefile will then output instructions to activate the workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
-
-.. code-block:: console
-
-   Please do the following to activate conda:
-       > conda activate workflow_tools
-
-then the user should run |activate|. This will activate the |wflow_env| conda environment. The command(s) will vary from system to system, but the user should see |prompt| in front of the Terminal prompt at this point.
-
-.. _SetUpConfigFileC: 
-
-Configure the Workflow
----------------------------
-
-Run ``stage-srw.sh``:
+To set up the container with your host system, run the ``stage-srw.sh`` script:
 
 .. code-block:: console
 
    ./stage-srw.sh -c=<compiler> -m=<mpi_implementation> -p=<platform> -i=$img
 
-where: 
+where:
 
-   * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
-   * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
+   * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``, ``intel-oneapi-compilers/2022.2.1``, ``intel/2023.2.0``)
+   * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``, ``intel-oneapi-mpi/2021.7.1``, ``cray-mpich/8.1.28``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``macos``, ``linux``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options.
-   * ``-i`` indicates the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-ue-1.4.1-srw-dev.img`` by default).
+   * ``-i`` indicates the full path to the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu22.04-intel-ue-1.6.0-srw-dev`` or ``ubuntu22.04-intel-ue-1.6.0-srw-dev.img`` by default).
 
 For example, on Hera, the command would be:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-ue-1.4.1-srw-dev.img
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=$img
 
 .. attention::
 
    The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of the `Intel oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
 
-After this command runs, the working directory should contain ``srw.sh``, a ``ufs-srweather-app`` directory, and an ``ush`` directory.
+After this command runs, the working directory should contain the ``srw.sh`` script and a ``ufs-srweather-app`` directory.
 
-.. COMMENT: Check that the above is true for the dev containers...
+.. _SetUpConfigFileC:
+
+Configure the Workflow
+---------------------------
+
+Configuring the workflow for the container is similar to configuring the workflow without a container. The only exception is that there is no need to activate the ``srw_app`` conda environment. That is because there is a conflict between the container's conda and the host’s conda. To get around this, the container’s conda environment bin directory is appended to the system’s ``PATH`` variable in the ``python_srw.lua`` and ``build_<platform>_intel.lua`` modulefiles with the ``stage-srw.sh`` script. Activate the workflow by running the following commands: 
+
+.. code-block:: console
+
+   module use ufs-srweather-app/modulefiles
+   module load wflow_<platform>
+
+where: 
+
+   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
+
 
 From here, users can follow the steps below to configure the out-of-the-box SRW App case with an automated Rocoto workflow. For more detailed instructions on experiment configuration, users can refer to :numref:`Section %s <UserSpecificConfig>`. 
 
@@ -386,7 +366,7 @@ where ``/path/to`` is replaced by the actual path to the user's experiment direc
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the workflow. Then, users can configure a new experiment by updating the experiment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpCont>` to reactivate the workflow. Then, users can configure a new experiment by updating the experiment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.
 
 .. _appendix:
 

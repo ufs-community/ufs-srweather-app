@@ -36,6 +36,9 @@ platform:
   FIXshp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/NaturalEarth
   FIXaqm: /work/noaa/epic/SRW-AQM_DATA/fix_aqm
   FIXemis: /work/noaa/epic/SRW-AQM_DATA/fix_emis
+  FIXsmoke: /work/noaa/epic/SRW-AQM_DATA/fix_smoke
+  FIXupp: /work/noaa/epic/SRW-AQM_DATA/fix_upp
+  FIXcrtm: /work/noaa/epic/SRW-AQM_DATA/fix_crtm
   EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
@@ -52,6 +55,10 @@ cpl_aqm_parm:
   COMINfire_default: /work/noaa/epic/SRW-AQM_DATA/aqm_data/RAVE_fire
   COMINgefs_default: /work/noaa/epic/SRW-AQM_DATA/aqm_data/GEFS_DATA
   NEXUS_GFS_SFC_DIR: /work/noaa/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
+
+smoke_dust_parm:
+  COMINsmoke_default: /work/noaa/epic/SRW-AQM_DATA/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /work/noaa/epic/SRW-AQM_DATA/data_smoke_dust/RAVE_fire
 
 rocoto:
   tasks:

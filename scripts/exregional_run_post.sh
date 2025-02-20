@@ -65,7 +65,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm \
+for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm \
   task_run_fcst task_run_post ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -155,7 +155,7 @@ else
   if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
   else
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-rrfs.txt"
   fi
   print_info_msg "
 ====================================================================
@@ -167,22 +167,24 @@ temporary work directory (DATA_FHR):
 fi
 cp ${post_config_fp} ./postxconfig-NT.txt
 cp ${PARMdir}/upp/params_grib2_tbl_new .
-if [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
-  cp ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/FAST*.bin ./
-  cp ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/AerosolCoeff.bin ./
-  cp ${CRTM_DIR}/CloudCoeff.bin ./
-  cp ${CRTM_DIR}/*.SpcCoeff.bin ./
-  cp ${CRTM_DIR}/*.TauCoeff.bin ./
+if [ $(boolify ${DO_SMOKE_DUST}) = "TRUE" ] || [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
+  if [ $(boolify ${DO_SMOKE_DUST}) = "TRUE" ]; then
+    CRTM_DIR="${FIXcrtm}"
+  fi
+  ln -nsf ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin .
+  ln -nsf ${CRTM_DIR}/FAST*.bin .
+  ln -nsf ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin .
+  ln -nsf ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin .
+  ln -nsf ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin .
+  ln -nsf ${CRTM_DIR}/AerosolCoeff.bin .
+  ln -nsf ${CRTM_DIR}/CloudCoeff.bin .
+  ln -nsf ${CRTM_DIR}/*.SpcCoeff.bin .
+  ln -nsf ${CRTM_DIR}/*.TauCoeff.bin .
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
 work directory (DATA_FHR):
   CRTM_DIR = \"${CRTM_DIR}\"
-  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
 #
@@ -230,8 +232,10 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 else
     DATAFCST=$DATA
 fi
+
 dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
 phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
+
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -245,8 +249,10 @@ post_mn=${post_time:10:2}
 #
 # Create the input namelist file to the post-processor executable.
 #
-if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ] && [ $(boolify "${DO_SMOKE_DUST}") = "FALSE" ]; then
   post_itag_add="aqf_on=.true.,"
+elif [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  post_itag_add="slrutah_on=.true.,gtg_on=.true."
 else
   post_itag_add=""
 fi
@@ -264,6 +270,23 @@ fileNameFlux='${phy_file}'
  KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add},numx=${NUMX}
  /
 EOF
+
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  if [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ]; then
+    grid_specs_rrfs="lambert:-97.5:38.500000 237.280472:1799:3000 21.138115:1059:3000"
+  elif [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
+    grid_specs_rrfs="rot-ll:247.000000:-35.000000:0.000000 299.000000:4881:0.025000 -37.0000000:2961:0.025000"
+  fi
+  if [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ] || [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
+    for ayear in 100y 10y 5y 2y ; do
+      for ahour in 01h 03h 06h 12h 24h; do
+        if [ -f ${FIXupp}/${PREDEF_GRID_NAME}/ari${ayear}_${ahour}.grib2 ]; then
+          ln -snf ${FIXupp}/${PREDEF_GRID_NAME}/ari${ayear}_${ahour}.grib2 ari${ayear}_${ahour}.grib2
+        fi
+      done
+    done
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -315,45 +338,68 @@ The \${fhr} variable contains too few or too many characters:
   fhr = \"$fhr\""
 fi
 
-post_mn_or_null=""
-dot_post_mn_or_null=""
-if [ "${post_mn}" != "00" ]; then
-  post_mn_or_null="${post_mn}"
-  dot_post_mn_or_null=".${post_mn}"
-fi
+if [ $(boolify "${DO_SMOKE_DUST}") = "TRUE" ]; then
+  bgdawp=${NET}.${cycle}.prslev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+  bgrd3d=${NET}.${cycle}.natlev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+  bgifi=${NET}.${cycle}.ififip.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+  bgavi=${NET}.${cycle}.aviation.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
-post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
-post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
-#
-# For convenience, change location to COMOUT (where the final output
-# from UPP will be located).  Then loop through the two files that UPP
-# generates (i.e. "...prslev..." and "...natlev..." files) and move, 
-# rename, and create symlinks to them.
-#
-cd "${COMOUT}"
-basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
-if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
-  fids=( "cmaq" )
+  if [ -f "PRSLEV.GrbF${post_fhr}" ]; then
+    wgrib2 PRSLEV.GrbF${post_fhr} -set center 7 -grib ${bgdawp}
+    mv ${bgdawp} ${COMOUT}
+  fi
+  if [ -f "NATLEV.GrbF${post_fhr}" ]; then
+    wgrib2 NATLEV.GrbF${post_fhr} -set center 7 -grib ${bgrd3d}
+    mv ${bgrd3d} ${COMOUT}
+  fi
+  if [ -f "IFIFIP.GrbF${post_fhr}" ]; then
+    wgrib2 IFIFIP.GrbF${post_fhr} -set center 7 -grib ${bgifi}
+    mv ${bgifi} ${COMOUT}
+  fi
+  if [ -f "AVIATION.GrbF${post_fhr}" ]; then
+    wgrib2 AVIATION.GrbF${post_fhr} -set center 7 -grib ${bgavi}
+    mv ${bgavi} ${COMOUT}
+  fi
+
 else
-  fids=( "prslev" "natlev" )
+  post_mn_or_null=""
+  dot_post_mn_or_null=""
+  if [ "${post_mn}" != "00" ]; then
+    post_mn_or_null="${post_mn}"
+    dot_post_mn_or_null=".${post_mn}"
+  fi
+
+  post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
+  post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
+  #
+  # For convenience, change location to COMOUT (where the final output
+  # from UPP will be located).  Then loop through the two files that UPP
+  # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
+  # rename, and create symlinks to them.
+  #
+  cd "${COMOUT}"
+  basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
+  symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
+    fids=( "cmaq" )
+  else
+    fids=( "prslev" "natlev" )
+  fi
+  for fid in "${fids[@]}"; do
+    FID=$(echo_uppercase $fid)
+    post_orig_fn="${FID}.${post_fn_suffix}"
+    post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
+    mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+    if [ $RUN_ENVIR != "nco" ]; then
+      create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
+    fi
+    # DBN alert
+    if [ "$SENDDBN" = "TRUE" ]; then
+      $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
+    fi
+  done
 fi
-for fid in "${fids[@]}"; do
-  FID=$(echo_uppercase $fid)
-  post_orig_fn="${FID}.${post_fn_suffix}"
-  post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
-  mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
-  if [ $RUN_ENVIR != "nco" ]; then
-    create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
-  fi
-  # DBN alert
-  if [ "$SENDDBN" = "TRUE" ]; then
-    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-  fi
-done
-
 rm -rf ${DATA_FHR}
-
 #
 #-----------------------------------------------------------------------
 #

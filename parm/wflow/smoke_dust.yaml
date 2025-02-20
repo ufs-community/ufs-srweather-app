@@ -1,0 +1,91 @@
+default_smoke_dust_task: &default_smoke_dust
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    HOMEdir: '&HOMEdir;'
+    USHdir: '&USHdir;'
+    envir: '&envir;'
+    model_ver: '&model_ver;'
+    KEEPDATA: '&KEEPDATA;'
+    SENDCOM: '&SENDCOM;'
+    COMROOT: '&COMROOT;'
+    DATAROOT: '&DATAROOT;'
+    DCOMROOT: '&DCOMROOT;'
+    LOGDIR: !cycstr "&LOGDIR;"
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
+    subcyc: !cycstr "@M"
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    ENSMEM_INDX: '#mem#'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_smoke_dust:
+  <<: *default_smoke_dust
+  command: '&LOAD_MODULES_RUN_TASK; "smoke_dust" "&HOMEdir;/jobs/JSRW_SMOKE_DUST"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    and:
+      or_grid:
+        datadep_grid:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+        streq:
+          left: staged_grid
+          right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+      or_orog:
+        datadep_orog:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+        streq:
+          left: staged_orog
+          right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
+      or_sfc_climo:
+        datadep_sfc_climo:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_sfc_climo.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
+        streq:
+          left: staged_sfc_climo
+          right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
+      or:
+        datadep_coldstart:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '{{ workflow.EXPTDIR }}/task_skip_coldstart_@Y@m@d@H00.txt'
+        datadep_warmstart_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
+        datadep_comin_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+
+task_prepstart:
+  <<: *default_smoke_dust
+  command: '&LOAD_MODULES_RUN_TASK; "prepstart" "&HOMEdir;/jobs/JSRW_PREPSTART"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    or_smoke_dust:
+      not:
+        taskvalid:
+          attrs:
+            task: smoke_dust
+      taskdep:
+        attrs:
+          task: smoke_dust
+
