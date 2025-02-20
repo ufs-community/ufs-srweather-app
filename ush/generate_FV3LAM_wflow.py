@@ -247,38 +247,24 @@ def generate_FV3LAM_wflow(
     #
     if ( dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") or
        dict_find(expt_config["rocoto"]["tasks"], "task_make_grid") ):
-        log_info(
-            """
-            Copying templates of various input files to the experiment directory...""",
-            verbose=debug,
-        )
+        logging.debug("Copying templates of various input files to the experiment directory...")
 
-        log_info(
-            """
-            Copying the template data table file to the experiment directory...""",
-            verbose=debug,
-        )
-        cp_vrfy(expt_config["workflow"]["DATA_TABLE_TMPL_FP"], expt_config["workflow"]["DATA_TABLE_FP"])
+        logging.debug("Copying the template data table file to the experiment directory...")
+        cp_vrfy(expt_config["workflow"]["DATA_TABLE_TMPL_FP"],
+                expt_config["workflow"]["DATA_TABLE_FP"])
 
-        log_info(
-            """
-            Copying the template field table file to the experiment directory...""",
-            verbose=debug,
-        )
-        cp_vrfy(expt_config["workflow"]["FIELD_TABLE_TMPL_FP"], expt_config["workflow"]["FIELD_TABLE_FP"])
+        logging.debug("Copying the template field table file to the experiment directory...")
+        cp_vrfy(expt_config["workflow"]["FIELD_TABLE_TMPL_FP"],
+                expt_config["workflow"]["FIELD_TABLE_FP"])
 
         #
         # Copy the CCPP physics suite definition file from its location in the
         # clone of the FV3 code repository to the experiment directory (EXPT-
         # DIR).
         #
-        log_info(
-            """
-            Copying the CCPP physics suite definition XML file from its location in
-            the forecast model directory structure to the experiment directory...""",
-            verbose=debug,
-        )
-        cp_vrfy(expt_config["workflow"]["CCPP_PHYS_SUITE_IN_CCPP_FP"], expt_config["workflow"]["CCPP_PHYS_SUITE_FP"])
+        logging.debug("Copying CCPP suite definition file from forecast model repository")
+        cp_vrfy(expt_config["workflow"]["CCPP_PHYS_SUITE_IN_CCPP_FP"],
+                expt_config["workflow"]["CCPP_PHYS_SUITE_FP"])
 
         # If UFS_FIRE, update FIELD_TABLE
         if expt_config['fire'].get('UFS_FIRE'):
@@ -293,17 +279,11 @@ def generate_FV3LAM_wflow(
 
         #
         # Copy the field dictionary file from its location in the
-        # clone of the FV3 code repository to the experiment directory (EXPT-
-        # DIR).
+        # clone of the FV3 code repository to the experiment directory
         #
-        log_info(
-            """
-            Copying the field dictionary file from its location in the
-            forecast model directory structure to the experiment
-            directory...""",
-            verbose=debug,
-        )
-        cp_vrfy(expt_config["workflow"]["FIELD_DICT_IN_UWM_FP"], expt_config["workflow"]["FIELD_DICT_FP"])
+        logging.debug("Copying field dictionary file from forecast model repository")
+        cp_vrfy(expt_config["workflow"]["FIELD_DICT_IN_UWM_FP"],
+                expt_config["workflow"]["FIELD_DICT_FP"])
 
         #
         # -----------------------------------------------------------------------
@@ -326,7 +306,8 @@ def generate_FV3LAM_wflow(
     # the C-resolution of the grid), and this parameter is in most workflow
     # configurations is not known until the grid is created.
     #
-    if not expt_config['rocoto']['tasks'].get('task_make_grid') and dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst"):
+    if ( not expt_config['rocoto']['tasks'].get('task_make_grid') and
+         dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") ):
         set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
 
     #
