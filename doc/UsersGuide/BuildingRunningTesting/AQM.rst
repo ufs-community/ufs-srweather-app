@@ -21,7 +21,7 @@ Quick Start Guide (SRW-AQM)
 
 .. attention::
 
-   These instructions should work smoothly on Hera and WCOSS2, but users on other systems may need to make additional adjustments. 
+   These instructions should work smoothly on Hera, Hercules, Derecho and Orion but users on other systems may need to make additional adjustments. 
 
 Download the Code
 -------------------
@@ -51,7 +51,7 @@ On Hera and WCOSS2, users can build the SRW App AQM binaries with the following 
 
    ./devbuild.sh -p=<machine> -a=ATMAQ
 
-where ``<machine>`` is ``hera``, or ``wcoss2``. The ``-a`` argument indicates the configuration/version of the application to build. 
+where ``<machine>`` is ``hera``, ``hercules``, ``orion``, or ``derecho``. The ``-a`` argument indicates the configuration/version of the application to build. 
 
 Building the SRW App with AQM on other machines, including other :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platforms, is not currently guaranteed to work, and users may have to make adjustments to the modulefiles for their system. 
 
@@ -79,13 +79,11 @@ Load the python environment for the workflow:
 
 .. code-block:: console
 
-   # On WCOSS2 (do not run on other systems):
-   source ../versions/run.ver.wcoss2
-   # On all systems (including WCOSS2):
+   # On all systems:
    module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<machine>
 
-where ``<machine>`` is ``hera`` or ``wcoss2``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms. 
+where ``<machine>`` is ``hera``, ``hercules``, ``orion``, or ``derecho``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms. 
 
 If the console outputs a message, the user should run the commands specified in the message. For example, if the output says: 
 
@@ -106,10 +104,8 @@ Users will need to configure their experiment by setting parameters in the ``con
 .. code-block:: console
 
    cd ush
-   cp config.aqm.community.yaml config.yaml 
+   cp config.aqm.yaml config.yaml 
    
-Users may prefer to copy the ``config.aqm.nco.realtime.yaml`` for a default "nco" mode experiment instead. 
-
 Users will need to change the ``MACHINE`` and ``ACCOUNT`` variables in ``config.yaml`` to match their system. They may also wish to adjust other experiment settings. For more information on each task and variable, see :numref:`Section %s <ConfigWorkflow>`. 
 
 The community AQM configuration assumes that users have :term:`HPSS` access and attempts to download the data from HPSS. However, if users have the data on their system already, they may prefer to add the following lines to ``task_get_extrn_*:`` in their ``config.yaml`` file, adjusting the file path to point to the correct data locations:
@@ -125,7 +121,7 @@ The community AQM configuration assumes that users have :term:`HPSS` access and 
 
 On Level 1 systems, users can find :term:`ICs/LBCs` in the usual :ref:`input data locations <Data>` under ``FV3GFS/netcdf/2023021700`` and ``FV3GFS/netcdf/2023021706``. Users can also download the data required for the community experiment from the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/input_model_data/FV3GFS/netcdf/>`__. 
 
-Users may also wish to change :term:`cron`-related parameters in ``config.yaml``. In the ``config.aqm.community.yaml`` file, which was copied into ``config.yaml``, cron is used for automatic submission and resubmission of the workflow:
+Users may also wish to change :term:`cron`-related parameters in ``config.yaml``. In the ``config.aqm.yaml`` file, which was copied into ``config.yaml``, cron is used for automatic submission and resubmission of the workflow:
 
 .. code-block:: console
 
@@ -135,7 +131,7 @@ Users may also wish to change :term:`cron`-related parameters in ``config.yaml``
 
 This means that cron will submit the launch script every 3 minutes. Users may choose not to submit using cron or to submit at a different frequency. Note that users should create a crontab by running ``crontab -e`` the first time they use cron.
 
-When using the basic ``config.aqm.community.yaml`` experiment, the AQM pre-processing tasks are automatically turned on because ``"parm/wflow/aqm_prep.yaml"`` appears in the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM *post*-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
+When using the basic ``config.aqm.yaml`` experiment, the AQM pre-processing tasks are automatically turned on because ``"parm/wflow/aqm_prep.yaml"`` appears in the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM *post*-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
 
 .. attention::
 
