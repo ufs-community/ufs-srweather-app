@@ -36,9 +36,18 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
-nitpick_ignore = [('py:class', 'obj'),('py:class', 
-                   'yaml.dumper.Dumper'),('py:class', 
-                   'xml.etree.ElementTree'),('py:class', 'Basemap'),]
+nitpick_ignore = [('py:class', 'obj'),
+                  ('py:class', 'yaml.dumper.Dumper'),
+                   ('py:class', 'xml.etree.ElementTree'),
+                   ('py:class', 'Basemap'),
+                   ('py:class', 'pandas.DataFrame'),
+                   ('py:class', 'numpy.ndarray'),
+                   ('py:class', 'pandas.Index'),
+                   ('py:class', 'xarray.DataArray'),
+                   ('py:class', 'netCDF4.Dataset'),
+                   ('py:class', 'ESMF.Field'),
+                   ('py:class', 'ESMF.Grid'),
+                   ]
 
 # -- General configuration ---------------------------------------------------
 
@@ -255,8 +264,19 @@ epub_exclude_files = ['search.html']
 
 # -- Options for autodoc extension ---------------------------------------
 
-autodoc_mock_imports = ["f90nml","cartopy","mpl_toolkits.basemap","fill_jinja_template",
-   "matplotlib","numpy","uwtools","mpl_toolkits","metplus",
+autodoc_mock_imports = ["f90nml",
+                        "cartopy",
+                        "mpl_toolkits.basemap",
+                        "fill_jinja_template",
+                        "matplotlib",
+                        "numpy",
+                        "uwtools",
+                        "mpl_toolkits",
+                        "metplus",
+                        "netCDF4",
+                        "pandas",
+                        "xarray",
+                        "ESMF",
    ]
 
 logger = logging.getLogger(__name__)
