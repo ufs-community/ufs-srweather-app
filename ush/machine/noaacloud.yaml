@@ -3,11 +3,13 @@ platform:
   NCORES_PER_NODE: '{{ 44 if (user.ACCOUNT == "cz-epic") else 36 if (user.ACCOUNT == "ca-epic") else 28 }}'
   SCHED: slurm
   WE2E_TEST_DATA: /contrib/EPIC/UFS_SRW_data/develop
-  TEST_CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/ndas/proc
-  TEST_NOHRSC_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/nohrsc/proc
-  DOMAIN_PREGEN_BASEDIR: /contrib/EPIC/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/ccpa/proc'
+  TEST_MRMS_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/mrms/proc'
+  TEST_NDAS_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/ndas/proc'
+  TEST_NOHRSC_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/nohrsc/proc'
+  TEST_AERONET_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/aeronet'
+  TEST_AIRNOW_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/airnow'
+  DOMAIN_PREGEN_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/FV3LAM_pregen'
   REMOVE_MEMORY: True
   RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
   RUN_CMD_POST: mpiexec -np $nprocs
