@@ -11,6 +11,10 @@ export cyc=${DATE_FIRST_CYCL:8:2}
 export PDY=${DATE_FIRST_CYCL:0:8}
 export SLASH_ENSMEM_SUBDIR=""
 export ENSMEM_INDX=""
+# Declare Intel library variable for Azure
+if [ ${PW_CSP} == "azure" ]; then
+    export FI_PROVIDER=tcp
+fi
 
 ${JOBSdir}/JREGIONAL_RUN_FCST
 

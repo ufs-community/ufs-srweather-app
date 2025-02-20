@@ -701,6 +701,13 @@ def setup_fv3_namelist(expt_config,debug):
         "lsoil": lsoil or None,
         "print_diff_pgr": PRINT_DIFF_PGR,
     })
+
+    if DO_SMOKE_DUST:
+        gfs_physics_nml_dict.update({
+            "ebb_dcycle": EBB_DCYCLE,
+            "rrfs_sd": True,
+    })
+
     if CPL_AQM:
         gfs_physics_nml_dict.update({
             "cplaqm": True,

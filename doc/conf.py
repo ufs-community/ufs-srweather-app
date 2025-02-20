@@ -125,6 +125,8 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                  r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*",
                                r"https://github\.com/ufs-community/ufs\-srweather\-app/issues/.*": 
                                  r"https://github\.com/login\?return\_to\=https.*",
+                               r"https://mrms\.ncep\.noaa\.gov/data/": 
+                                 r"https://mrms\.ncep\.noaa\.gov",
                                }
 
 

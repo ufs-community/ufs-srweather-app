@@ -49,9 +49,7 @@ Additionally, users can potentially access the directories where the Jenkins tes
    * - Derecho
      - /glade/derecho/scratch/epicufsrt/jenkins/workspace
    * - Gaea
-     - /lustre/f2/dev/wpo/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/gaea
-   * - Gaea C5
-     - /lustre/f2/dev/wpo/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/gaea-c5
+     - /gpfs/f5/epic/scratch/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/gaea
    * - Hera (Intel)
      - /scratch2/NAGAPE/epic/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#__2/hera
    * - Hera (GNU)

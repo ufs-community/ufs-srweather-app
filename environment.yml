@@ -6,3 +6,4 @@ dependencies:
   - pylint=2.17*
   - pytest=7.2*
   - uwtools=2.3*
+  - sphinx=7.4.0*
