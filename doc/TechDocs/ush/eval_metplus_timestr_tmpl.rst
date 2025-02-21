@@ -3,5 +3,5 @@ eval\_metplus\_timestr\_tmpl module
 
 .. automodule:: eval_metplus_timestr_tmpl
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:

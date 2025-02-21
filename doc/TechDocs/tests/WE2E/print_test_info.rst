@@ -3,5 +3,5 @@ print\_test\_info module
 
 .. automodule:: print_test_info
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:

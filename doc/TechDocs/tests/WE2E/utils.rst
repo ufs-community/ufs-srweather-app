@@ -3,5 +3,5 @@ utils module
 
 .. automodule:: utils
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
