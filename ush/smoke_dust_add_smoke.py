@@ -23,6 +23,9 @@ def populate_data(data: np.ndarray, target_shape: Tuple) -> np.ndarray:
 
 
 def main() -> None:
+    """
+    Main entrypoint for generating smoke/dust initial conditions.
+    """
     # File paths
     source_file = "fv_tracer.res.tile1.nc"
     target_file = "gfs_data.tile7.halo0.nc"
