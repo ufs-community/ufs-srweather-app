@@ -53,6 +53,7 @@ class Testing(unittest.TestCase):
         run_command(
             f"""{sed} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
         )
+        os.makedirs("/home/username/DATA/UFS/fix/fix_am")
         run_workflow(USHdir, logfile)
 
     def setUp(self):
