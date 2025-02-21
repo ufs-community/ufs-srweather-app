@@ -51,7 +51,6 @@ jobs:
           export UNIT_TEST=True
           export PYTHONPATH=$(pwd)/ush
           # Make dummy directories for fix files so generate_FV3LAM_workflow.py tests complete successfully
-#          aws s3 cp --recursive --no-sign-request --no-progress s3://noaa-ufs-srw-pds/develop-20240618/fix/ /home/runner/work/
           export CI_FIX_FILES=/home/runner/work/fix
           mkdir -p $CI_FIX_FILES/fix_am
 
