@@ -257,7 +257,7 @@ pipeline {
                                     
                                     // Create empty txt test file and set it as the test type
                                     sh "> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
-                                    single_test = user_input_test.txt
+                                    single_test = "user_input_test.txt"
 
                                     // Create user input list and add tests to txt file
                                     def user_input_list = stringToList(params.SRW_WE2E_USER_INPUT_TEST, "\n")   
