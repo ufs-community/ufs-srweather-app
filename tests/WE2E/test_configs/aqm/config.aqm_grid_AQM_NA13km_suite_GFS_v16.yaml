@@ -22,7 +22,8 @@ workflow:
 nco:
   NET_default: aqm
 rocoto:
-  task_aqm_ics_ext: !remove
+  tasks:
+    task_aqm_ics_ext: !remove
 task_get_extrn_ics:
   envvars:
     EXTRN_MDL_NAME_ICS: FV3GFS
