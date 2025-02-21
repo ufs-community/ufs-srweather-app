@@ -6,7 +6,7 @@ Defining an SRW App Workflow
 
 Many predefined workflows with optional variants exist within the Short-Range Weather Application, but the Application also includes the ability to define a new workflow from scratch. This functionality allows users to add tasks to the workflow to meet their scientific exploration needs.
 
-Rocoto is the primary workflow manager software used by the UFS SRW App. Rocoto workflows are defined in an XML file (``FV3LAM_wflow.xml``) based on parameters set during experiment generation. The SRW Rocoto XML is built using the UW Tools Rocoto Tool. Reference its documentation `here<https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/rocoto.html/>`__. For more information about Rocoto, check out its `documentation here <http://christopherwharrop.github.io/rocoto/>`_.
+Rocoto is the primary workflow manager software used by the UFS SRW App. Rocoto workflows are defined in an XML file (``FV3LAM_wflow.xml``) based on parameters set during experiment generation. The SRW Rocoto XML is built using the UW Tools Rocoto Tool. Reference its documentation `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/rocoto.html/>`__. For more information about Rocoto, check out its `documentation here <http://christopherwharrop.github.io/rocoto/>`_.
 
 Order of Precedence
 ===================
