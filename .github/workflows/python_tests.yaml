@@ -52,7 +52,7 @@ jobs:
           export PYTHONPATH=$(pwd)/ush
           # Retrieve fix files so generate_FV3LAM_workflow.py tests complete successfully
           mkdir -p /home/runner/work && cd /home/runner/work
-          aws s3 cp --recursive https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/fix/
+          aws s3 cp --recursive https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/fix/ .
           cd -
           export CI_FIX_FILES=/home/runner/work/fix
           python -m unittest tests/test_python/*.py
