@@ -27,7 +27,7 @@ class Testing(unittest.TestCase):
 
         # run workflows in separate process to avoid conflict between community and nco settings
         def run_workflow(USHdir, logfile):
-            p = Process(target=generate_FV3LAM_wflow, args=(USHdir,"config.yaml",logfile))
+            p = Process(target=generate_FV3LAM_wflow, args=(USHdir,"config.yaml",logfile,True))
             p.start()
             p.join()
             exit_code = p.exitcode
