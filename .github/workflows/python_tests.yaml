@@ -50,10 +50,11 @@ jobs:
           micromamba activate srw_app
           export UNIT_TEST=True
           export PYTHONPATH=$(pwd)/ush
-          # Retrieve fix files so generate_FV3LAM_workflow.py tests complete successfully
-          mkdir -p /home/runner/work
-          aws s3 cp --recursive --no-sign-request --no-progress s3://noaa-ufs-srw-pds/develop-20240618/fix/ /home/runner/work/
+          # Make dummy directories for fix files so generate_FV3LAM_workflow.py tests complete successfully
+#          aws s3 cp --recursive --no-sign-request --no-progress s3://noaa-ufs-srw-pds/develop-20240618/fix/ /home/runner/work/
           export CI_FIX_FILES=/home/runner/work/fix
+          mkdir -p $CI_FIX_FILES/fix_am
+
           python -m unittest tests/test_python/*.py
 
       - name: Run python functional tests
