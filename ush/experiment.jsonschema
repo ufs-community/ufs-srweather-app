@@ -186,6 +186,7 @@
           "enum": [
             "DERECHO",
             "GAEA",
+            "GAEA-C6",
             "HERA",
             "HERCULES",
             "JET",

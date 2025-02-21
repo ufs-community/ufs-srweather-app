@@ -22,4 +22,9 @@ jobs:
       - name: Build documentation
         run: |
           cd doc
-          make doc
+          make clean && make html
+      - name: Check links
+        if: ${{ !cancelled() }}
+        run: |
+          cd doc
+          make linkcheck
