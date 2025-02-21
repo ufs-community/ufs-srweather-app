@@ -30,9 +30,7 @@ task_run_fcst:
   QUILTING: true
   envvars:
     PRINT_ESMF: True
-  fv3:
-    execution:
-      threads: 1
+    OMP_NUM_THREADS_RUN_FCST: 1
 task_plot_allvars:
   envvars:
     COMOUT_REF: ""

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Read in the configuration YAMLs and prepare a self-consistenet
+Read in the configuration YAMLs and prepare a self-consistent
 experiment configuration file.
 """
 

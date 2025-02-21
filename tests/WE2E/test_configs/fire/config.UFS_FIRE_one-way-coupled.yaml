@@ -34,7 +34,8 @@ task_run_fcst:
     execution:
       batchargs:
         walltime: 01:00:00
-      threads: 1
+    envvars:
+      OMP_NUM_THREADS_RUN_FCST: 1
 task_plot_allvars:
   envvars:
     COMOUT_REF: ""

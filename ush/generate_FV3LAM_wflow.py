@@ -436,7 +436,7 @@ def generate_FV3LAM_wflow(
         })
 
     # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
-    if expt_config['fire'].get('UFS_FIRE'):
+    if expt_config['fire']['envvars']['UFS_FIRE']:
         gfs_physics_nml_dict.update({
             "cpl_fire": True,
         })
@@ -681,15 +681,15 @@ def generate_FV3LAM_wflow(
     #
     #-----------------------------------------------------------------------
     #
-    if expt_config['fire'].get('UFS_FIRE'):
+    if expt_config['fire']['envvars']['UFS_FIRE']:
         logging.debug("Setting fire namelist values")
         fire_nml_dict = {}
         fire_nml_dict['atm'] = {}
         fire_nml_dict['time'] = {}
         fire_nml_dict['fire'] = {}
         # Fill in &atm variables
-        fire_nml_dict['atm']['interval_atm'] = expt_config['task_run_fcst']['DT_ATMOS']
-        fire_nml_dict['atm']['kde'] = expt_config['task_make_ics']['LEVP']
+        fire_nml_dict['atm']['interval_atm'] = expt_config['task_run_fcst']['envvars']['DT_ATMOS']
+        fire_nml_dict['atm']['kde'] = expt_config['task_make_ics']['envvars']['LEVP']
         # Fill in &fire and static &time variables
 
         # These settings must be handled specially below
@@ -698,7 +698,7 @@ def generate_FV3LAM_wflow(
                       "FIRE_IGNITION_END_LAT", "FIRE_IGNITION_END_LON"]
 
         # These settings do not get added to namelist, or are handled elsewhere
-        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS"]
+        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "envvars"]
         pass_settings.extend(each_ignit)
 
         for setting in expt_config['fire']:

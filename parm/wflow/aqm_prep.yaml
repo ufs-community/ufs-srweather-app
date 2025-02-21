@@ -92,6 +92,7 @@ task_nexus_post_split:
     <<: *default_vars
     nprocs: '{{ task_nexus_post_split.execution.batchargs.cores }}'
   cores: !int '{{ task_nexus_post_split.execution.batchargs.cores }}'
+  exclusive: "True"
   walltime: '{{ task_nexus_post_split.execution.batchargs.walltime }}'
   dependency:
     metataskdep:
