@@ -45,7 +45,7 @@ def create_symlink_to_file(target, symlink, relative=True):
             print_err_msg_exit(
                 f"""
                 Cannot create symlink to specified target file because the latter does
-                not exist or is not a file:
+                not exist or is not readable:
                     target = '{target}'"""
             )
 
