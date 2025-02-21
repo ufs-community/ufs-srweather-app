@@ -38,14 +38,16 @@ from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
 
+
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
-        ushdir: str,
-        config: str = "config.yaml",
-        logfile: str = "log.generate_FV3LAM_wflow",
-        debug: bool = False) -> str:
+    ushdir: str,
+    config: str = "config.yaml",
+    logfile: str = "log.generate_FV3LAM_wflow",
+    debug: bool = False,
+) -> str:
     """
-    Sets up a forecast experiment and creates a workflow (according to the parameters specified 
+    Sets up a forecast experiment and creates a workflow (according to the parameters specified
     in the configuration file)
 
     Args:
@@ -72,7 +74,7 @@ def generate_FV3LAM_wflow(
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(ushdir,user_config_fn=config,debug=debug)
+    expt_config = setup(ushdir, user_config_fn=config, debug=debug)
 
     #
     # -----------------------------------------------------------------------
@@ -98,7 +100,7 @@ def generate_FV3LAM_wflow(
         uwrocoto.realize(
             config=rocoto_yaml_fp,
             output_file=wflow_xml_fp,
-            )
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -118,22 +120,27 @@ def generate_FV3LAM_wflow(
         verbose=debug,
     )
 
-    with open(wflow_launch_script_fp, "r", encoding='utf-8') as launch_script_file:
+    with open(wflow_launch_script_fp, "r", encoding="utf-8") as launch_script_file:
         launch_script_content = launch_script_file.read()
 
     # Stage an experiment-specific launch file in the experiment directory
     template = Template(launch_script_content)
 
     # The script needs several variables from the workflow and user sections
-    template_variables = {**expt_config["user"], **expt_config["workflow"],
-            "valid_vals_BOOLEAN": list_to_str(expt_config["constants"]["valid_vals_BOOLEAN"])}
-    launch_content =  template.safe_substitute(template_variables)
+    template_variables = {
+        **expt_config["user"],
+        **expt_config["workflow"],
+        "valid_vals_BOOLEAN": list_to_str(
+            expt_config["constants"]["valid_vals_BOOLEAN"]
+        ),
+    }
+    launch_content = template.safe_substitute(template_variables)
 
     launch_fp = os.path.join(exptdir, wflow_launch_script_fn)
-    with open(launch_fp, "w", encoding='utf-8') as expt_launch_fn:
+    with open(launch_fp, "w", encoding="utf-8") as expt_launch_fn:
         expt_launch_fn.write(launch_content)
 
-    os.chmod(launch_fp, os.stat(launch_fp).st_mode|S_IXUSR)
+    os.chmod(launch_fp, os.stat(launch_fp).st_mode | S_IXUSR)
 
     #
     # -----------------------------------------------------------------------
@@ -151,9 +158,13 @@ def generate_FV3LAM_wflow(
     import_vars(dictionary=flatten_dict(expt_config))
     workflow_config = expt_config["workflow"]
     if workflow_config["USE_CRON_TO_RELAUNCH"]:
-        add_crontab_line(called_from_cron=False,machine=expt_config["user"]["MACHINE"],
-                         crontab_line=workflow_config["CRONTAB_LINE"],
-                         exptdir=exptdir,debug=debug)
+        add_crontab_line(
+            called_from_cron=False,
+            machine=expt_config["user"]["MACHINE"],
+            crontab_line=workflow_config["CRONTAB_LINE"],
+            exptdir=exptdir,
+            debug=debug,
+        )
 
     #
     # Copy or symlink fix files
@@ -161,7 +172,9 @@ def generate_FV3LAM_wflow(
     platform_config = expt_config["platform"]
     fixgsm = platform_config["FIXgsm"]
     fixam = workflow_config["FIXam"]
-    fixgsm_files_to_copy_to_fixam = expt_config["fixed_files"]["FIXgsm_FILES_TO_COPY_TO_FIXam"]
+    fixgsm_files_to_copy_to_fixam = expt_config["fixed_files"][
+        "FIXgsm_FILES_TO_COPY_TO_FIXam"
+    ]
     if symlink_fix_files := workflow_config["SYMLINK_FIX_FILES"]:
         log_info(
             f"""
@@ -244,7 +257,9 @@ def generate_FV3LAM_wflow(
         Copying the template field table file to the experiment directory...""",
         verbose=debug,
     )
-    shutil.copy(workflow_config["FIELD_TABLE_TMPL_FP"], workflow_config["FIELD_TABLE_FP"])
+    shutil.copy(
+        workflow_config["FIELD_TABLE_TMPL_FP"], workflow_config["FIELD_TABLE_FP"]
+    )
 
     #
     # Copy the CCPP physics suite definition file from its location in the
@@ -257,7 +272,10 @@ def generate_FV3LAM_wflow(
         the forecast model directory structure to the experiment directory...""",
         verbose=debug,
     )
-    shutil.copy(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"], workflow_config["CCPP_PHYS_SUITE_FP"])
+    shutil.copy(
+        workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"],
+        workflow_config["CCPP_PHYS_SUITE_FP"],
+    )
     #
     # Copy the field dictionary file from its location in the
     # clone of the FV3 code repository to the experiment directory (EXPT-
@@ -270,7 +288,9 @@ def generate_FV3LAM_wflow(
         directory...""",
         verbose=debug,
     )
-    shutil.copy(workflow_config["FIELD_DICT_IN_UWM_FP"], workflow_config["FIELD_DICT_FP"])
+    shutil.copy(
+        workflow_config["FIELD_DICT_IN_UWM_FP"], workflow_config["FIELD_DICT_FP"]
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -314,8 +334,11 @@ def generate_FV3LAM_wflow(
     # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
     #
     lsoil = 4
-    if expt_config["task_get_extrn_ics"]["envvars"]["EXTRN_MDL_NAME_ICS"] in ("HRRR", "RAP") \
-        and sdf_uses_ruc_lsm:
+    if (
+        expt_config["task_get_extrn_ics"]["envvars"]["EXTRN_MDL_NAME_ICS"]
+        in ("HRRR", "RAP")
+        and sdf_uses_ruc_lsm
+    ):
         lsoil = 9
     ccpp_phys_suite = workflow_config["CCPP_PHYS_SUITE"]
     if ccpp_phys_suite == "FV3_GFS_v15_thompson_mynn_lam3km":
@@ -345,115 +368,183 @@ def generate_FV3LAM_wflow(
     }
 
     fv_core_nml_dict = {}
-    fv_core_nml_dict.update({
-        "target_lon": expt_config["grid_params"]["LON_CTR"],
-        "target_lat": expt_config["grid_params"]["LAT_CTR"],
-        "nrows_blend": expt_config["global"]["HALO_BLEND"],
-        #
-        # Question:
-        # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
-        # on how the FV3 code uses the stretch_fac parameter in the namelist file.
-        # Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
-        # to something like 0.9999, but is it ok to set it to that here in the
-        # FV3 namelist file?
-        #
-        "stretch_fac": expt_config["grid_params"]["STRETCH_FAC"],
-        "npx": expt_config["grid_params"]["NX"] + 1,
-        "npy": expt_config["grid_params"]["NY"] + 1,
-        "layout": [expt_config["task_run_fcst"]["LAYOUT_X"],
-            expt_config["task_run_fcst"]["LAYOUT_Y"]],
-        "bc_update_interval": expt_config["task_get_extrn_lbcs"]["envvars"]["LBC_SPEC_INTVL_HRS"],
-        "npz": expt_config["task_make_lbcs"]["LEVP"] - 1,
-    })
+    fv_core_nml_dict.update(
+        {
+            "target_lon": expt_config["grid_params"]["LON_CTR"],
+            "target_lat": expt_config["grid_params"]["LAT_CTR"],
+            "nrows_blend": expt_config["global"]["HALO_BLEND"],
+            #
+            # Question:
+            # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
+            # on how the FV3 code uses the stretch_fac parameter in the namelist file.
+            # Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
+            # to something like 0.9999, but is it ok to set it to that here in the
+            # FV3 namelist file?
+            #
+            "stretch_fac": expt_config["grid_params"]["STRETCH_FAC"],
+            "npx": expt_config["grid_params"]["NX"] + 1,
+            "npy": expt_config["grid_params"]["NY"] + 1,
+            "layout": [
+                expt_config["task_run_fcst"]["LAYOUT_X"],
+                expt_config["task_run_fcst"]["LAYOUT_Y"],
+            ],
+            "bc_update_interval": expt_config["task_get_extrn_lbcs"]["envvars"][
+                "LBC_SPEC_INTVL_HRS"
+            ],
+            "npz": expt_config["task_make_lbcs"]["LEVP"] - 1,
+        }
+    )
     cpl_aqm = expt_config["cpl_aqm_parm"]["CPL_AQM"]
     if ccpp_phys_suite == "FV3_GFS_v15p2":
         if cpl_aqm:
-            fv_core_nml_dict.update({
-                "dnats": 5
-            })
+            fv_core_nml_dict.update({"dnats": 5})
         else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
+            fv_core_nml_dict.update({"dnats": 1})
     elif ccpp_phys_suite == "FV3_GFS_v16":
         if cpl_aqm:
-            fv_core_nml_dict.update({
-                "hord_tr": 8,
-                "dnats": 5,
-                "nord": 2
-            })
+            fv_core_nml_dict.update({"hord_tr": 8, "dnats": 5, "nord": 2})
         else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
+            fv_core_nml_dict.update({"dnats": 1})
     elif ccpp_phys_suite == "FV3_GFS_v17_p8":
         if cpl_aqm:
-            fv_core_nml_dict.update({
-                "dnats": 4
-            })
+            fv_core_nml_dict.update({"dnats": 4})
         else:
-            fv_core_nml_dict.update({
-                "dnats": 0
-            })
+            fv_core_nml_dict.update({"dnats": 0})
 
     settings["fv_core_nml"] = fv_core_nml_dict
 
     gfs_physics_nml_dict = {}
-    gfs_physics_nml_dict.update({
-        "kice": kice or None,
-        "lsoil": lsoil or None,
-        "print_diff_pgr": expt_config["global"]["PRINT_DIFF_PGR"],
-    })
+    gfs_physics_nml_dict.update(
+        {
+            "kice": kice or None,
+            "lsoil": lsoil or None,
+            "print_diff_pgr": expt_config["global"]["PRINT_DIFF_PGR"],
+        }
+    )
 
     if expt_config["smoke_dust_parm"]["DO_SMOKE_DUST"]:
-        gfs_physics_nml_dict.update({
-            "ebb_dcycle": expt_config["smoke_dust_parm"]["EBB_DCYCLE"],
-            "rrfs_sd": True,
-    })
+        gfs_physics_nml_dict.update(
+            {
+                "ebb_dcycle": expt_config["smoke_dust_parm"]["EBB_DCYCLE"],
+                "rrfs_sd": True,
+            }
+        )
 
     if cpl_aqm:
-        gfs_physics_nml_dict.update({
-            "cplaqm": True,
-            "cplocn2atm": False,
-            "fscav_aero": [
-                "aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0",
-                "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0",
-                "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0",
-                "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0",
-                "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0",
-                "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0",
-                "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0",
-                "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0",
-                "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0",
-                "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0",
-                "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0",
-                "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0",
-                "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0",
-                "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0",
-                "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0",
-                "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
-                "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
-        })
+        gfs_physics_nml_dict.update(
+            {
+                "cplaqm": True,
+                "cplocn2atm": False,
+                "fscav_aero": [
+                    "aacd:0.0",
+                    "acet:0.0",
+                    "acrolein:0.0",
+                    "acro_primary:0.0",
+                    "ald2:0.0",
+                    "ald2_primary:0.0",
+                    "aldx:0.0",
+                    "benzene:0.0",
+                    "butadiene13:0.0",
+                    "cat1:0.0",
+                    "cl2:0.0",
+                    "clno2:0.0",
+                    "co:0.0",
+                    "cres:0.0",
+                    "cron:0.0",
+                    "ech4:0.0",
+                    "epox:0.0",
+                    "eth:0.0",
+                    "etha:0.0",
+                    "ethy:0.0",
+                    "etoh:0.0",
+                    "facd:0.0",
+                    "fmcl:0.0",
+                    "form:0.0",
+                    "form_primary:0.0",
+                    "gly:0.0",
+                    "glyd:0.0",
+                    "h2o2:0.0",
+                    "hcl:0.0",
+                    "hg:0.0",
+                    "hgiigas:0.0",
+                    "hno3:0.0",
+                    "hocl:0.0",
+                    "hono:0.0",
+                    "hpld:0.0",
+                    "intr:0.0",
+                    "iole:0.0",
+                    "isop:0.0",
+                    "ispd:0.0",
+                    "ispx:0.0",
+                    "ket:0.0",
+                    "meoh:0.0",
+                    "mepx:0.0",
+                    "mgly:0.0",
+                    "n2o5:0.0",
+                    "naph:0.0",
+                    "no:0.0",
+                    "no2:0.0",
+                    "no3:0.0",
+                    "ntr1:0.0",
+                    "ntr2:0.0",
+                    "o3:0.0",
+                    "ole:0.0",
+                    "opan:0.0",
+                    "open:0.0",
+                    "opo3:0.0",
+                    "pacd:0.0",
+                    "pan:0.0",
+                    "panx:0.0",
+                    "par:0.0",
+                    "pcvoc:0.0",
+                    "pna:0.0",
+                    "prpa:0.0",
+                    "rooh:0.0",
+                    "sesq:0.0",
+                    "so2:0.0",
+                    "soaalk:0.0",
+                    "sulf:0.0",
+                    "terp:0.0",
+                    "tol:0.0",
+                    "tolu:0.0",
+                    "vivpo1:0.0",
+                    "vlvoo1:0.0",
+                    "vlvoo2:0.0",
+                    "vlvpo1:0.0",
+                    "vsvoo1:0.0",
+                    "vsvoo2:0.0",
+                    "vsvoo3:0.0",
+                    "vsvpo1:0.0",
+                    "vsvpo2:0.0",
+                    "vsvpo3:0.0",
+                    "xopn:0.0",
+                    "xylmn:0.0",
+                    "*:0.2",
+                ],
+            }
+        )
 
     # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
-    if expt_config['fire']['envvars']['UFS_FIRE']:
-        gfs_physics_nml_dict.update({
-            "cpl_fire": True,
-        })
+    if expt_config["fire"]["envvars"]["UFS_FIRE"]:
+        gfs_physics_nml_dict.update(
+            {
+                "cpl_fire": True,
+            }
+        )
         field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding='UTF-8') as file:
+        with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding="UTF-8") as file:
             file.write(field_table_append)
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
     # Update levp in external_ic_nml; this should be the only variable that needs changing
 
-    settings["external_ic_nml"] = {"levp": expt_config['task_make_lbcs']['LEVP']}
+    settings["external_ic_nml"] = {"levp": expt_config["task_make_lbcs"]["LEVP"]}
 
     #
     # Add to "settings" the values of those namelist variables that specify
@@ -546,7 +637,7 @@ def generate_FV3LAM_wflow(
     # the C-resolution of the grid), and this parameter is in most workflow
     # configurations is not known until the grid is created.
     #
-    if not expt_config['rocoto']['tasks'].get('task_make_grid'):
+    if not expt_config["rocoto"]["tasks"].get("task_make_grid"):
 
         set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
 
@@ -658,11 +749,11 @@ def generate_FV3LAM_wflow(
 
     settings_str = cfg_to_yaml_str(settings)
     #
-    #-----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     #
     # Generate namelist files with stochastic physics if needed
     #
-    #-----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
         realize(
@@ -671,66 +762,75 @@ def generate_FV3LAM_wflow(
             output_file=worklflow_config["FV3_NML_STOCH_FP"],
             output_format="nml",
             update_config=get_nml_config(settings),
-            )
+        )
     # pylint: enable=undefined-variable
     #
-    #-----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     #
     # Generate UFS_FIRE namelist if needed. Most variables in the &time section
     # will be updated at the run_fcst step
     #
-    #-----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     #
-    if expt_config['fire']['envvars']['UFS_FIRE']:
+    if expt_config["fire"]["envvars"]["UFS_FIRE"]:
         logging.debug("Setting fire namelist values")
         fire_nml_dict = {}
-        fire_nml_dict['atm'] = {}
-        fire_nml_dict['time'] = {}
-        fire_nml_dict['fire'] = {}
+        fire_nml_dict["atm"] = {}
+        fire_nml_dict["time"] = {}
+        fire_nml_dict["fire"] = {}
         # Fill in &atm variables
-        fire_nml_dict['atm']['interval_atm'] = expt_config['task_run_fcst']['envvars']['DT_ATMOS']
-        fire_nml_dict['atm']['kde'] = expt_config['task_make_ics']['envvars']['LEVP']
+        fire_nml_dict["atm"]["interval_atm"] = expt_config["task_run_fcst"]["envvars"][
+            "DT_ATMOS"
+        ]
+        fire_nml_dict["atm"]["kde"] = expt_config["task_make_ics"]["envvars"]["LEVP"]
         # Fill in &fire and static &time variables
 
         # These settings must be handled specially below
-        each_ignit = ["FIRE_IGNITION_ROS", "FIRE_IGNITION_START_LAT", "FIRE_IGNITION_START_LON",
-                      "FIRE_IGNITION_RADIUS", "FIRE_IGNITION_START_TIME", "FIRE_IGNITION_END_TIME",
-                      "FIRE_IGNITION_END_LAT", "FIRE_IGNITION_END_LON"]
+        each_ignit = [
+            "FIRE_IGNITION_ROS",
+            "FIRE_IGNITION_START_LAT",
+            "FIRE_IGNITION_START_LON",
+            "FIRE_IGNITION_RADIUS",
+            "FIRE_IGNITION_START_TIME",
+            "FIRE_IGNITION_END_TIME",
+            "FIRE_IGNITION_END_LAT",
+            "FIRE_IGNITION_END_LON",
+        ]
 
         # These settings do not get added to namelist, or are handled elsewhere
         pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "envvars"]
         pass_settings.extend(each_ignit)
 
-        for setting in expt_config['fire']:
+        for setting in expt_config["fire"]:
             if setting in pass_settings:
                 pass
             elif setting == "DT_FIRE":
-                fire_nml_dict['time']['dt'] = expt_config['fire'][setting]
+                fire_nml_dict["time"]["dt"] = expt_config["fire"][setting]
             elif setting == "OUTPUT_DT_FIRE":
-                fire_nml_dict['time']['interval_output'] = expt_config['fire'][setting]
+                fire_nml_dict["time"]["interval_output"] = expt_config["fire"][setting]
             else:
                 # For all other settings in config.yaml, convert to lowercase
                 # and enter into namelist.fire's &fire section
-                fire_nml_dict['fire'][setting.lower()] = expt_config['fire'][setting]
+                fire_nml_dict["fire"][setting.lower()] = expt_config["fire"][setting]
 
         # The variables specific to each ignition need special handling: SRW uses a list, but the
         # fire model has these settings as separate namelist entries
-        for i in range(expt_config['fire']['FIRE_NUM_IGNITIONS']):
+        for i in range(expt_config["fire"]["FIRE_NUM_IGNITIONS"]):
             for setting in each_ignit:
                 # If not a list, convert to a 1-element list
-                if not isinstance(expt_config['fire'][setting], list):
-                    expt_config['fire'][setting] = [ expt_config['fire'][setting] ]
+                if not isinstance(expt_config["fire"][setting], list):
+                    expt_config["fire"][setting] = [expt_config["fire"][setting]]
 
                 nmle = f"{setting.lower()}{i+1}"
-                fire_nml_dict['fire'][nmle] = expt_config['fire'][setting][i]
+                fire_nml_dict["fire"][nmle] = expt_config["fire"][setting][i]
 
         realize(
-            input_config=expt_config['workflow']['FIRE_NML_BASE_FP'],
+            input_config=expt_config["workflow"]["FIRE_NML_BASE_FP"],
             input_format="nml",
-            output_file=expt_config['workflow']['FIRE_NML_FP'],
+            output_file=expt_config["workflow"]["FIRE_NML_FP"],
             output_format="nml",
             update_config=get_nml_config(fire_nml_dict),
-            )
+        )
 
     #
     # -----------------------------------------------------------------------
@@ -799,7 +899,9 @@ def generate_FV3LAM_wflow(
     return exptdir
 
 
-def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
+def setup_logging(
+    logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False
+) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen and printing all
     messages with detailed timing and routine info in the specified text file. If ``debug = True``,
@@ -816,7 +918,7 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
 
     formatter = logging.Formatter("%(name)-22s %(levelname)-8s %(message)s")
 
-    fh = logging.FileHandler(logfile, mode='w')
+    fh = logging.FileHandler(logfile, mode="w")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     logging.getLogger().addHandler(fh)
@@ -839,15 +941,24 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
 
 if __name__ == "__main__":
 
-    #Parse arguments
+    # Parse arguments
     parser = argparse.ArgumentParser(
-                     description="Script for setting up a forecast and creating a workflow"\
-                     "according to the parameters specified in the config file\n")
+        description="Script for setting up a forecast and creating a workflow"
+        "according to the parameters specified in the config file\n"
+    )
 
-    parser.add_argument('-c', '--config', default='config.yaml',
-                        help='Name of experiment config file in YAML format')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='Script will be run in debug mode with more verbose output')
+    parser.add_argument(
+        "-c",
+        "--config",
+        default="config.yaml",
+        help="Name of experiment config file in YAML format",
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Script will be run in debug mode with more verbose output",
+    )
     pargs = parser.parse_args()
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
@@ -856,8 +967,10 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        expt_dir = generate_FV3LAM_wflow(USHdir, pargs.config, wflow_logfile, pargs.debug)
-    except: # pylint: disable=bare-except
+        expt_dir = generate_FV3LAM_wflow(
+            USHdir, pargs.config, wflow_logfile, pargs.debug
+        )
+    except:  # pylint: disable=bare-except
         logging.exception(
             dedent(
                 f"""
