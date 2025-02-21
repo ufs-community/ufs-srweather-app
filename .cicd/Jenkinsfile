@@ -22,6 +22,7 @@ pipeline {
         choice(name: 'SRW_WRAPPER_TASK_DEPTH', choices: ['9', '1', '0'], description: '0=none, 1=simple, 9=all [default]')
         // WE2E Tests ?
         choice(name: 'SRW_WE2E_SINGLE_TEST', choices: ['coverage', 'none', 'skill-score', 'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0'], description: 'Specify the WE2E test to use')
+        text(name: 'SRW_WE2E_USER_INPUT_TEST', defaultValue: '', description: 'Enter a single WE2E test or multiple using this format Test-1\nTest-2\nTest-3\n')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
     }
 
@@ -248,6 +249,21 @@ pipeline {
                                         if (it == run_we2e_comprehensive_tests_label) {
                                             run_we2e_comprehensive_tests = true
                                         }
+                                    }
+                                }
+
+                                // Check if there is a user input WE2E test(s)
+                                if (params.SRW_WE2E_USER_INPUT_TEST != null && !params.SRW_WE2E_USER_INPUT_TEST.isEmpty()) {
+                                    
+                                    // Create empty txt test file and set it as the test type
+                                    sh "> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
+                                    single_test = user_input_test.txt
+
+                                    // Create user input list and add tests to txt file
+                                    def user_input_list = stringToList(params.SRW_WE2E_USER_INPUT_TEST, "\n")   
+
+                                    for (int i = 0; i < user_input_list.size(); ++i) {
+                                        sh "echo user_input_list[i] >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
                                     }
                                 }
 
