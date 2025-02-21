@@ -57,14 +57,6 @@ python\_utils.environment module
    :undoc-members:
    :show-inheritance:
 
-python\_utils.filesys\_cmds\_vrfy module
-----------------------------------------
-
-.. automodule:: python_utils.filesys_cmds_vrfy
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 python\_utils.fv3write\_parms\_lambert module
 ---------------------------------------------
 

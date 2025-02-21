@@ -7,5 +7,5 @@ WE2E
    WE2E_summary
    monitor_jobs
    print_test_info
-   run_WE2E_tests
+   run_we2e_tests
    utils
