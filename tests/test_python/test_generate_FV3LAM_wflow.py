@@ -55,7 +55,7 @@ class Testing(unittest.TestCase):
         )
         # If running CI, point config.yaml to correct location for fix files
         if fix_files:=get_env_var("CI_FIX_FILES"):
-            run_command(f"{sed} -i ''s|/home/username/DATA/UFS|{fix_files}|g "\
+            run_command(f"{sed} -i 's|/home/username/DATA/UFS|{fix_files}|g' "\
                         f"{USHdir}/config.yaml")
         run_workflow(USHdir, logfile)
 
