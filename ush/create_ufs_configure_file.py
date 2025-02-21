@@ -8,13 +8,14 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.config import get_yaml_config
-from uwtools.api.template import render
 
 from python_utils import (
     flatten_dict,
     print_info_msg,
 )
+
+from uwtools.api.config import get_yaml_config
+from uwtools.api.template import render
 
 def create_ufs_configure_file(run_dir,cfg):
     """ Creates a UFS configuration file in the specified run directory

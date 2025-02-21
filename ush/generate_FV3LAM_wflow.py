@@ -18,10 +18,6 @@ from stat import S_IXUSR
 from string import Template
 from textwrap import dedent
 
-from uwtools.api.config import get_nml_config, get_yaml_config, realize
-from uwtools.api import rocoto as uwrocoto
-
-
 from python_utils import (
     list_to_str,
     log_info,
@@ -37,6 +33,9 @@ from setup import setup
 from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
+
+from uwtools.api.config import get_nml_config, get_yaml_config, realize
+from uwtools.api import rocoto as uwrocoto
 
 
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
