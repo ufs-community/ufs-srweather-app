@@ -45,13 +45,13 @@ class Testing(unittest.TestCase):
         if not os.path.exists(build_settings_file):
             os.makedirs(EXECdir, exist_ok=True)
             with open(build_settings_file, 'w', encoding='utf-8') as build_settings:
-                build_settings.write('Machine: linux\n')
+                build_settings.write('Machine: LINUX\n')
                 build_settings.write('Application:\n')
 
         # community test case
         shutil.copy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(
-            f"""{sed} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
+            f"""{sed} -i 's/MACHINE: HERA/MACHINE: LINUX/g' {USHdir}/config.yaml"""
         )
         run_workflow(USHdir, logfile)
 
