@@ -184,7 +184,7 @@ def run_we2e_tests(homedir, args) -> None:
 
         test_config_updates = {
             "user": {
-                "MACHINE": machine,
+                "MACHINE": machine.upper(),
                 "ACCOUNT": args.account,
             },
             "platform": {

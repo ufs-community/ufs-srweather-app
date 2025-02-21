@@ -3,7 +3,7 @@ metadata:
     Sample community config
 user:
   RUN_ENVIR: community
-  MACHINE: hera
+  MACHINE: HERA
   ACCOUNT: an_account
 workflow:
   USE_CRON_TO_RELAUNCH: false
