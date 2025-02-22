@@ -51,8 +51,8 @@ jobs:
           export UNIT_TEST=True
           export PYTHONPATH=$(pwd)/ush
           # Make dummy directories for fix files so generate_FV3LAM_workflow.py tests complete successfully
-          export CI_FIX_FILES=/home/runner/work/fix
-          mkdir -p $CI_FIX_FILES/fix_am
+          export CI_FIX_FILES=/home/runner/work
+          mkdir -p $CI_FIX_FILES/fix/fix_am
 
           python -m unittest tests/test_python/test_generate_FV3LAM_wflow.py
 
