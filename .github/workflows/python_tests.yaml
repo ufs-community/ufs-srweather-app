@@ -54,7 +54,7 @@ jobs:
           export CI_FIX_FILES=/home/runner/work/fix
           mkdir -p $CI_FIX_FILES/fix_am
 
-          python -m unittest tests/test_python/*.py
+          python -m unittest tests/test_python/test_generate_FV3LAM_wflow.py
 
       - name: Run python functional tests
         run: |

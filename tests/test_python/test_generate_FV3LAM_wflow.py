@@ -27,7 +27,7 @@ class Testing(unittest.TestCase):
 
         # run workflows in separate process to avoid conflict between community and nco settings
         def run_workflow(USHdir, logfile):
-            p = Process(target=generate_FV3LAM_wflow, args=(USHdir,"config.yaml",logfile,True))
+            p = Process(target=generate_FV3LAM_wflow, args=(USHdir,"config.yaml",logfile))
             p.start()
             p.join()
             exit_code = p.exitcode
@@ -58,7 +58,7 @@ class Testing(unittest.TestCase):
             print(f"{fix_files=}")
             config_file=f"{USHdir}/config.yaml"
             sed_command=f"{sed} -i 's|/home/username/DATA/UFS|{fix_files}|g' "\
-                        f"{USHdir}/config.yaml"
+                        f"{USHdir}/machine/linux.yaml"
             print(f"{fix_files=}")
             print(f"{config_file} contents before sed:")
             with open(config_file, "r", encoding="utf-8") as file:
