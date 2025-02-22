@@ -56,9 +56,9 @@ class Testing(unittest.TestCase):
         # If running CI, point config.yaml to correct location for fix files
         if fix_files:=get_env_var("CI_FIX_FILES"):
             print(f"{fix_files=}")
-            config_file=f"{USHdir}/config.yaml"
+            config_file=f"{USHdir}/machine/linux.yaml"
             sed_command=f"{sed} -i 's|/home/username/DATA/UFS|{fix_files}|g' "\
-                        f"{USHdir}/machine/linux.yaml"
+                        f"{config_file}"
             print(f"{fix_files=}")
             print(f"{config_file} contents before sed:")
             with open(config_file, "r", encoding="utf-8") as file:
