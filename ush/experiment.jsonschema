@@ -185,8 +185,8 @@
         "MACHINE": {
           "enum": [
             "DERECHO",
-            "GAEA",
-            "GAEA-C6",
+            "GAEAC5",
+            "GAEAC6",
             "HERA",
             "HERCULES",
             "JET",

@@ -73,6 +73,7 @@ MET_ensemble_verification_only_vx_time_lag
 MET_ensemble_verification_winter_wx
 MET_verification_only_vx
 pregen_grid_orog_sfc_climo
+smoke_dust_grid_RRFS_CONUS_3km_suite_HRRR_gf
 specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS
 specify_template_filenames
 vx-det_long-fcst_custom-vx-config_aiml-fourcastnet
