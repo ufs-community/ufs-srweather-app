@@ -173,7 +173,7 @@ Each experiment requires certain basic information to run (e.g., date, grid, phy
 Default configuration: ``config_defaults.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Each of the sections may have subsections describing run-time resource requirements in an ``execution:`` block with a structure described by the ``uwtools`` YAML documentation `here<https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/components/execution.html>`_ and variables that are used as bash environment variables in the run scripts will appear under the ``envvars:`` block. Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` and in the ``config_defaults.yaml`` file comments. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``.
+In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Each of the sections may have subsections describing run-time resource requirements in an ``execution:`` block with a structure described by the ``uwtools`` YAML documentation `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/components/execution.html/>`__ and variables that are used as bash environment variables in the run scripts will appear under the ``envvars:`` block. Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` and in the ``config_defaults.yaml`` file comments. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``.
 
 .. _UserSpecificConfig:
 
@@ -1061,14 +1061,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    * - plot_allvars
      - Run the plotting task and, optionally, the difference plotting task
 
-The METplus verification tasks and metatasks that are included by default in ``verify_*.yaml`` are described
-in :numref:`Table %s <VXWorkflowTasksTable>`. The ``taskgroup`` entry after the name of each (meta)task indicates
-the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:``
-in order for that (meta)task to be considered for inclusion in the workflow (see :numref:`Section %s <DefineWorkflow>`
-for details). As described in  :numref:`Section %s <defining_metatasks>`, metatasks define a set of tasks in the
-workflow based on multiple values of one or more parameters such as the ensemble member index, the accumulation
-interval (for cumulative fields such as accumulated precipitation), and the name of the verification field group
-(see description of ``VX_FIELD_GROUPS`` in :numref:`Section %s <GeneralVXParams>`).
+The METplus verification tasks and metatasks that are included by default in ``verify_*.yaml`` are described in :numref:`Table %s <VXWorkflowTasksTable>`. The ``taskgroup`` entry after the name of each (meta)task indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` in order for that (meta)task to be considered for inclusion in the workflow (see :numref:`Section %s <DefineWorkflow>` for details). Metatasks define a set of tasks in the workflow based on multiple values of one or more parameters such as the ensemble member index, the accumulation interval (for cumulative fields such as accumulated precipitation), and the name of the verification field group (see description of ``VX_FIELD_GROUPS`` in :numref:`Section %s <GeneralVXParams>`).
 
 .. _VXWorkflowTasksTable:
 
