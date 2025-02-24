@@ -45,7 +45,7 @@ function usage {
 
 }
 
-machines=( hera jet cheyenne derecho orion wcoss2 gaea gaea-c6 odin singularity macos noaacloud )
+machines=( hera cheyenne derecho orion wcoss2 gaeac5 gaeac6 odin singularity macos noaacloud )
 
 if [ "$1" = "-h" ] ; then usage ; fi
 [[ $# -le 2 ]] && usage
