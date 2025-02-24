@@ -33,6 +33,25 @@ export we2e_test_dir="${workspace}/tests/WE2E"
 rm -f ${workspace}/tests/WE2E/log.*
 rm -f ${we2e_experiment_base_dir}/*/log.generate_FV3LAM_wflow ${we2e_experiment_base_dir}/*/log/* WE2E_summary*txt
 
+# Modify coverage suites
+if [[ "${SRW_WE2E_SINGLE_TEST}" == "coverage" ]]; then
+    
+    # Create noaacloud coverage suite
+    [[ "${SRW_PLATFORM}" == "pclusternoaav2use1" ]] && cp ${we2e_test_dir}/machine_suites/coverage.noaacloud.aws ${we2e_test_dir}/machine_suites/coverage.noaacloud
+    [[ "${SRW_PLATFORM}" == "azclusternoaav2use1" ]] && cp ${we2e_test_dir}/machine_suites/coverage.noaacloud.azure ${we2e_test_dir}/machine_suites/coverage.noaacloud
+    [[ "${SRW_PLATFORM}" == "gclusternoaav2usc1" ]] && cp ${we2e_test_dir}/machine_suites/coverage.noaacloud.gcp ${we2e_test_dir}/machine_suites/coverage.noaacloud
+
+    # Add skill-score WE2E test to coverage suites
+    if [[ "${SRW_PLATFORM}" == "hera" ]]; then
+        coverage_test_name="hera.${SRW_COMPILER}.*"
+    else
+        coverage_test_name="${platform}"
+    fi
+    if [[ "${SRW_PLATFORM}" != "orion" ]]; then
+           echo grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0 >> ${we2e_test_dir}/machine_suites/coverage.${coverage_test_name}
+    fi
+fi
+
 # Run the end-to-end tests.
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
     export test_type="comprehensive"

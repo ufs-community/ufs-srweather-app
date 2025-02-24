@@ -10,7 +10,7 @@ OPTIONS
       show this help guide
   -p, --platform=PLATFORM
       name of machine you are building on
-      (e.g. cheyenne | hera | jet | orion | wcoss2)
+      (e.g. cheyenne | hera | orion | wcoss2)
   -c, --compiler=COMPILER
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
