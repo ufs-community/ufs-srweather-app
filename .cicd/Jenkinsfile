@@ -256,15 +256,15 @@ pipeline {
                                 if (params.SRW_WE2E_USER_INPUT_TEST != null && !params.SRW_WE2E_USER_INPUT_TEST.isEmpty()) {
                                     echo "${params.SRW_WE2E_USER_INPUT_TEST}"    
                                     // Create empty txt test file and set it as the test type
-                                    sh "echo ${params.SRW_WE2E_USER_INPUT_TEST} > ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
-                                    sh "> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/loop_user_input_test.txt"
+                                    // sh "echo ${params.SRW_WE2E_USER_INPUT_TEST} > ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
+                                    sh "> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
                                     single_test = "user_input_test.txt"
 
                                     // Create user input list and add tests to txt file
                                     def user_input_list = params.SRW_WE2E_USER_INPUT_TEST.split('\n')
 
                                     for (test in user_input_list) {
-                                        sh "echo ${test} >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/loop_user_input_test.txt"
+                                        sh "echo ${test} >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
                                     }
                                 }
 
