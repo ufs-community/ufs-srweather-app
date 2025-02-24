@@ -262,7 +262,7 @@ pipeline {
 
                                     // Create user input list and add tests to txt file
                                     def user_input_list = params.SRW_WE2E_USER_INPUT_TEST.split('\n')
-
+                                    echo "${user_input_list}"
                                     for (test in user_input_list) {
                                         sh "echo ${test} >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
                                     }
