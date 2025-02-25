@@ -27,9 +27,18 @@ platform:
   FIXorg: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /contrib/EPIC/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_aqm
+  FIXemis: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_emis
+  FIXsmoke: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_smoke
+  FIXupp: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_upp
+  FIXcrtm: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws nomads
 data:
   ics_lbcs:
     FV3GFS:
       nemsio: /contrib/EPIC/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
-      grib2: /contrib/EPIC/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
+      grib2: /contrib/EPIC/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+
+smoke_dust_parm:
+         COMINsmoke_default: /contrib/EPIC/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
+         COMINrave_default: /contrib/EPIC/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire

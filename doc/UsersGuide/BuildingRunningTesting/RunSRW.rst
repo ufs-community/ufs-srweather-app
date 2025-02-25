@@ -310,9 +310,9 @@ On platforms where Rocoto and :term:`cron` are available, users can automate res
    USE_CRON_TO_RELAUNCH: true
    CRON_RELAUNCH_INTVL_MNTS: 3
 
-.. note::
+.. attention::
 
-   On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
+   Cron is not available on Derecho or Gaea. On Orion/Hercules, users must be logged into the [hercules/orion]-login-1 node to use cron.
 
 When running with GNU compilers (i.e., if the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler), users must also set ``COMPILER: "gnu"`` in the ``workflow:`` section of the ``config.yaml`` file.
 
@@ -1340,6 +1340,10 @@ where ``/path/to/experiment/directory`` is changed to correspond to the user's `
 
    * On NOAA Cloud instances, ``*/1 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 1``) is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
    * On other NOAA HPC systems, administrators discourage using ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on other Level 1 systems.
+
+.. attention::
+
+   Cron is not available on Derecho or Gaea. On Orion/Hercules, users must be logged into the [hercules/orion]-login-1 node to use cron.
 
 To check the experiment progress:
 
