@@ -107,28 +107,30 @@ if [ -e "${DCOMINfire}/${aqm_fire_file_fn}" ]; then
     FILE_13km=$(find_latest_file "${DCOMINfire}/${yyyymmdd_dn}/rave" "${FILE_13km_pattern}")
     FILE_13km_md1=$(find_latest_file "${DCOMINfire}/${yyyymmdd_dn_md1}/rave" "${FILE_13km_md1_pattern}")
 
-    if ls ${FILE_13km} 1> /dev/null 2>&1; then
+#   if ls ${FILE_13km} 1> /dev/null 2>&1; then
+    if [ "${FILE_13km}" != "" ] && [ -f ${FILE_13km} ]; then
        if [ $(stat -c %s ${FILE_13km}) -gt 4000000 ]; then
            cpreq ${FILE_13km} ${FILE_curr}
        fi
-    elif ls ${FILE_13km_md1} 1> /dev/null 2>&1; then
+#   elif ls ${FILE_13km_md1} 1> /dev/null 2>&1; then
+    elif [ "${FILE_13km_md1}" != "" ] && [ -f ${FILE_13km_md1} ]; then
        if [ $(stat -c %s ${FILE_13km_md1}) -gt 4000000 ]; then
            echo "WARNING: ${FILE_13km} does not exist or is broken. Replacing with the file from the previous date..."
            cpreq ${FILE_13km_md1} ${FILE_curr}
        fi
     else
-      message_txt="WARNING Fire Emission RAW data does not exist or is broken:
-  FILE_13km_md1 = \"${FILE_13km_md1}\"
-  DCOMINfire = \"${DCOMINfire}\""
+      message_txt="WARNING Fire Emission RAW data does not exist or is broken: 
+  \n FILE_13km_md1=\"${FILE_13km_md1} \" 
+  \n DCOMINfire=\"${DCOMINfire}\" \n"
 
       cpreq "${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_curr}"
-      message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
+      message_warning="WARNING: ${message_txt}. Replacing with the dummy file ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc :: AQM RUN SOFT FAILED."
       print_info_msg "${message_warning}"
       if [ "${EMAIL_SDM^^}" = "YES" ]; then
         MAILFROM=${MAILFROM:-"nco.spa@noaa.gov"}
         MAILTO=${MAILTO:-"${maillist}"}
         subject="${cyc}Z ${RUN^^} Output for ${basinname:-} WILDFIRE EMIS "
-        mail.py -s "${subject}" -v "${MAILTO}"
+        echo -e $message_warning | mail.py -s "${subject}" -v "${MAILTO}"
       fi
     fi
   done
