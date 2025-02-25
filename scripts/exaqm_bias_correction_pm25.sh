@@ -342,6 +342,8 @@ EOF1
       cpreq ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
       chk=0
     else 
+      message_txt="FATAL ERROR pm2.5.corrected files at 00z and previous day 12z requried for Bias-Correction Post at \"${cycle}\" does not exist"
+      err_exit "${message_txt}"
       flag_run_bicor_max=no
     fi
   fi
@@ -354,6 +356,8 @@ EOF1
       cpreq ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
       chk=0
     else
+      message_txt="FATAL ERROR pm2.5.corrected files at 00z and previous day 12z requried for Bias-Correction Post at \"${cycle}\" does not exist"
+      err_exit "${message_txt}"
       flag_run_bicor_max=no
     fi
 
@@ -364,6 +368,8 @@ EOF1
       cpreq ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  c.nc
       chk1=0
     else
+      message_txt="FATAL ERROR pm2.5.corrected files at 00z and previous day 12z requried for Bias-Correction Post at \"${cycle}\" does not exist"
+      err_exit "${message_txt}"
       flag_run_bicor_max=no
     fi
   fi
