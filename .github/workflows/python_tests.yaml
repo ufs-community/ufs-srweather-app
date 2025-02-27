@@ -24,21 +24,22 @@ jobs:
       - name: Install Micromamba and srw_app environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: environment.yml
-          environment-name: srw_app
+          environment-file: sd_environment.yml
+          environment-name: srw_sd
           init-shell: bash
           cache-downloads: true
           cache-environment: true
 
       - name: Lint the python code
         run: |
-          micromamba activate srw_app
+          micromamba activate srw_sd
           export PYTHONPATH=$(pwd)/ush
           pylint --ignore-imports=yes tests/test_python/
           pylint ush/create_*.py
           pylint ush/generate_FV3LAM_wflow.py
           pylint ush/set_fv3nml*.py
           pylint ush/update_input_nml.py
+          pylint ush/smoke_dust
 
       - name: Checkout externals
         run: |
@@ -47,15 +48,16 @@ jobs:
       - name: Run python unittests
         run: |
           # exclude test_retrieve_data that is tested in functional test
-          micromamba activate srw_app
+          micromamba activate srw_sd
           export UNIT_TEST=True
           export PYTHONPATH=$(pwd)/ush
           python -m unittest tests/test_python/*.py
+          export PYTHONPATH=${PYTHONPATH}:$(pwd)/tests
+          python -m pytest tests/test_python/test_smoke_dust
 
       - name: Run python functional tests
         run: |
-          micromamba activate srw_app
+          micromamba activate srw_sd
           export CI=true
           export PYTHONPATH=${PWD}/ush
           python3 -m unittest tests/test_python/test_retrieve_data.py
-
