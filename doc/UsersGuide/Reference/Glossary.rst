@@ -103,7 +103,7 @@ Glossary
       Fluid Dynamics Laboratory <https://www.gfdl.noaa.gov/>`_ (GFDL), it is a scalable and flexible dycore capable of both hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the UFS Weather Model.
 
    FVCOM
-      `Finite Volume Community Ocean Model <http://www.fvcom.org/>`_. FVCOM is used in modeling work for the `Great Lakes Coastal Forecasting System (next-gen FVCOM) <https://www.glerl.noaa.gov/res/glcfs/>`__ conducted by the `Great Lakes Environmental Research Laboratory <https://www.glerl.noaa.gov/>`__.
+      `Finite Volume Community Ocean Model <http://www.fvcom.org/>`_. FVCOM is used in modeling work for the `Great Lakes Coastal Forecasting System (next-gen FVCOM) <https://www.glerl.noaa.gov/res/glcfs/>`_ conducted by the `Great Lakes Environmental Research Laboratory <https://www.glerl.noaa.gov/>`_.
 
    GFS
       `Global Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast>`_. The GFS is a National Centers for Environmental Prediction (:term:`NCEP`) weather forecast model that generates data for dozens of atmospheric and land-soil variables, including temperatures, winds, precipitation, soil moisture, and atmospheric ozone concentration. The system couples four separate models (atmosphere, ocean, land/soil, and sea ice) that work together to accurately depict weather conditions.

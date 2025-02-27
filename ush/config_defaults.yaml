@@ -249,6 +249,7 @@ platform:
   RUN_CMD_PRDGEN: ""
   RUN_CMD_NEXUS: ""
   RUN_CMD_AQMLBC: ""
+  RUN_CMD_SMOKE_DUST: mpirun -n $nprocs python
   #
   #-----------------------------------------------------------------------
   #
@@ -2868,6 +2869,18 @@ smoke_dust_parm:
   # SMOKE_DUST_FILE_PREFIX:
   # Prefix of Smoke and Dust file name
   #
+  # RAVE_QA_FILTER:
+  # Apply RAVE QA filtering to source RAVE fields.
+  #   none: No filtering applied
+  #   high: QA flag values < 2 set to zero.
+  #
+  # EXIT_ON_ERROR:
+  # If true, raise and exception in the preprocessor when an error occurs. If false, create a
+  # dummy emissions file, log the error, and continue.
+  #
+  # LOG_LEVEL:
+  # Logging level for the preprocessor: info or debug
+  #
   #-----------------------------------------------------------------------
   #
   DO_SMOKE_DUST: false
@@ -2876,6 +2889,9 @@ smoke_dust_parm:
   COMINsmoke_default: ""
   COMINrave_default: ""
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
+  RAVE_QA_FILTER: none
+  EXIT_ON_ERROR: true
+  LOG_LEVEL: info
 
 #----------------------------
 # UFS FIRE config parameters

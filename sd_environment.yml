@@ -3,13 +3,16 @@ channels:
   - conda-forge
   - ufs-community
 dependencies:
-  - esmpy=*=mpi_mpich*
-  - mpi4py
-  - pydantic
+  - esmpy=8.4.*=mpi_mpich*
+  - mpi4py=3.1.*
+  - pydantic=2.10.*
   - netcdf4=1.6.*=mpi_mpich*
   - numpy=1.23.*
-  - pylint=2.17*
-  - pytest=7.2*
+  - pylint=2.17.*
+  - pytest=7.2.*
+  - pytest-mock=3.14.*
   - scipy=1.10.*
-  - uwtools=2.3*
+  - uwtools=2.3.*
   - xarray=2022.11.*
+  - typer=0.15.*
+  - sphinx=7.4.*

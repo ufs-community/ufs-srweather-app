@@ -1343,7 +1343,7 @@ where ``/path/to/experiment/directory`` is changed to correspond to the user's `
 
 .. attention::
 
-   Cron is not available on Derecho or Gaea. On Orion/Hercules, users must be logged into [hercules/orion]-login-1 to use cron. 
+   Cron is not available on Derecho or Gaea. On Orion/Hercules, users must be logged into the [hercules/orion]-login-1 node to use cron.
 
 To check the experiment progress:
 
