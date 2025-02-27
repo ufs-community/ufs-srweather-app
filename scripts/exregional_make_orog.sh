@@ -337,9 +337,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Note that the orography filtering code assumes that the regional grid
-# is a GFDLgrid type of grid; it is not designed to handle ESGgrid type
-# regional grids.
 #
 # To handle ESGgrid type grids, we set res in the namelist to the
 # orography filtering code the equivalent global uniform cubed-sphere
