@@ -758,7 +758,7 @@ def generate_FV3LAM_wflow(
         realize(
             input_config=fv3_nml_fp,
             input_format="nml",
-            output_file=worklflow_config["FV3_NML_STOCH_FP"],
+            output_file=workflow_config["FV3_NML_STOCH_FP"],
             output_format="nml",
             update_config=get_nml_config(settings),
         )

@@ -257,7 +257,7 @@ def run_we2e_tests(homedir, args) -> None:
             f"Writing updated config.yaml for test {test_name}\n"
             "based on specified command-line arguments:\n"
         )
-        logging.debug(print(test_cfg))
+        logging.debug(str(test_cfg))
         test_cfg.dump(Path(ushdir, "config.yaml"))
 
         logging.info(f"Calling workflow generation function for test {test_name}\n")
