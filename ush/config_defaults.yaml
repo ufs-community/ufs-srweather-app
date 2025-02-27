@@ -3055,7 +3055,7 @@ task_smoke_dust:
     batchargs:
       memory: 120G
       nodes: 1
-      tasks_per_node: 1
+      tasks_per_node: 8
       walltime: 00:30:00
 task_prepstart:
   execution:
