@@ -53,7 +53,7 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
                                 ``config.yaml``)
 
     Returns:
-        None
+        The combined, schema-checked experiment Config object.
 
     Raises:
         FileNotFoundError: If the user-provided configuration file or the machine file does not
@@ -519,18 +519,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # intervals from integer to datetime.timedelta objects.
         fcst_len_dt = datetime.timedelta(hours=fcst_len_hrs)
         vx_fcst_output_intvl_dt = datetime.timedelta(hours=vx_fcst_output_intvl_hrs)
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Generate a list containing the starting times of the cycles.  This will
-        # be needed in checking that the hours-of-day of the forecast output match
-        # those of the observations.
-        #
-        # -----------------------------------------------------------------------
-        #
-        cycle_start_times = set_cycle_dates(
-            date_first_cycl_dt, date_last_cycl_dt, cycl_intvl_dt, return_type="datetime"
-        )
         #
         # -----------------------------------------------------------------------
         #
