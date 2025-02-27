@@ -326,7 +326,7 @@ def generate_FV3LAM_wflow(
     # dictionaries, instead.
     # pylint: disable=undefined-variable
     import_vars(dictionary=flatten_dict(expt_config))
-    export_vars(source_dict=flatten_dict(expt_config))
+    export_vars(source_dict=expt_config["global"])
     settings = {}
     settings["gfs_physics_nml"] = {
         "do_shum": DO_SHUM,

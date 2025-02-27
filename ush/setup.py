@@ -800,15 +800,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         vx_field_groups_all_by_obtype["AIRNOW"] = ["PM25", "PM10"]
         vx_metatasks_all_by_obtype["AIRNOW"] \
         = ["task_get_obs_airnow",
-           "metatask_ASCII2nc_obs"
+           "metatask_ASCII2nc_obs",
            "metatask_PcpCombine_fcst_PM_all_mems"]
 
-        vx_field_groups_all_by_obtype["AERONET"] = ["AOD"]
-        vx_metatasks_all_by_obtype["AERONET"] = ["task_get_obs_aeronet","metatask_ASCII2nc_obs"]
-
-        vx_field_groups_all_by_obtype["AIRNOW"] = ["PM25","PM10"]
-        vx_metatasks_all_by_obtype["AIRNOW"] = ["task_get_obs_airnow","metatask_ASCII2nc_obs","metatask_PcpCombine_fcst_PM_all_mems"]
-    
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.
         vx_field_groups = vx_config["VX_FIELD_GROUPS"]

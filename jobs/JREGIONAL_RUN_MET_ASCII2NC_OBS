@@ -3,6 +3,26 @@
 #
 #-----------------------------------------------------------------------
 #
+#
+# The J-Job that runs METplus for point-stat by initialization time for
+# all forecast hours.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
@@ -10,8 +30,6 @@
 . $USHdir/source_util_funcs.sh
 sections=(
   user
-  nco
-  workflow
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
