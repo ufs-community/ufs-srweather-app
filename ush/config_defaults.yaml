@@ -2413,7 +2413,7 @@ verification:
   # METPLUS_VERBOSITY_LEVEL: 
   # Logging verbosity level used by METplus verification tools.  0 to 9,
   # with 0 having the fewest log messages and 9 having the most. Levels 5
-  # and above can result in very large log files and slower tool execution..
+  # and above can result in very large log files and slower tool execution.
   # 
   METPLUS_VERBOSITY_LEVEL: 2
   #

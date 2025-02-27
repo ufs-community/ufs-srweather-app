@@ -13,7 +13,7 @@ Glossary
       According to the American Meteorological Society (AMS) definition, `advection <https://glossary.ametsoc.org/wiki/Advection>`_ is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
 
    AERONET
-      The "`AErosol RObotic NETwork <https://aeronet.gsfc.nasa.gov/>`_": A worldwide ground-based remote sensing aerosol networks established by NASA and PHOTONS. The SRW verification tasks can use "Level 1.5" (cloud-screened and quality-controlled) aerosol optical depth observations. 
+      The "`AErosol RObotic NETwork <https://aeronet.gsfc.nasa.gov/>`_": A worldwide ground-based remote sensing aerosol network established by NASA and PHOTONS. The SRW verification tasks can use "Level 1.5" (cloud-screened and quality-controlled) aerosol optical depth observations. 
 
    AIRNOW
       A North American ground-level air quality measurement network. The SRW verification tasks can use PM2.5 and PM10 observations. More information available at https://www.airnow.gov/
@@ -166,7 +166,7 @@ Glossary
 
    MET
    METplus
-      The `Model Evaluation Tools <https://dtcenter.org/community-code/model-evaluation-tools-met>`__ is a highly-configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/community-code/metplus>`_ is a suite of python wrappers providing low-level automation of the MET tools.
+      The `Model Evaluation Tools <https://dtcenter.org/community-code/model-evaluation-tools-met>`__ is a highly configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/community-code/metplus>`_ is a suite of Python wrappers providing low-level automation of the MET tools.
 
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC) systems.

@@ -867,7 +867,7 @@ that attempt is successful, the workflow will move on to subsequent tasks.  Thus
      staging locations and file names.
 
 .. note::
-   AIRNOW observations can be retrieved from AWS in addition to HPSS, but this requires changing some default settings.
+   AIRNOW observations can be retrieved from AWS or HPSS, but retrieving from AWS requires changing some default settings.
    See ``ush/config_defaults.yaml`` or :numref:`Section %s <GeneralVXParams>` for more details. 
 
    * Users who have access to a data store that hosts the necessary files (e.g. NOAA HPSS) do not need to
