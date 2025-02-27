@@ -1424,7 +1424,8 @@ task_make_sfc_climo:
 task_get_extrn_ics:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       walltime: 01:30:00
   envvars:
     #
@@ -1523,7 +1524,8 @@ task_get_extrn_ics:
 task_get_extrn_lbcs:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       walltime: 01:30:00
   envvars:
     #
@@ -2103,7 +2105,8 @@ task_integration_test:
   execution:
     batchargs:
       walltime: 00:05:00
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
 
 #-----------------------------
 # RUN PRDGEN config parameters
@@ -2165,7 +2168,8 @@ task_run_prdgen:
 task_plot_allvars:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       exclusive: True
       walltime: 01:00:00
   #-------------------------------------------------------------------------
@@ -2231,7 +2235,8 @@ task_nexus_emission:
 task_point_source:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
   envvars:
     #-------------------------------------------------------------------------------
@@ -2247,7 +2252,8 @@ task_point_source:
 task_bias_correction_o3:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       memory: 120G
       walltime: 00:30:00
   envvars:
@@ -2271,7 +2277,8 @@ task_bias_correction_o3:
 task_bias_correction_pm25:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       memory: 120G
       walltime: 00:30:00
   envvars:
@@ -2468,7 +2475,8 @@ global:
 
 verification_resources:
   execution:
-    cores: 1
+    nodes: 1
+    tasks_per_node: 1
     deterministic:
       gridstat:
         walltime: 02:00:00
@@ -2979,48 +2987,56 @@ cpl_aqm_parm:
 task_pre_post_stat:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_post_stat_o3:
   execution:
     batchargs:
-      cores: 1
       memory: 120G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_post_stat_pm25:
   execution:
     batchargs:
-      cores: 1
       memory: 120G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_nexus_gfs_sfc:
   execution:
     batchargs:
-      cores: 1
       memory: 2G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_nexus_post_split:
   execution:
     batchargs:
-      cores: 1
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_fire_emission:
   execution:
     batchargs:
-      cores: 1
       memory: 2G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_aqm_ics_ext:
   execution:
     batchargs:
-      cores: 1
       memory: 64G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_aqm_ics:
   execution:
     batchargs:
-      cores: 1
       memory: 64G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_aqm_lbcs:
   execution:
@@ -3036,14 +3052,16 @@ task_aqm_lbcs:
 task_smoke_dust:
   execution:
     batchargs:
-      cores: 1
       memory: 120G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 task_prepstart:
   execution:
     batchargs:
-      cores: 1
       memory: 120G
+      nodes: 1
+      tasks_per_node: 1
       walltime: 00:30:00
 smoke_dust_parm:
   #

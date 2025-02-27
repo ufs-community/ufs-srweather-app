@@ -31,8 +31,8 @@ task_pre_post_stat:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_pre_post_stat.execution.batchargs.cores }}'
-  cores: !int '{{ task_pre_post_stat.execution.batchargs.cores }}'
+    nprocs: '{{ task_pre_post_stat.execution.batchargs.nodes * task_pre_post_stat.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_pre_post_stat.execution.batchargs.nodes }}:ppn={{ task_pre_post_stat.execution.batchargs.tasks_per_node }}'
   walltime: '{{ task_pre_post_stat.execution.batchargs.walltime }}'
   dependency:
     or:
@@ -54,8 +54,8 @@ task_post_stat_o3:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_post_stat_o3.execution.batchargs.cores }}'
-  cores: !int '{{ task_post_stat_o3.execution.batchargs.cores }}'
+    nprocs: '{{ task_post_stat_o3.execution.batchargs.nodes * task_post_stat_o3.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_post_stat_o3.execution.batchargs.nodes }}:ppn={{ task_post_stat_o3.execution.batchargs.tasks_per_node }}'
   memory: 120G
   walltime: '{{ task_post_stat_o3.execution.batchargs.walltime }}'
   dependency:
@@ -71,8 +71,8 @@ task_post_stat_pm25:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_post_stat_pm25.execution.batchargs.cores }}'
-  cores: !int '{{ task_post_stat_pm25.execution.batchargs.cores }}'
+    nprocs: '{{ task_post_stat_pm25.execution.batchargs.nodes * task_post_stat_pm25.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_post_stat_pm25.execution.batchargs.nodes }}:ppn={{ task_post_stat_pm25.execution.batchargs.tasks_per_node }}'
   memory: 120G
   walltime: '{{ task_post_stat_pm25.execution.batchargs.walltime }}'
   dependency:
@@ -88,9 +88,9 @@ task_bias_correction_o3:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_bias_correction_o3.execution.batchargs.cores }}'
+    nprocs: '{{ task_bias_correction_o3.execution.batchargs.nodes * task_bias_correction_o3.execution.batchargs.tasks_per_node }}'
   memory: 120G
-  cores: !int '{{ task_bias_correction_o3.execution.batchargs.cores }}'
+  nodes: '{{ task_bias_correction_o3.execution.batchargs.nodes }}:ppn={{ task_bias_correction_o3.execution.batchargs.tasks_per_node }}'
   walltime: '{{ task_bias_correction_o3.execution.batchargs.walltime }}'
   dependency:
     taskdep:
@@ -105,9 +105,9 @@ task_bias_correction_pm25:
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   envars:
     <<: *default_vars
-    nprocs: '{{ task_bias_correction_pm25.execution.batchargs.cores }}'
+    nprocs: '{{ task_bias_correction_pm25.execution.batchargs.nodes * task_bias_correction_pm25.execution.batchargs.tasks_per_node }}'
   memory: 120G
-  cores: !int '{{ task_bias_correction_pm25.execution.batchargs.cores }}'
+  nodes: '{{ task_bias_correction_pm25.execution.batchargs.nodes }}:ppn={{ task_bias_correction_pm25.execution.batchargs.tasks_per_node }}'
   walltime: '{{ task_bias_correction_pm25.execution.batchargs.walltime }}'
   dependency:
     taskdep:

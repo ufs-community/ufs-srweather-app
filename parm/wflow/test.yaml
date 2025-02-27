@@ -37,7 +37,7 @@ metatask_integration_test:
   task_integration_test_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK; "integration_test" "&JOBSdir;/JREGIONAL_INTEGRATION_TEST"'
-    cores: !int '{{ task_integration_test.execution.batchargs.cores }}'
+    nodes: '{{ task_integration_test.execution.batchargs.nodes }}:ppn={{ task_integration_test.execution.batchargs.tasks_per_node }}'
     join:
       cyclestr:
         value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'

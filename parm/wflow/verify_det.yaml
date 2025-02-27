@@ -25,7 +25,7 @@ default_task_verify_det: &default_task_verify_det
   memory: '{{ "2G" if user.MACHINE not in ["NOAACLOUD"] }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
-  cores: !int '{{ verification_resources.execution.cores }}'
+  nodes: '{{ verification_resources.execution.nodes }}:ppn={{ verification_resources.execution.tasks_per_node }}'
   queue: '&QUEUE_DEFAULT;'
 
 metatask_GridStat_APCP_all_accums_all_mems:

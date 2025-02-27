@@ -28,10 +28,11 @@ metatask_plot_allvars:
             value:  "&LOGDIR;"
         SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
         ENSMEM_INDX: '#mem#'
-        nprocs: '{{ task_plot_allvars.execution.batchargs.cores }}'
+        nprocs: '{{ task_plot_allvars.execution.batchargs.nodes * task_plot_allvars.execution.batchargs.tasks_per_node }}'
         fhr: '#fhr#'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
       cores: !int '{{ task_plot_allvars.execution.batchargs.cores }}'
+      nodes: '{{ task_plot_allvars.execution.batchargs.nodes }}:ppn={{ task_plot_allvars.execution.batchargs.tasks_per_node }}'
       exclusive: '{{ task_plot_allvars.execution.batchargs.exclusive }}'
       partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
       queue: '&QUEUE_DEFAULT;'

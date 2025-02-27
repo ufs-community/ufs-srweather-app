@@ -23,7 +23,7 @@ default_task_verify_ens: &default_task_verify_ens
       value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{{ "2G" if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  cores: !int '{{ verification_resources.execution.cores }}'
+  nodes: '{{ verification_resources.execution.nodes }}:ppn={{ verification_resources.execution.tasks_per_node }}'
   partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
