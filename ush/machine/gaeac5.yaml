@@ -35,6 +35,11 @@ platform:
   FIXorg: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_aqm
+  FIXemis: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_emis
+  FIXsmoke: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_smoke
+  FIXupp: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_upp
+  FIXcrtm: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
@@ -46,6 +51,9 @@ data:
     HRRR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     GSMGFS: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
+smoke_dust_parm:
+  COMINsmoke_default: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire
 rocoto:
   tasks:
     metatask_run_ensemble:

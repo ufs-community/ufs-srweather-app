@@ -22,4 +22,13 @@ platform:
   FIXorg: /contrib/global/glopara/fix/fix_orog
   FIXsfc: /contrib/global/glopara/fix/fix_sfc_climo
   FIXshp: /contrib/global/glopara/NaturalEarth
+  FIXaqm: /contrib/global/glopara/fix/fix_aqm
+  FIXemis: /contrib/global/glopara/fix/fix_emis
+  FIXsmoke: /contrib/global/glopara/fix/fix_smoke
+  FIXupp: /contrib/global/glopara/fix/fix_upp
+  FIXcrtm: /contrib/global/glopara/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws nomads
+
+smoke_dust_parm:
+  COMINsmoke_default: /contrib/global/glopara/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /contrib/global/glopara/data_smoke_dust/RAVE_fire

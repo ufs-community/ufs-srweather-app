@@ -33,6 +33,10 @@ platform:
   FIXorg: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_aqm
+  FIXsmoke: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_smoke
+  FIXupp: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_upp
+  FIXcrtm: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
   ics_lbcs:
@@ -45,6 +49,10 @@ data:
     GFS:
       prepbufr: /public/data/grids/gfs/prepbufr
       tcvitals: /public/data/grids/gfs/bufr
+
+smoke_dust_parm:
+  COMINsmoke_default: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire
 
 rocoto:
   tasks:

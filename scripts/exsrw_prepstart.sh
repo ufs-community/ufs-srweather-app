@@ -116,7 +116,7 @@ else
       echo "${PDY}${cyc}: cycle smoke/dust from ${checkfile} "
     fi
 
-    ${USHdir}/smoke_dust_add_smoke.py
+    ${USHdir}/smoke_dust/add_smoke.py
     export err=$?
     if [ $err -ne 0 ]; then
       message_txt="add_smoke.py failed with return code $err"

@@ -36,18 +36,22 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
-nitpick_ignore = [('py:class', 'obj'),
-                  ('py:class', 'yaml.dumper.Dumper'),
-                   ('py:class', 'xml.etree.ElementTree'),
-                   ('py:class', 'Basemap'),
-                   ('py:class', 'pandas.DataFrame'),
-                   ('py:class', 'numpy.ndarray'),
-                   ('py:class', 'pandas.Index'),
-                   ('py:class', 'xarray.DataArray'),
-                   ('py:class', 'netCDF4.Dataset'),
-                   ('py:class', 'ESMF.Field'),
-                   ('py:class', 'ESMF.Grid'),
-                   ]
+nitpick_ignore = [
+    ('py:class', 'obj'),
+    ('py:class', 'yaml.dumper.Dumper'),
+    ('py:class', 'xml.etree.ElementTree'),
+    ('py:class', 'Basemap'),
+    ('py:class', 'numpy.ma.MaskedArray'),
+    ('py:class', 'esmpy.Field'),
+    ('py:class', 'pandas.DataFrame'),
+    ('py:class', 'netCDF4.Variable'),
+    ('py:class', 'pandas.DatetimeIndex'),
+    ('py:class', 'netCDF4.Dataset'),
+    ('py:class', 'numpy.ndarray'),
+    ('py:class', 'pydantic.BaseModel'),
+    ('py:class', 'esmpy.Grid'),
+    ('py:class', 'esmpy.StaggerLoc'),
+]
 
 # -- General configuration ---------------------------------------------------
 
@@ -264,20 +268,24 @@ epub_exclude_files = ['search.html']
 
 # -- Options for autodoc extension ---------------------------------------
 
-autodoc_mock_imports = ["f90nml",
-                        "cartopy",
-                        "mpl_toolkits.basemap",
-                        "fill_jinja_template",
-                        "matplotlib",
-                        "numpy",
-                        "uwtools",
-                        "mpl_toolkits",
-                        "metplus",
-                        "netCDF4",
-                        "pandas",
-                        "xarray",
-                        "ESMF",
-   ]
+autodoc_mock_imports = [
+    "f90nml",
+    "cartopy",
+    "mpl_toolkits.basemap",
+    "fill_jinja_template",
+    "matplotlib",
+    "numpy",
+    "uwtools",
+    "mpl_toolkits",
+    "metplus",
+    "esmpy",
+    "netCDF4",
+    "pandas",
+    "xarray",
+    "mpi4py",
+    "pydantic",
+    "typer",
+]
 
 logger = logging.getLogger(__name__)
 

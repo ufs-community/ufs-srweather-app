@@ -32,8 +32,11 @@ platform:
   FIXorg: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/NaturalEarth
-  FIXaqm: /glade/work/chanhooj/SRW-AQM_DATA/fix_aqm
-  FIXemis: /glade/work/chanhooj/SRW-AQM_DATA/fix_emis
+  FIXaqm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_aqm
+  FIXemis: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_emis
+  FIXsmoke: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_smoke
+  FIXupp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_upp
+  FIXcrtm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
@@ -49,3 +52,6 @@ cpl_aqm_parm:
   COMINfire_default: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/RAVE_fire
   COMINgefs_default: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/GEFS_DATA
   NEXUS_GFS_SFC_DIR: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
+smoke_dust_parm:
+  COMINsmoke_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire
