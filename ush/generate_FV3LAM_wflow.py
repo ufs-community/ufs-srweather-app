@@ -721,6 +721,10 @@ def setup_fv3_namelist(expt_config,debug):
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
+    # Update levp in external_ic_nml; this should be the only variable that needs changing
+
+    settings["external_ic_nml"] = {"levp": LEVP}
+
     #
     # Add to "settings" the values of those namelist variables that specify
     # the paths to fixed files in the FIXam directory.  As above, these namelist
