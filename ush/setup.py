@@ -681,12 +681,12 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             obs_basedirs_orig = list(obs_basedirs_dict.values())
             obs_basedirs_uniq = list(set(obs_basedirs_orig))
             if len(obs_basedirs_orig) != len(obs_basedirs_uniq):
-                obs_locations = [f"{v} = {p}" for v, p in obs_basedirs_dict.items()]
+                obs_locations = "\n".join([f"{v} = {p}" for v, p in obs_basedirs_dict.items()])
                 msg = dedent(
                     f"""
                     The base directories for the obs files must be distinct, but at least two
                     are identical:
-                    {"\n".join(obs_locations)}
+                    {obs_locations}
 
                     Modify these in the SRW App's user configuration file to make them distinct
                     and rerun.
