@@ -643,6 +643,7 @@ def setup_fv3_namelist(expt_config,debug):
         "npy": NY + 1,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
+        "npz": LEVP - 1,
     })
     if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
         if CPL_AQM:
@@ -720,10 +721,6 @@ def setup_fv3_namelist(expt_config,debug):
         })
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
-
-    # Update levp in external_ic_nml; this should be the only variable that needs changing
-
-    settings["external_ic_nml"] = {"levp": LEVP}
 
     #
     # Add to "settings" the values of those namelist variables that specify
