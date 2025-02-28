@@ -1649,7 +1649,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # tool adds jobname for each task. Also matches UW-supported tags.
         pattern = r"({{(?! jobname )|{%.*?%})|!bool|!float|!int"
         line_not_ok = lambda l: any(m for m in re.finditer(pattern, l))
-        unrendered_lines = [l.strip() for l in xml_config_str.split("\n") if line_not_ok(l)]
+        unrendered_lines = "\n".join([l.strip() for l in xml_config_str.split("\n") if line_not_ok(l)])
         msg = f"""
         Jinja expressions remain in the XML configuration file.
 
@@ -1657,7 +1657,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         They include:
 
-        {'\n'.join(unrendered_lines)}
+        {unrendered_lines}
         """
         raise ValueError(msg)
 
