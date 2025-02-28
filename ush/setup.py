@@ -1325,8 +1325,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             f"""
               Ensemble verification can not be run unless running in ensemble mode:
                   DO_ENSEMBLE = \"{do_ensemble}\"
-              Ensemble verification tasks:
-              {"\n".join(ens_vx_tasks)}
               Please set DO_ENSEMBLE to True or remove ensemble vx tasks from the
               workflow."""
         )
