@@ -234,7 +234,10 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   fi
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
-    mamba env create -n srw_app --file environment.yml
+    time mamba env create -n srw_app --file environment.yml
+  fi
+  if ! conda env list | grep -q "^get_data\s" ; then
+    time mamba env create -n get_data --file data_environment.yml
   fi
   if ! conda env list | grep -q "^srw_graphics\s" ; then
     mamba env create -n srw_graphics --file graphics_environment.yml
