@@ -1132,7 +1132,7 @@ def parse_args(argv):
     parser.add_argument(
         "--data_stores",
         help="List of priority data_stores. Tries first list item \
-        first. Choices: hpss, nomads, aws, disk, remote.",
+        first. Choices: hpss, nomads, aws, http, disk, remote.",
         nargs="*",
         required=True,
         type=to_lower,
@@ -1239,7 +1239,7 @@ def parse_args(argv):
               f"argument when --file_set = {args.file_set}")
 
     # Check valid arguments for various conditions
-    valid_data_stores = ["hpss", "nomads", "aws", "disk", "remote"]
+    valid_data_stores = ["hpss", "nomads", "aws", "http", "disk", "remote"]
     for store in args.data_stores:
         if store not in valid_data_stores:
             raise argparse.ArgumentTypeError(f"Invalid value '{store}' provided " \

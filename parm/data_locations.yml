@@ -406,7 +406,7 @@ AERONET_obs:
         - "{yyyy}{mm}{dd}.lev15"
     archive_internal_dir:
       - ./validation_data/aq/aeronet/
-  aws:
+  http:
     protocol: wget
     url: "https://aeronet.gsfc.nasa.gov/cgi-bin/"
     file_names:
