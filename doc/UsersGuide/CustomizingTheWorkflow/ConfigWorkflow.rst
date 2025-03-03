@@ -1899,7 +1899,7 @@ VX Parameters for Observations
    Observation format for ASCII Airnow observations. Observations retrieved from HPSS are in
    "airnowhourlyaqobs" format, observations retrieved from AWS are generally in "airnowhourly" format.
    For more information see the
-   `METplus users guide <https://met.readthedocs.io/en/latest/Users_Guide/reformat_point.html#ascii2nc-tool>`_
+   `METplus users guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/reformat_point.html#ascii2nc-tool>`_
 
 
 ``OBS_DATA_STORE_AIRNOW``: (Default: ``hpss``)
