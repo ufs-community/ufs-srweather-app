@@ -1,8 +1,8 @@
 .. _srw-sd:
 
-=====================================
+==================================
 SRW Smoke & Dust (SRW-SD) Features
-=====================================
+==================================
 
 .. attention::
 
@@ -15,14 +15,14 @@ This chapter provides instructions for running a simple, example six-hour foreca
    Although this chapter is the primary documentation resource for running the SRW-SD configuration, users may need to refer to :numref:`Chapter %s <BuildSRW>` and :numref:`Chapter %s <RunSRW>` for additional information on building and running the SRW App, respectively. 
 
 Quick Start Guide (SRW-SD)
-=============================
+==========================
 
 .. attention::
 
    These instructions should work smoothly on Hera and Orion/Hercules, but users on other systems may need to make additional adjustments.
 
 Download the Code
--------------------
+-----------------
 
 Clone the |branch| branch of the authoritative SRW App repository:
 
@@ -32,7 +32,7 @@ Clone the |branch| branch of the authoritative SRW App repository:
    cd ufs-srweather-app/sorc
 
 Checkout Externals
----------------------
+------------------
 
 Users must run the ``checkout_externals`` script to collect (or "check out") the individual components of the SRW App (AQM version) from their respective GitHub repositories. 
 
@@ -41,7 +41,7 @@ Users must run the ``checkout_externals`` script to collect (or "check out") the
    ./manage_externals/checkout_externals -e Externals_smoke_dust.cfg
 
 Build the SRW App
-------------------
+-----------------
 
 .. code-block:: console
 
@@ -54,7 +54,7 @@ Building the SRW App with SRW-SD on other machines, including other :srw-wiki:`L
 If SRW-SD builds correctly, users should see the standard executables listed in :numref:`Table %s <ExecDescription>` in the ``ufs-srweather-app/exec`` directory.
 
 Load the |wflow_env| Environment
---------------------------------------------
+--------------------------------
 
 Load the workflow environment:
 
@@ -70,7 +70,7 @@ where ``<machine>`` is ``hera``, ``orion``, or ``hercules``. The workflow should
 .. _srw-sd-config:
 
 Configure an Experiment
----------------------------
+-----------------------
 
 Users will need to configure their experiment by setting parameters in the ``config.yaml`` file. To start, users can copy a default experiment setting into ``config.yaml``:
 
@@ -115,7 +115,7 @@ When using the basic ``config.smoke_dust.yaml`` experiment, the usual pre-proces
 .. _srw-sd-more-tasks:
 
 Additional SRW-SD Tasks
---------------------------
+-----------------------
 
 .. COMMENT: Add workflow diagram in the future. 
 
@@ -164,7 +164,7 @@ The Python scripts listed in :numref:`Table %s <sd-scripts>` are used to perform
      - Regridding utilities using `esmpy <https://earthsystemmodeling.org/esmpy/>`_ that interpolate data from the RAVE observational grid to the RRFS grid.
 
 Generate the Workflow
-------------------------
+---------------------
 
 Generate the workflow:
 
@@ -197,7 +197,7 @@ Users may check experiment status from the experiment directory with either of t
 .. _srw-sd-success:
 
 Experiment Output
---------------------
+-----------------
 
 The workflow run is complete when all tasks display a "SUCCEEDED" message. If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
 

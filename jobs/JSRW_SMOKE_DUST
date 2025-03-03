@@ -71,6 +71,10 @@ if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
 fi
 #
 #-----------------------------------------------------------------------
+# Save the COMIN directory. This is a workaround until the scripts
+# are decoupled from NCO mode and can run in COMMUNITY mode.
+#-----------------------------------------------------------------------
+export COMIN_SMOKE_DUST_COMMUNITY=${EXPTDIR}
 #
 # Create a temp working directory (DATA) and cd into it.
 #
