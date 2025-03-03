@@ -1,4 +1,4 @@
-# Worflow file for running pygraf on Hera
+# Worflow file for running pygraf on NOAA HPC
 
 task_run_pygraf:
   account: '&ACCOUNT;'
