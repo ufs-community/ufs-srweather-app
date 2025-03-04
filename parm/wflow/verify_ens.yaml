@@ -157,7 +157,7 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
       ACCUM_HH: '01'
       FCST_LEVEL: 'all'
       FCST_THRESH: 'all'
-    walltime: 04:15:00
+    walltime: 04:45:00
     dependency:
       metataskdep_check_post_output:
          <<: *check_post_output
@@ -180,11 +180,11 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
                  {%- for n in range(0, num_obs_days) %}
                    {%- set yyyymmdd = workflow.OBS_DAYS_ALL_CYCLES_INST[n] %}
                    {%- if n == 0 %}
-                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {{- workflow.WFLOW_FLAG_FILES_DIR ~ "/NDAS_nc_obs_" ~ yyyymmdd ~ "_ready.txt" }}
                    {%- else %}
                      {{- indent ~ "</datadep>\n" }}
                      {{- indent ~ "<datadep age=\"00:00:00:30\">\n" }}
-                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/run_met_pb2nc_obs_ndas_" ~ yyyymmdd ~ "_complete.txt" }}
+                     {{- indent_p2 ~ workflow.WFLOW_FLAG_FILES_DIR ~ "/NDAS_nc_obs_" ~ yyyymmdd ~ "_ready.txt" }}
                    {%- endif %}
                    {%- if n != num_obs_days-1 %} {{- "\n" }} {%- endif %}
                  {%- endfor %}'

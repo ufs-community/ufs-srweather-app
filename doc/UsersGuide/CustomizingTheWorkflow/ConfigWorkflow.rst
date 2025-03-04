@@ -199,8 +199,8 @@ These directories are used only by the ``run_WE2E_tests.py`` script, so they are
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS``, ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
    These parameters are used by the testing script to test the mechanism that allows users to point to a data stream on disk. They set up a sandbox location that mimics the stream in a more controlled way and test the ability to access :term:`ICS` or :term:`LBCS`, respectively. 
 
-``TEST_CCPA_OBS_DIR``, ``TEST_MRMS_OBS_DIR``, ``TEST_NDAS_OBS_DIR``: (Default: "")
-These parameters are used by the testing script to test the mechanism that allows user to point to data streams on disk for observation data for verification tasks. They test the ability for users to set ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR`` respectively.
+``TEST_CCPA_OBS_DIR``, ``TEST_MRMS_OBS_DIR``, ``TEST_NDAS_OBS_DIR``, ``TEST_NOHRSC_OBS_DIR``, ``TEST_AERONET_OBS_DIR``, ``TEST_AIRNOW_OBS_DIR``: (Default: "")
+These parameters are used by the testing script to test the mechanism that allows user to point to data streams on disk for observation data for verification tasks. They test the ability for users to set ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, ``NDAS_OBS_DIR``, etc.
 
 ``TEST_VX_FCST_INPUT_BASEDIR``: (Default: "") 
    The path to user-staged forecast files for WE2E testing of verificaton using user-staged forecast files in a known location on a given platform. 
@@ -633,7 +633,7 @@ Pre-Existing Directory Parameter
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
-   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ``###`` is a 3-digit integer chosen to make the new name unique.
+   * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old_YYYYMMDD_HHmmss", where ``YYYYMMDD_HHmmss`` is the full date and time of the rename
 
    * **"reuse":** This method will keep the preexisting directory intact. However, when the preexisting directory is ``$EXPDIR``, this method will save all old files to a subdirectory ``oldxxx/`` and then populate new files into the ``$EXPDIR`` directory. This is useful to keep ongoing runs uninterrupted; rocotoco ``*db`` files and previous cycles will stay and hence there is no need to manually copy or move ``*db`` files and previous cycles back, and there is no need to manually restart related rocoto tasks failed during the workflow generation process. This method may be best suited for incremental system reuses.
 
@@ -1676,7 +1676,7 @@ METplus-Specific Parameters
 -----------------------------------
 
 ``METPLUS_VERBOSITY_LEVEL``: (Default: ``2``)
-   Logging verbosity level used by METplus verification tools. Valid values: 0 to 5, with 0 quiet and 5 loudest.
+   Logging verbosity level used by METplus verification tools. Valid values: 0 to 9, with 0 having the fewest log messages and 9 having the most. Levels 5 and above can result in very large log files and slower tool execution.
 
 
 VX Parameters for Observations
@@ -1691,11 +1691,13 @@ VX Parameters for Observations
       * NOHRSC (National Operational Hydrologic Remote Sensing Center)
       * MRMS (Multi-Radar Multi-Sensor)
       * NDAS (NAM Data Assimilation System)
+      * AERONET (Aerosol Robotic Network)
+      * AIRNOW (AirNow air quality reports)
 
    The script ``ush/get_obs.py`` contains further details on the files and
    directory structure of each obs type.
 
-``[CCPA|NOHRSC|MRMS|NDAS]_OBS_AVAIL_INTVL_HRS``: (Defaults: [1|6|1|1])
+``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW]_OBS_AVAIL_INTVL_HRS``: (Defaults: [1|6|1|1|24|1])
   Time interval (in hours) at which the various types of obs are available
   on NOAA's HPSS. 
 
@@ -1704,8 +1706,8 @@ VX Parameters for Observations
   is the shortest output interval for forecasts, i.e. the forecasts cannot
   (yet) support sub-hourly output.
 
-``[CCPA|NOHRSC|MRMS|NDAS]_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/[ccpa|nohrsc|mrms|ndas]"``)
-   Base directory in which CCPA, NOHRSC, MRMS, or NDAS obs files needed by
+``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW]_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/[ccpa|nohrsc|mrms|ndas|aeronet|airnow]"``)
+   Base directory in which CCPA, NOHRSC, MRMS, NDAS, AERONET, or AIRNOW obs files needed by
    the verification tasks are located.  If the files do not exist, they
    will be retrieved and placed under this directory.  Note that:
 
@@ -1718,7 +1720,7 @@ VX Parameters for Observations
      that need to be corrected during obs retrieval.  This is described
      in more detail in the script ``ush/get_obs.py``.
 
-``OBS_[CCPA|NOHRSC|MRMS|NDAS]_FN_TEMPLATES``:
+``OBS_[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW]_FN_TEMPLATES``:
      **Defaults:**
 
      ``OBS_CCPA_FN_TEMPLATES``:
@@ -1745,6 +1747,16 @@ VX Parameters for Observations
         .. code-block:: console
 
            [ 'SFCandUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
+
+     ``OBS_AERONET_FN_TEMPLATES``:
+        .. code-block:: console
+
+           [ 'AOD', '{valid?fmt=%Y%m%d}/{valid?fmt=%Y%m%d}.lev15' ]
+
+     ``OBS_AIRNOW_FN_TEMPLATES``:
+        .. code-block:: console
+
+           [ 'PM', '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat' ]
 
    File name templates for various obs types.  These are meant to be used
    in METplus configuration files and thus contain METplus time formatting
@@ -1854,7 +1866,7 @@ VX Parameters for Observations
       {{- "ccpa.t{valid?fmt=%H}z." ~ obs_avail_intvl_hrs ~ "h.hrap.conus.gb2_a${ACCUM_HH}h.nc" }}
 
    METplus template for the names of the NetCDF files generated by the
-   worfklow verification tasks that call METplus's PcpCombine tool on
+   workflow verification tasks that call METplus's PcpCombine tool on
    CCPA observations.  These files will contain observed accumulated
    precipitation in NetCDF format for various accumulation intervals.
 
@@ -1867,26 +1879,44 @@ VX Parameters for Observations
       {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc" }}
 
    METplus template for the names of the NetCDF files generated by the
-   worfklow verification tasks that call METplus's PcpCombine tool on
+   workflow verification tasks that call METplus's PcpCombine tool on
    NOHRSC observations.  These files will contain observed accumulated
-   snowfall for various accumulaton intervals.
+   snowfall for various accumulation intervals.
+
+``OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT``: (Default: ``'hourly_aeronet_obs_{valid?fmt=%Y%m%d}00.nc'``)
+   
+   METplus template for the names of the NetCDF files generated by the
+   workflow verification tasks that call METplus's ASCII2NC tool on
+   AERONET observations.
+
+``OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT``: (Default: ``'hourly_airnow_obs_{valid?fmt=%Y%m%d}00.nc'``)
+   
+   METplus template for the names of the NetCDF files generated by the
+   workflow verification tasks that call METplus's ASCII2NC tool on
+   AIRNOW observations.  
+
+``AIRNOW_INPUT_FORMAT``: (Default: ``"airnowhourlyaqobs"``)
+   Observation format for ASCII Airnow observations. Observations retrieved from HPSS are in
+   "airnowhourlyaqobs" format, observations retrieved from AWS are generally in "airnowhourly" format.
+   For more information see the
+   `METplus users guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/reformat_point.html#ascii2nc-tool>`_
+
+
+``OBS_DATA_STORE_AIRNOW``: (Default: ``hpss``)
+   Location to retrieve observation data from. Valid values are "aws" and/or "hpss", see
+   ``parm/data_locations.yaml`` for info on these data stores.
 
 ``OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'${OBS_NDAS_FN_TEMPLATES[1]}.nc'``)
    METplus template for the names of the NetCDF files generated by the
-   worfklow verification tasks that call METplus's Pb2nc tool on the 
+   workflow verification tasks that call METplus's Pb2nc tool on the 
    prepbufr files in NDAS observations.  These files will contain the
    observed surface (SFC) and upper-air (UPA) fields in NetCDF format
    (instead of NDAS's native prepbufr format).
 
-``NUM_MISSING_OBS_FILES_MAX``: (Default: 2)
+``NUM_MISSING_OBS_FILES_MAX``: (Default: 0)
    For verification tasks that need observational data, this specifies
    the maximum number of observation files that may be missing.  If more
    than this number are missing, the verification task will error out.
-   This is a crude way of checking that there are enough obs to conduct
-   verification (crude because this number should probably depend on the
-   field being verified, the time interval between observations, the
-   length of the forecast, etc; an alternative may be to specify the
-   maximum allowed fraction of obs files that can be missing).
 
 
 VX Parameters for Forecasts
@@ -1955,7 +1985,7 @@ VX Parameters for Forecasts
       {{- ".prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc" }}
 
    METplus template for the names of the NetCDF files generated by the
-   worfklow verification tasks that call METplus's PcpCombine tool on
+   workflow verification tasks that call METplus's PcpCombine tool on
    forecast output.  These files will contain forecast accumulated
    precipitation in NetCDF format for various accumulation intervals.
 

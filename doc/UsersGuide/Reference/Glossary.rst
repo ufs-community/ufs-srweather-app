@@ -12,6 +12,12 @@ Glossary
    advection
       According to the American Meteorological Society (AMS) definition, `advection <https://glossary.ametsoc.org/wiki/Advection>`_ is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
 
+   AERONET
+      The "`AErosol RObotic NETwork <https://aeronet.gsfc.nasa.gov/>`_": A worldwide ground-based remote sensing aerosol network established by NASA and PHOTONS. The SRW verification tasks can use "Level 1.5" (cloud-screened and quality-controlled) aerosol optical depth observations. 
+
+   AIRNOW
+      A North American ground-level air quality measurement network. The SRW verification tasks can use PM2.5 and PM10 observations. More information available at https://www.airnow.gov/
+
    AQM
       The `Air Quality Model <https://github.com/NOAA-EMC/AQM>`__ (AQM) is a UFS Application that dynamically couples the Community Multiscale Air Quality (:term:`CMAQ`) model with the UFS Weather Model through the :term:`NUOPC` Layer to simulate temporal and spatial variations of atmospheric compositions (e.g., ozone and aerosol compositions). The CMAQ, treated as a column chemistry model, updates concentrations of chemical species (e.g., ozone and aerosol compositions) at each integration time step. The transport terms (e.g., :term:`advection` and diffusion) of all chemical species are handled by the UFS Weather Model as :term:`tracers<tracer>`.
 
@@ -159,7 +165,8 @@ Glossary
       The `Modern-Era Retrospective analysis for Research and Applications, Version 2 <https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/>`__ provides satellite observation data back to 1980. According to NASA, "It was introduced to replace the original MERRA dataset because of the advances made in the assimilation system that enable assimilation of modern hyperspectral radiance and microwave observations, along with GPS-Radio Occultation datasets. It also uses NASA's ozone profile observations that began in late 2004. Additional advances in both the GEOS model and the GSI assimilation system are included in MERRA-2. Spatial resolution remains about the same (about 50 km in the latitudinal direction) as in MERRA."
 
    MET
-      The `Model Evaluation Tools <https://dtcenter.org/community-code/model-evaluation-tools-met>`__ is a highly-configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`.
+   METplus
+      The `Model Evaluation Tools <https://dtcenter.org/community-code/model-evaluation-tools-met>`__ is a highly configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/community-code/metplus>`_ is a suite of Python wrappers providing low-level automation of the MET tools.
 
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC) systems.

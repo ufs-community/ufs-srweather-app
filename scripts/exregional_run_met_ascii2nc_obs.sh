@@ -16,8 +16,6 @@ sections=(
   global
   verification
   cpl_aqm_parm
-  constants
-  fixed_files
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
@@ -30,7 +28,6 @@ done
 #-----------------------------------------------------------------------
 #
 . $USHdir/get_metplus_tool_name.sh
-. $USHdir/set_vx_params.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -68,26 +65,15 @@ get_metplus_tool_name \
 #
 #-----------------------------------------------------------------------
 #
-# Print message indicating entry into script.
-#
-#-----------------------------------------------------------------------
-#
 print_info_msg "
 ========================================================================
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs the METplus tool ${MetplusToolName}
-to convert NDAS prep buffer observation files to NetCDF format.
+to convert ASCII format observation files to NetCDF format.
 ========================================================================"
-#
-#-----------------------------------------------------------------------
-#
-# The day (in the form YYYMMDD) associated with the current task via the
-# task's cycledefs attribute in the ROCOTO xml.
-#
-#-----------------------------------------------------------------------
-#
+
 yyyymmdd_task=${PDY}
 
 # Seconds since some reference time that the DATE_UTIL utility uses of
@@ -105,36 +91,7 @@ sec_since_ref_task=$(${DATE_UTIL} --date "${yyyymmdd_task} 0 hours" +%s)
 array_name="OBS_RETRIEVE_TIMES_${OBTYPE}_${yyyymmdd_task}"
 eval obs_retrieve_times_crnt_day=\( \${${array_name}[@]} \)
 #
-#-----------------------------------------------------------------------
-#
-# Get the cycle date and time in YYYYMMDDHH format.
-#
-#-----------------------------------------------------------------------
-#
 CDATE="${PDY}${cyc}"
-#
-#-----------------------------------------------------------------------
-#
-# Set various verification parameters associated with the field to be
-# verified.  Not all of these are necessarily used later below but are
-# set here for consistency with other verification ex-scripts.
-#
-#-----------------------------------------------------------------------
-#
-FIELDNAME_IN_OBS_INPUT=""
-FIELDNAME_IN_FCST_INPUT=""
-FIELDNAME_IN_MET_OUTPUT=""
-FIELDNAME_IN_MET_FILEDIR_NAMES=""
-
-set_vx_params \
-  obtype="${OBTYPE}" \
-  field_group="${FIELD_GROUP}" \
-  accum_hh="${ACCUM_HH}" \
-  outvarname_grid_or_point="grid_or_point" \
-  outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
-  outvarname_fieldname_in_fcst_input="FIELDNAME_IN_FCST_INPUT" \
-  outvarname_fieldname_in_MET_output="FIELDNAME_IN_MET_OUTPUT" \
-  outvarname_fieldname_in_MET_filedir_names="FIELDNAME_IN_MET_FILEDIR_NAMES"
 #
 #-----------------------------------------------------------------------
 #
@@ -146,17 +103,24 @@ set_vx_params \
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 
 OBS_INPUT_DIR="${OBS_DIR}"
-OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_FN_TEMPLATES[1]} )
 
 OUTPUT_BASE="${vx_output_basedir}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT} )
 STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
-#
+if [ "${OBTYPE}" = "AERONET" ]; then
+  OBS_INPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATES[1]}
+  OUTPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT}
+  ASCII2NC_INPUT_FORMAT=aeronetv3
+elif [ "${OBTYPE}" = "AIRNOW" ]; then
+  OBS_INPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATES[1]}
+  OUTPUT_FN_TEMPLATE=${OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT}
+  ASCII2NC_INPUT_FORMAT=${AIRNOW_INPUT_FORMAT}
+else
+  print_err_msg_exit "\nNo filename template set for OBTYPE \"${OBTYPE}\"!"
+fi
 #-----------------------------------------------------------------------
 #
-# Set the array of lead hours (relative to the date associated with this
-# task) for which to run the MET/METplus tool.
+# Set the array of forecast hours for which to run the MET/METplus tool.
 #
 #-----------------------------------------------------------------------
 #
@@ -174,7 +138,7 @@ for yyyymmddhh in ${obs_retrieve_times_crnt_day[@]}; do
   fp=$( python3 $USHdir/eval_metplus_timestr_tmpl.py \
     --init_time="${yyyymmdd_task}00" \
     --lhr="${lhr}" \
-    --fn_template="${OBS_DIR}/${OBS_NDAS_FN_TEMPLATES[1]}") || \
+    --fn_template="${OBS_DIR}/${OBS_INPUT_FN_TEMPLATE}") || \
     print_err_msg_exit "Call to eval_metplus_timestr_tmpl.py failed with return code: $?"
 
   if [[ -f "${fp}" ]]; then
@@ -248,14 +212,14 @@ export LOGDIR
 #
 #-----------------------------------------------------------------------
 #
-# Do not run METplus if there isn't at least one lead hour for which to
-# run it.
+# Do not run METplus if there isn't at least one valid forecast hour for
+# which to run it.
 #
 #-----------------------------------------------------------------------
 #
 if [ -z "${LEADHR_LIST}" ]; then
   print_err_msg_exit "\
-The list of lead hours for which to run METplus is empty:
+The list of forecast hours for which to run METplus is empty:
   LEADHR_LIST = [${LEADHR_LIST}]"
 fi
 #
@@ -271,24 +235,12 @@ fi
 #
 metplus_config_tmpl_fn="${MetplusToolName}_obs"
 #
-# Note that we append the cycle date to the name of the configuration
-# file because we are considering only observations when using Pb2NC, so
-# the output files from METplus are not placed under cycle directories.
-# Thus, another method is necessary to associate the configuration file
-# with the cycle for which it is used.
+# Set the name of the final conf file that will be used for this task. We
+# append the OBTYPE and cycle date to ensure that different tasks in the same
+# workflow won't overwrite each others' conf files.
 #
-# Note also that if considering an ensemble forecast, we include the
-# ensemble member name to the config file name.  This is necessary in
-# NCO mode (i.e. when RUN_ENVIR = "nco") because in that mode, the
-# directory tree under which the configuration file is placed does not
-# contain member information, so the file names must include it.  It is
-# not necessary in community mode (i.e. when RUN_ENVIR = "community")
-# because in that case, the directory structure does contain the member
-# information, but we still include that info in the file name so that
-# the behavior in the two modes is as similar as possible.
-#
-metplus_config_fn="${metplus_config_tmpl_fn}_NDAS_${CDATE}"
-metplus_log_fn="${metplus_config_fn}_NDAS"
+metplus_config_fn="${metplus_config_tmpl_fn}_${OBTYPE}_${CDATE}"
+metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
@@ -320,10 +272,10 @@ settings="\
   'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
   'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
 #
-# Date and lead hour information.
+# Date and forecast hour information.
 #
   'cdate': '$CDATE'
-  'leadhr_list': '${LEADHR_LIST}'
+  'fhr_list': '${LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #
@@ -338,6 +290,7 @@ settings="\
   'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
   'staging_dir': '${STAGING_DIR}'
   'vx_fcst_model_name': '${VX_FCST_MODEL_NAME}'
+  'input_format': '${ASCII2NC_INPUT_FORMAT}'
 #
 # Ensemble and member-specific information.
 #
@@ -358,7 +311,7 @@ uw template render \
   -o ${metplus_config_fp} \
   --verbose \
   --values-file "${tmpfile}" \
-  --search-path "/"
+  --search-path "/" 
 
 err=$?
 rm $tmpfile

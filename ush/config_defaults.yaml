@@ -315,11 +315,11 @@ platform:
   # mimics the stream in a more controlled way and tests the ability 
   # to access LBCS.
   # 
-  # TEST_CCPA_OBS_DIR, TEST_MRMS_OBS_DIR, TEST_NDAS_OBS_DIR: 
-  # These parameters are used by the testing script to test the mechanism 
+  # TEST_*_OBS_DIR:
+  # These parameters are used by the WE2E testing script to test the mechanism
   # that allows user to point to data streams on disk for observation data 
-  # for verification tasks. They test the ability for users to set 
-  # CCPA_OBS_DIR, MRMS_OBS_DIR, and NDAS_OBS_DIR respectively.
+  # for verification tasks. They test the ability for users to manually set 
+  # these observation directories.
   # 
   # TEST_VX_FCST_INPUT_BASEDIR: 
   # The path to user-staged forecast files for WE2E testing of verificaton 
@@ -335,6 +335,9 @@ platform:
   TEST_CCPA_OBS_DIR: ""
   TEST_MRMS_OBS_DIR: ""
   TEST_NDAS_OBS_DIR: ""
+  TEST_NOHRSC_OBS_DIR: ""
+  TEST_AERONET_OBS_DIR: ""
+  TEST_AIRNOW_OBS_DIR: ""
   TEST_VX_FCST_INPUT_BASEDIR: ""
   #
   #-----------------------------------------------------------------------
@@ -699,7 +702,7 @@ workflow:
   # the workflow launch script (WFLOW_LAUNCH_SCRIPT_FN).
   #
   # GLOBAL_VAR_DEFNS_FP: 
-  # Path to the global varibale definition file 
+  # Path to the global variable definition file
   # (GLOBAL_VAR_DEFNS_FN) in the experiment directory. 
   #
   # ROCOTO_YAML_FP: 
@@ -909,13 +912,11 @@ workflow:
   #
   # DATE_FIRST_CYCL:
   # Starting cycle date of the FIRST forecast in the set of forecasts to
-  # run.  Format is "YYYYMMDDHH". Note: This has recently changed to
-  # include the first cycle hour.
+  # run.  Format is "YYYYMMDDHH".
   #
   # DATE_LAST_CYCL:
   # Starting cycle date of the LAST forecast in the set of forecasts to run.
-  # Format is "YYYYMMDDHH".  Note: This has recently changed to include
-  # the last cycle hour.
+  # Format is "YYYYMMDDHH".
   #
   # INCR_CYCL_FREQ:
   # Increment in hours for Rocoto cycle frequency.
@@ -966,8 +967,8 @@ workflow:
   #   The preexisting directory is renamed and a new directory (having the
   #   same name as the original preexisting directory) is created. The new
   #   name of the preexisting directory consists of its original name and
-  #   the suffix "_oldNNN", where NNN is a 3-digit integer chosen to make
-  #   the new name unique.
+  #   the suffix "_old_YYYYMMDD_HHmmss", where YYYYMMDD_HHmmss is the full
+  #   date and time of the rename
   #
   # * "reuse":
   #    This method will keep preexisting directory intact except that
@@ -2411,8 +2412,9 @@ verification:
   # -------------------------------
   #
   # METPLUS_VERBOSITY_LEVEL: 
-  # Logging verbosity level used by METplus verification tools.  0 to 5,
-  # with 0 quiet and 5 loudest.
+  # Logging verbosity level used by METplus verification tools.  0 to 9,
+  # with 0 having the fewest log messages and 9 having the most. Levels 5
+  # and above can result in very large log files and slower tool execution.
   # 
   METPLUS_VERBOSITY_LEVEL: 2
   #
@@ -2427,13 +2429,15 @@ verification:
   #   * NOHRSC (National Operational Hydrologic Remote Sensing Center)
   #   * MRMS (Multi-Radar Multi-Sensor)
   #   * NDAS (NAM Data Assimilation System)
+  #   * AERONET (Aerosol Robotic Network)
+  #   * AIRNOW (AirNow air quality reports)
   #
   # The script ush/get_obs.py contains further details on the files and
   # directory structure of each obs type.
   #
 
   #
-  # [CCPA|NOHRSC|MRMS|NDAS]_OBS_AVAIL_INTVL_HRS:
+  # *_OBS_AVAIL_INTVL_HRS:
   # Time interval (in hours) at which various types of obs are available on
   # NOAA's HPSS.
   #
@@ -2446,11 +2450,14 @@ verification:
   NOHRSC_OBS_AVAIL_INTVL_HRS: 6
   MRMS_OBS_AVAIL_INTVL_HRS: 1
   NDAS_OBS_AVAIL_INTVL_HRS: 1
+  AERONET_OBS_AVAIL_INTVL_HRS: 24
+  AIRNOW_OBS_AVAIL_INTVL_HRS: 1
   #
-  # [CCPA|NOHRSC|MRMS|NDAS]_OBS_DIR:
-  # Base directory in which CCPA, NOHRSC, MRMS, or NDAS obs files needed by
-  # the verification tasks are located.  If the files do not exist, they
-  # will be retrieved and placed under this directory.
+  # *_OBS_DIR:
+  # Base directory in which observation files needed by verification tasks are
+  # located.  If the files do not exist, they will be retrieved and placed under
+  # this directory.
+  #
   #
   # Note that:
   #
@@ -2467,6 +2474,8 @@ verification:
   NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
   MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
   NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
+  AERONET_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/aeronet"
+  AIRNOW_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/airnow"
   #
   # OBS_[CCPA|NOHRSC|MRMS|NDAS]_FN_TEMPLATES:
   # File name templates for various obs types.  These are meant to be used
@@ -2566,20 +2575,21 @@ verification:
   OBS_MRMS_FN_TEMPLATES: [ 'REFC', '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2',
                            'RETOP', '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2' ]
   OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
+  OBS_AERONET_FN_TEMPLATES: [ 'AOD', '{valid?fmt=%Y%m%d}/{valid?fmt=%Y%m%d}.lev15' ]
+  # NOTE: for files retrieved from AWS (see OBS_DATA_STORE variable), the
+  # default value should be replaced with
+  # '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat'
+  OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
   #
-  # REMOVE_RAW_OBS_DIRS_[CCPA|NOHRSC|MRMS|NDAS]:
+  # REMOVE_RAW_OBS_DIRS
   # Flag specifying whether to remove the "raw" observation directories
-  # after retrieving the specified type of obs (CCPA, NOHRSC, MRMS, or
-  # NOHRSC) from a data store (e.g. NOAA's HPSS).  The raw directories
-  # are the ones in which the observation files are placed immediately
+  # after retrieving observations from a data store (e.g. NOAA's HPSS).
+  # The raw directories are the ones in which the observation files are placed
   # after pulling them from the data store but before performing any
   # processing on them such as renaming the files and/or reorganizing
   # their directory structure.
   #
-  REMOVE_RAW_OBS_CCPA: True
-  REMOVE_RAW_OBS_NOHRSC: True
-  REMOVE_RAW_OBS_MRMS: True
-  REMOVE_RAW_OBS_NDAS: True
+  REMOVE_RAW_OBS_DIRS: True
   # 
   # OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
   # METplus template for the names of the NetCDF files generated by the
@@ -2587,8 +2597,7 @@ verification:
   # CCPA observations.  These files will contain observed accumulated
   # precipitation in NetCDF format for various accumulation intervals.
   #
-  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{%- set obs_avail_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
-                                                {{- "ccpa.t{valid?fmt=%H}z." ~ obs_avail_intvl_hrs ~ "h.hrap.conus.gb2_a${ACCUM_HH}h.nc" }}'
+  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- "ccpa.hrap.conus.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc" }}'
   #
   # OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
   # METplus template for the names of the NetCDF files generated by the
@@ -2598,6 +2607,34 @@ verification:
   #
   OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{%- set obs_avail_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
                                                    {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc" }}'
+  # OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT:
+  # Template used to specify the names of the output NetCDF observation
+  # files generated by the worfklow verification tasks that call the
+  # METplus ASCII2NC tool on AERONET and AIRNOW observations, respectively.
+  #
+  OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT: 'hourly_aeronet_obs_{valid?fmt=%Y%m%d}00.nc'
+  OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT: 'hourly_airnow_obs_{valid?fmt=%Y%m%d%H}.nc'
+  #
+  # AIRNOW_INPUT_FORMAT:
+  # Observation format for ASCII Airnow observations. Observations retrieved from HPSS are in
+  # "airnowhourlyaqobs" format, observations retrieved from AWS are generally in "airnowhourly" format.
+  # For more information see the METplus users guide: 
+  # https://met.readthedocs.io/en/latest/Users_Guide/reformat_point.html#ascii2nc-tool
+
+  AIRNOW_INPUT_FORMAT: "airnowhourlyaqobs"
+
+  #
+  # OBS_DATA_STORE*:
+  # Location(s) to retrieve observation data from. Valid values are "aws" and/or "hpss", see
+  # parm/data_locations.yaml for info on these data stores.
+  # 
+  OBS_DATA_STORE_CCPA: hpss
+  OBS_DATA_STORE_NOHRSC: hpss
+  OBS_DATA_STORE_MRMS: hpss
+  OBS_DATA_STORE_NDAS: hpss
+  OBS_DATA_STORE_AERONET: hpss
+  OBS_DATA_STORE_AIRNOW: hpss
+
   #
   # OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT: 
   # METplus template for the names of the NetCDF files generated by the
@@ -2618,7 +2655,7 @@ verification:
   # length of the forecast, etc; an alternative may be to specify the
   # maximum allowed fraction of obs files that can be missing).
   #
-  NUM_MISSING_OBS_FILES_MAX: 2
+  NUM_MISSING_OBS_FILES_MAX: 0
   #
   # VX Parameters for Forecasts
   # ----------------------------
@@ -2681,7 +2718,7 @@ verification:
                                        {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
                                          {{- ".${ensmem_name}" }}
                                        {%- endif %}
-                                       {{- ".prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${FIELD_GROUP}_a${ACCUM_HH}h.nc" }}'
+                                       {{- ".prslev.${POST_OUTPUT_DOMAIN_NAME}.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc" }}'
   #
   # VX_NDIGITS_ENSMEM_NAMES:
   # Number of digits to assume/use in the forecast ensemble member identifier

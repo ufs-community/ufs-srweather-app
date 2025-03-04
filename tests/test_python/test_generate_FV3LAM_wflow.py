@@ -53,6 +53,13 @@ class Testing(unittest.TestCase):
         run_command(
             f"""{sed} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
         )
+        # If running CI, point config.yaml to correct location for fix files
+        if fix_files:=get_env_var("CI_FIX_FILES"):
+            machine_file=f"{USHdir}/machine/linux.yaml"
+            sed_command=f"{sed} -i 's|/home/username/DATA/UFS|{fix_files}|g' "\
+                        f"{machine_file}"
+            run_command(sed_command)
+
         run_workflow(USHdir, logfile)
 
     def setUp(self):

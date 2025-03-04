@@ -8,9 +8,19 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_run_post ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+  constants
+  fixed_files
+  task_run_post
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -306,8 +316,8 @@ fi
 # First, set the base file names.
 #
 metplus_config_tmpl_bn="${MetplusToolName}"
-metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_bn="${metplus_config_bn}_$CDATE"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${CDATE}"
+metplus_log_bn="${metplus_config_bn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
