@@ -1044,7 +1044,7 @@ For information on different file types found in the ``metprd`` directory users 
 Analyzing HRRR Results
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this section, we will analyze how different variables were verified in the HRRR forecast. To do this users will be examining the RMSE and MBIAS scores for Temperature and Dew Point (DPT) on the surface using the ``point_stat`` file type.
+This section, will analyze how different variables were verified in the HRRR forecast. To do this, users will be examining the RMSE and MBIAS scores for Temperature and Dew Point (DPT) on the surface using the ``point_stat`` file type.
 
 **Interpretation:**
 
@@ -1063,12 +1063,12 @@ To begin examining the temperature variable, navigate to ``path/to/2019103012/me
 
 Press ``Enter`` to open this file. You will now be able to see verification data for different types of variables. 
 
-We can see that on October 31st at 2400L temperature received an MBIAS score of 1.7212 and an RMSE score of 2.38512. Looking at these scores we can conclude that for this forecast hour the temperature was overforecasted and was not close to the observed temperature.
+We can see that on October 31st, at 2400L, temperature received an MBIAS score of 1.7212 and an RMSE score of 2.38512. Looking at these scores, we can conclude that for this forecast hour, the temperature was over forecasted and was greater than the observed temperature.
 
 Dew Point
 ----------
 
-Good news! The DPT variable can be examined within the same point_stat file, so there is no need to switch files. DPT received an MBIAS score of 1.5978 and an RMSE score of 2.51836. Looking at these scores we can see that similar to temperature, the DPT was overforecasted and not close to the observed dewpoint.
+Good news! The DPT variable can be examined within the same point_stat file, so there is no need to switch files. DPT received an MBIAS score of 1.5978 and an RMSE score of 2.51836. Looking at these scores, we can see that, similar to temperature, the DPT was over forecasted and was greater than the observed dewpoint.
 
 Sample Forecast #5: Hurricane Barry
 =======================================
