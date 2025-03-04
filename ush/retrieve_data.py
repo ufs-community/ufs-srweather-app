@@ -694,7 +694,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                     cmd = f'unzip -o {os.path.basename(existing_archive)} {" ".join(source_paths)}'
 
                 else:
-                    cmd = f'htar -xvf {existing_archive} {" ".join(source_paths)}'
+                    cmd = f'htar -H nostage -xvf {existing_archive} {" ".join(source_paths)}'
 
                 logging.info(f"Running command \n {cmd}")
 
