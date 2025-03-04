@@ -246,6 +246,58 @@ this observation type (obtype) and field group (field_group) combination:
       esac
       ;;
 
+    "AERONET")
+
+      _grid_or_point_="point"
+      case "${field_group}" in
+
+        "AOD")
+          fieldname_in_obs_input="${field_group}"
+          fieldname_in_fcst_input="AOTK"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
+          ;;
+
+        *)
+          print_err_msg_exit "\
+A method for setting verification parameters has not been specified for
+this observation type (obtype) and field group (field_group) combination:
+  obtype = \"${obtype}\"
+  field_group = \"${field_group}\""
+          ;;
+
+      esac
+      ;;
+
+    "AIRNOW")
+
+      _grid_or_point_="point"
+      case "${field_group}" in
+
+        "PM25")
+          fieldname_in_obs_input="${field_group}"
+          fieldname_in_fcst_input="MASSDEN"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
+          ;;
+        "PM10")
+          fieldname_in_obs_input="${field_group}"
+          fieldname_in_fcst_input="MASSDEN"
+          fieldname_in_MET_output="${field_group}"
+          fieldname_in_MET_filedir_names="${field_group}"
+          ;;
+
+        *)
+          print_err_msg_exit "\
+A method for setting verification parameters has not been specified for
+this observation type (obtype) and field_group (field_group) combination:
+  obtype = \"${obtype}\"
+  field_group = \"${field_group}\""
+          ;;
+
+      esac
+      ;;
+
     *)
       print_err_msg_exit "\
 A method for setting verification parameters has not been specified for

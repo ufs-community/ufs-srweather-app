@@ -3,25 +3,22 @@
 #
 #-----------------------------------------------------------------------
 #
-# The ex-script that checks, pulls, and stages observation data for
-# model verification.
+#
+# The J-Job that runs METplus for point-stat by initialization time for
+# all forecast hours.
 #
 # Run-time environment variables:
 #
-#    FHR
 #    GLOBAL_VAR_DEFNS_FP
-#    OBS_DIR
-#    OBTYPE
-#    PDY
-#    VAR
 #
 # Experiment variables
 #
-#   user:
+#  user:
+#    SCRIPTSdir
 #    USHdir
-#    PARMdir
 #
 #-----------------------------------------------------------------------
+#
 
 #
 #-----------------------------------------------------------------------
@@ -33,13 +30,11 @@
 . $USHdir/source_util_funcs.sh
 sections=(
   user
-  nco
-  workflow
-  verification
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -52,40 +47,49 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# Make sure the obs type is valid.  Then call a python script to check
-# for the presence of obs files on disk and get them if needed.
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC" "AERONET" "AIRNOW")
-if [[ ! ${valid_obtypes[@]} =~ ${OBTYPE} ]]; then
-  print_err_msg_exit "\
-Invalid observation type (OBTYPE) specified for script:
-  OBTYPE = \"${OBTYPE}\"
-Valid observation types are:
-  $(printf "\"%s\" " ${valid_obtypes[@]})
-"
-fi
-
-cmd="\
-python3 -u ${USHdir}/get_obs.py \
---var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
---obtype ${OBTYPE} \
---obs_day ${PDY}"
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
 print_info_msg "
-CALLING: ${cmd}"
-${cmd} || print_err_msg_exit "Error calling get_obs.py"
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that runs METplus for point-stat
+by initialization time for all forecast hours.
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Create flag file that indicates completion of task.  This is needed by
-# the workflow.
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles. 
 #
 #-----------------------------------------------------------------------
 #
-mkdir -p ${WFLOW_FLAG_FILES_DIR}
-file_bn="get_obs_$(echo_lowercase ${OBTYPE})"
-touch "${WFLOW_FLAG_FILES_DIR}/${file_bn}_${PDY}_complete.txt"
+$SCRIPTSdir/exregional_run_met_ascii2nc_obs.sh || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
 #
 #-----------------------------------------------------------------------
 #

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import glob
 import os
 from pathlib import Path
 
@@ -40,12 +41,16 @@ def create_symlink_to_file(target, symlink, relative=True):
     symlink = Path(symlink)
 
     if not target.exists():
-        print_err_msg_exit(
-            f"""
-            Cannot create symlink to specified target file because the latter does
-            not exist or is not a file:
-                target = '{target}'"""
-        )
+        if glob.glob(target):
+            for wildtarget in glob.glob(target):
+                create_symlink_to_file(wildtarget,symlink,relative)
+        else:
+            print_err_msg_exit(
+                f"""
+                Cannot create symlink to specified target file because the latter does
+                not exist or is not readable:
+                    target = '{target}'"""
+            )
 
     if relative:
         # Find the relative path from the target to its symbolic link name

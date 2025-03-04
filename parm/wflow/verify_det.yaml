@@ -132,23 +132,26 @@ metatask_GridStat_REFC_RETOP_all_mems:
               cyclestr:
                 value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
 
-metatask_PointStat_SFC_UPA_all_mems:
+metatask_PointStat:
   var:
-    mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
-  metatask_PointStat_SFC_UPA_mem#mem#:
+    FIELD_GROUP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["SFC", "UPA", "AOD", "PM25", "PM10"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+    METAOBTYPE: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="SFC" or var =="UPA" %}NDAS {% elif var =="AOD" %}AERONET {% elif var =="PM25" or var =="PM10" %}AIRNOW {% endif %}{% endfor %}'
+    METAOBS_DIR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="SFC" or var =="UPA" %}&NDAS_OBS_DIR; {% elif var =="AOD" %}&AERONET_OBS_DIR; {% elif var =="PM25" or var =="PM10" %}&AIRNOW_OBS_DIR; {% endif %}{% endfor %}'
+    METAOB_AVAIL_HRS: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="SFC" or var =="UPA" %} {{ verification.NDAS_OBS_AVAIL_INTVL_HRS }} {% elif var =="AOD" %}{{ verification.AERONET_OBS_AVAIL_INTVL_HRS }} {% elif var =="PM25" or var =="PM10" %}{{ verification.AIRNOW_OBS_AVAIL_INTVL_HRS }} {% endif %}{% endfor %}'
+  metatask_PointStat_#FIELD_GROUP#_all_mems:
     var:
-      FIELD_GROUP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
     task_run_MET_PointStat_vx_#FIELD_GROUP#_mem#mem#:
       <<: *default_task_verify_det
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
-        OBS_DIR: '&NDAS_OBS_DIR;'
+        OBS_DIR: '#METAOBS_DIR#'
         FIELD_GROUP: '#FIELD_GROUP#'
         METPLUSTOOLNAME: 'POINTSTAT'
-        OBTYPE: 'NDAS'
+        OBTYPE: '#METAOBTYPE#'
         ENSMEM_INDX: "#mem#"
-        OBS_AVAIL_INTVL_HRS: '{{ verification.NDAS_OBS_AVAIL_INTVL_HRS }}'
+        OBS_AVAIL_INTVL_HRS: '#METAOB_AVAIL_HRS#'
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
       walltime: "{{ verification_resources.execution.deterministic.pointstat.walltime }}"
@@ -159,7 +162,7 @@ metatask_PointStat_SFC_UPA_all_mems:
           sh_pb2nc_complete:
             attrs:
               shell: /bin/bash
-            command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "run_met_pb2nc_obs_ndas_*_complete.txt" -exec basename {} \; 2>/dev/null |
+            command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "#METAOBTYPE#_nc_obs_*_ready.txt" -exec basename {} \; 2>/dev/null |
               grep -oE '[0-9]{8}' |
               awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
               test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_INST|length }}
@@ -169,3 +172,11 @@ metatask_PointStat_SFC_UPA_all_mems:
             value:
               cyclestr:
                 value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+          or:
+            not:
+              taskvalid:
+                attrs:
+                  task: 'run_MET_PcpCombine_fcst_#FIELD_GROUP#_mem#mem#'
+            taskdep:
+              attrs:
+                task: 'run_MET_PcpCombine_fcst_#FIELD_GROUP#_mem#mem#'

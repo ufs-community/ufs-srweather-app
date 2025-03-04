@@ -258,8 +258,11 @@
         "VX_FIELD_GROUPS": {
           "prefixItems": [
             { "enum": [
+              "AOD",
               "APCP",
               "ASNOW",
+              "PM10",
+              "PM25",
               "REFC",
               "RETOP",
               "SFC",

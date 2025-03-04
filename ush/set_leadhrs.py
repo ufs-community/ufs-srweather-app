@@ -36,6 +36,10 @@ def set_leadhrs(date_init, lhr_min, lhr_max, lhr_intvl, base_dir, time_lag, fn_t
     if skip_check_files:
         return lhrs_list
 
+    # Since calls to this script from bash do not allow us to print to screen,
+    # save alerts about missing files and only print in case of an exception
+    errmsg=''
+
     # Step 2: Loop through lead hours and check for corresponding file existence
     final_list = []
     num_missing_files = 0
@@ -52,16 +56,18 @@ def set_leadhrs(date_init, lhr_min, lhr_max, lhr_intvl, base_dir, time_lag, fn_t
             final_list.append(lhr)
         else:
             num_missing_files += 1
-
+            newerrmsg = f"File for lead hour {lhr} (relative to {date_init}) is MISSING: {fp}"
             if verbose:
-                print(f"File for lead hour {lhr} (relative to {date_init}) is MISSING: {fp}")
+                print(newerrmsg)
+            else:
+                errmsg += newerrmsg
 
     if verbose:
         print(f"Final set of lead hours relative to {date_init}: {final_list}")
 
     # Step 3: Check if the number of missing files exceeds the maximum allowed
     if num_missing_files > num_missing_files_max:
-        raise Exception(f"Number of missing files ({num_missing_files}) exceeds maximum allowed ({num_missing_files_max}).")
+        raise Exception(f"{errmsg}\nNumber of missing files ({num_missing_files}) exceeds maximum allowed ({num_missing_files_max}).")
 
     return final_list
 

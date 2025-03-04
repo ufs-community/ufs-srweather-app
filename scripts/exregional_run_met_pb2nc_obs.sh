@@ -18,7 +18,6 @@ sections=(
   cpl_aqm_parm
   constants
   fixed_files
-  grid_params
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
@@ -348,13 +347,7 @@ settings="\
 #
 # Field information.
 #
-  'fieldname_in_obs_input': '${FIELDNAME_IN_OBS_INPUT}'
-  'fieldname_in_fcst_input': '${FIELDNAME_IN_FCST_INPUT}'
-  'fieldname_in_met_output': '${FIELDNAME_IN_MET_OUTPUT}'
-  'fieldname_in_met_filedir_names': '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
   'obtype': '${OBTYPE}'
-  'accum_hh': '${ACCUM_HH:-}'
-  'accum_no_pad': '${ACCUM_NO_PAD:-}'
 "
 
 # Render the template to create a METplus configuration file
@@ -404,7 +397,7 @@ METplus configuration file used is:
 #-----------------------------------------------------------------------
 #
 mkdir -p ${WFLOW_FLAG_FILES_DIR}
-touch "${WFLOW_FLAG_FILES_DIR}/run_met_pb2nc_obs_ndas_${PDY}_complete.txt"
+touch "${WFLOW_FLAG_FILES_DIR}/${OBTYPE}_nc_obs_${PDY}_ready.txt"
 #
 #-----------------------------------------------------------------------
 #

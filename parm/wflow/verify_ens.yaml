@@ -157,7 +157,7 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
       ACCUM_HH: '01'
       FCST_LEVEL: 'all'
       FCST_THRESH: 'all'
-    walltime: "{{ verification_resources.execution.ensemble.genensprod.ndas.walltime }}"
+    walltime: "{{ verification_resources.execution.ensemble.genensprod.default.walltime }}"
     dependency:
       metataskdep_check_post_output:
          <<: *check_post_output
@@ -174,7 +174,7 @@ metatask_GenEnsProd_EnsembleStat_SFC_UPA:
         sh_pb2nc_ndas_complete: &all_pb2nc_obs_ndas_complete
           attrs:
             shell: /bin/bash
-          command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "run_met_pb2nc_obs_ndas_*_complete.txt" -exec basename {} \; 2>/dev/null |
+          command: find {{ workflow.WFLOW_FLAG_FILES_DIR }} -name "NDAS_nc_obs_*_ready.txt" -exec basename {} \; 2>/dev/null |
             grep -oE '[0-9]{8}' |
             awk -F/ -v s={{ workflow.OBS_DAYS_ALL_CYCLES_INST[0] }} -v e={{ workflow.OBS_DAYS_ALL_CYCLES_INST[-1] }} '($NF >= s && $NF <= e)' |
             test $(wc -l) -ge {{ workflow.OBS_DAYS_ALL_CYCLES_INST|length }}

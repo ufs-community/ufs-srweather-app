@@ -233,6 +233,8 @@ def run_we2e_tests(homedir, args) -> None:
                 "MRMS_OBS_DIR",
                 "NDAS_OBS_DIR",
                 "NOHRSC_OBS_DIR",
+                'AERONET_OBS_DIR',
+                'AIRNOW_OBS_DIR',
             ]
             for obvar in obs_vars:
                 mach_path = machine_defaults["platform"].get("TEST_" + obvar)

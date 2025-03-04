@@ -18,7 +18,7 @@ sections=(
   cpl_aqm_parm
   constants
   fixed_files
-  grid_params
+  task_run_post.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
@@ -316,8 +316,8 @@ fi
 # First, set the base file names.
 #
 metplus_config_tmpl_bn="${MetplusToolName}"
-metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_bn="${metplus_config_bn}_$CDATE"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${CDATE}"
+metplus_log_bn="${metplus_config_bn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
