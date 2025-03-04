@@ -48,12 +48,6 @@ SRW App components, including the UFS :term:`WM`, draw on over 50 code libraries
 Instructions
 -------------------------
 
-.. attention::
-
-   Spack-stack is the fully-supported software stack validated by the UFS WM as of `PR #1707 <https://github.com/ufs-community/ufs-weather-model/pull/1707>`__ on August 24, 2023. UFS applications are therefore shifting to :term:`spack-stack`, too. When all systems have shifted to spack-stack, support for HPC-Stack will be deprecated. Users are encouraged to check out `spack-stack <https://github.com/JCSDA/spack-stack>`__ to prepare for this shift in support from HPC-Stack to spack-stack even if their system currently has support for HPC-Stack. 
-
-   As of the v2.2.0 release, spack-stack is supported in the SRW App on most Level 1 systems with the exception of Derecho, which uses HPC-Stack. Transition to spack-stack is underway for Derecho. Users on generic MacOS and Linux systems will find HPC-Stack-based modulefiles in the v2.2.0 release but can expect that these will also shift to spack-stack in the ``develop`` branch in the coming months. 
-
 Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack or HPC-Stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing spack-stack or HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
 
 .. code-block:: console
