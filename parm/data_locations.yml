@@ -437,11 +437,3 @@ AIRNOW_obs:
         - "HourlyData_{fyyyymmdd}{fhh}.dat"
         - "Monitoring_Site_Locations_V2.dat"
 
-GOES_AOD:
-  aws:
-    protocol: awscli
-    bucket: "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}"
-    file_names:
-      obs:
-        - "OR_ABI-L2-AODF-M[3-6]_G16_s{fyyyy}{fjjj}{fhh}*.nc"
-
