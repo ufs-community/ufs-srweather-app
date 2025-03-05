@@ -354,6 +354,11 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
 
     zipped_archive_file_paths = zip(paths, file_names)
 
+    if len(file_names) != len(paths):
+        logging.warning("Data archive has different number of 'archive_path' and "
+                        "'archive_file_names' entries; not all paths will be searched!\n"
+                        f"archive_path={paths}\narchive_file_names={file_names}")
+
     # Narrow down which HPSS files are available for this date
     for list_item, (archive_path, archive_file_names) in enumerate(
         zipped_archive_file_paths
@@ -624,9 +629,10 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
         ens_group=ens_group,
     )
 
-    logging.debug(f"Found existing archives: {existing_archives}")
+    if existing_archives:
+        logging.debug(f"Found existing archives: {existing_archives}")
 
-    if not existing_archives:
+    else:
         logging.warning("No archive files were found!")
         unavailable["archive"] = list(zip(archive_paths, archive_file_names))
         return unavailable
