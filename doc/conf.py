@@ -116,6 +116,7 @@ user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
                     r'https://glossary.ametsoc.org/.*',
+                    r'https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana',
                     #r'https://readthedocs.org/projects/ufs-srweather-app/',
                    ]
 
