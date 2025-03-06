@@ -1609,6 +1609,8 @@ Pressure Tendency Diagnostic
 ``PRINT_DIFF_PGR``: (Default: false)
    Option to turn on/off the pressure tendency diagnostic. 
 
+.. _VXParams:
+
 Verification (VX) Parameters
 =================================
 
