@@ -767,18 +767,10 @@ def get_obs(config, obtype, yyyymmdd_task):
             obs_times_in_arcv.sort()
 
             # Construct the set of obs times over which to loop below when creating
-            # the processed obs files.  This consists of the intersection of the obs
-            # times in the current archive and the obs retrieve times for the current
-            # day.
-            #
-            # Note that we must use this intersection of times because it is possible
-            # that some of the obs retrieval times for the current day come before
-            # the range of times spanned by the current archive while others come after,
-            # but none fall within that range.  This can happen because the set of
-            # archive hours over which we are looping were constructed above without
-            # considering whether there are obs retrieve time gaps that make it
-            # unnecessary to retrieve some of the archives between the first and last
-            # ones that must be retrieved.
+            # the processed obs files. This is the intersection of the obs times in the
+            # current archive and the obs retrieve times for the current day. Using the
+            # intersection is necessary because some files that contain observations for
+            # more than one hour may not be retrieved correctly otherwise.
             obs_retrieve_times_crnt_day_in_arcv = [
                 yyyymmddhh for yyyymmddhh in obs_retrieve_times_crnt_day if yyyymmddhh in obs_times_in_arcv
             ]
@@ -826,23 +818,11 @@ def get_obs(config, obtype, yyyymmdd_task):
             # in the previous archive (their valid times being equivalent), so we always
             # use the tm06 files.
 
-            # Note that for some obs types, each obs file extracted from the archive
-            # may contain observations for more than one time.  For example, for
-            # AERONET obs, there is one archive file per day, and that archive contains
-            # only one obs file that in turn contains the observations for all 24 hours
-            # of that day.  In such cases, once the processed obs file is created for
-            # one obs time, it does not need to be created for other times because the
-            # processed file creation process is the same regardless of the obs time.
-            # In fact, if remove_raw_obs is set to True, the processed file cannot be
-            # created a second time because the raw obs will have been removed during
-            # the creation of the first processed file (and if we try, it will cause
-            # an error).
-            #
-            # To avoid unnecesarily re-creating processed obs files and/or to avoid
-            # errors due to missing raw obs files, here we create a list to keep track
+            # Note that for some obs types (e.g. AERONET), each obs file extracted from the archive
+            # may contain observations for more than one time. To avoid errors and/or unnecesarily
+            # re-creating processed obs files, here we create a list to keep track
             # of the processed obs files that have already been created in the loop
-            # below.  Any file that is already in this list will not be recreated in
-            # subsequent iterations of the loop.
+            # below.
             proc_files_created = []
 
             for yyyymmddhh in obs_retrieve_times_crnt_day_in_arcv:
