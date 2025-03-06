@@ -233,6 +233,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         * **DYING:** One or more tasks have died (status DEAD), so this experiment has an error. Experiment monitoring will continue until all previously submitted tasks are in either status DEAD or status SUCCEEDED (see next entry).
         * **DEAD:** One or more tasks are in status DEAD, and other previously submitted jobs are either DEAD or SUCCEEDED. This experiment will no longer be monitored.
         * **ERROR:** Could not read the Rocoto database (``.db``) file. This will require manual intervention to solve, so the experiment will no longer be monitored. 
+        * **STALLED:** All submitted jobs are SUCCEEDED but one or more jobs have not been submitted; if this state persists, it will become "STUCK".
+        * **STUCK:** All submitted jobs are SUCCEEDED but one or more jobs have not been submitted for multiple iterations; this can indicate system-level throttling or a problem with Rocoto dependencies.
         * **RUNNING:** One or more jobs are in status RUNNING, and other previously submitted jobs are in status QUEUED, SUBMITTED, or SUCCEEDED. This is a normal state; experiment monitoring will continue.
         * **QUEUED:** One or more jobs are in status QUEUED, and some others may be in status SUBMITTED or SUCCEEDED. This is a normal state; experiment monitoring will continue.
         * **SUCCEEDED:** All jobs are in status SUCCEEDED; experiment monitoring will continue for one more cycle in case there are unsubmitted jobs remaining.
@@ -330,7 +332,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         # If all task statuses are "SUCCEEDED", set the experiment status to "SUCCEEDED". This
         # will trigger a final check using rocotostat to make sure there are no remaining un-
         # started tests.
-        expt["status"] = "SUCCEEDED"
+        if expt["status"] not in ['STALLED', 'STUCK']:
+            expt["status"] = "SUCCEEDED"
     elif expt["status"] == "CREATED":
         # Some platforms (including Hera) can have a problem with rocoto jobs not submitting
         # properly due to build-ups of background processes. This will resolve over time as
@@ -535,7 +538,8 @@ def compare_rocotostat(expt_dict,name):
 
         # If we're already tracking this task, continue
         if expt_dict.get(taskname):
-            continue
+            if expt_dict.get(taskname).get('status') not in ['STALLED', 'STUCK']:
+                continue
 
         # Otherwise, extract information into dictionary of untracked tasks
         untracked_tasks.append(taskname)

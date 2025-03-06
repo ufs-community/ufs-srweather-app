@@ -362,11 +362,13 @@ NDAS_obs:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
-      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}        
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
     archive_file_names:
       - "com2_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "gpfs_dell1_nco_ops_com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_obsproc_v1.0_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_obsproc_v1.1_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_obsproc_v1.2_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
     file_names:
@@ -388,3 +390,50 @@ NOHRSC_obs:
         - "sfav2_CONUS_6h_{yyyy}{mm}{dd}*_grid184.grb2"
     archive_internal_dir:
       - ./wgrbbul/nohrsc_snowfall/
+
+AERONET_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "dcom_prod_{yyyy}{mm}{dd}.tar"
+      - "dcom_{yyyy}{mm}{dd}.tar"
+    file_names:
+      obs:
+        - "{yyyy}{mm}{dd}.lev15"
+    archive_internal_dir:
+      - ./validation_data/aq/aeronet/
+  aws:
+    protocol: download
+    url: "https://aeronet.gsfc.nasa.gov/cgi-bin/"
+    file_names:
+      obs:
+        - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&AOD15=1&AVG=10"
+
+AIRNOW_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "dcom_prod_{yyyymmdd}.tar"
+      - "dcom_{yyyymmdd}.tar"
+    file_names:
+      obs:
+        - "HourlyAQObs_{yyyymmdd}*.dat"
+        - "Monitoring_Site_Locations_V2.dat"
+    archive_internal_dir:
+      - ./airnow/
+  aws:
+    protocol: download
+    url: "https://s3-us-west-1.amazonaws.com//files.airnowtech.org/airnow/{fyyyy}/{fyyyymmdd}/"
+    file_names:
+      obs:
+        - "HourlyData_{fyyyymmdd}{fhh}.dat"
+        - "Monitoring_Site_Locations_V2.dat"
+

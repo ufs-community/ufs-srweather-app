@@ -21,6 +21,39 @@ default_task_verify_pre: &default_task_verify_pre
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
 
+task_get_obs_aeronet:
+  <<: *default_task_verify_pre
+  attrs:
+    cycledefs: cycledefs_obs_days_cumul
+    maxtries: '1'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&AERONET_OBS_DIR;'
+    OBTYPE: 'AERONET'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 02:00:00
+
+task_get_obs_airnow:
+  <<: *default_task_verify_pre
+  attrs:
+    cycledefs: cycledefs_obs_days_cumul
+    maxtries: '1'
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&AIRNOW_OBS_DIR;'
+    OBTYPE: 'AIRNOW'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
+
+
 task_get_obs_ccpa:
   <<: *default_task_verify_pre
   attrs:
@@ -97,6 +130,35 @@ task_run_MET_Pb2nc_obs_NDAS:
         taskdep:
           attrs:
             task: get_obs_ndas
+
+metatask_ASCII2nc_obs:
+  var:
+    METAOBTYPE: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}AERONET {% elif var in ["PM25", "PM10"] %}AIRNOW {% endif %}{% endfor %}'
+    METAOBS_DIR: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}&AERONET_OBS_DIR; {% elif var in ["PM25", "PM10"] %}&AIRNOW_OBS_DIR; {% endif %}{% endfor %}'
+    TASKDEP: '{% for var in verification.VX_FIELD_GROUPS %}{% if var =="AOD" %}get_obs_aeronet {% elif var in ["PM25", "PM10"] %}get_obs_airnow {% endif %}{% endfor %}'
+  task_run_MET_ASCII2nc_obs_#METAOBTYPE#:
+    <<: *default_task_verify_pre
+    attrs:
+      cycledefs: cycledefs_obs_days_inst
+      maxtries: '2'
+    command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_ASCII2NC_OBS"'
+    envars:
+      <<: *default_vars
+      OBTYPE: '#METAOBTYPE#'
+      OBS_DIR: '#METAOBS_DIR#'
+      METPLUSTOOLNAME: 'ASCII2NC'
+    dependency:
+      and:
+        datadep:
+          text: '#METAOBS_DIR#'
+        or:
+          not:
+            taskvalid:
+              attrs:
+                task: '#TASKDEP#'
+          taskdep:
+            attrs:
+              task: '#TASKDEP#'
 
 metatask_PcpCombine_APCP_all_accums_obs_CCPA:
   var:
@@ -313,6 +375,34 @@ metatask_PcpCombine_ASNOW_all_accums_all_mems:
         FCST_OR_OBS: FCST
         OBTYPE: NOHRSC
         OBS_DIR: '&NOHRSC_OBS_DIR;'
+        METPLUSTOOLNAME: 'PCPCOMBINE'
+        ENSMEM_INDX: "#mem#"
+      dependency:
+        datadep:
+          attrs:
+            age: 00:00:00:30
+          text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+      walltime: 00:10:00
+
+metatask_PcpCombine_fcst_PM_all_mems:
+  var:
+    PM: '{% for var in verification.VX_FIELD_GROUPS %}{% if var in ["PM25", "PM10"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  metatask_PcpCombine_fcst_#PM#_all_mems:
+    var:
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+    task_run_MET_PcpCombine_fcst_#PM#_mem#mem#:
+      <<: *default_task_verify_pre
+      attrs:
+        cycledefs: forecast
+        maxtries: '2'
+      command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      envars:
+        <<: *default_vars
+        FIELD_GROUP: '#PM#'
+        ACCUM_HH: '01'
+        FCST_OR_OBS: FCST
+        OBTYPE: AIRNOW
+        OBS_DIR: '&AIRNOW_OBS_DIR;'
         METPLUSTOOLNAME: 'PCPCOMBINE'
         ENSMEM_INDX: "#mem#"
       dependency:

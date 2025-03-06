@@ -8,9 +8,19 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_run_post ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+  constants
+  fixed_files
+  task_run_post
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -180,7 +190,8 @@ OBS_INPUT_DIR=""
 OBS_INPUT_FN_TEMPLATE=""
 FCST_INPUT_DIR=""
 FCST_INPUT_FN_TEMPLATE=""
-
+PCP_COMBINE_METHOD="ADD"
+PCP_COMBINE_COMMAND=""
 if [ "${FCST_OR_OBS}" = "FCST" ]; then
 
   FCST_INPUT_DIR="${vx_fcst_input_basedir}"
@@ -190,7 +201,17 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_fcst"
   OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+  if [ "${OBTYPE}" = "AIRNOW" ]; then
+    PCP_COMBINE_METHOD="USER_DEFINED"
 
+    if [ "${FIELD_GROUP}" = "PM25" ]; then
+    # Need to combine two fields (different PM types) and convert units from forecast files to create PM25 equivalent to obs
+      PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62010; convert(x)=x*1e9;' {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=0; convert(x)=x*1e9;'"
+    elif [ "${FIELD_GROUP}" = "PM10" ]; then
+    # for PM10, command is just a passthrough
+      PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} -field 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=2; convert(x)=x*1e9;'"
+    fi
+  fi
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
 
   OBS_INPUT_DIR="${OBS_DIR}"
@@ -212,8 +233,14 @@ fi
 #-----------------------------------------------------------------------
 #
 vx_intvl="$((10#${ACCUM_HH}))"
+#Airnow obs use PCP_Combine simply to combine two fields, so run for every hour
+if [ "${OBTYPE}" = "AIRNOW" ]; then
+  lhr_min=0
+else
+  lhr_min=${vx_intvl}
+fi
 VX_LEADHR_LIST=$( python3 $USHdir/set_leadhrs.py \
-  --lhr_min="${vx_intvl}" \
+  --lhr_min="${lhr_min}" \
   --lhr_max="${FCST_LEN_HRS}" \
   --lhr_intvl="${vx_intvl}" \
   --skip_check_files ) || \
@@ -397,8 +424,13 @@ settings="\
   'input_field_group': '${FIELD_GROUP:-}'
   'input_level_fcst': '${FCST_LEVEL:-}'
   'input_thresh_fcst': '${FCST_THRESH:-}'
+#
+# Configuration information
+#
+  'pcp_combine_method': '${PCP_COMBINE_METHOD}'
+# NOTE: this command must remain un-quoted for proper rendering of nested quotes in command
+  'pcp_combine_command': ${PCP_COMBINE_COMMAND}
 "
-
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 printf "%s" "$settings" > "$tmpfile"

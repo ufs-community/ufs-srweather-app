@@ -70,11 +70,15 @@ function get_metplus_tool_name() {
 #-----------------------------------------------------------------------
 #
   valid_vals_METPLUSTOOLNAME=( \
-    "PB2NC" "PCPCOMBINE" "GRIDSTAT" "POINTSTAT" "GENENSPROD" "ENSEMBLESTAT" \
+    "ASCII2NC" "PB2NC" "PCPCOMBINE" "GRIDSTAT" "POINTSTAT" "GENENSPROD" "ENSEMBLESTAT" \
     )
   check_var_valid_value "METPLUSTOOLNAME" "valid_vals_METPLUSTOOLNAME"
 
   case "${METPLUSTOOLNAME}" in
+    "ASCII2NC")
+      _metplus_tool_name_="ascii2nc"
+      _MetplusToolName_="Ascii2nc"
+      ;;
     "PB2NC")
       _metplus_tool_name_="pb2nc"
       _MetplusToolName_="Pb2nc"

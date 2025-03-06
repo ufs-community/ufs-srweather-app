@@ -14,7 +14,6 @@ from uwtools.api.config import get_yaml_config
 from pprint import pprint
 
 from python_utils import (
-    log_info,
     cd_vrfy,
     date_to_str,
     mkdir_vrfy,
@@ -22,6 +21,7 @@ from python_utils import (
     check_var_valid_value,
     lowercase,
     uppercase,
+    dict_find,
     list_to_str,
     check_for_preexist_dir_file,
     flatten_dict,
@@ -449,7 +449,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     logger = logging.getLogger(__name__)
 
     # print message
-    log_info(
+    logger.info(
         f"""
         ========================================================================
         Starting function setup() in \"{os.path.basename(__file__)}\"...
@@ -490,11 +490,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config = expt_config["workflow"]
 
     workflow_id = workflow_config["WORKFLOW_ID"]
-    log_info(f"""WORKFLOW ID = {workflow_id}""")
+    logger.info(f"""WORKFLOW ID = {workflow_id}""")
 
     debug = workflow_config.get("DEBUG")
     if debug:
-        log_info(
+        logger.info(
             """
             Setting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
@@ -578,11 +578,24 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
+    # Before setting task flags, ensure we don't have any invalid rocoto tasks
+    # (e.g. metatasks with no tasks, tasks with no associated commands)
+    clean_rocoto_dict(expt_config["rocoto"]["tasks"])
+
     rocoto_config = expt_config.get('rocoto', {})
     rocoto_tasks = rocoto_config.get("tasks")
     run_make_grid = rocoto_tasks.get('task_make_grid') is not None
     run_make_orog = rocoto_tasks.get('task_make_orog') is not None
     run_make_sfc_climo = rocoto_tasks.get('task_make_sfc_climo') is not None
+
+    # Also set some flags that will be needed later
+    run_make_ics = dict_find(rocoto_tasks, "task_make_ics")
+    run_make_lbcs = dict_find(rocoto_tasks, "task_make_lbcs")
+    run_run_fcst = dict_find(rocoto_tasks, "task_run_fcst")
+    run_any_coldstart_task = run_make_ics or \
+                             run_make_lbcs or \
+                             run_run_fcst
+    run_run_post = dict_find(rocoto_tasks, "task_run_post")
 
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
@@ -778,7 +791,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
            "metatask_PointStat_SFC_UPA_all_mems",
            "metatask_GenEnsProd_EnsembleStat_SFC_UPA",
            "metatask_PointStat_SFC_UPA_ensmeanprob"]
-    
+
+        vx_field_groups_all_by_obtype["AERONET"] = ["AOD"]
+        vx_metatasks_all_by_obtype["AERONET"] \
+        = ["task_get_obs_aeronet",
+           "metatask_ASCII2nc_obs"]
+
+        vx_field_groups_all_by_obtype["AIRNOW"] = ["PM25", "PM10"]
+        vx_metatasks_all_by_obtype["AIRNOW"] \
+        = ["task_get_obs_airnow",
+           "metatask_ASCII2nc_obs",
+           "metatask_PcpCombine_fcst_PM_all_mems"]
+
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.
         vx_field_groups = vx_config["VX_FIELD_GROUPS"]
@@ -1089,6 +1113,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
+
     grid_gen_method = workflow_config["GRID_GEN_METHOD"]
     if grid_gen_method == "GFDLgrid":
         grid_params = set_gridparams_GFDLgrid(
@@ -1105,6 +1130,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             nh4=expt_config["constants"]["NH4"],
             run_envir=run_envir,
         )
+        expt_config["grid_params"] = grid_params
     elif grid_gen_method == "ESGgrid":
         grid_params = set_gridparams_ESGgrid(
             lon_ctr=grid_config["ESGgrid_LON_CTR"],
@@ -1117,8 +1143,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             dely=grid_config["ESGgrid_DELY"],
             constants=expt_config["constants"],
         )
+        expt_config["grid_params"] = grid_params
+    elif not run_any_coldstart_task:
+        logger.warning("No coldstart tasks specified, not setting grid parameters")
     else:
-
         errmsg = dedent(
             f"""
             Valid values of GRID_GEN_METHOD are GFDLgrid and ESGgrid.
@@ -1128,9 +1156,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         )
         raise KeyError(errmsg) from None
 
-    # Add a grid parameter section to the experiment config
-    expt_config["grid_params"] = grid_params
-
     # Check to make sure that mandatory forecast variables are set.
     vlist = [
         "DT_ATMOS",
@@ -1138,9 +1163,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         "LAYOUT_Y",
         "BLOCKSIZE",
     ]
-    for val in vlist:
-        if not fcst_config.get(val):
-            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
+    if run_any_coldstart_task:
+        for val in vlist:
+            if not fcst_config.get(val):
+                raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
     #
     # -----------------------------------------------------------------------
@@ -1394,7 +1420,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     post_output_domain_name = post_config.get("POST_OUTPUT_DOMAIN_NAME")
 
     if not post_output_domain_name:
-        if not predef_grid_name:
+        if not predef_grid_name and run_run_post:
             raise Exception(
                 f"""
                 The domain name used in naming the run_post output files
@@ -1402,7 +1428,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 POST_OUTPUT_DOMAIN_NAME = \"{post_output_domain_name}\"
                 If this experiment is not using a predefined grid (i.e. if
                 PREDEF_GRID_NAME is set to a null string), POST_OUTPUT_DOMAIN_NAME
-                must be set in the configuration file (\"{user_config}\"). """
+                must be set in the configuration file (\"{user_config_fn}\"). """
             )
         post_output_domain_name = predef_grid_name
 
@@ -1544,26 +1570,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # the same resolution input.
     #
 
-    def _dict_find(user_dict, substring):
-
-        if not isinstance(user_dict, dict):
-            return False
-
-        for key, value in user_dict.items():
-            if substring in key:
-                return True
-            if isinstance(value, dict):
-                if _dict_find(value, substring):
-                    return True
-
-        return False
-
-    run_make_ics = _dict_find(rocoto_tasks, "task_make_ics")
-    run_make_lbcs = _dict_find(rocoto_tasks, "task_make_lbcs")
-    run_run_fcst = _dict_find(rocoto_tasks, "task_run_fcst")
-    run_any_coldstart_task = run_make_ics or \
-                             run_make_lbcs or \
-                             run_run_fcst
     # Flags for creating symlinks to pre-generated grid, orography, and sfc_climo files.
     # These consider dependencies of other tasks on each pre-processing task.
     create_symlinks_to_pregen_files = {
@@ -1581,10 +1587,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
-        sect_key = f"task_make_{prep_task.lower()}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if not task_defs.get(sect_key):
+        if create_symlinks_to_pregen_files[prep_task]:
+            sect_key = f"task_make_{prep_task.lower()}"
             dir_key = f"{prep_task}_DIR"
             task_dir = expt_config[sect_key].get(dir_key)
 
@@ -1769,9 +1775,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
             raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
     else:
-        if fire_conf["FIRE_NUM_TASKS"] < 1:
+        if fire_conf["FIRE_NUM_TASKS"] > 0:
             logger.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
-
+            fire_conf["FIRE_NUM_TASKS"] = 0
     #
     # -----------------------------------------------------------------------
     #
@@ -1789,11 +1795,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # print content of var_defns if DEBUG=True
     all_lines = cfg_to_yaml_str(expt_config)
-    log_info(all_lines, verbose=debug)
+    logger.debug(all_lines)
 
     global_var_defns_fp = workflow_config["GLOBAL_VAR_DEFNS_FP"]
     # print info message
-    log_info(
+    logger.info(
         f"""
         Generating the global experiment variable definitions file here:
           GLOBAL_VAR_DEFNS_FP = '{global_var_defns_fp}'

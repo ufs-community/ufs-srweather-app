@@ -201,7 +201,7 @@ def run_we2e_tests(homedir, args) -> None:
             # This section checks if we are doing verification on a machine with staged verification
             # obs. If so, and if the config file does not explicitly set the observation locations,
             # fill these in with defaults from the machine files
-            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR','NOHRSC_OBS_DIR']
+            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR','NOHRSC_OBS_DIR','AERONET_OBS_DIR','AIRNOW_OBS_DIR']
             for obvar in obs_vars:
                 mach_path = machine_defaults['platform'].get('TEST_'+obvar)
                 if not test_cfg['verification'].get(obvar) and mach_path:
