@@ -9,7 +9,7 @@ Sample Forecast #6: Choose Your Own Adventure!
 Weather Summary
 --------------------
 
-Weather will vary depending on the case the user chooses. In this example, we use the Gulf Coast Blissard from January 21, 2025 (2025-01-21), with a custom regional grid centered over New Orleans, LA. 
+Weather will vary depending on the case the user chooses. In this example, we use the Gulf Coast Blizzard from January 21, 2025 (2025-01-21), with a custom regional grid centered over New Orleans, LA. 
 
 In this case, the polar vortex stretched far south bringing cold, dry air to the Gulf Coast, where it met the comparatively warm, moist air from the Gulf, leading to unprecedented snowfall followed by record low temperatures. 
 
