@@ -465,7 +465,7 @@ The workflow run is complete when all tasks have “SUCCEEDED”. If everything 
    202501210000  plot_allvars_mem000_f036  4350496   SUCCEEDED     0    1   77.0
 
 If tasks fail, examine the log files in the experiment directory (e.g., ``$GCB/expt_dirs/hrrr_nola36/log``). 
-To rerun tasks, view information on :ref:`useful Rocoto workflow commands <Rocoto>`. 
+To rerun tasks, view information on :ref:`useful Rocoto workflow commands <RocotoInfo>`. 
 
 Analyze Results
 ----------------
