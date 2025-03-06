@@ -110,7 +110,7 @@ When creating this experiment, the following command was used to download the da
 
 .. code-block:: console
 
-   python3 get_data.py -p wrfprsf -d 2025012100 -f 0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48
+   python3 get_data.py -p wrfprsf -d 2025012100 -f 0 3 6 9 12 15 18 21 24 27 30 33 36
 
 Users will need to adjust this command for the specific date(s) and forecast hours they need for their experiment. Although the Gulf Coast Blizzard data is no longer available via Planetary Computer, it has been added to the `SRW Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`_ and placed on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). Users can retrieve this data from the SRW App data bucket by running:
 
@@ -158,7 +158,7 @@ This process will likely take 20-30 min. Users who do not have access to a :srw-
 Create a Regional Grid
 ------------------------
 
-The SRW App already contains several predefined grids, which are well-tested with the supported physics and data sources. While these are a great start for new users, they cover a narrow set of possible grid configurations. Depending on their goals, users may be interested in creating their own custom grid. :numref:`Section %s <UserDefinedGrid>` explains how to create a custom Extended Schmidt Gnomonic grid (ESGgrid), which is the supported grid type for the SRW App. For this example, we created a grid centered over New Orleans, LA (NOLA), which is located at 29.9509º N, 90.0758º W (29.9509, -90.0758). We thank our colleagues at the Developmental Testbed Center (DTC) for their `guidance on this process <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_. 
+The SRW App already contains several predefined grids, which are well-tested with the supported physics and data sources. While these are a great start for new users, they cover a narrow set of possible grid configurations. Users may be interested in creating their own custom grid instead. :numref:`Section %s <UserDefinedGrid>` explains how to create a custom Extended Schmidt Gnomonic grid (ESGgrid), which is the supported grid type for the SRW App. For this example, we created a grid centered over New Orleans, LA (NOLA), which is located at 29.9509º N, 90.0758º W (29.9509, -90.0758). We thank our colleagues at the Developmental Testbed Center (DTC) for their `guidance on this process <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_. 
 
 For a custom ESGgrid, users must define three sets of parameters:
 
@@ -231,26 +231,23 @@ Users must:
 * ``GRID_GEN_METHOD: "ESGgrid"``: This will generate a regional version of the :srw-wiki:`Extended Schmidt Gnomonic (ESG) grid <Purser_UIFCW_2023.pdf>`, which is the supported grid type for the SRW App.
 * ``ESGgrid_LON_CTR`` and ``ESGgrid_LAT_CTR``: The longitude and latitude for the center of the grid. 
 * ``ESGgrid_DELX`` and ``ESGgrid_DELY``: Grid cell size (in meters) in the x- (west-to-east) and y- (south-to-north) directions. For a 3-km grid, this value is always 3000 (i.e., 3 km). 
-* ``ESGgrid_NX`` and ``ESGgrid_NY``: The number of grid cells in the x and y directions. This setting will be based on how much area the grid should cover. For example, a grid that is approximately 1200 km wide by 1200 km tall would have ``ESGgrid_NX`` and ``ESGgrid_NY`` values of approximately 400 (:math:`1200 km / 3 km` per cell). 
-* ``ESGgrid_PAZI``: The rotation of the grid from true north (in degrees). This can usually be set to zero. 
+* ``ESGgrid_NX`` and ``ESGgrid_NY``: The number of grid cells in the x and y directions. This setting will be based on how much area the grid should cover. For example, a grid that is approximately 1200 km wide by 1200 km tall would have ``ESGgrid_NX`` and ``ESGgrid_NY`` values of approximately 400 --- :math:`1200 km / 3 km` per cell. 
+* ``ESGgrid_PAZI``: The rotation of the grid from true north (in degrees). This can generally be set to zero. 
 * ``ESGgrid_WIDE_HALO_WIDTH``: Number of :term:`halo` points around the grid with a "wide" halo. This parameter can always be set to ``6`` regardless of the other grid parameters.
 
 **Computational Parameters** 
 
 * ``DT_ATMOS:`` Physics time step (in seconds) to use in the forecast model with this grid. This is the largest time step in the model. It is the time step on which the physics parameterizations are called. In general, ``DT_ATMOS`` must be smaller for higher horizontal grid resolutions to avoid numerical instabilities (specifically, Courant-Friedrichs-Lewy [CFL] conditions). Users can examine predefined grids of similar resolutions to their custom grid for suggested values. 
-* ``LAYOUT_X`` and ``LAYOUT_Y``: MPI layout --- the number of MPI processes into which to decompose the grid.
-
-   .. COMMENT: Add more about calculating this. 
-
+* ``LAYOUT_X`` and ``LAYOUT_Y``: MPI layout --- the number of MPI processes into which to decompose the grid. 
 * ``BLOCKSIZE:`` Machine-dependent parameter that does not have a default value.
 
-   .. COMMENT: Then why is it set here instead of in machine files? How do we pick a good blocksize? 
+.. COMMENT: Would be good to add more about calculating LAYOUT_X and LAYOUT_Y. Also, why is BLOCKSIZE set here instead of in machine files? How do we pick a good blocksize? 
 
 **Quilting Parameters**
 
 .. note::
    
-   The UPP (called by the ``run_post_*`` tasks) cannot process output on the native grid types (“GFDLgrid” and “ESGgrid”), so output fields are interpolated to a write component grid before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the ``model_configure`` file, as described in :ref:`Section 4.2.3 <ufs-wm:model_configureFile>` of the UFS Weather Model documentation.
+   The :term:`UPP` (called by the ``run_post_*`` tasks) cannot process output on the native grid types (“GFDLgrid” and “ESGgrid”), so output fields are interpolated to a write component grid before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (ESMF) component, referred to as the write component. This model component is configured with settings in the ``model_configure`` file, as described in :ref:`Section 4.2.3 <ufs-wm:model_configureFile>` of the UFS Weather Model documentation.
 
 Certain quilting parameters will be the same as the ESGgrid parameters. For example: 
 
@@ -267,8 +264,8 @@ Additionally, adjust the following parameters:
 
 Then, calculate the values of ``WRTCMP_lon_lwr_left`` and ``WRTCMP_lat_lwr_left``. According to the `DTC guidance <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_, "approximate values (from a linearization that is more accurate the smaller the horizontal extent of the grid) for these quantities can be obtained using the formulas (for reference)":
 
-:math:`WRTCMP\_lon\_lwr\_left = WRTCMP\_cen\_lon - (degs\_per\_meter/(2*cos\_phi\_ctr))*WRTCMP\_nx*WRTCMP\_dx`
-:math:`WRTCMP\_lat\_lwr\_left = WRTCMP\_cen\_lat - (degs\_per\_meter/2)*WRTCMP\_ny*WRTCMP\_dy`
+* :math:`WRTCMP\_lon\_lwr\_left = WRTCMP\_cen\_lon - (degs\_per\_meter/(2*cos\_phi\_ctr))*WRTCMP\_nx*WRTCMP\_dx`
+* :math:`WRTCMP\_lat\_lwr\_left = WRTCMP\_cen\_lat - (degs\_per\_meter/2)*WRTCMP\_ny*WRTCMP\_dy`
 
 where: 
 
@@ -309,7 +306,7 @@ Edit the configuration file (``config.yaml``) to include the variables and value
 
 .. include:: ../../doc-snippets/file-edit-hint.rst
 
-Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal Linux device, users might set:
+Start in the ``user:`` section of ``config.yaml`` and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal Linux device, users might set:
 
 .. code-block:: console
 
@@ -386,9 +383,9 @@ Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6`` and  ``P
      PLOT_FCST_INC: 6
      PLOT_DOMAINS: ["regional"]
 
-``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour. For the Gulf Coast Blizzard forecast, this is 0z on January 21, 2025 (the 0th forecast hour) through the 36th forecast hour (January 22, 2025 at 12z).
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate ``.png`` files for every 6th forecast hour. For the Gulf Coast Blizzard forecast, this is 0z on January 21, 2025 (the 0th forecast hour) through the 36th forecast hour (January 22, 2025 at 12z).
 
-``PLOT_DOMAINS:`` The plotting scripts are designed to generate plots over the entire :term:`CONUS` by default, but by setting this variable to ["regional"], the experiment will generate plots for the smaller SUBCONUS_NOLA_3km regional domain instead. 
+``PLOT_DOMAINS:`` The plotting scripts are designed to generate plots over the entire :term:`CONUS` by default, but by setting this variable to ["regional"], the experiment will generate plots for the smaller custom regional domain (e.g., SUBCONUS_NOLA_3km) instead. 
 
 To turn on the plotting for the experiment, the plotting YAML file
 should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
@@ -415,7 +412,7 @@ To see experiment progress, users should navigate to their experiment directory.
 
 .. code-block:: console
 
-   cd /path/to/expt_dirs/hrrr_nola36
+   cd $GCB/expt_dirs/hrrr_nola36
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
@@ -467,14 +464,17 @@ The workflow run is complete when all tasks have “SUCCEEDED”. If everything 
    202501210000  plot_allvars_mem000_f035  4350495   SUCCEEDED     0    1   79.0
    202501210000  plot_allvars_mem000_f036  4350496   SUCCEEDED     0    1   77.0
 
+If tasks fail, examine the log files in the experiment directory (e.g., ``$GCB/expt_dirs/hrrr_nola36/log``). 
+To rerun tasks, view information on :ref:`useful Rocoto workflow commands <Rocoto>`. 
+
 Analyze Results
 ----------------
 
-Navigate to the ``postprd`` directory for the date of your forecast (e.g., ``$GCB/expt_dirs/hrrr_nola36/2025012100/postprd``). This directory contains the post-processed data generated by the :term:`UPP` from the ``hrrr_nola36`` forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables including 2-m temperature, 10-m winds, accumulated precipitation, and composite reflectivity. The most appropriate variables to track will differ for each case. Given the predictions for blizzard conditions and extreme cold, this tutorial examines the progression of the storm via predictions of 2-m temperature, 10-m winds, composite reflectivity, and accumulated precipitation. In layman's terms, 2-m temperature is the temperature close to (2 meters from) the Earth's surface; 10-m wind is the wind velocity at the lowest atmospheric level; reflectivity measures the energy (in decibels [dBZ]) reflected back from radar, and composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or “tilts”, of the antenna. Accumulated precipitation measures how much precipitation actually fell. 
+Navigate to the ``postprd`` directory for the date of your forecast (e.g., ``$GCB/expt_dirs/hrrr_nola36/2025012100/postprd``). This directory contains the post-processed data generated by the :term:`UPP` from the forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables. The most appropriate variables to track will differ for each case. Given the predictions for blizzard conditions and extreme cold, this tutorial examines the progression of the storm via predictions of 2-m temperature, 10-m winds, composite reflectivity, and accumulated precipitation. In layman's terms, 2-m temperature is the temperature close to (2 meters from) the Earth's surface; 10-m wind is the wind velocity at the lowest atmospheric level; reflectivity measures the energy (in decibels [dBZ]) reflected back from radar, and composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or “tilts”, of the antenna. Accumulated precipitation measures how much precipitation is predicted to fall. 
 
 .. note::
 
-   There are many options for viewing plots, and instructions for this are highly machine-dependent. Users should view the data transfer documentation for their system to secure-copy files from a remote system (such as :term:`RDHPCS`) to their local system. 
+   There are many options for viewing plots, and instructions for this are highly machine-dependent. Users can view the data transfer documentation for their system to secure-copy files from a remote system (such as :term:`RDHPCS`) to their local system. 
    Another option is to download `Xming <https://sourceforge.net/projects/xming/>`_ (for Windows) or `XQuartz <https://www.xquartz.org/>`_ (for Mac), use the ``-X`` option when connecting to a remote system via SSH, and run:
 
    .. code-block:: console
@@ -487,7 +487,7 @@ Navigate to the ``postprd`` directory for the date of your forecast (e.g., ``$GC
 Forecast Hour 000
 ^^^^^^^^^^^^^^^^^^
 
-At forecast hour zero (f000, 6pm local time), the 2-m temperature plot shows that the air over land is significantly colder than the more moist air over the water, creating prime conditions for precipitation along the front. Users may wish to adjust the plotting script to limit the temperature range for the key in this experiment; this would show the contrast in temperatures more clearly. At f000, winds were also picking up over the Gulf coast, bring winds of up to 25 knots (~29 mph). For reference, the National Weather Service (NWS) describes these as windy conditions; however, wind damage is unlikely to result, especially because the windiest parts are still over the sea (https://www.weather.gov/mlb/seasonal_wind_threat). The composite reflectivity plot shows that areas of precipitation are building along the southern and western edges of the map. At f000, there can be no *accumulated* precipitation. 
+At forecast hour zero (f000, 6pm local time), the 2-m temperature plot shows that the air over land is significantly colder than the more moist air over the water, creating prime conditions for precipitation along the front. At f000, winds were also picking up over the Gulf coast, bring winds of up to 25 knots (~29 mph). For reference, the National Weather Service (NWS) describes these as windy conditions; however, wind damage is unlikely to result, especially because the windiest parts are still over the sea (https://www.weather.gov/mlb/seasonal_wind_threat). The composite reflectivity plot shows that areas of precipitation are building along the southern and western edges of the map. At f000, there can be no *accumulated* precipitation. 
 
 .. list-table:: Initial Conditions (2025-01-21 0z)
    :widths: 25 25 25
@@ -508,7 +508,10 @@ At forecast hour zero (f000, 6pm local time), the 2-m temperature plot shows tha
           :align: center
      - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/refc_gradient.png
           :align: center
-          
+
+.. note:: 
+
+   Users may wish to adjust the plotting script to limit the temperature range for this experiment, since this is a cold weather case where temperatures are not likely to increase to the extreme of 128+ºF. This change would show the contrast in temperatures more clearly. 
 
 At this point, NWS was warning of potential blizzard conditions on a variety of platforms, including social media:
 
