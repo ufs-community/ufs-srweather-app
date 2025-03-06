@@ -487,7 +487,7 @@ Navigate to the ``postprd`` directory for the date of your forecast (e.g., ``$GC
 Forecast Hour 000
 ^^^^^^^^^^^^^^^^^^
 
-At forecast hour zero (f000, 6pm local time), the 2-m temperature plot shows that the air over land is significantly colder than the more moist air over the water, creating prime conditions for precipitation along the front. At f000, winds were also picking up over the Gulf coast, bring winds of up to 25 knots (~29 mph). For reference, the National Weather Service (NWS) describes these as windy conditions; however, wind damage is unlikely to result, especially because the windiest parts are still over the sea (https://www.weather.gov/mlb/seasonal_wind_threat). The composite reflectivity plot shows that areas of precipitation are building along the southern and western edges of the map. At f000, there can be no *accumulated* precipitation. 
+At forecast hour zero (f000, 6pm local time), the 2-m temperature plot shows that the air over land is significantly colder than the more moist air over the water, creating prime conditions for precipitation along the front. At f000, winds were also predicted to pick up over the Gulf coast, bringing winds of up to 25 knots (~29 mph). For reference, the National Weather Service (NWS) describes these as windy conditions; however, wind damage is unlikely to result (https://www.weather.gov/mlb/seasonal_wind_threat). The composite reflectivity plot shows that areas of precipitation are building along the southern and western edges of the map. At f000, there can be no *accumulated* precipitation. 
 
 .. list-table:: Initial Conditions (2025-01-21 0z)
    :widths: 25 25 25
@@ -511,7 +511,7 @@ At forecast hour zero (f000, 6pm local time), the 2-m temperature plot shows tha
 
 .. note:: 
 
-   Users may wish to adjust the plotting script to limit the temperature range for this experiment, since this is a cold weather case where temperatures are not likely to increase to the extreme of 128+ºF. This change would show the contrast in temperatures more clearly. 
+   Users may wish to adjust the plotting script to limit the temperature range for this experiment, since this is a cold weather case where temperatures are not likely to increase to the extreme of 128+ºF. This change would show the contrast in temperatures over land and water more clearly. 
 
 At this point, NWS was warning of potential blizzard conditions on a variety of platforms, including social media:
 
@@ -525,7 +525,7 @@ At this point, NWS was warning of potential blizzard conditions on a variety of 
 Forecast Hour 012
 ^^^^^^^^^^^^^^^^^^
 
-At forecast hour 12, folks in New Orleans normally would have been preparing for their morning commute to work. However, on Jan. 21, 2025 at 6am CT, snow was falling more heavily in a place that rarely sees snow and winds had picked up. By 8am, meteorologist A.J. Mastrangelo noted that the weather "[a]lmost looks like a hurricane... only with snow as the precip type!"
+At forecast hour 12, folks in New Orleans normally would have been preparing for their morning commute to work. However, on Jan. 21, 2025 at 6am CT, snow was falling in a place that rarely sees snow, and winds had picked up. By 8am, meteorologist A.J. Mastrangelo noted that the weather "[a]lmost looks like a hurricane... only with snow as the precip type!"
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/gcb_X_blizzard.png
    :align: center
@@ -533,7 +533,7 @@ At forecast hour 12, folks in New Orleans normally would have been preparing for
 
    *The morning commute in New Orleans, LA*
 
-The SRW App plots indicate a drop in temperature overnight and an increase in winds and precipitation. The predicted drop in 2-m temperature over land would increase the temperature differential between the relatively warm air over the waters and the colder temperatures over land. This, in turn, would be likely to cause more severe weather. By f012, the wind was also predicted to pick up, and the patch of red in the southeast corner of the plot shows incoming winds reaching 40 knots (~46 mph) off the coast. The composite reflectivity image shows significant precipitation with a few high-energy spots in red-orange popping up. Precipitation was predicted to start accumulating slightly. Based on the SRW forecast predictions, the storm is picking up by f012. For people who are not used to driving in these conditions, it could be dangerous, but the bigger danger is how they would get home if they leave. Conditions were deteriorating, and the worst snowfall was expected in the 11 AM -- 6 PM window. That said, a simple comparison of Mastrangelo's post and the predicted conditions show that the SRW App is likely underpredicting precipitation and wind over land at this point in the storm. 
+The SRW App plots indicate a drop in temperature during the night and an increase in winds and precipitation. The predicted drop in 2-m temperature over land would increase the temperature differential between the relatively warm air over the waters and the colder temperatures over land. This, in turn, would be likely to cause more severe weather. By f012, the wind was also predicted to pick up, and the patch of red in the southeast corner of the plot shows incoming winds reaching 40 knots (~46 mph) off the coast. The composite reflectivity image shows significant precipitation with a few high-energy spots in red-orange popping up. Precipitation was predicted to start accumulating somewhat. For people who are not used to driving in these conditions, it could be dangerous, but the bigger danger would be how to get home. Conditions were deteriorating, and the worst snowfall was expected in the 11 AM -- 6 PM window. That said, a simple comparison of Mastrangelo's post and the predicted conditions show that the SRW App is likely underpredicting precipitation and wind over land at this point in the storm. 
 
 .. list-table:: Conditions at f012 (2025-01-21 12z)
    :widths: 25 25 25 25
@@ -563,21 +563,13 @@ The SRW App plots indicate a drop in temperature overnight and an increase in wi
 Forecast Hour 024
 ^^^^^^^^^^^^^^^^^^
 
-By f024, or 6pm CT on January 21, most people had enjoyed a snow day --- possibly their first, complete with Mardi Gras snowmen. Check out `more photos here <https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana>`! 
+By f024, or 6pm CT on January 21, most people had enjoyed a snow day --- possibly their first, complete with Mardi Gras snowmen. Check out `more photos here <https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana>`_! 
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/gcb_davidnola.png
           :align: center
           :width: 50%
 
           *Mardi Gras snowman (by @davidnola on Instagram)*
-
-However, NWS was predicting a severe drop in temperatures overnight. 
-
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/gcb_cold.png
-   :align: center
-   :width: 50%
-
-   *Dangerous drop in temperatures overnight*
 
 The SRW App plots show that by f024f (6 PM local time), temperatures were predicted to warm slightly over the course of the day before taking a plunge overnight. Winds were predicted to move eastward and calm somewhat. Composite reflectivity plots show that the snow was anticipated to move eastward and calm over the New Orleans area with fewer high-energy orangey-red areas. At this point, SRW App forecast shows less than two inches of accumulated precipitation --- a lot for New Orleans area but still significantly less than the observed precipitation. 
 
@@ -606,10 +598,19 @@ The SRW App plots show that by f024f (6 PM local time), temperatures were predic
      - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_gradient.png
           :align: center
 
+However, NWS was predicting a severe drop in temperatures overnight. 
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/gcb_cold.png
+   :align: center
+   :width: 50%
+
+   *Dangerous drop in temperatures overnight*
+
+
 Forecast Hour 036
 ^^^^^^^^^^^^^^^^^^
 
-Overnight, the SRW App likewise predicted a drop in temperatures. Plots show the winds dissipating, precipitation trailing off, and a total accumulated precipitation of less than 2 inches. 
+Like the NWS, the SRW App predicted a drop in temperatures overnight. Plots show the winds dissipating, precipitation trailing off, and a total accumulated precipitation of less than 2 inches. 
 
 .. list-table:: Conditions at f024 (2025-01-22 0z)
    :widths: 25 25 25 25
@@ -647,7 +648,7 @@ While this generally corresponds with how the storm unfolded, this forecast sign
 The Aftermath
 ^^^^^^^^^^^^^^^
 
-Overall, New Orleans handled the snow, but the storm still caused significant challenges, including: 
+Overall, New Orleans handled the snow reasonably well under the circumstances, but the storm still caused significant challenges, including: 
 
 * A boil water advisory for parts of New Orleans after a brief, cold-related power loss at Carrollton Water Treatment Plant
 * 3,500 power outages statewide; 200+ in Orleans Parish
@@ -658,7 +659,7 @@ Overall, New Orleans handled the snow, but the storm still caused significant ch
 How Did We Do?
 ---------------
 
-Overall, this configuration of the SRW App significantly underpredicted snowfall. Plots show a maximum prediction of about ~1.5 inches, but New Orleans received 8 inches of snow. Due to a lack of publicly available verification data, it is difficult to determine whether wind predictions over land were accurate. For example, both NOMADS and Planetary Computer include :term:`MRMS` verification data for the previous 24 hours only, so users would need to plan in advance to download this data before it becomes unavailable for their experiment. Publicly available :term:`CCPA` or :term:`NDAS` data is limited. Verification data is key to determining precisely how accurate or inaccurate forecasts are, and how they fall short. With concrete skill measurements, scientists can investigate potential improvements to the current forecasting systems and quantify those improvements once implemented. 
+Overall, this configuration of the SRW App significantly underpredicted snowfall. Plots show a maximum prediction of about ~1.5 inches, but New Orleans received 8 inches of snow. Due to a lack of publicly available verification data, it is difficult to determine whether wind predictions over land were accurate. For example, both NOMADS and Planetary Computer include :term:`MRMS` verification data for the previous 24 hours only, so users would need to plan in advance to download this data before it becomes unavailable for their experiment. Publicly available :term:`CCPA` or :term:`NDAS` data is also limited. Verification data is key to determining precisely how accurate or inaccurate forecasts are, and in what ways they excel or fall short. With concrete skill measurements, scientists can investigate potential improvements to the current forecasting systems and quantify those improvements once implemented. 
 
 Improving the Forecast
 ------------------------
