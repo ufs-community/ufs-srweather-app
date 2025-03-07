@@ -32,7 +32,7 @@ class Testing(unittest.TestCase):
             p.join()
             exit_code = p.exitcode
             if exit_code != 0:
-                with open(logfile, 'r') as fin:
+                with open(logfile, 'r', encoding='utf-8') as fin:
                     print(fin.read())
                 sys.exit(exit_code)
 
