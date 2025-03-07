@@ -782,7 +782,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # -----------------------------------------------------------------------
         #
         if vx_field_groups:
-            obtypes_all = ["CCPA", "NOHRSC", "MRMS", "NDAS"]
+            obtypes_all = ["CCPA", "NOHRSC", "MRMS", "NDAS", "AERONET", "AIRNOW", "GOESABI"]
             obs_basedir_var_names = [f"{obtype}_OBS_DIR" for obtype in obtypes_all]
             obs_basedirs_dict = {key: vx_config[key] for key in obs_basedir_var_names}
             obs_basedirs_orig = list(obs_basedirs_dict.values())
