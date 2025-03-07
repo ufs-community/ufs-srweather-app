@@ -1746,6 +1746,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 """
                 )
             )
+        # CCPP suite must have these schemes to work correctly with fire capability
+        if not ( has_tag_with_value(ccpp_suite_xml, "scheme", "rrfs_smoke_wrapper") and
+                 has_tag_with_value(ccpp_suite_xml, "scheme", "GFS_surface_composites_post") ):
+            raise ValueError(dedent(
+                  """
+                  UFS_FIRE can only work with smoke-enabled CCPP suites, including
+                  FV3_HRRR, FV3_HRRR_gf, and RRFS_sas""" ))
         if fire_conf["FIRE_NUM_TASKS"] < 1:
             raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
         elif fire_conf["FIRE_NUM_TASKS"] > 1:
