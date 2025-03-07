@@ -85,6 +85,11 @@ Users will need to change the ``MACHINE`` and ``ACCOUNT`` variables in ``config.
 
 Activating the fire behavior module is done by setting ``UFS_FIRE: True`` in the ``fire:`` section of your ``config.yaml`` file. If this variable is not specified or set to false, a normal atmospheric simulation will be run, without fire settings.
 
+.. note::
+
+  The UFS_FIRE capability requires using a CCPP physics suite containing the parameterizations ``GFS_surface_composites_post`` and ``rrfs_smoke_wrapper``.
+  For the v3.0.0 release, these supported suites are ``FV3_HRRR``, ``FV3_HRRR_gf``, and ``RRFS_sas``.
+
 .. code-block:: console
 
    fire:
