@@ -269,14 +269,14 @@ def generate_FV3LAM_wflow(
         # If UFS_FIRE or smoke/dust, update FIELD_TABLE
         field_table_append=""
         if expt_config['fire'].get('UFS_FIRE'):
-            field_table_append += """# smoke tracer for UFS_FIRE
+            field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        if expt_config['fire'].get('DO_SMOKE_DUST'):
-            field_table_append += """# prognostic smoke mixing ratio tracer
+        elif expt_config['smoke_dust_parm'].get('DO_SMOKE_DUST'):
+            field_table_append = """# prognostic smoke mixing ratio tracer
   "TRACER", "atmos_mod", "smoke"
             "longname",     "smoke mixing ratio"
             "units",        "ug/kg"
@@ -291,7 +291,7 @@ def generate_FV3LAM_wflow(
             "longname",     "coarsepm mixing ratio"
             "units",        "ug/kg"
        "profile_type", "fixed", "surface_value=1.e-12" /\n"""
-        with open(expt_config["workflow"]["FIELD_TABLE_FP"], "a+", encoding='UTF-8') as file:
+        with open(expt_config["workflow"]["FIELD_TABLE_FP"], "a", encoding='UTF-8') as file:
             file.write(field_table_append)
 
         #
