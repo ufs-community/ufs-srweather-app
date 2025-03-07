@@ -6,7 +6,7 @@ metadata:
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+  CCPP_PHYS_SUITE: RRFS_sas
   GRID_GEN_METHOD: ESGgrid
   DATE_FIRST_CYCL: '2019061518'
   DATE_LAST_CYCL: '2019061518'

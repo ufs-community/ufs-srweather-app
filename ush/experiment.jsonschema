@@ -286,7 +286,8 @@
             "FV3_HRRR",
             "FV3_RAP",
             "FV3_RRFS_v1beta",
-            "FV3_WoFS_v0"
+            "FV3_WoFS_v0",
+            "RRFS_sas"
           ],
           "type": "string"
         },

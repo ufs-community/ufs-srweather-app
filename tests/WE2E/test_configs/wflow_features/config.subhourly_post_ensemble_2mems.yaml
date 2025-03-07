@@ -10,7 +10,7 @@ metadata:
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+  CCPP_PHYS_SUITE: RRFS_sas
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2020081000'
   DATE_LAST_CYCL: '2020081000'

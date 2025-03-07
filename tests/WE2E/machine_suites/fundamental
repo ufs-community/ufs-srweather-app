@@ -2,8 +2,8 @@
 # to get as wide a test coverage as possible while minimizing core hours usage.
 # This is a good set of tests for a sanity check prior to opening a PR
 
-# Test RRFS_CONUScompact_25km grid, HRRR ics, RAP lbcs, RRFS_v1beta suite
-grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
+# Test RRFS_CONUScompact_25km grid, RRFS bcs, RRFS_sas suite
+grid_RRFS_CONUScompact_25km_ics_RRFS_lbcs_RRFS_suite_RRFS_sas
 # Test grid_RRFS_CONUS_25km grid, FV3GFS bcs, inline post, GFS_v15p2 suite
 grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
 # Test grid_RRFS_CONUS_25km grid, FV3GFS bcs, restart files, GFS_v17_p8 suite

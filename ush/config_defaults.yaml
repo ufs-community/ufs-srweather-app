@@ -1684,7 +1684,7 @@ task_make_lbcs:
       batchargs:
         nodes: 4
         tasks_per_node: 12
-        walltime: 00:30:00
+        walltime: 01:00:00
       threads: !int '{{ task_make_lbcs.envvars.OMP_NUM_THREADS_MAKE_ICS }}'
   #------------------------------------------------------------------------
   #
@@ -1826,7 +1826,7 @@ task_run_fcst:
     WRITE_DOPOST: false
     PRINT_ESMF: false
     DO_FCST_RESTART: false
-    USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE in ["FV3_GFS_v15_thompson_mynn_lam3km", "FV3_HRRR_gf", "FV3_GFS_v17_p8"] }}'
+    USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE in ["FV3_GFS_v15_thompson_mynn_lam3km", "FV3_HRRR_gf", "FV3_GFS_v17_p8", "RRFS_sas"] }}'
 
   ITASKS: 1
   #

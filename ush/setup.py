@@ -852,8 +852,22 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config = expt_config["workflow"]
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
+
+    # Warn if user has specified a large timestep inappropriately
     ccpp_physics_suite = workflow_config["CCPP_PHYS_SUITE"]
-    hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
+    hires_ccpp_suites = ["FV3_RRFS_v1beta","FV3_WoFS_v0", "FV3_HRRR", "FV3_HRRR_gf", "RRFS_sas"]
+    if ccpp_phys_suite in hires_ccpp_suites:
+        dt = fcst_config["DT_ATMOS"]
+        if dt:
+            if dt > 40:
+                logger.warning(dedent(
+                    f"""
+                    WARNING: CCPP suite {ccpp_phys_suite} requires short
+                    time step regardless of grid resolution. The user-specified value
+                    DT_ATMOS = {dt}
+                    may result in CFL violations or other errors!
+                    """
+                ))
 
     # Gather the pre-defined grid parameters, if needed
     if (predef_grid := workflow_config["PREDEF_GRID_NAME"]) != "":
