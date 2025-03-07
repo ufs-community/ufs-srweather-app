@@ -2475,10 +2475,9 @@ verification:
 
   #
   # *_OBS_AVAIL_INTVL_HRS:
-  # Time interval (in hours) at which various types of obs are available on
-  # NOAA's HPSS.
+  # Time interval (in hours) at which various types of obs are available
   #
-  # Note that MRMS files are in fact available every few minutes, but here
+  # Note that MRMS and GOESABI files are in fact available every few minutes, but here
   # we set the obs availability interval to 1 hour because currently that
   # is the shortest output interval for forecasts, i.e. the forecasts cannot
   # (yet) support sub-hourly output.
@@ -2489,6 +2488,7 @@ verification:
   NDAS_OBS_AVAIL_INTVL_HRS: 1
   AERONET_OBS_AVAIL_INTVL_HRS: 1
   AIRNOW_OBS_AVAIL_INTVL_HRS: 1
+  GOESABI_OBS_AVAIL_INTVL_HRS: 1
   #
   # *_OBS_DIR:
   # Base directory in which observation files needed by verification tasks are
@@ -2513,6 +2513,7 @@ verification:
   NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
   AERONET_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/aeronet"
   AIRNOW_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/airnow"
+  GOESABI_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/goesabi"
   #
   # OBS_[CCPA|NOHRSC|MRMS|NDAS]_FN_TEMPLATES:
   # File name templates for various obs types.  These are meant to be used
@@ -2612,9 +2613,10 @@ verification:
   OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
   OBS_AERONET_FN_TEMPLATES: [ 'AOD', '{valid?fmt=%Y%m%d}/{valid?fmt=%Y%m%d}.lev15' ]
   # NOTE: for files retrieved from AWS (see OBS_DATA_STORE variable), the
-  # default value should be replaced with
+  # default value for OBS_AIRNOW_FN_TEMPLATES should be replaced with
   # '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat'
   OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
+  OBS_GOESABI_FN_TEMPLATES: [ 'AOD', '{valid?fmt=%Y%m%d}/OR_ABI-L2-AODF_G16_{valid?fmt=%Y%m%d%H}.nc' ]
   #
   # REMOVE_RAW_OBS_DIRS
   # Flag specifying whether to remove the "raw" observation directories
@@ -2669,6 +2671,7 @@ verification:
   OBS_DATA_STORE_NDAS: hpss
   OBS_DATA_STORE_AERONET: hpss
   OBS_DATA_STORE_AIRNOW: hpss
+  OBS_DATA_STORE_GOESABI: aws
 
   #
   # OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT: 

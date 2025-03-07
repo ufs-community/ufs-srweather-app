@@ -459,9 +459,14 @@ AIRNOW_obs:
         - "HourlyData_{fyyyymmdd}{fhh}.dat"
         - "Monitoring_Site_Locations_V2.dat"
 
-GOES_AOD:
+GOESABI:
   aws:
     protocol: awscli
+    # Data description including repositories/buckets can be found in
+    # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01511
+    #
+    # Product descriptions can be found in https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf
+    # File names specifically in Appendix A
     bucket: "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}"
     file_names:
       obs:
