@@ -3,11 +3,13 @@ platform:
   NCORES_PER_NODE: 24
   SCHED: slurm
   WE2E_TEST_DATA: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop
-  TEST_CCPA_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/ndas/proc
-  TEST_NOHRSC_OBS_DIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
-  DOMAIN_PREGEN_BASEDIR: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/ccpa/proc'
+  TEST_MRMS_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/mrms/proc'
+  TEST_NDAS_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/ndas/proc'
+  TEST_NOHRSC_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/nohrsc/proc'
+  TEST_AERONET_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/aeronet'
+  TEST_AIRNOW_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/airnow'
+  DOMAIN_PREGEN_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/FV3LAM_pregen'
   PARTITION_DEFAULT: vjet,kjet,xjet
   QUEUE_DEFAULT: batch
   PARTITION_FCST: xjet
@@ -33,6 +35,10 @@ platform:
   FIXorg: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_aqm
+  FIXsmoke: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_smoke
+  FIXupp: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_upp
+  FIXcrtm: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
   ics_lbcs:
@@ -45,6 +51,10 @@ data:
     GFS:
       prepbufr: /public/data/grids/gfs/prepbufr
       tcvitals: /public/data/grids/gfs/bufr
+
+smoke_dust_parm:
+  COMINsmoke_default: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /mnt/lfs5/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire
 
 rocoto:
   tasks:

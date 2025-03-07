@@ -2,7 +2,7 @@ metadata:
   description: config for Smoke and Dust, RRFS_CONUS_3km
 user:
   RUN_ENVIR: community
-  MACHINE: [hera/orion/hercules/gaea-c6]
+  MACHINE: [machine name]
   ACCOUNT: [account name]
 workflow:
   USE_CRON_TO_RELAUNCH: false
@@ -36,18 +36,10 @@ rocoto:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: RAP
   EXTRN_MDL_ICS_OFFSET_HRS: 0
-  USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAP_DATA_SD/${yyyymmddhh} # hera
-#  EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/epic/SRW-AQM_DATA/input_model_data/RAP/${yyyymmddhh} # orion/hercules
-#  EXTRN_MDL_SOURCE_BASEDIR_ICS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmddhh} # gaea-c6
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
-  USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/NAGAPE/epic/SRW-AQM_DATA/data_smoke_dust/RAP_DATA_SD/${yyyymmddhh} # hera
-#  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/epic/SRW-AQM_DATA/input_model_data/RAP/${yyyymmddhh} # orion/hercules
-#  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmddhh}  # gaea-c6
 task_make_ics:
   LEVP: 66
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
@@ -56,10 +48,6 @@ task_make_lbcs:
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
 task_run_fcst:
   DT_ATMOS: 36
-  LAYOUT_X: 15
-  LAYOUT_Y: 20
-  BLOCKSIZE: 32
-  WRTCMP_write_tasks_per_group: 40
   RESTART_INTERVAL: 6 12 18 24
   QUILTING: true
   PRINT_ESMF: false
@@ -75,4 +63,7 @@ smoke_dust_parm:
   DO_SMOKE_DUST: true
   EBB_DCYCLE: 1
   SMOKE_DUST_FILE_PREFIX: "SMOKE_RRFS_data"
-
+  PERSISTENCE: false
+  RAVE_QA_FILTER: none
+  EXIT_ON_ERROR: true
+  LOG_LEVEL: info

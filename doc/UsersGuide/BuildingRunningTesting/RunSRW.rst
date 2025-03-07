@@ -630,7 +630,9 @@ a staged forecast (e.g. from another forecasting system) need to add additional 
 machine file (``ush/machine/<platform>.yaml``) or their ``config.yaml`` file. Other users may skip
 to the next step (:numref:`Section %s: Generate the SRW App Workflow <GenerateWorkflow>`). 
 
-To use METplus verification,  MET and METplus modules need to be installed on the system.
+To use METplus verification, MET and METplus modules need to be installed on the system. In order
+to ensure all capabilities work as expected, users should use at a minimum the latest release of
+these tools as of the latest SRW release: MET 12.0.1 and METplus 6.0.0.
 
 .. note::
    If users update their METplus installation, they must also update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` to correspond to their system's updated installation:
@@ -796,6 +798,16 @@ fields they include are given in :numref:`Table %s <VXFieldGroupDescsTable>`.
    * - UPA
      - NDAS
      - Various upper-air fields (e.g. at 800 mb, 500 mb, etc)
+   * - AOD
+     - AERONET
+     - Aerosol Optical Depth
+   * - PM25
+     - AIRNOW
+     - Volumetric mass of particulate matter diameter 2.5 microns or less
+   * - PM10
+     - AIRNOW
+     - Volumetric mass of particulate matter diameter 10 microns or less
+
 
 The ``VX_FIELD_GROUPS`` list in the ``verification:`` section of ``config.yaml`` specifies the VX field
 groups for which to run verification. In order to avoid unwanted computation, the Rocoto XML will include 
@@ -820,7 +832,7 @@ summer period for which ``ASNOW`` is not relevant.
 Staging Observation Files
 ``````````````````````````````````
 The taskgroup in ``verify_pre.yaml`` defines a set of workflow tasks named ``get_obs_*``, where the ``*``
-represents any one of the supported obs types: :term:`CCPA`, :term:`NOHRSC`, :term:`MRMS`, and :term:`NDAS`. These ``get_obs_*`` tasks 
+represents any one of the supported obs types: :term:`CCPA`, :term:`NOHRSC`, :term:`MRMS`, :term:`NDAS`, :term:`AERONET`, and :term:`AIRNOW`. These ``get_obs_*`` tasks 
 will first check on disk for the existence of the obs files required for VX using the locations specified
 by the variables ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]`` in the ``verification:`` section of
 ``config.yaml``. The ``*_OBS_DIR``  are the base directories in which the obs files are or should be
@@ -846,14 +858,18 @@ place them in the locations specified by ``{*_OBS_DIR}/{OBS_*_FN_TEMPLATES[1,3,.
 that attempt is successful, the workflow will move on to subsequent tasks.  Thus:
 
    * Users who have the obs files already available (staged) on their system only need to set ``*_OBS_DIR``
-     and ``OBS_*_FN_TEMPLATES[1,3,...]`` in ``config.yaml`` to match those staging locations and file names.  
+     and ``OBS_*_FN_TEMPLATES[1,3,...]`` in ``config.yaml`` to match those staging locations and file names.
    
    * Users who do not have the obs files available on their systems and do not have access to NOAA HPSS
-     need to download :term:`CCPA`, :term:`NOHRSC`, :term:`MRMS`, and/or :term:`NDAS` files manually
-     from collections of publicly available data. 
+     need to download :term:`CCPA`, :term:`NOHRSC`, :term:`MRMS`, :term:`NDAS`, :term:`AERONET`, and/or
+     :term:`AIRNOW` files manually from collections of publicly available data.
      Then, as above, they must set ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]`` to match those
      staging locations and file names.
-   
+
+.. note::
+   AIRNOW observations can be retrieved from AWS or HPSS, but retrieving from AWS requires changing some default settings.
+   See ``ush/config_defaults.yaml`` or :numref:`Section %s <GeneralVXParams>` for more details. 
+
    * Users who have access to a data store that hosts the necessary files (e.g. NOAA HPSS) do not need to
      manually stage the obs data because the ``get_obs_*`` tasks will retrieve the necessary obs and place
      them in the locations specified by ``*_OBS_DIR`` and ``OBS_*_FN_TEMPLATES[1,3,...]``.  By default,
@@ -872,12 +888,22 @@ and ``OBS_*_FN_TEMPLATES`` might be set as follows:
       NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/nohrsc
       MRMS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/mrms
       NDAS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ndas
+      AERONET_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/aeronet
+      AIRNOW_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/airnow
 
       OBS_CCPA_FN_TEMPLATES: [ 'APCP', '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2' ]
       OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW', 'sfav2_CONUS_6h_{valid?fmt=%Y%m%d%H}_grid184.grb2' ]
       OBS_MRMS_FN_TEMPLATES: [ 'REFC', '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2',
                                'RETOP', '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2' ]
       OBS_NDAS_FN_TEMPLATES: [ 'SFC_UPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
+      OBS_AERONET_FN_TEMPLATES: [ 'AOD', '{valid?fmt=%Y%m%d}/{valid?fmt=%Y%m%d}.lev15' ]
+      OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
+
+.. note::
+   For AIRNOW obs retrieved from AWS (see ``parm/data_locations.yml``, the default value should be
+   replaced with:
+
+   ``OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat' ]``
 
 Now further consider the CCPA obs type.  If one of the days encompassed by the forecast(s) is 20240429,
 then the ``get_obs_ccpa`` task associated with this day will check for the existence of the set of obs
@@ -1104,8 +1130,25 @@ interval (for cumulative fields such as accumulated precipitation), and the name
        from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
        in the workflow only if ``'SFC'`` and/or ``'UPA'`` are included in ``VX_FIELD_GROUPS``.
 
+   * - :bolditalic:`task_get_obs_aeronet` (``verify_pre.yaml``)
+     - Checks for existence of staged :term:`AERONET` obs files at locations specified by ``AERONET_OBS_DIR``
+       and ``OBS_AERONET_FN_TEMPLATES``.  If any files do not exist, it attempts to retrieve all the files
+       from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
+       in the workflow only if ``'AOD'``is included in ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`task_get_obs_airnow` (``verify_pre.yaml``)
+     - Checks for existence of staged :term:`AIRNOW` obs files at locations specified by ``AIRNOW_OBS_DIR``
+       and ``OBS_AIRNOW_FN_TEMPLATES``.  If any files do not exist, it attempts to retrieve all the files
+       from a data store (e.g. NOAA :term:`HPSS`) and place them in those locations.  This task is included
+       in the workflow only if ``'PM25'`` and/or ``'PM10'`` are included in ``VX_FIELD_GROUPS``.
+
    * - :bolditalic:`task_run_MET_Pb2nc_obs_NDAS` (``verify_pre.yaml``)
      - Converts NDAS obs prepbufr files to NetCDF format.
+
+   * - :bolditalic:`metatask_ASCII2nc_obs` (``verify_pre.yaml``)
+     - Set of tasks that convert observations in ASCII text format to NetCDF files that can be processed by
+       :term:`METplus`; these observation types include AERONET and AIRNOW. This metatask is included in the
+       workflow only if ``'AOD'``, ``'PM25'``, or ``'PM10'`` are included in ``VX_FIELD_GROUPS``.
 
    * - :bolditalic:`metatask_PcpCombine_APCP_all_accums_obs_CCPA` (``verify_pre.yaml``)
      - Set of tasks that generate NetCDF files containing observed APCP for the accumulation intervals
@@ -1127,6 +1170,11 @@ interval (for cumulative fields such as accumulated precipitation), and the name
        In Rocoto, the tasks under this metatask are named ``run_MET_PcpCombine_ASNOW{accum_intvl}h_obs_NOHRSC``,
        where ``{accum_intvl}`` is the accumulation interval in hours (e.g., ``06``, ``24``, etc.) for which
        the task is being run.  This metatask is included in the workflow only if ``'ASNOW'`` is included in
+       ``VX_FIELD_GROUPS``.
+
+   * - :bolditalic:`metatask_PcpCombine_fcst_PM_all_mems` (``verify_pre.yaml``)
+     - Set of tasks that convert the raw forecast output of particulate matter into the appropriate bins for
+       PM 2.5 and PM10. This metatask is included in the workflow only if ``'PM25'`` or ``'PM10'`` is included in
        ``VX_FIELD_GROUPS``.
 
    * - :bolditalic:`metatask_check_post_output_all_mems` (``verify_pre.yaml``)

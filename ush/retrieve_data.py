@@ -31,7 +31,7 @@ import urllib.request
 from copy import deepcopy
 
 import yaml
-
+from pathlib import Path
 
 def clean_up_output_dir(expected_subdir, local_archive, output_path, source_paths):
 
@@ -40,7 +40,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     Args: 
         expected_subdir      : Expected subdirectories
         local_archive   (str): File name
-        output_path     (str): Path to a location on disk. Path is expected to exist.
+        output_path     (str): Path to a location on disk.
         source_paths    (str): 
     
     Returns: 
@@ -66,6 +66,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
             expected_output_loc = os.path.join(output_path, file_name)
             if not local_file_path == expected_output_loc:
                 logging.info(f"Moving {local_file_path} to " f"{expected_output_loc}")
+                Path(output_path).mkdir(parents=True, exist_ok=True)
                 shutil.move(local_file_path, expected_output_loc)
 
     # Clean up directories from inside archive, if they exist
@@ -423,6 +424,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
         target_path = create_target_path(target_path)
 
         logging.info(f"Retrieved files will be placed here: \n {target_path}")
+        Path(target_path).mkdir(parents=True, exist_ok=True)
         os.chdir(target_path)
 
         for fcst_hr in cla.fcst_hrs:
@@ -519,7 +521,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
     It cleans up the local disk after files are deemed available in order to remove any empty 
     subdirectories that may still be present.
 
-    This function exepcts that the output directory exists and is writable.
+    This function exepcts that the output directory is writable.
 
     Args:
         cla          (str): Command line arguments (Namespace object)
@@ -1086,7 +1088,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--output_path",
-        help="Path to a location on disk. Path is expected to exist.",
+        help="Path to a location on disk where files will be placed.",
         required=True,                    
         type=os.path.abspath,
     )

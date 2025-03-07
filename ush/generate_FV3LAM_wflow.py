@@ -19,18 +19,19 @@ from uwtools.api.config import get_nml_config, get_yaml_config, realize
 from uwtools.api.template import render
 
 from python_utils import (
-    list_to_str,
-    log_info,
-    import_vars,
-    export_vars,
-    cp_vrfy,
-    ln_vrfy,
-    mkdir_vrfy,
-    mv_vrfy,
-    check_for_preexist_dir_file,
     cfg_to_yaml_str,
+    check_for_preexist_dir_file,
+    cp_vrfy,
+    create_symlink_to_file,
+    dict_find,
+    export_vars,
     find_pattern_in_str,
     flatten_dict,
+    import_vars,
+    list_to_str,
+    log_info,
+    mkdir_vrfy,
+    mv_vrfy
 )
 
 from setup import setup
@@ -167,15 +168,8 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # From here on out, going back to setting variables for everything
-    # in the flattened expt_config dictionary
-    # TODO: Reference all these variables in their respective
-    # dictionaries, instead.
-    import_vars(dictionary=flatten_dict(expt_config))
-    export_vars(source_dict=flatten_dict(expt_config))
 
-    # pylint: disable=undefined-variable
-    if USE_CRON_TO_RELAUNCH:
+    if expt_config["workflow"]["USE_CRON_TO_RELAUNCH"]:
         add_crontab_line(called_from_cron=False,machine=expt_config["user"]["MACHINE"],
                          crontab_line=expt_config["workflow"]["CRONTAB_LINE"],
                          exptdir=exptdir,debug=debug)
@@ -183,34 +177,36 @@ def generate_FV3LAM_wflow(
     #
     # Copy or symlink fix files
     #
-    if SYMLINK_FIX_FILES:
+    fixgsm = expt_config["platform"]["FIXgsm"]
+    fixam = expt_config["workflow"]["FIXam"]
+    if expt_config["workflow"]["SYMLINK_FIX_FILES"]:
         log_info(
             f"""
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = '{FIXgsm}'
-              FIXam = '{FIXam}'""",
+              FIXgsm = '{fixgsm}'
+              FIXam = '{fixam}'""",
             verbose=debug,
         )
 
-        ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
+        create_symlink_to_file(fixgsm,fixam,False)
     else:
 
         log_info(
             f"""
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = '{FIXgsm}'
-              FIXam = '{FIXam}'""",
+              FIXgsm = '{fixgsm}'
+              FIXam = '{fixam}'""",
             verbose=debug,
         )
 
-        check_for_preexist_dir_file(FIXam, "delete")
-        mkdir_vrfy("-p", FIXam)
-        mkdir_vrfy("-p", os.path.join(FIXam, "fix_co2_proj"))
+        check_for_preexist_dir_file(fixam, "delete")
+        mkdir_vrfy("-p", fixam)
+        mkdir_vrfy("-p", os.path.join(fixam, "fix_co2_proj"))
 
-        num_files = len(FIXgsm_FILES_TO_COPY_TO_FIXam)
+        num_files = len(expt_config["fixed_files"]["FIXgsm_FILES_TO_COPY_TO_FIXam"])
         for i in range(num_files):
-            fn = f"{FIXgsm_FILES_TO_COPY_TO_FIXam[i]}"
-            cp_vrfy(os.path.join(FIXgsm, fn), os.path.join(FIXam, fn))
+            fn = f"{expt_config['fixed_files']['FIXgsm_FILES_TO_COPY_TO_FIXam'][i]}"
+            cp_vrfy(os.path.join(fixgsm, fn), os.path.join(fixam, fn))
     #
     # -----------------------------------------------------------------------
     #
@@ -218,26 +214,30 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    if USE_MERRA_CLIMO:
+    fixaer = expt_config["platform"]["FIXaer"]
+    fixlut = expt_config["platform"]["FIXlut"]
+    fixclim = expt_config["workflow"]["FIXclim"]
+
+    if expt_config["task_run_fcst"]["USE_MERRA_CLIMO"]:
         log_info(
             f"""
             Copying MERRA2 aerosol climatology data files from system directory
             (FIXaer/FIXlut) to a subdirectory (FIXclim) in the experiment directory:
-              FIXaer = '{FIXaer}'
-              FIXlut = '{FIXlut}'
-              FIXclim = '{FIXclim}'""",
+              FIXaer = '{fixaer}'
+              FIXlut = '{fixlut}'
+              FIXclim = '{fixclim}'""",
             verbose=debug,
         )
 
-        check_for_preexist_dir_file(FIXclim, "delete")
-        mkdir_vrfy("-p", FIXclim)
+        check_for_preexist_dir_file(fixclim, "delete")
+        mkdir_vrfy("-p", fixclim)
 
-        if SYMLINK_FIX_FILES:
-            ln_vrfy("-fsn", os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
-            ln_vrfy("-fsn", os.path.join(FIXlut, "optics*.dat"), FIXclim)
+        if expt_config["workflow"]["SYMLINK_FIX_FILES"]:
+            create_symlink_to_file(os.path.join(fixaer, "merra2.aerclim*.nc"), fixclim)
+            create_symlink_to_file(os.path.join(fixlut, "optics*.dat"), fixclim)
         else:
-            cp_vrfy(os.path.join(FIXaer, "merra2.aerclim*.nc"), FIXclim)
-            cp_vrfy(os.path.join(FIXlut, "optics*.dat"), FIXclim)
+            cp_vrfy(os.path.join(fixaer, "merra2.aerclim*.nc"), fixclim)
+            cp_vrfy(os.path.join(fixlut, "optics*.dat"), fixclim)
     #
     # -----------------------------------------------------------------------
     #
@@ -245,314 +245,55 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    log_info(
-        """
-        Copying templates of various input files to the experiment directory...""",
-        verbose=debug,
-    )
+    if ( dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") or
+       dict_find(expt_config["rocoto"]["tasks"], "task_make_grid") ):
+        logging.debug("Copying templates of various input files to the experiment directory...")
 
-    log_info(
-        """
-        Copying the template data table file to the experiment directory...""",
-        verbose=debug,
-    )
-    cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
+        logging.debug("Copying the template data table file to the experiment directory...")
+        cp_vrfy(expt_config["workflow"]["DATA_TABLE_TMPL_FP"],
+                expt_config["workflow"]["DATA_TABLE_FP"])
 
-    log_info(
-        """
-        Copying the template field table file to the experiment directory...""",
-        verbose=debug,
-    )
-    cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
+        logging.debug("Copying the template field table file to the experiment directory...")
+        cp_vrfy(expt_config["workflow"]["FIELD_TABLE_TMPL_FP"],
+                expt_config["workflow"]["FIELD_TABLE_FP"])
 
-    #
-    # Copy the CCPP physics suite definition file from its location in the
-    # clone of the FV3 code repository to the experiment directory (EXPT-
-    # DIR).
-    #
-    log_info(
-        """
-        Copying the CCPP physics suite definition XML file from its location in
-        the forecast model directory structure to the experiment directory...""",
-        verbose=debug,
-    )
-    cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
-    #
-    # Copy the field dictionary file from its location in the
-    # clone of the FV3 code repository to the experiment directory (EXPT-
-    # DIR).
-    #
-    log_info(
-        """
-        Copying the field dictionary file from its location in the
-        forecast model directory structure to the experiment
-        directory...""",
-        verbose=debug,
-    )
-    cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set parameters in the FV3-LAM namelist file.
-    #
-    # -----------------------------------------------------------------------
-    #
-    log_info(
-        f"""
-        Setting parameters in weather model's namelist file (FV3_NML_FP):
-        FV3_NML_FP = '{FV3_NML_FP}'""",
-        verbose=debug,
-    )
-    #
-    # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
-    # These need to be set in the FV3-LAM Fortran namelist file. They represent
-    # the number of cell vertices in the x and y directions on the regional
-    # grid.
-    #
-    npx = NX + 1
-    npy = NY + 1
-    #
-    # Set npz, which is just LEVP minus 1.
-    npz = LEVP - 1
-    #
-    # For the physics suites that use RUC LSM, set the parameter kice to 9,
-    # Otherwise, leave it unspecified (which means it gets set to the default
-    # value in the forecast model).
-    #
-    kice = None
-    if SDF_USES_RUC_LSM:
-        kice = 9
-    #
-    # Set lsoil, which is the number of input soil levels provided in the
-    # chgres_cube output NetCDF file.  This is the same as the parameter
-    # nsoill_out in the namelist file for chgres_cube.  [On the other hand,
-    # the parameter lsoil_lsm (not set here but set in input.nml.FV3 and/or
-    # FV3.input.yml) is the number of soil levels that the LSM scheme in the
-    # forecast model will run with.]  Here, we use the same approach to set
-    # lsoil as the one used to set nsoill_out in exregional_make_ics.sh.
-    # See that script for details.
-    #
-    # NOTE:
-    # May want to remove lsoil from FV3.input.yml (and maybe input.nml.FV3).
-    # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
-    #
-    lsoil = 4
-    if EXTRN_MDL_NAME_ICS in ("HRRR", "RAP") and SDF_USES_RUC_LSM:
-        lsoil = 9
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
-        lsoil = ""
-    #
-    # Create a multiline variable that consists of a yaml-compliant string
-    # specifying the values that the namelist variables that are physics-
-    # suite-independent need to be set to.  Below, this variable will be
-    # passed to a python script that will in turn set the values of these
-    # variables in the namelist file.
-    #
-    # IMPORTANT:
-    # If we want a namelist variable to be removed from the namelist file,
-    # in the "settings" variable below, we need to set its value to the
-    # string "null".  This is equivalent to setting its value to
-    #    !!python/none
-    # in the base namelist file specified by FV3_NML_BASE_SUITE_FP or the
-    # suite-specific yaml settings file specified by FV3_NML_YAML_CONFIG_FP.
-    #
-    # It turns out that setting the variable to an empty string also works
-    # to remove it from the namelist!  Which is better to use??
-    #
-    settings = {}
-    settings["atmos_model_nml"] = {
-        "blocksize": BLOCKSIZE,
-        "ccpp_suite": CCPP_PHYS_SUITE,
-    }
-
-    fv_core_nml_dict = {}
-    fv_core_nml_dict.update({
-        "target_lon": LON_CTR,
-        "target_lat": LAT_CTR,
-        "nrows_blend": HALO_BLEND,
         #
-        # Question:
-        # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
-        # on how the FV3 code uses the stretch_fac parameter in the namelist file.
-        # Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
-        # to something like 0.9999, but is it ok to set it to that here in the
-        # FV3 namelist file?
+        # Copy the CCPP physics suite definition file from its location in the
+        # clone of the FV3 code repository to the experiment directory (EXPT-
+        # DIR).
         #
-        "stretch_fac": STRETCH_FAC,
-        "npx": npx,
-        "npy": npy,
-        "layout": [LAYOUT_X, LAYOUT_Y],
-        "bc_update_interval": LBC_SPEC_INTVL_HRS,
-        "npz": npz,
-    })
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "dnats": 5
-            })
-        else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "hord_tr": 8,
-                "dnats": 5,
-                "nord": 2
-            })
-        else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v17_p8":
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "dnats": 4
-            })
-        else:
-            fv_core_nml_dict.update({
-                "dnats": 0
-            })
+        logging.debug("Copying CCPP suite definition file from forecast model repository")
+        cp_vrfy(expt_config["workflow"]["CCPP_PHYS_SUITE_IN_CCPP_FP"],
+                expt_config["workflow"]["CCPP_PHYS_SUITE_FP"])
 
-    settings["fv_core_nml"] = fv_core_nml_dict
-
-    gfs_physics_nml_dict = {}
-    gfs_physics_nml_dict.update({
-        "kice": kice or None,
-        "lsoil": lsoil or None,
-        "print_diff_pgr": PRINT_DIFF_PGR,
-    })
-
-    if DO_SMOKE_DUST:
-        gfs_physics_nml_dict.update({
-            "ebb_dcycle": EBB_DCYCLE,
-            "rrfs_sd": True,
-    })
-
-    if CPL_AQM:
-        gfs_physics_nml_dict.update({
-            "cplaqm": True,
-            "cplocn2atm": False,
-            "fscav_aero": [
-                "aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0",
-                "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0",
-                "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0",
-                "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0",
-                "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0",
-                "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0",
-                "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0",
-                "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0",
-                "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0",
-                "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0",
-                "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0",
-                "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0",
-                "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0",
-                "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0",
-                "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0",
-                "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
-                "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
-        })
-
-    # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
-    if expt_config['fire'].get('UFS_FIRE'):
-        gfs_physics_nml_dict.update({
-            "cpl_fire": True,
-        })
-        field_table_append = """# smoke tracer for UFS_FIRE
+        # If UFS_FIRE, update FIELD_TABLE
+        if expt_config['fire'].get('UFS_FIRE'):
+            field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        with open(FIELD_TABLE_FP, "a+", encoding='UTF-8') as file:
-            file.write(field_table_append)
+            with open(expt_config["workflow"]["FIELD_TABLE_FP"], "a+", encoding='UTF-8') as file:
+                file.write(field_table_append)
 
-    settings["gfs_physics_nml"] = gfs_physics_nml_dict
-
-    # Update levp in external_ic_nml; this should be the only variable that needs changing
-
-    settings["external_ic_nml"] = {"levp": LEVP}
-
-    #
-    # Add to "settings" the values of those namelist variables that specify
-    # the paths to fixed files in the FIXam directory.  As above, these namelist
-    # variables are physcs-suite-independent.
-    #
-    # Note that the array FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
-    # the mapping between the namelist variables and the names of the files
-    # in the FIXam directory.  Here, we loop through this array and process
-    # each element to construct each line of "settings".
-    #
-    dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
-    if DO_ENSEMBLE:
-        dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
-
-    regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-    num_nml_vars = len(FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING)
-    namsfc_dict = {}
-    for i in range(num_nml_vars):
-
-        mapping = f"{FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[i]}"
-        tup = find_pattern_in_str(regex_search, mapping)
-        nml_var_name = tup[0]
-        FIXam_fn = tup[1]
-
-        fp = '""'
-        if FIXam_fn:
-            fp = os.path.join(FIXam, FIXam_fn)
-            #
-            # If not in NCO mode, for portability and brevity, change fp so that it
-            # is a relative path (relative to any cycle directory immediately under
-            # the experiment directory).
-            #
-            if RUN_ENVIR != "nco":
-                fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
-        # Add a line to the variable "settings" that specifies (in a yaml-compliant
-        # format) the name of the current namelist variable and the value it should
-        # be set to.
+        # Copy the field dictionary file from its location in the
+        # clone of the FV3 code repository to the experiment directory
         #
-        namsfc_dict[nml_var_name] = fp
-    #
-    # Add namsfc_dict to settings
-    #
-    settings["namsfc"] = namsfc_dict
-    #
-    # Use netCDF4 when running the North American 3-km domain due to file size.
-    #
-    if PREDEF_GRID_NAME == "RRFS_NA_3km":
-        settings["fms2_io_nml"] = {"netcdf_default_format": "netcdf4"}
+        logging.debug("Copying field dictionary file from forecast model repository")
+        cp_vrfy(expt_config["workflow"]["FIELD_DICT_IN_UWM_FP"],
+                expt_config["workflow"]["FIELD_DICT_FP"])
 
-    settings_str = cfg_to_yaml_str(settings)
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Call function to write the FV3 namelist
+        #
+        # -----------------------------------------------------------------------
+        #
+        setup_fv3_namelist(expt_config,debug)
 
-    log_info(
-        """
-        The variable 'settings' specifying values of the weather model's
-        namelist variables has been set as follows:\n""",
-        verbose=debug,
-    )
-    log_info("\nsettings =\n\n" + settings_str, verbose=debug)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Create a new FV3 namelist file
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
-    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
-    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
-    base_namelist.update_values(settings)
-    for sect, values in base_namelist.copy().items():
-        if not values:
-            del base_namelist[sect]
-            continue
-        for k, v in values.copy().items():
-            if v is None:
-                del base_namelist[sect][k]
-    base_namelist.dump(FV3_NML_FP)
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -565,8 +306,8 @@ def generate_FV3LAM_wflow(
     # the C-resolution of the grid), and this parameter is in most workflow
     # configurations is not known until the grid is created.
     #
-    if not expt_config['rocoto']['tasks'].get('task_make_grid'):
-
+    if ( not expt_config['rocoto']['tasks'].get('task_make_grid') and
+         dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") ):
         set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
 
     #
@@ -579,6 +320,13 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
+    # From here on out, going back to setting variables for everything
+    # in the flattened expt_config dictionary
+    # TODO: Reference all these variables in their respective
+    # dictionaries, instead.
+    # pylint: disable=undefined-variable
+    import_vars(dictionary=flatten_dict(expt_config))
+    export_vars(source_dict=expt_config["global"])
     settings = {}
     settings["gfs_physics_nml"] = {
         "do_shum": DO_SHUM,
@@ -672,7 +420,6 @@ def generate_FV3LAM_wflow(
 
     settings["nam_sfcperts"] = nam_sfcperts_dict
 
-    settings_str = cfg_to_yaml_str(settings)
     #
     #-----------------------------------------------------------------------
     #
@@ -812,6 +559,253 @@ def generate_FV3LAM_wflow(
 
     return EXPTDIR
 
+def setup_fv3_namelist(expt_config,debug):
+    """
+    Updates parameters specific to the FV3ATM namelist for the run_fcst step.
+
+    Args:
+        expt_dict (dict): The full experiment configuration dictionary
+        debug    (bool): Enable extra output for debugging
+    Returns:
+        EXPTDIR (str) : The full path of the directory where this experiment has been generated
+    """
+
+    # From here on out, going back to setting variables for everything
+    # in the flattened expt_config dictionary
+    # TODO: Reference all these variables in their respective
+    # dictionaries, instead.
+    import_vars(dictionary=flatten_dict(expt_config))
+    export_vars(source_dict=flatten_dict(expt_config))
+
+    # pylint: disable=undefined-variable
+
+    log_info(
+        f"""
+        Setting parameters in weather model's namelist file (FV3_NML_FP):
+        FV3_NML_FP = '{FV3_NML_FP}'""",
+        verbose=debug,
+    )
+    #
+    # For the physics suites that use RUC LSM, set the parameter kice to 9,
+    # Otherwise, leave it unspecified (which means it gets set to the default
+    # value in the forecast model).
+    #
+    kice = None
+    if SDF_USES_RUC_LSM:
+        kice = 9
+    #
+    # Set lsoil, which is the number of input soil levels provided in the
+    # chgres_cube output NetCDF file.  This is the same as the parameter
+    # nsoill_out in the namelist file for chgres_cube.  [On the other hand,
+    # the parameter lsoil_lsm (not set here but set in input.nml.FV3 and/or
+    # FV3.input.yml) is the number of soil levels that the LSM scheme in the
+    # forecast model will run with.]  Here, we use the same approach to set
+    # lsoil as the one used to set nsoill_out in exregional_make_ics.sh.
+    # See that script for details.
+    #
+    # NOTE:
+    # May want to remove lsoil from FV3.input.yml (and maybe input.nml.FV3).
+    # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
+    #
+    lsoil = 4
+    if EXTRN_MDL_NAME_ICS in ("HRRR", "RAP") and SDF_USES_RUC_LSM:
+        lsoil = 9
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
+        lsoil = ""
+    #
+    # Create a multiline variable that consists of a yaml-compliant string
+    # specifying the values that the namelist variables that are physics-
+    # suite-independent need to be set to.  Below, this variable will be
+    # passed to a python script that will in turn set the values of these
+    # variables in the namelist file.
+    #
+    settings = {}
+    settings["atmos_model_nml"] = {
+        "blocksize": BLOCKSIZE,
+        "ccpp_suite": CCPP_PHYS_SUITE,
+    }
+
+    fv_core_nml_dict = {}
+    fv_core_nml_dict.update({
+        "target_lon": LON_CTR,
+        "target_lat": LAT_CTR,
+        "nrows_blend": HALO_BLEND,
+        #
+        # Question:
+        # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
+        # on how the FV3 code uses the stretch_fac parameter in the namelist file.
+        # Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
+        # to something like 0.9999, but is it ok to set it to that here in the
+        # FV3 namelist file?
+        #
+        "stretch_fac": STRETCH_FAC,
+        "npx": NX + 1,
+        "npy": NY + 1,
+        "layout": [LAYOUT_X, LAYOUT_Y],
+        "bc_update_interval": LBC_SPEC_INTVL_HRS,
+        "npz": LEVP - 1,
+    })
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 5
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "hord_tr": 8,
+                "dnats": 5,
+                "nord": 2
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v17_p8":
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 4
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 0
+            })
+
+    settings["fv_core_nml"] = fv_core_nml_dict
+
+    gfs_physics_nml_dict = {}
+    gfs_physics_nml_dict.update({
+        "kice": kice or None,
+        "lsoil": lsoil or None,
+        "print_diff_pgr": PRINT_DIFF_PGR,
+    })
+
+    if DO_SMOKE_DUST:
+        gfs_physics_nml_dict.update({
+            "ebb_dcycle": EBB_DCYCLE,
+            "rrfs_sd": True,
+    })
+
+    if CPL_AQM:
+        gfs_physics_nml_dict.update({
+            "cplaqm": True,
+            "cplocn2atm": False,
+            "fscav_aero": [
+                "aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0",
+                "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0",
+                "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0",
+                "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0",
+                "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0",
+                "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0",
+                "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0",
+                "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0",
+                "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0",
+                "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0",
+                "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0",
+                "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0",
+                "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0",
+                "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0",
+                "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0",
+                "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
+                "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
+        })
+
+    # If UFS_FIRE, activate appropriate flags
+    if expt_config['fire'].get('UFS_FIRE'):
+        gfs_physics_nml_dict.update({
+            "cpl_fire": True,
+        })
+
+    settings["gfs_physics_nml"] = gfs_physics_nml_dict
+
+    # Update levp in external_ic_nml; this should be the only variable that needs changing
+
+    settings["external_ic_nml"] = {"levp": LEVP}
+
+    #
+    # Add to "settings" the values of those namelist variables that specify
+    # the paths to fixed files in the FIXam directory.  As above, these namelist
+    # variables are physcs-suite-independent.
+    #
+    # Note that the array FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
+    # the mapping between the namelist variables and the names of the files
+    # in the FIXam directory.  Here, we loop through this array and process
+    # each element to construct each line of "settings".
+    #
+    dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
+    if DO_ENSEMBLE:
+        dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
+
+    regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
+    num_nml_vars = len(FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING)
+    namsfc_dict = {}
+    for i in range(num_nml_vars):
+
+        mapping = f"{FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[i]}"
+        tup = find_pattern_in_str(regex_search, mapping)
+        nml_var_name = tup[0]
+        FIXam_fn = tup[1]
+
+        fp = '""'
+        if FIXam_fn:
+            fp = os.path.join(FIXam, FIXam_fn)
+            #
+            # If not in NCO mode, for portability and brevity, change fp so that it
+            # is a relative path (relative to any cycle directory immediately under
+            # the experiment directory).
+            #
+            if RUN_ENVIR != "nco":
+                fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
+        #
+        # Add a line to the variable "settings" that specifies (in a yaml-compliant
+        # format) the name of the current namelist variable and the value it should
+        # be set to.
+        #
+        namsfc_dict[nml_var_name] = fp
+    #
+    # Add namsfc_dict to settings
+    #
+    settings["namsfc"] = namsfc_dict
+    #
+    # Use netCDF4 when running the North American 3-km domain due to file size.
+    #
+    if PREDEF_GRID_NAME == "RRFS_NA_3km":
+        settings["fms2_io_nml"] = {"netcdf_default_format": "netcdf4"}
+
+    settings_str = cfg_to_yaml_str(settings)
+
+    log_info(
+        """
+        The variable 'settings' specifying values of the weather model's
+        namelist variables has been set as follows:\n""",
+        verbose=debug,
+    )
+    log_info("\nsettings =\n\n" + settings_str, verbose=debug)
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Create a new FV3 namelist file
+    #
+    # -----------------------------------------------------------------------
+    #
+
+    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
+    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
+    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
+    base_namelist.update_values(settings)
+    for sect, values in base_namelist.copy().items():
+        if not values:
+            del base_namelist[sect]
+            continue
+        for k, v in values.copy().items():
+            if v is None:
+                del base_namelist[sect][k]
+    base_namelist.dump(FV3_NML_FP)
+
 
 def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
     """
@@ -886,7 +880,6 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    # pylint: disable=undefined-variable
     # Note workflow generation completion
     log_info(
         f"""
@@ -894,7 +887,7 @@ if __name__ == "__main__":
 
             Experiment generation completed.  The experiment directory is:
 
-              EXPTDIR='{EXPTDIR}'
+              EXPTDIR='{expt_dir}'
 
         ========================================================================
         """

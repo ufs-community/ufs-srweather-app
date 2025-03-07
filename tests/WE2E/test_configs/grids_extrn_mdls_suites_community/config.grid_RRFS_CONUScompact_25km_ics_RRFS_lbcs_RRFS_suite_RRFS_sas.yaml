@@ -1,13 +1,13 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_CONUScompact_25km grid using the RRFS_v1beta
+    completes successfully on the RRFS_CONUScompact_25km grid using the RRFS_sas
     physics suite. It uses RRFS forecasts mapped onto 3-km regular grid (rrfs*.conus.grib2) for
-    ICs and LBCs. This test uses old v1 sfc_data, not the v2 fractional grid sfc_data.
+    ICs and LBCs. 
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+  CCPP_PHYS_SUITE: RRFS_sas
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2024060517'
   DATE_LAST_CYCL: '2024060517'
@@ -22,8 +22,6 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 1
   FV3GFS_FILE_FMT_LBCS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
-task_plot_allvars:
-  COMOUT_REF: ""
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'

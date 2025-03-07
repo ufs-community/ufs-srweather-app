@@ -8,9 +8,19 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_run_post ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+  constants
+  fixed_files
+  task_run_post
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -198,10 +208,36 @@ if [ "${grid_or_point}" = "grid" ]; then
 
 elif [ "${grid_or_point}" = "point" ]; then
 
-  OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
-  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-  FCST_INPUT_FN_TEMPLATE="${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE}"
+  if [ "${OBTYPE}" = "NDAS" ]; then
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
+    OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
+    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+    FCST_INPUT_FN_TEMPLATE="${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE}"
+  elif [ "${OBTYPE}" = "AERONET" ]; then
+    FIELDNAME_IN_MET_FILEDIR_NAMES="AERONET_AOD"
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
+    OBS_INPUT_FN_TEMPLATE="${OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT}"
+    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+    FCST_INPUT_FN_TEMPLATE="${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE}"
+  elif [ "${OBTYPE}" = "AIRNOW" ]; then
+    # It's very annoying that the names for specifying Airnow format are slightly different
+    # for ASCII2NC and Pointstat. This logic deals with that.
+    if [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourly" ]]; then
+      FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY"
+    elif [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourlyaqobs" ]]; then
+      FIELDNAME_IN_MET_FILEDIR_NAMES="AIRNOW_HOURLY_AQOBS"
+    else
+      print_err_msg_exit "Invalid AIRNOW_INPUT_FORMAT: ${AIRNOW_INPUT_FORMAT}"
+    fi
+    ACCUM_HH='01'
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/Ascii2nc_obs"
+    OBS_INPUT_FN_TEMPLATE="${OBS_AIRNOW_FN_TEMPLATE_ASCII2NC_OUTPUT}"
+    # The forecast input for Airnow obs is the output from PcP combine
+    FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
+    FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
+  else
+    print_err_msg_exit "Invalid OBTYPE for PointStat: ${OBTYPE}"
+  fi
 
 fi
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
@@ -297,7 +333,7 @@ fi
 # First, set the base file names.
 #
 metplus_config_tmpl_bn="GridStat_or_PointStat"
-metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${FIELD_GROUP}_${ensmem_name}"
 metplus_log_bn="${metplus_config_bn}_$CDATE"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
@@ -410,6 +446,12 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
+# Ugly hack to deal with different obs variable name (PM25 -->PM2.5) for
+# data retrieved from AWS
+if [[ "${AIRNOW_INPUT_FORMAT}" == "airnowhourly" ]]; then
+  sed -i -e 's/OBS_VAR1_NAME = PM25/OBS_VAR1_NAME = PM2.5/g' ${metplus_config_fp}
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -417,6 +459,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
 print_info_msg "$VERBOSE" "
 Calling METplus to run MET's ${metplus_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 ${METPLUS_PATH}/ush/run_metplus.py \

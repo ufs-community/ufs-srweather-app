@@ -30,7 +30,7 @@ if (BUILD_UFS)
     if(CPL_AQM)
       set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8")
     else()
-      set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8,FV3_RRFS_v1beta,FV3_HRRR,FV3_HRRR_gf,FV3_RAP,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
+	    set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8,FV3_RRFS_v1beta,FV3_HRRR,FV3_HRRR_gf,FV3_RAP,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0,RRFS_sas")
     endif()
   endif()
   
