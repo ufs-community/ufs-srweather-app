@@ -21,6 +21,7 @@ from textwrap import dedent
 from python_utils import (
     cfg_to_yaml_str,
     check_for_preexist_dir_file,
+    dict_find,
     export_vars,
     find_pattern_in_str,
     flatten_dict,
@@ -245,6 +246,17 @@ def generate_FV3LAM_wflow(
             workflow_config["FIELD_TABLE_TMPL_FP"], workflow_config["FIELD_TABLE_FP"]
         )
 
+        # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
+        if expt_config["fire"]["envvars"]["UFS_FIRE"]:
+            field_table_append = """# smoke tracer for UFS_FIRE
+ "TRACER", "atmos_mod", "fsmoke"
+           "longname",     "fire smoke"
+           "units",        "kg/kg"
+       "profile_type", "fixed", "surface_value=0.0" /\n"""
+
+            with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding="UTF-8") as file:
+                file.write(field_table_append)
+
         #
         # Copy the CCPP physics suite definition file from its location in the
         # clone of the FV3 code repository to the experiment directory (EXPT-
@@ -256,21 +268,11 @@ def generate_FV3LAM_wflow(
             workflow_config["CCPP_PHYS_SUITE_FP"],
         )
 
-        # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
-        if expt_config["fire"]["envvars"]["UFS_FIRE"]:
-            field_table_append = """# smoke tracer for UFS_FIRE
- "TRACER", "atmos_mod", "fsmoke"
-           "longname",     "fire smoke"
-           "units",        "kg/kg"
-       "profile_type", "fixed", "surface_value=0.0" /\n"""
-
-        with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding="UTF-8") as file:
-            file.write(field_table_append)
-
         logging.debug("Copying field dictionary file from forecast model repository")
         shutil.copy(
             workflow_config["FIELD_DICT_IN_UWM_FP"], workflow_config["FIELD_DICT_FP"]
         )
+
 
         #
         # -----------------------------------------------------------------------
@@ -559,10 +561,8 @@ def setup_fv3_namelist(expt_config,debug):
     Updates parameters specific to the FV3ATM namelist for the run_fcst step.
 
     Args:
-        expt_dict (dict): The full experiment configuration dictionary
-        debug    (bool): Enable extra output for debugging
-    Returns:
-        EXPTDIR (str) : The full path of the directory where this experiment has been generated
+        expt_config (dict): The full experiment configuration dictionary
+        debug       (bool): Enable extra output for debugging
     """
 
     # From here on out, going back to setting variables for everything
@@ -734,19 +734,15 @@ def setup_fv3_namelist(expt_config,debug):
     # in the FIXam directory.  Here, we loop through this array and process
     # each element to construct each line of "settings".
     #
-    dummy_run_dir = os.path.join(exptdir, "any_cyc")
+    dummy_run_dir = Path(expt_config["workflow"]["EXPTDIR"], "any_cyc")
     if expt_config["global"]["DO_ENSEMBLE"]:
-        dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
+        dummy_run_dir = dummy_run_dir / "any_ensmem"
 
     regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-    mapping = expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]
     namsfc_dict = {}
-    for i in range(num_nml_vars):
+    for mapping in expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]:
 
-        mapping = f"{FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[i]}"
-        tup = find_pattern_in_str(regex_search, mapping)
-        nml_var_name = tup[0]
-        FIXam_fn = tup[1]
+        nml_var_name, FIXam_fn = find_pattern_in_str(regex_search, mapping)
 
         fp = '""'
         if FIXam_fn:
@@ -802,7 +798,7 @@ def setup_fv3_namelist(expt_config,debug):
         for k, v in values.copy().items():
             if v is None:
                 del base_namelist[sect][k]
-    base_namelist.dump(Path(fv3_nml_fp))
+    base_namelist.dump(Path(FV3_NML_FP))
 
 
 def setup_logging(

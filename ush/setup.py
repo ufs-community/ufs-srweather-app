@@ -1271,7 +1271,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         post_output_domain_name = predef_grid_name
 
     if not isinstance(post_output_domain_name, int):
-        post_output_domain_name = lowercase(post_output_domain_name)
+        post_output_domain_name = post_output_domain_name.lower()
 
     # Write updated value of POST_OUTPUT_DOMAIN_NAME back to dictionary
     post_config["envvars"]["POST_OUTPUT_DOMAIN_NAME"] = post_output_domain_name
@@ -1409,10 +1409,10 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
+        sect_key = f"task_make_{prep_task.lower()}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if create_symlinks_to_pregen_files[prep_task]:
-            sect_key = f"task_make_{prep_task.lower()}"
+        if not task_defs.get(sect_key):
             dir_key = f"{prep_task}_DIR"
             task_dir = expt_config[sect_key]["envvars"][dir_key]
 
