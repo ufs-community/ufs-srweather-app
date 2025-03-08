@@ -31,7 +31,13 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user workflow nco ; do
+sections=(
+  user
+  nco
+  workflow
+  verification
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -51,7 +57,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC")
+valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC" "AERONET" "AIRNOW")
 if [[ ! ${valid_obtypes[@]} =~ ${OBTYPE} ]]; then
   print_err_msg_exit "\
 Invalid observation type (OBTYPE) specified for script:

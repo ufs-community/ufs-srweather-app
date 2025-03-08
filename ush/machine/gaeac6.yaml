@@ -3,11 +3,13 @@ platform:
   NCORES_PER_NODE: 128
   SCHED: slurm
   WE2E_TEST_DATA: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop
-  TEST_CCPA_OBS_DIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/obs_data/ndas/proc
-  TEST_NOHRSC_OBS_DIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/obs_data/nohrsc/proc
-  DOMAIN_PREGEN_BASEDIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/ccpa/proc'
+  TEST_MRMS_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/mrms/proc'
+  TEST_NDAS_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/ndas/proc'
+  TEST_NOHRSC_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/nohrsc/proc'
+  TEST_AERONET_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/aeronet'
+  TEST_AIRNOW_OBS_DIR: '{{ platform.WE2E_TEST_DATA }}/obs_data/airnow'
+  DOMAIN_PREGEN_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/FV3LAM_pregen'
   QUEUE_DEFAULT: normal
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
@@ -35,9 +37,9 @@ platform:
   FIXorg: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/NaturalEarth
-  FIXsmoke: /gpfs/f6/bil-fire8/world-shared/SRW_AQM_data/fix_smoke
-  FIXupp: /gpfs/f6/bil-fire8/world-shared/SRW_AQM_data/fix_upp
-  FIXcrtm: /gpfs/f6/bil-fire8/world-shared/SRW_AQM_data/fix_crtm
+  FIXsmoke: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_smoke
+  FIXupp: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_upp
+  FIXcrtm: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws
 
 data:
@@ -52,8 +54,8 @@ data:
     GSMGFS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
 
 smoke_dust_parm:
-  COMINsmoke_default: /gpfs/f6/bil-fire8/world-shared/SRW_AQM_data/data_smoke_dust/RAVE_smoke_dust
-  COMINrave_default: /gpfs/f6/bil-fire8/world-shared/SRW_AQM_data/data_smoke_dust/RAVE_fire
+  COMINsmoke_default: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
+  COMINrave_default: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire
 
 rocoto:
   tasks:

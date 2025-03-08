@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import glob
 
 from .print_input_args import print_input_args
 from .print_msg import print_err_msg_exit
@@ -37,12 +38,16 @@ def create_symlink_to_file(target, symlink, relative=True):
         )
 
     if not os.path.exists(target):
-        print_err_msg_exit(
-            f"""
-            Cannot create symlink to specified target file because the latter does
-            not exist or is not a file:
-                target = '{target}'"""
-        )
+        if glob.glob(target):
+            for wildtarget in glob.glob(target):
+                create_symlink_to_file(wildtarget,symlink,relative)
+        else:
+            print_err_msg_exit(
+                f"""
+                Cannot create symlink to specified target file because the latter does
+                not exist or is not readable:
+                    target = '{target}'"""
+            )
 
     relative_flag = ""
     if relative:

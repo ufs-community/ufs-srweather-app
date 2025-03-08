@@ -57,3 +57,27 @@ def find_pattern_in_file(pattern, file_name):
             for match in re.finditer(pattern, line):
                 return match.groups()
     return None
+
+
+def dict_find(user_dict, substring):
+    """Find any keys in a dictionary that contain the provided substring
+
+    Args:
+        user_dict: dictionary to search
+        substring: substring to search keys for
+    Return:
+        True if substring found, otherwise False
+    """
+
+    if not isinstance(user_dict, dict):
+        return False
+
+    for key, value in user_dict.items():
+        if substring in key:
+            return True
+        if isinstance(value, dict):
+            if dict_find(value, substring):
+                return True
+
+    return False
+
