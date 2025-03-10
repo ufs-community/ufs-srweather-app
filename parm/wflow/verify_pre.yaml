@@ -23,9 +23,6 @@ default_task_verify_pre: &default_task_verify_pre
 
 task_get_obs_aeronet:
   <<: *default_task_verify_pre
-  attrs:
-    cycledefs: cycledefs_obs_days_cumul
-    maxtries: '1'
   command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
@@ -39,9 +36,6 @@ task_get_obs_aeronet:
 
 task_get_obs_airnow:
   <<: *default_task_verify_pre
-  attrs:
-    cycledefs: cycledefs_obs_days_cumul
-    maxtries: '1'
   command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
