@@ -1,0 +1,25 @@
+metadata:
+  description: |-
+    This test checks the capability of the workflow to run verification tasks
+    for smoke data (AERONET AOD and AIRNOW PM). Also does SFC and NOHRSC snow verification
+user:
+  RUN_ENVIR: community
+workflow:
+  CCPP_PHYS_SUITE: FV3_RAP
+  DATE_FIRST_CYCL: '2024011100'
+  DATE_LAST_CYCL: '2024011100'
+  FCST_LEN_HRS: 18
+  PREEXISTING_DIR_METHOD: rename
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+verification:
+  VX_FCST_MODEL_NAME: RRFS_smoke_test
+  VX_FIELD_GROUPS: [ "SFC", "AOD", "PM25", "PM10"]
+  VX_FCST_INPUT_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/input_model_data/RRFS'
+  FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H}'
+  FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
+

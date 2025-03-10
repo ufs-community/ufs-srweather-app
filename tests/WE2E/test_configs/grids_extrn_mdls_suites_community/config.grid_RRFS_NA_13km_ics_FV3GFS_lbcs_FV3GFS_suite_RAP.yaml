@@ -1,7 +1,7 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_NA_13km grid using the RRFS_v1beta
+    completes successfully on the RRFS_NA_13km grid using the FV3_RAP
     physics suite with ICs and LBCs derived from the FV3GFS.
     Note that this test also sets various resource parameters for several
     of the rocoto tasks in order to more efficiently run the code on this

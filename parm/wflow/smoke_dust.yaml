@@ -25,7 +25,7 @@ default_smoke_dust_task: &default_smoke_dust
   nnodes: 1
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  ppn: 1
+  ppn: 8
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
 

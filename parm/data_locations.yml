@@ -13,7 +13,7 @@
 #
 # protocol:
 #   indication of how a set of files will be retrieved. Options:
-#   download or htar. The requirements for each protocol are described
+#   wget or htar. The requirements for each protocol are described
 #   below
 #
 # file_names:
@@ -30,7 +30,7 @@
 #
 # 3rd level optional:
 #
-#  for download protocol:
+#  for wget protocol:
 #     url: required. the URL to the location of the data file. May include
 #          templates.
 #
@@ -50,7 +50,7 @@
 #
 FV3GFS:
   nomads:
-    protocol: download
+    protocol: wget
     url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.{yyyymmdd}/{hh}/atmos
     file_names: &gfs_file_names
       grib2:
@@ -115,7 +115,7 @@ FV3GFS:
     file_names:
       <<: *gfs_file_names
   aws:
-    protocol: download
+    protocol: wget
     url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{yyyymmdd}/{hh}/atmos
     file_names:
       <<: *gfs_file_names
@@ -160,14 +160,14 @@ GDAS:
           - gdas.t{hh}z.atmf{fcst_hr:03d}.nc
           - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
   nomads:
-    protocol: download
+    protocol: wget
     url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
     file_names:
       netcdf:
         fcst:
           - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
   aws:
-    protocol: download
+    protocol: wget
     url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
     file_names:
       netcdf:
@@ -176,7 +176,7 @@ GDAS:
 
 GEFS:
   aws:
-    protocol: download
+    protocol: wget
     url:
       - ['https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/atmos/pgrb2ap5', 'https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/atmos/pgrb2bp5']
       - ['https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/pgrb2a', 'https://noaa-gefs-pds.s3.amazonaws.com/gefs.{yyyymmdd}/{hh}/pgrb2b']
@@ -231,7 +231,7 @@ RAP:
       fcst:
         - rap.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
   aws:
-    protocol: download
+    protocol: wget
     url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}
     file_names:
       <<: *rap_file_names
@@ -245,7 +245,7 @@ RRFS:
       fcst:
         - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus.grib2
   aws:
-    protocol: download
+    protocol: wget
     url: https://noaa-rrfs-pds.s3.amazonaws.com/rrfs_a/rrfs_a.{yyyymmdd}/{hh}/control/
     file_names:
       <<: *rrfs_file_names
@@ -270,7 +270,7 @@ HRRR:
       fcst:
         - hrrr.t{hh}z.wrfprsf{fcst_hr:02d}.grib2
   aws:
-    protocol: download
+    protocol: wget
     url: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{yyyymmdd}/conus/
     file_names:
       <<: *hrrr_file_names
@@ -294,7 +294,7 @@ NAM:
 
 UFS-CASE-STUDY:
   aws:
-    protocol: download
+    protocol: wget
     url: "https://ufs-case-studies.s3.amazonaws.com/"
     file_names: &ufs_file_names
       nemsio:
@@ -362,11 +362,13 @@ NDAS_obs:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
-      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}        
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
     archive_file_names:
       - "com2_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "gpfs_dell1_nco_ops_com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_obsproc_v1.0_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_obsproc_v1.1_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_obsproc_v1.2_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
     file_names:
@@ -388,3 +390,50 @@ NOHRSC_obs:
         - "sfav2_CONUS_6h_{yyyy}{mm}{dd}*_grid184.grb2"
     archive_internal_dir:
       - ./wgrbbul/nohrsc_snowfall/
+
+AERONET_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "dcom_prod_{yyyy}{mm}{dd}.tar"
+      - "dcom_{yyyy}{mm}{dd}.tar"
+    file_names:
+      obs:
+        - "{yyyy}{mm}{dd}.lev15"
+    archive_internal_dir:
+      - ./validation_data/aq/aeronet/
+  http:
+    protocol: wget
+    url: "https://aeronet.gsfc.nasa.gov/cgi-bin/"
+    file_names:
+      obs:
+        - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&AOD15=1&AVG=10"
+
+AIRNOW_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "dcom_prod_{yyyymmdd}.tar"
+      - "dcom_{yyyymmdd}.tar"
+    file_names:
+      obs:
+        - "HourlyAQObs_{yyyymmdd}*.dat"
+        - "Monitoring_Site_Locations_V2.dat"
+    archive_internal_dir:
+      - ./airnow/
+  aws:
+    protocol: wget
+    url: "https://s3-us-west-1.amazonaws.com//files.airnowtech.org/airnow/{fyyyy}/{fyyyymmdd}/"
+    file_names:
+      obs:
+        - "HourlyData_{fyyyymmdd}{fhh}.dat"
+        - "Monitoring_Site_Locations_V2.dat"
+

@@ -29,9 +29,5 @@ ush
    set_leadhrs
    set_predef_grid_params
    setup
-   smoke_dust_add_smoke
-   smoke_dust_fire_emiss_tools
-   smoke_dust_generate_fire_emissions
-   smoke_dust_hwp_tools
-   smoke_dust_interp_tools
+   smoke_dust
    update_input_nml

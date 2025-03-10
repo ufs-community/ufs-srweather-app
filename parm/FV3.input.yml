@@ -5,10 +5,10 @@
 #
 # to obtain the namelist for each physics suite that the SRW App can 
 # run with.
-
+#
 
 FV3_RRFS_v1beta:
-  gfs_physics_nml: &RRFS_v1beta_phys
+  gfs_physics_nml: 
     do_deep: False
     do_mynnsfclay: True
     imfdeepcnv: -1
@@ -28,6 +28,7 @@ FV3_RRFS_v1beta:
     iopt_trs: 2
     lsm: 2
     lsoil_lsm: 4
+
 FV3_WoFS_v0:
   gfs_physics_nml:
     do_deep: False
@@ -75,7 +76,7 @@ FV3_HRRR:
     d_con: 0.5
     n_sponge: 9
   gfs_physics_nml:
-    <<: *RRFS_v1beta_phys
+    do_deep: False
     cdmbgwd: [3.5, 1.0]
     do_mynnsfclay: True
     do_sfcperts: null
@@ -85,6 +86,21 @@ FV3_HRRR:
     do_gsl_drag_ls_bl: True
     iaer: 5111
     icliq_sw: 2
+    imfdeepcnv: -1
+    imfshalcnv: -1
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iopt_trs: 2
     iovr: 3
     lsm: 3
     lsoil_lsm: 9
@@ -262,8 +278,8 @@ FV3_RAP:
   fv_core_nml:
     <<: *HRRR_fv_core
   gfs_physics_nml:
-    <<: *RRFS_v1beta_phys
     cdmbgwd: [3.5, 1.0]
+    do_deep: False
     do_mynnsfclay: True
     do_sfcperts: null
     gwd_opt: 3
@@ -272,6 +288,21 @@ FV3_RAP:
     do_gsl_drag_ls_bl: True
     iaer: 5111
     icliq_sw: 2
+    imfdeepcnv: -1
+    imfshalcnv: -1
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iopt_trs: 2
     iovr: 3
     lsm: 3
     lsoil_lsm: 9
@@ -702,3 +733,118 @@ FV3_GFS_v17_p8:
     deflate_level: 1
     shuffle: 1
   surf_map_nml: null
+
+RRFS_sas:
+  atmos_model_nml:
+    avg_max_length: 3600.
+    ignore_rst_cksum: true
+  fv_core_nml:
+    agrid_vel_rst: true
+    d_con: 0.5
+    d2_bg_k2: 0.04
+    dz_min: 2.0
+    hord_dp: 6
+    hord_mt: 6
+    hord_tm: 6
+    hord_tr: 8
+    hord_vt: 6
+    k_split: 2
+    kord_mt: 9
+    kord_tm: -9
+    kord_tr: 9
+    kord_wz: 9
+    n_split: 5
+    psm_bc: 1
+    nord_tr: 0
+    nrows_blend: 10
+    range_warn: False
+    regional_bcs_from_gsi: false
+    rf_cutoff: 2000.0
+    vtdm4: 0.02
+    write_restart_with_bcs: false
+  gfs_physics_nml:
+    betadcu: 1.0
+    cdmbgwd: [3.5, 1.0]
+    diag_log: true
+    do_deep: true
+    do_gsl_drag_ls_bl: true
+    do_gsl_drag_ss: true
+    do_gsl_drag_tofd: true
+    do_mynnsfclay: true
+    do_sfcperts: null
+    do_tofd : false
+    do_ugwp : false
+    do_ugwp_v0 : false
+    do_ugwp_v0_nst_only : false
+    do_ugwp_v0_orog_only : false
+    dt_inner : 36
+    ebb_dcycle : 1
+    effr_in: true
+    gwd_opt: 3
+    fhlwr: 900.0
+    fhswr: 900.0
+    iaer: 1011
+    ialb: 2
+    iccn: 2
+    icliq_sw: 2
+    iems: 2
+    imfdeepcnv: 2
+    imfshalcnv: -1
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    iovr: 3
+    ldiag_ugwp: false
+    lgfdlmprad: false
+    lightning_threat: true
+    mosaic_lu: 0
+    mosaic_soil: 0
+    isncond_opt: 2
+    isncovr_opt: 3
+    progsigma: true
+    sfclay_compute_flux: true
+    sigmab_coldstart : true
+    thsfc_loc: false
+    nst_anl: null
+    nstf_name: null
+    # Smoke/dust options
+    rrfs_sd : false
+    rrfs_smoke_debug : false
+    seas_opt : 0
+    mix_chem : true
+    dust_opt : 1
+    coarsepm_settling : 1
+    smoke_conv_wet_coef : [0.5, 0.5, 0.5]
+    hwp_method : 1
+    aero_ind_fdb : false
+    aero_dir_fdb : true
+    addsmoke_flag : 1
+    wetdep_ls_opt : 1
+    do_plumerise : true
+    do_smoke_transport : true
+    plumerisefire_frq : 30
+    plume_wind_eff : 1
+    dust_moist_correction : 2.0
+    dust_drylimit_factor : 0.5
+    dust_alpha : 10.0
+    dust_gamma : 1.3
+    drydep_opt : 1
+    enh_mix : false
+    wetdep_ls_alpha : 0.5
+    smoke_conv_wet_coef : [ 0.50, 0.50, 0.50 ]
+    do_smoke_transport : true
+    ebb_dcycle : 2
+    sc_factor : 1.0
+
+  fv_diagnostics_nml:
+    do_hailcast: true
+

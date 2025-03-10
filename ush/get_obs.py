@@ -16,14 +16,6 @@ from python_utils import (
     load_yaml_config,
 )
 from mrms_pull_topofhour import mrms_pull_topofhour
-try:
-    sys.path.append(os.environ['METPLUS_ROOT'])
-except:
-    print("\nERROR ERROR ERROR\n")
-    print("Environment variable METPLUS_ROOT must be set to use this script\n")
-    raise
-from metplus.util import string_template_substitution as sts
-
 
 def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     """
@@ -35,12 +27,13 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     Note that for cumulative fields (like CCPA and NOHRSC, as opposed to
     instantaneous ones like MRMS and NDAS), the archive files corresponding
     to hour 0 of the day represent accumulations over the previous day.  Thus,
-    here, we never return an archive hour of 0 for cumulative fields.  Instead,
+    here, we do not return an archive hour of 0 for cumulative fields.  Instead,
     if the specified hour-of-day is 0, we consider that to represent the 0th
     hour of the NEXT day (i.e. the 24th hour of the current day) and set the
     archive hour to 24.
 
     Args:
+
         obtype (str):
             The observation type.
 
@@ -60,7 +53,8 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
             the obs file for the given hour of day.
     """
 
-    valid_obtypes = ['CCPA', 'NOHRSC', 'MRMS', 'NDAS']
+    valid_obtypes = ['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW']
+
     if obtype not in valid_obtypes:
         msg = dedent(f"""
             The specified observation type is not supported:
@@ -111,6 +105,10 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
         arcv_hr = (floor(hod/arcv_intvl_hrs))*arcv_intvl_hrs
     elif obtype in ['NDAS']:
         arcv_hr = (floor(hod/arcv_intvl_hrs) + 1)*arcv_intvl_hrs
+    elif obtype in ['AERONET']:
+        arcv_hr = (floor(hod/arcv_intvl_hrs))*arcv_intvl_hrs
+    elif obtype in ['AIRNOW']:
+        arcv_hr = (floor(hod/arcv_intvl_hrs))*arcv_intvl_hrs
 
     return arcv_hr
 
@@ -316,6 +314,18 @@ def get_obs(config, obtype, yyyymmdd_task):
     are available and none of the obs files for this day already exist on
     disk, this sequence will be [6, 12, 18, 24].  In other cases, the
     sequence we loop over will be a subset of [6, 12, 18, 24].
+
+    AERONET Aerosol Optical Depth (AOD) observations:
+    -------------------------------------------------
+    For AERONET, the archive interval is 24 hours. There is one archive per day
+    containing a single text file that contains all of the day's observations.
+
+    AIRNOW Air Quality Particulate Matter (PM25, PM10) observations:
+    ----------------------------------------------------------------
+    For AIRNOW, the HPSS archive interval is 24 hours. There is one archive per day
+    containing one text file per hour that contains all the observation for that
+    hour.
+    When retrieved from AWS, the interval is 1 hour.
     """
 
     # Convert obtype to upper case to simplify code below.
@@ -443,7 +453,6 @@ def get_obs(config, obtype, yyyymmdd_task):
     # To generate this sequence, we first set the archive interval and then
     # set the starting and ending archive hour values.
     #
-    #
     #-----------------------------------------------------------------------
     #
     if obtype == 'CCPA':
@@ -454,10 +463,18 @@ def get_obs(config, obtype, yyyymmdd_task):
         arcv_intvl_hrs = 24
     elif obtype == 'NDAS':
         arcv_intvl_hrs = 6
+    elif obtype == 'AERONET':
+        arcv_intvl_hrs = 24
+    elif obtype == 'AIRNOW':
+        if vx_config[f'OBS_DATA_STORE_AIRNOW'] == 'hpss':
+            arcv_intvl_hrs = 24
+        else:
+            arcv_intvl_hrs = 1
+
     arcv_intvl = dt.timedelta(hours=arcv_intvl_hrs)
 
     # Number of obs files within each archive.
-    num_obs_files_per_arcv = int(arcv_intvl/obs_avail_intvl)
+    num_obs_times_per_arcv = int(arcv_intvl/obs_avail_intvl)
 
     # Initial guess for starting archive hour.  This is set to the archive
     # hour containing obs at the first obs retrieval time of the day.
@@ -584,7 +601,7 @@ def get_obs(config, obtype, yyyymmdd_task):
 
     # Whether to remove raw observations after processed directories have
     # been created from them.
-    remove_raw_obs = vx_config[f'REMOVE_RAW_OBS_{obtype}']
+    remove_raw_obs = vx_config[f'REMOVE_RAW_OBS_DIRS']
 
     # Base directory that will contain the archive subdirectories in which
     # the files extracted from each archive (tar) file will be placed.  We
@@ -641,14 +658,17 @@ def get_obs(config, obtype, yyyymmdd_task):
         #
         # NDAS:
         # Same as for CCPA.
-        if obtype == 'CCPA':
+        #
+        # AERONET, AIRNOW:
+        # Same as for MRMS
+        #
+
+        if obtype in ['CCPA', 'NDAS']:
             arcv_subdir_raw = yyyymmddhh_arcv_str
         elif obtype == 'NOHRSC':
             arcv_subdir_raw = yyyymmdd_arcv_str
-        elif obtype == 'MRMS':
+        elif obtype in ['MRMS', 'AERONET', 'AIRNOW']:
             arcv_subdir_raw = ''
-        elif obtype == 'NDAS':
-            arcv_subdir_raw = yyyymmddhh_arcv_str
 
         # Combine the raw archive base directory with the raw archive subdirectory
         # name to obtain the full path to the raw archive directory.
@@ -659,17 +679,20 @@ def get_obs(config, obtype, yyyymmdd_task):
         # so, set the flag (do_retrieve) to retrieve the files in the current
         # archive.
         if obtype == 'CCPA':
-            arcv_contents_start = yyyymmddhh_arcv - (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_start = yyyymmddhh_arcv - (num_obs_times_per_arcv - 1)*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv
         elif obtype == 'NOHRSC':
             arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
         elif obtype == 'MRMS':
             arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
         elif obtype == 'NDAS':
-            arcv_contents_start = yyyymmddhh_arcv - num_obs_files_per_arcv*obs_avail_intvl
+            arcv_contents_start = yyyymmddhh_arcv - num_obs_times_per_arcv*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv - obs_avail_intvl
+        elif obtype in ['AERONET', 'AIRNOW']:
+            arcv_contents_start = yyyymmddhh_arcv
+            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
 
         do_retrieve = False
         for obs_retrieve_time in obs_retrieve_times_crnt_day:
@@ -712,18 +735,18 @@ def get_obs(config, obtype, yyyymmdd_task):
             # obs-day dependent) and then call the retrieve_data.py script.
             os.chdir(basedir_raw)
 
-            # Pull obs from HPSS.  This will get all the obs files in the current
-            # archive and place them in the raw archive directory.
+            # Pull obs from HPSS or AWS based on OBS_DATA_STORE* setting.
             #
             # Note that for the specific case of NDAS obs, this will get all 7 obs
             # files in the current archive, although we will make use of only 6 of
             # these (we will not use the tm00 file).
+
             parmdir = config['user']['PARMdir']
             args = ['--debug', \
                     '--file_set', 'obs', \
                     '--config', os.path.join(parmdir, 'data_locations.yml'), \
                     '--cycle_date', yyyymmddhh_arcv_str, \
-                    '--data_stores', 'hpss', \
+                    '--data_stores', vx_config[f'OBS_DATA_STORE_{obtype}'], \
                     '--data_type', obtype + '_obs', \
                     '--output_path', arcv_dir_raw, \
                     '--summary_file', 'retrieve_data.log']
@@ -732,17 +755,29 @@ def get_obs(config, obtype, yyyymmdd_task):
             # Get the list of times corresponding to the obs files in the current
             # archive.  This is a list of datetime objects.
             if obtype == 'CCPA':
-                obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'NOHRSC':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'MRMS':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'NDAS':
-                obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
+            elif obtype in ['AERONET', 'AIRNOW']:
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             obs_times_in_arcv.sort()
 
-            # Loop over the raw obs files extracted from the current archive and
-            # generate from them the processed obs files.
+            # Construct the set of obs times over which to loop below when creating
+            # the processed obs files. This is the intersection of the obs times in the
+            # current archive and the obs retrieve times for the current day. Using the
+            # intersection is necessary because some files that contain observations for
+            # more than one hour may not be retrieved correctly otherwise.
+            obs_retrieve_times_crnt_day_in_arcv = [
+                yyyymmddhh for yyyymmddhh in obs_retrieve_times_crnt_day if yyyymmddhh in obs_times_in_arcv
+            ]
+
+            # Loop over the set of times in the current archive that are also required
+            # obs times for the current day.  Use the raw obs file for each such time
+            # extracted from the current archive to generate the processed obs file.
             #
             # Notes on each obs type:
             #
@@ -755,7 +790,7 @@ def get_obs(config, obtype, yyyymmdd_task):
             # error in the metadata of the raw file and writing the corrected data
             # to a new grib2 file in the processed location.
             #
-            # NOHRSC:
+            # NOHRSC, AERONET, AIRNOW:
             # Generating the processed obs files consists of simply copying or moving
             # the files from the raw archive directory to the processed directory,
             # possibly renaming them in the process.
@@ -782,21 +817,37 @@ def get_obs(config, obtype, yyyymmdd_task):
             # the tm06 file in a contains more/better observations than the tm00 file
             # in the previous archive (their valid times being equivalent), so we always
             # use the tm06 files.
-            for yyyymmddhh in obs_times_in_arcv:
 
-                # Create the processed obs file from the raw one (by moving, copying, or
-                # otherwise) only if the time of the current file in the current archive
-                # also exists in the list of obs retrieval times for the current day.  We
-                # need to check this because it is possible that some of the obs retrieval
-                # times come before the range of times spanned by the current archive while
-                # the others come after, but none fall within that range.  This can happen
-                # because the set of archive hours over which we are looping were constructed
-                # above without considering whether there are obs retrieve time gaps that
-                # make it unnecessary to retrieve some of the archives between the first
-                # and last ones that must be retrieved.
-                if yyyymmddhh in obs_retrieve_times_crnt_day:
+            # Note that for some obs types (e.g. AERONET), each obs file extracted from the archive
+            # may contain observations for more than one time. To avoid errors and/or unnecesarily
+            # re-creating processed obs files, here we create a list to keep track
+            # of the processed obs files that have already been created in the loop
+            # below.
+            proc_files_created = []
 
-                    for i, fg in enumerate(field_groups_in_obs):
+            for yyyymmddhh in obs_retrieve_times_crnt_day_in_arcv:
+
+                for i, fg in enumerate(field_groups_in_obs):
+
+                    # Get the full path to the final processed obs file (fp_proc) we want to
+                    # create.
+                    indx = obs_retrieve_times_crnt_day.index(yyyymmddhh)
+                    fp_proc = all_fp_proc_dict[fg][indx]
+
+                    # Check whether the processed obs file has already been created in previous
+                    # iterations of this loop.
+                    if fp_proc in proc_files_created:
+
+                        msg = dedent(f"""
+                            The processed obs file (fp_proc) for this observation time (yyyymmddhh)
+                            has already been created:
+                                {fp_proc = }
+                                {yyyymmddhh = }
+                            Skipping to next observation time.
+                            """)
+                        logging.info(msg)
+
+                    else:
 
                         # For MRMS obs, first select from the set of raw files for the current day
                         # those that are nearest in time to the current hour.  Unzip these in a
@@ -824,28 +875,34 @@ def get_obs(config, obtype, yyyymmdd_task):
                         # is actually used is not known until retrieve_data.py completes.  Thus,
                         # that information needs to be passed back by the script and used here.
                         # For now, we hard-code the file name here.
+                        yyyymmddhh_str = dt.datetime.strftime(yyyymmddhh, '%Y%m%d%H')
+                        hr = yyyymmddhh.hour
                         if obtype == 'CCPA':
-                            hr = yyyymmddhh.hour
                             fn_raw = 'ccpa.t' + f'{hr:02d}' + 'z.' + accum_obs_formatted + 'h.hrap.conus.gb2'
                         elif obtype == 'NOHRSC':
-                            yyyymmddhh_str = dt.datetime.strftime(yyyymmddhh, '%Y%m%d%H')
                             fn_raw = 'sfav2_CONUS_' + accum_obs_formatted + 'h_' + yyyymmddhh_str + '_grid184.grb2'
                         elif obtype == 'MRMS':
-                            hr = yyyymmddhh.hour
-                            fn_raw = mrms_fields_in_obs_filenames[i] + '_' + mrms_levels_in_obs_filenames[i] \
-                                   + '_' + yyyymmdd_task_str + '-' + f'{hr:02d}' + '0000.grib2'
+                            fn_raw = f'{mrms_fields_in_obs_filenames[i]}_{mrms_levels_in_obs_filenames[i]}' \
+                                   + f'_{yyyymmdd_task_str}-{hr:02d}0000.grib2'
                             fn_raw = os.path.join('topofhour', fn_raw)
                         elif obtype == 'NDAS':
                             time_ago = yyyymmddhh_arcv - yyyymmddhh
                             hrs_ago = int(time_ago.seconds/3600)
                             hh_arcv_str = dt.datetime.strftime(yyyymmddhh_arcv, '%H')
-                            fn_raw = 'nam.t' + hh_arcv_str + 'z.prepbufr.tm' + f'{hrs_ago:02d}' + '.nr'
+                            fn_raw = f'nam.t{hh_arcv_str}z.prepbufr.tm{hrs_ago:02d}.nr'
+                        elif obtype == 'AERONET':
+                            fn_raw = f'{yyyymmdd_task_str}.lev15'
+                            # Special logic for AERONET pulled from http: internet archives result
+                            # in weird filenames, rename them to the standard name before continuing
+                            badfile = os.path.join(arcv_dir_raw, f'print_web_data_v3?year={yyyymmddhh_str[:4]}')
+                            if os.path.isfile(badfile):
+                                shutil.move(badfile, os.path.join(arcv_dir_raw, fn_raw))
+                        elif obtype == 'AIRNOW':
+                            if vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourlyaqobs':
+                                fn_raw = f'HourlyAQObs_{yyyymmddhh_str}.dat'
+                            elif vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourly':
+                                fn_raw = f'HourlyData_{yyyymmddhh_str}.dat'
                         fp_raw = os.path.join(arcv_dir_raw, fn_raw)
-
-                        # Get the full path to the final processed obs file (fp_proc) we want to
-                        # create.
-                        indx = obs_retrieve_times_crnt_day.index(yyyymmddhh)
-                        fp_proc = all_fp_proc_dict[fg][indx]
 
                         # Make sure the directory in which the processed file will be created exists.
                         dir_proc = os.path.dirname(fp_proc)
@@ -873,6 +930,17 @@ def get_obs(config, obtype, yyyymmdd_task):
                             shutil.move(fp_raw, fp_proc)
                         else:
                             shutil.copy(fp_raw, fp_proc)
+
+                        # Update list of already-created processed files to include the one just
+                        # created above.
+                        proc_files_created.append(fp_proc)
+
+                        msg = dedent(f"""
+                            Processed obs file (fp_proc) successfully created from raw obs file (fp_raw):
+                                {fp_raw = }
+                                {fp_proc = }
+                            """)
+                        logging.info(msg)
     #
     #-----------------------------------------------------------------------
     #
@@ -898,7 +966,7 @@ def parse_args(argv):
         "--obtype",
         type=str,
         required=True,
-        choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS'],
+        choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW'],
         help="Cumulative observation type.",
     )
 
@@ -943,6 +1011,15 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
+
+    # We import METPLUS after parse_args so that we can still call the script with -h
+    try:
+        sys.path.append(os.environ['METPLUS_ROOT'])
+    except:
+        print("\nERROR ERROR ERROR\n")
+        print("Environment variable METPLUS_ROOT must be set to use this script\n")
+        raise
+    from metplus.util import string_template_substitution as sts
 
     # Set up logging.
     # If the name/path of a log file has been specified in the command line
