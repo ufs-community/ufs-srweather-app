@@ -351,7 +351,7 @@ AWS S3 Data Buckets:
    * GDAS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
    * HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
    * A list of the NOAA Open Data Dissemination (NODD) datasets can be found here: https://www.noaa.gov/nodd/datasets
-   * RRFS: https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/ --- Experimental data is available starting 02/01/2024 for deteministic forecasts starting hourly. Forecast data are available out to 60 hours for 00, 06, 12, and 18 UTC starting times (cycles), and out to 18 hours for other cycles. Earlier dates, from 05/01/2023 to 01/31/2024, may contain only forecasts at 00, 06, 12, 18 UTC; user needs to verify that data exist for needed dates.
+   * RRFS: https://registry.opendata.aws/noaa-rrfs/ --- `Experimental data <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`_ for the Rapid Refresh Forecast System (RRFS) prototype is available for deterministic forecasts starting hourly for many dates from 04/29/2024 to 12/03/2024. Forecast data are available out to 60 hours for 00, 06, 12, and 18 UTC starting times (cycles), and out to 18 hours for other cycles. Earlier dates may contain only forecasts at 00, 06, 12, 18 UTC; the user needs to verify that data exist for needed dates.
 
 Planetary Computer Data:
    * GFS: https://planetarycomputer.microsoft.com/dataset/storage/noaa-gfs

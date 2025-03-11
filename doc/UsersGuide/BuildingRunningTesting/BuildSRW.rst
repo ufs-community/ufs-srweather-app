@@ -315,13 +315,7 @@ This will work on Level 1 systems, where a modulefile is available in the ``modu
 
 .. note::
 
-   These instructions assume that Lmod (an SRW App prerequisite) is installed. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` command in a bash shell: 
-
-   .. code-block::
-
-      export <VARIABLE_NAME>=<PATH_TO_MODULE>
-
-   However, building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
+   These instructions assume that Lmod (an SRW App prerequisite) is installed. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. Building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
 
 .. _BuildCMake:
 
@@ -355,7 +349,7 @@ The build will take a few minutes to complete. When it starts, a random number i
 Install ``uwtools``
 ^^^^^^^^^^^^^^^^^^^^
 
-The :uw:`UW Tools documentation <sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. 
+The :uw:`UW Tools documentation <sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. See :numref:`Section %s <uwtools>` for more information on ``uwtools`` in the SRW App.
 
 For convenience, a suggested procedure is included below for users who do not have ``uwtools`` or ``conda`` installed. However, in the event of problems, refer to the UW Tools documentation and forums. 
 
