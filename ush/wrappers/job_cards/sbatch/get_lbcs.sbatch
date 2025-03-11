@@ -25,10 +25,10 @@ export ICS_OR_LBCS='LBCS'
 
 $USHdir/load_modules_run_task.sh "get_extrn_lbcs" $JOBSdir/JREGIONAL_GET_EXTRN_MDL_FILES
 
-# Gaea-C5 differences:
+# Gaea-c5 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=es --partition=eslogin_c5 --export=NONE
 
-# Gaea-C6 differences:
+# Gaea-c6 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=es --partition=eslogin_c6 --export=NONE

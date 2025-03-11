@@ -25,12 +25,12 @@ export bcgrpnum='1'
 
 $USHdir/load_modules_run_task.sh "make_lbcs" $JOBSdir/JREGIONAL_MAKE_LBCS
 
-# Gaea-C5 differences:
+# Gaea-c5 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 #export nprocs='48'
 
-# Gaea-C6 differences:
+# Gaea-c6 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 #export nprocs='48'

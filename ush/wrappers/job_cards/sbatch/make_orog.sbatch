@@ -17,12 +17,12 @@ export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 
 $USHdir/load_modules_run_task.sh "make_orog" $JOBSdir/JREGIONAL_MAKE_OROG
 
-# Gaea-C5 differences:
+# Gaea-c5 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 #export nprocs='24'
 
-# Gaea-C6 differences:
+# Gaea-c6 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 #export nprocs='24'
