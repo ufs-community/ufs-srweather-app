@@ -120,7 +120,7 @@ def check_file(url):
     Checks that a file exists at the expected URL. 
 
     Args:
-        url: URL for file to be downloaded
+        url: URL for file to be checked
 
     Return:
         Boolean value (True if ``status_code == 200`` or False otherwise)
@@ -128,13 +128,14 @@ def check_file(url):
     status_code = urllib.request.urlopen(url).getcode()
     return status_code == 200
 
-def download_file(url):
+
+def wget_file(url):
 
     """
     Download a file from a URL source, and place it in a target location on disk.
 
     Args:
-      url: URL for file to be downloaded
+      url: URL for file to be retrieved
 
     Returns:
       Boolean value reflecting whether the copy was successful (True) or unsuccessful (False)
@@ -307,6 +308,11 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
 
     zipped_archive_file_paths = zip(paths, file_names)
 
+    if len(file_names) != len(paths):
+        logging.warning("Data archive has different number of 'archive_path' and "
+                        "'archive_file_names' entries; not all paths will be searched!\n"
+                        f"archive_path={paths}\narchive_file_names={file_names}")
+
     # Narrow down which HPSS files are available for this date
     for list_item, (archive_path, archive_file_names) in enumerate(
         zipped_archive_file_paths
@@ -379,18 +385,18 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     # pylint: disable=too-many-locals
 
-    """Copies files from disk locations or downloads files from a URL, depending on the option 
-    specified by the user.
+    """Copies files from disk locations or downloads files from a URL or S3 bucket,
+    depending on the option specified by the user.
 
     This function expects that the output directory exists and is writeable.
 
     Args:
       cla            (str) : Command line arguments (Namespace object)
       file_templates (list): A list of file templates
-      input_locs     (str) : A string containing a single data location, either a URL or disk 
-                             path, or a list of paths/URLs.
-      method         (str) : Choice of ``"disk"`` or ``"download"`` to indicate protocol for 
-                             retrieval
+      input_locs     (str) : A string containing a single data location, either a URL, a disk
+                             path, an AWS bucket/directory, or a list these paths/URLs.
+      method         (str) : Choice of ``"disk"`` or ``"wget"`` to indicate protocol
+                             for retrieval
 
     Keyword Args:
       members     (list): A list of integers corresponding to the ensemble members
@@ -455,13 +461,13 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                         else:
                             retrieved = copy_file(input_loc, target_path, "cp")
 
-                    elif method == "download":
+                    elif method == "wget":
 
                         if cla.check_file:
                             retrieved = check_file(input_loc)
 
                         else:
-                            retrieved = download_file(input_loc)
+                            retrieved = wget_file(input_loc)
                         # Wait a bit before trying the next download.
                         # Seems to reduce the occurrence of timeouts
                         # when downloading from AWS
@@ -566,9 +572,10 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
         ens_group=ens_group,
     )
 
-    logging.debug(f"Found existing archives: {existing_archives}")
+    if existing_archives:
+        logging.debug(f"Found existing archives: {existing_archives}")
 
-    if not existing_archives:
+    else:
         logging.warning("No archive files were found!")
         unavailable["archive"] = list(zip(archive_paths, archive_file_names))
         return unavailable
@@ -630,7 +637,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                     cmd = f'unzip -o {os.path.basename(existing_archive)} {" ".join(source_paths)}'
 
                 else:
-                    cmd = f'htar -xvf {existing_archive} {" ".join(source_paths)}'
+                    cmd = f'htar -H nostage -xvf {existing_archive} {" ".join(source_paths)}'
 
                 logging.info(f"Running command \n {cmd}")
 
@@ -920,8 +927,8 @@ def main(argv):
 
     unavailable = {}
     for data_store in cla.data_stores:
-        logging.info(f"Checking {data_store} for {cla.data_type}")
         store_specs = known_data_info.get(data_store, {})
+        logging.info(f"Checking {data_store} for {cla.data_type} using {store_specs.get('protocol')}")
 
         if data_store == "disk":
             file_templates = get_file_templates(
@@ -952,13 +959,13 @@ def main(argv):
                 data_store=data_store,
             )
 
-            if store_specs.get("protocol") == "download":
+            if store_specs.get("protocol") == "wget":
                 unavailable = get_requested_files(
                     cla,
                     check_all=known_data_info.get("check_all", False),
                     file_templates=file_templates,
                     input_locs=store_specs["url"],
-                    method="download",
+                    method=store_specs.get("protocol"),
                     members=cla.members,
                 )
 
@@ -1064,7 +1071,7 @@ def parse_args(argv):
     parser.add_argument(
         "--data_stores",
         help="List of priority data_stores. Tries first list item \
-        first. Choices: hpss, nomads, aws, disk, remote.",
+        first. Choices: hpss, nomads, aws, http, disk, remote.",
         nargs="*",
         required=True,
         type=to_lower,
@@ -1152,7 +1159,7 @@ def parse_args(argv):
         "--check_file",
         action="store_true",
         help="Use this flag to check the existence of requested files, \
-         but don't try to download them. Works with download protocol \
+         but don't try to download them. Works with wget protocol \
          only",
     )
 
@@ -1171,7 +1178,7 @@ def parse_args(argv):
               f"argument when --file_set = {args.file_set}")
 
     # Check valid arguments for various conditions
-    valid_data_stores = ["hpss", "nomads", "aws", "disk", "remote"]
+    valid_data_stores = ["hpss", "nomads", "aws", "http", "disk", "remote"]
     for store in args.data_stores:
         if store not in valid_data_stores:
             raise argparse.ArgumentTypeError(f"Invalid value '{store}' provided " \
