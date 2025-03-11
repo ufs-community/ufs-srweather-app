@@ -246,16 +246,33 @@ def generate_FV3LAM_wflow(
             workflow_config["FIELD_TABLE_TMPL_FP"], workflow_config["FIELD_TABLE_FP"]
         )
 
-        # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
-        if expt_config["fire"]["envvars"]["UFS_FIRE"]:
+        # If UFS_FIRE or smoke/dust, update FIELD_TABLE
+        field_table_append=""
+        if expt_config['fire']['UFS_FIRE']:
             field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-            with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding="UTF-8") as file:
-                file.write(field_table_append)
+        elif expt_config['smoke_dust_parm']['DO_SMOKE_DUST']:
+            field_table_append = """# prognostic smoke mixing ratio tracer
+  "TRACER", "atmos_mod", "smoke"
+            "longname",     "smoke mixing ratio"
+            "units",        "ug/kg"
+       "profile_type", "fixed", "surface_value=1.e-12" /
+# prognostic dust mixing ratio tracer
+            "TRACER", "atmos_mod", "dust"
+            "longname",     "dust mixing ratio"
+            "units",        "ug/kg"
+       "profile_type", "fixed", "surface_value=1.e-12" /
+# prognostic coarsepm mixing ratio tracer
+  "TRACER", "atmos_mod", "coarsepm"
+            "longname",     "coarsepm mixing ratio"
+            "units",        "ug/kg"
+       "profile_type", "fixed", "surface_value=1.e-12" /\n"""
+        with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding="UTF-8") as file:
+            file.write(field_table_append)
 
         #
         # Copy the CCPP physics suite definition file from its location in the
@@ -268,6 +285,10 @@ def generate_FV3LAM_wflow(
             workflow_config["CCPP_PHYS_SUITE_FP"],
         )
 
+        #
+        # Copy the field dictionary file from its location in the
+        # clone of the FV3 code repository to the experiment directory
+        #
         logging.debug("Copying field dictionary file from forecast model repository")
         shutil.copy(
             workflow_config["FIELD_DICT_IN_UWM_FP"], workflow_config["FIELD_DICT_FP"]

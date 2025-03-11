@@ -60,7 +60,7 @@ def set_leadhrs(date_init, lhr_min, lhr_max, lhr_intvl, base_dir, time_lag, fn_t
             if verbose:
                 print(newerrmsg)
             else:
-                errmsg += newerrmsg
+                errmsg = "\n".join([errmsg, newerrmsg])
 
     if verbose:
         print(f"Final set of lead hours relative to {date_init}: {final_list}")

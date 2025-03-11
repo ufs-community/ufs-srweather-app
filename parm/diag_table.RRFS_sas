@@ -467,6 +467,10 @@
 "gfs_sfc",     "lake_icefrac3d_10",  "lake_icefrac3d_10",  "fv3_history",  "all",  .false.,  "none",  2
 
 "gfs_sfc",     "use_lake_model",    "use_lake_model",    "fv3_history2d","all",  .false.,  "none",  2
+
+# Additional entries from user-specified SRW settings (e.g. UFS-FIRE, smoke/dust)
+{{ additional_entries }}
+
 #=============================================================================================
 #
 #====> This file can be used with diag_manager/v2.0a (or higher) <====
@@ -502,22 +506,3 @@
 #         = 8  packed 1-byte (not tested?)
 # This file contains diag_table entries for the RRFS-SD.
 # It should be appended to the end of the diag_table before execution of the test.
-
-# Tracers
-"gfs_dyn",     "smoke",       "smoke",     "fv3_history",  "all",  .false.,  "none",  2
-"gfs_dyn",     "dust",        "dust",      "fv3_history",  "all",  .false.,  "none",  2
-"gfs_dyn",     "coarsepm",    "coarsepm",  "fv3_history",  "all",  .false.,  "none",  2
-"gfs_dyn",     "smoke_ave",       "smoke_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_dyn",     "dust_ave",        "dust_ave",      "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_dyn",     "coarsepm_ave",    "coarsepm_ave",  "fv3_history2d",  "all",  .false.,  "none",  2
-
-# Aerosols emission for smoke
-"gfs_sfc",     "emdust",       "emdust",        "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_sfc",     "coef_bb_dc",   "coef_bb_dc",    "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_sfc",     "min_fplume",   "min_fplume",    "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_sfc",     "max_fplume",   "max_fplume",    "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_sfc",     "hwp",          "hwp",           "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_sfc",     "hwp_ave",      "hwp_ave",       "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_sfc",     "frp_output",   "frp_output",    "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_phys",    "ebu_smoke",    "ebu_smoke",     "fv3_history",    "all",  .false.,  "none",  2
-"gfs_phys",    "ext550",       "ext550",        "fv3_history",    "all",  .false.,  "none",  2

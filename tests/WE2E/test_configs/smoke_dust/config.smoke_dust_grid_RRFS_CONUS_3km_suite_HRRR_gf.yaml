@@ -13,8 +13,6 @@ workflow:
   VERBOSE: true
   DEBUG: false
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_smoke_dust.FV3_HRRR_gf
-  FIELD_TABLE_TMPL_FN: field_table_smoke_dust.FV3_HRRR_gf
   DO_REAL_TIME: false
   COLDSTART: true
 nco:
@@ -36,12 +34,6 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   USE_USER_STAGED_EXTRN_FILES: true
-task_make_ics:
-  LEVP: 66
-  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
-task_make_lbcs:
-  LEVP: 66
-  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev_fcst_rrfsL65.txt"
 task_run_fcst:
   DT_ATMOS: 36
   LAYOUT_X: 15
