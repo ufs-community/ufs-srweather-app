@@ -346,6 +346,9 @@
 "gfs_phys",    "du3_ofdcol",  "du3_ofdcol",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "dv3_ofdcol",  "dv3_ofdcol",     "fv3_history2d",  "all",  .false.,  "none",  2
 
+# Additional entries from user-specified SRW settings (e.g. UFS-FIRE, smoke/dust)
+{{ additional_entries }}
+
 #=============================================================================================
 #
 #====> This file can be used with diag_manager/v2.0a (or higher) <====
