@@ -31,6 +31,9 @@ $USHdir/load_modules_run_task.sh "run_fcst" $JOBSdir/JREGIONAL_RUN_FCST
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 #export nprocs='48'
 
+# Jet     differences:
+##SBATCH --partition=sjet,vjet,kjet,xjet
+
 # Orion   differences:
 ##SBATCH --nodes=1-1
 ##SBATCH --tasks-per-node=40

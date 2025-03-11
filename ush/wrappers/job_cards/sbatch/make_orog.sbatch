@@ -27,5 +27,9 @@ $USHdir/load_modules_run_task.sh "make_orog" $JOBSdir/JREGIONAL_MAKE_OROG
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 #export nprocs='24'
 
+# Jet     differences:
+##SBATCH --partition=sjet,vjet,kjet,xjet
+#export nprocs='24'
+
 # Orion   differences:
 ##SBATCH --partition=orion
