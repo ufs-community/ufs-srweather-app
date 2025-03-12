@@ -43,7 +43,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 * >97 GB disk space
 
    * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * ~23 GB for full :term:`spack-stack` installation (or ~8 GB :term:`HPC-Stack`)
+   * ~23 GB for full :term:`spack-stack` installation
    * 3 GB for ``ufs-srweather-app`` installation
    * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
@@ -77,15 +77,6 @@ The following software is also required to run the SRW Application, but the :ter
 * :term:`MPI` (MPICH, OpenMPI, or other implementation)
 
    * Only **MPICH** or **OpenMPI** can be built with spack-stack. Other implementations must be installed separately by the user (if desired).
-
-For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :doc:`HPC-Stack Documentation: Chapter 3 <hpc-stack:mac-install>` for further guidance on installing these prerequisites on MacOS.
-
-* bash v4.x
-* GNU compiler suite v11 or higher with gfortran
-* cmake
-* make
-* coreutils
-* gsed
 
 Optional but recommended prerequisites for all systems:
 

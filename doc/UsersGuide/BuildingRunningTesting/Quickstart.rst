@@ -9,12 +9,10 @@ This chapter provides a brief summary of how to build and run the SRW Applicatio
 
 Install the Prerequisite Software Stack
 =========================================
-SRW App users who are **not** working on a :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platform will need to install the prerequisite software stack via :term:`spack-stack` or :term:`HPC-Stack` prior to building the SRW App on a new machine. Users can find installation instructions in the :doc:`spack-stack documentation <spack-stack:index>` or the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform, but detailed instructions for a variety of platforms are available in the documentation. Users may also post questions in the `ufs-community Discussions tab <https://github.com/orgs/ufs-community/discussions/categories/q-a>`__.
 
-Once spack-stack or HPC-Stack has been successfully installed, users can move on to building the SRW Application.
+SRW App users who are **not** working on a :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platform will need to install the prerequisite software stack via :term:`spack-stack` prior to building the SRW App on a new machine. Users can find installation instructions in the :doc:`spack-stack documentation <spack-stack:index>`. The steps will vary slightly depending on the user's platform, but detailed instructions for a variety of platforms are available in the documentation. Users may also post questions in the `ufs-community Discussions tab <https://github.com/orgs/ufs-community/discussions/categories/q-a>`_.
 
-.. attention::
-   Most SRW App :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems have shifted to spack-stack from HPC-Stack (with the exception of Derecho). Spack-stack is a Spack-based method for installing UFS prerequisite software libraries. Currently, spack-stack is the software stack validated by the UFS Weather Model (:term:`WM <Weather Model>`) for running regression tests. UFS applications and components are also shifting to spack-stack from HPC-Stack but are at various stages of this transition. Although users can still build and use HPC-Stack, the UFS WM no longer uses HPC-Stack for validation, and support for this option is being deprecated. 
+Once spack-stack has been successfully installed, users can move on to building the SRW Application.
 
 .. _QuickBuildRun:
 
