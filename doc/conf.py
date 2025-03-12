@@ -29,9 +29,9 @@ copyright = '2020, '
 author = ' '
 
 # The short X.Y version
-version = 'develop'
+version = 'v3.0'
 # The full version, including alpha/beta/rc tags
-release = 'Develop Branch Documentation'
+release = 'v3.0.0'
 html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
@@ -51,6 +51,7 @@ nitpick_ignore = [
     ('py:class', 'pydantic.BaseModel'),
     ('py:class', 'esmpy.Grid'),
     ('py:class', 'esmpy.StaggerLoc'),
+    ('py:class', 'pathlib._local.Path')
 ]
 
 # -- General configuration ---------------------------------------------------
@@ -102,9 +103,9 @@ rst_prolog = """
 .. |cmaq_env| replace:: ``regional_workflow_cmaq``
 .. |activate| replace:: ``conda activate srw_app``
 .. |prompt| replace:: ``(srw_app)``
-.. |latestr| replace:: v2.2.0
-.. |branch| replace:: ``develop``
-.. |data| replace:: develop
+.. |latestr| replace:: v3.0.0
+.. |branch| replace:: ``release/public-v3.0.0``
+.. |data| replace:: v3p0
 """
 
 # Linkcheck options
@@ -316,16 +317,15 @@ napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of mult
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
    'python': ('https://docs.python.org/3', None),
-   'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/develop/', None),
-   'spack-stack': ('https://spack-stack.readthedocs.io/en/develop/', None),
+   'spack-stack': ('https://spack-stack.readthedocs.io/en/1.6.0/', None),
    'met': ('https://met.readthedocs.io/en/develop/', None),
    'metplus': ('https://metplus.readthedocs.io/en/develop/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/develop/', None),
-   'upp': ('https://upp.readthedocs.io/en/develop/', None),
+   'upp': ('https://upp.readthedocs.io/en/upp-srw-v3.0.0/', None),
    'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/latest/', None),
-   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
+   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None), # Update!
    'stochphys': ('https://stochastic-physics.readthedocs.io/en/latest/', None),
-   'srw_v2.2.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.2.0/', None),
+   'srw_v3.0.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v3.0.0/', None),
 }
 
 # -- Options for extlinks extension ---------------------------------------
