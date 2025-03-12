@@ -189,8 +189,8 @@ The SRW App requires input files to run. These include static datasets, initial 
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/out-of-the-box/gst_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/gst_data.tgz
    tar -xzf fix_data.tgz
    tar -xzf gst_data.tgz
 
