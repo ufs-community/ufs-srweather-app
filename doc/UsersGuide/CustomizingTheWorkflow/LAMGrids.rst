@@ -13,7 +13,7 @@ grids supported in the |latestr| release, but other predefined grids are availab
 
 Predefined Grids
 =================
-The SRW App includes five predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``workflow:`` section of the ``config.yaml`` script must be set to one of the following five options:
+The SRW App v3.0.0 release includes five predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``workflow:`` section of the ``config.yaml`` script must be set to one of the following five options:
 
 * ``RRFS_CONUS_3km``
 * ``RRFS_CONUS_13km``
