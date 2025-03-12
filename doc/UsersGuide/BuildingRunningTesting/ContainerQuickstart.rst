@@ -78,6 +78,8 @@ On most Level 1 systems, a container named ``ubuntu22.04-intel-ue-1.6.0-srw-dev.
      - /glade/work/epicufsrt/contrib/containers
    * - Gaea-C5 [#fn]_
      - /gpfs/f5/epic/world-shared/containers
+   * - Gaea-C6 [#fn]_
+     - /gpfs/f6/bil-fire8/world-shared/containers
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/containers
    * - Jet
@@ -129,9 +131,9 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
 .. note::
    Users can choose to build a release version of the container using a similar command:
 
-   .. code-block:: console
+.. code-block:: console
 
-      sudo singularity build --sandbox ubuntu20.04-intel-srwapp-release-public-v2.2.0 docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.2.0
+   sudo singularity build --sandbox ubuntu20.04-intel-srwapp-release-public-v3.0.0 docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-release3
 
 For easier reference, users can set an environment variable to point to the container: 
 
@@ -187,8 +189,8 @@ The SRW App requires input files to run. These include static datasets, initial 
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/gst_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/out-of-the-box/gst_data.tgz
    tar -xzf fix_data.tgz
    tar -xzf gst_data.tgz
 
