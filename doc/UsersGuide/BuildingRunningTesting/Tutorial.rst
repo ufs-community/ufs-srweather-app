@@ -524,9 +524,9 @@ Coming Soon!
 Sample Forecast #4: Halloween Storm
 =======================================
 
-**Objective:** 
+**Objectives:** 
    * Compare forecast outputs for similar experiments that use different :term:`IC/LBC <ics/lbcs>` sources. 
-   * Coming soon: Option to use verification tools to assess forecast quality. 
+   * Use verification tools to assess forecast quality. 
 
 Weather Summary
 --------------------
