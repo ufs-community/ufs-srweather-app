@@ -318,8 +318,8 @@ napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of mult
 intersphinx_mapping = {
    'python': ('https://docs.python.org/3', None),
    'spack-stack': ('https://spack-stack.readthedocs.io/en/1.6.0/', None),
-   'met': ('https://met.readthedocs.io/en/develop/', None),
-   'metplus': ('https://metplus.readthedocs.io/en/develop/', None),
+   'met': ('https://metplus.readthedocs.io/projects/met/en/main_v12.0/', None),
+   'metplus': ('https://metplus.readthedocs.io/en/main_v6.0/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/develop/', None),
    'upp': ('https://upp.readthedocs.io/en/upp-srw-v3.0.0/', None),
    'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/latest/', None),
@@ -337,7 +337,7 @@ extlinks = {'github-docs': ('https://docs.github.com/en/%s', '%s'),
             "rtd": ("https://readthedocs.org/projects/ufs-srweather-app/%s", "%s"),
             'srw-repo': ('https://github.com/ufs-community/ufs-srweather-app/%s', '%s'),
             'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
-            'uw': ('https://uwtools.readthedocs.io/en/main/%s', '%s'),
+            'uw': ('https://uwtools.readthedocs.io/en/2.3.4/%s', '%s'),
             'fire-ug': ('https://fire-behavior.readthedocs.io/en/latest/%s', '%s'),
             }
 
