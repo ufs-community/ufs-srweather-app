@@ -1070,6 +1070,8 @@ Dew Point
 
 Good news! The DPT variable can be examined within the same point_stat file, so there is no need to switch files. DPT received an MBIAS score of 1.5978 and an RMSE score of 2.51836. Looking at these scores, we can see that, similar to temperature, the DPT was over forecasted and was greater than the observed dewpoint.
 
+.. _fcst5:
+
 Sample Forecast #5: Hurricane Barry
 =======================================
 
