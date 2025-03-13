@@ -284,6 +284,7 @@
             "FV3_GFS_v16",
             "FV3_GFS_v17_p8",
             "FV3_HRRR",
+            "FV3_HRRR_gf",
             "FV3_RAP",
             "FV3_RRFS_v1beta",
             "FV3_WoFS_v0",
@@ -328,6 +329,7 @@
         },
         "PREDEF_GRID_NAME": {
           "enum": [
+            "",
             "AQM_NA_13km",
             "CONUS_25km_GFDLgrid",
             "CONUS_3km_GFDLgrid",

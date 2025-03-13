@@ -54,7 +54,7 @@ pwd
 echo "BRANCH=${BRANCH}"
 
 # Set test settings for the platform and account
-EXPTDIR=${workspace}/expt_dirs/test_community
+export EXPTDIR=${workspace}/expt_dirs/test_community
 
 # DATA_LOCATION differs on each platform ... find it.
 DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform,,}.yaml | awk '{printf "%s", $2}')

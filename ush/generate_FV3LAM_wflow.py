@@ -248,7 +248,7 @@ def generate_FV3LAM_wflow(
 
         # If UFS_FIRE or smoke/dust, update FIELD_TABLE
         field_table_append=""
-        if expt_config['fire']['UFS_FIRE']:
+        if expt_config['fire']['envvars']['UFS_FIRE']:
             field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
