@@ -859,7 +859,7 @@ In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloween
 
       *HRRR Plot for Composite Reflectivity*
 
-Experiment 2: Performing METplus Verification 
+Experiment 3: Performing METplus Verification 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In this experiment, we will use the METplus verification framework to evaluate the accuracy of the HRRR forecasts for the Halloween Storm Case. The METplus tools provide a robust and customizable way to assess forecast skill by comparing model output against observational data. This section will guide you through the steps to perform METplus verification for this case.
