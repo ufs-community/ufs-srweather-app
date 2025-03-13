@@ -137,7 +137,7 @@ FV3_HRRR_gf:
     kord_tr: 9
     kord_wz: 9
     n_split: 5
-    n_sponge: 65
+    n_sponge: 9
     nord_tr: 0
     psm_bc: 1
     range_warn: False

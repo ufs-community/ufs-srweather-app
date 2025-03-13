@@ -4,8 +4,8 @@
 
 # Test RRFS_CONUScompact_25km grid, RRFS bcs, RRFS_sas suite
 grid_RRFS_CONUScompact_25km_ics_RRFS_lbcs_RRFS_suite_RRFS_sas
-# Test grid_RRFS_CONUS_25km grid, FV3GFS bcs, inline post, GFS_v15p2 suite
-grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
+# Test custom grid, FV3GFS netcdf bcs, inline post, HRRR_gf suite
+custom_ESGgrid_Central_Asia_3km
 # Test grid_RRFS_CONUS_25km grid, FV3GFS bcs, restart files, GFS_v17_p8 suite
 grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v17_p8_plot
 # Test RRFS_CONUScompact_25km grid, HRRR bcs, HRRR suite, user-specified layout and timestep
