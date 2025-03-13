@@ -63,10 +63,10 @@ echo "DATA_LOCATION=${DATA_LOCATION}"
 user_settings="
 user:
   ACCOUNT: ${SRW_PROJECT}
-  MACHINE: ${platform,,}
+  MACHINE: ${platform^^}
 workflow:
   EXPT_BASEDIR: ${workspace}/expt_dirs
-  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}/exec
+  EXEC_SUBDIR: install_${SRW_COMPILER}/exec
   FCST_LEN_HRS: 6
   COMPILER: ${SRW_COMPILER}
 task_get_extrn_ics:
@@ -93,9 +93,9 @@ conda activate srw_app
 set -e -u
 
 echo "${user_settings}" | uw config realize \
-  -i config.community.yaml \
-  -o config.yaml \
-  --update_format yaml
+  -i ${workspace}/ush/config.community.yaml \
+  -o ${workspace}/ush/config.yaml \
+  --update-format yaml
 
 cd ${workspace}/ush
         # Consistency check ...
