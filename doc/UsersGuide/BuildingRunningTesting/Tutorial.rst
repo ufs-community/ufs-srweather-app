@@ -859,7 +859,7 @@ In the composite reflectivity plots below, the ``halloweenHRRR`` and ``halloween
 
       *HRRR Plot for Composite Reflectivity*
 
-Experiment 2: Performing METplus Verification 
+Experiment 3: Performing METplus Verification 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In this experiment, we will use the METplus verification framework to evaluate the accuracy of the HRRR forecasts for the Halloween Storm Case. The METplus tools provide a robust and customizable way to assess forecast skill by comparing model output against observational data. This section will guide you through the steps to perform METplus verification for this case.
@@ -1055,7 +1055,7 @@ This section, will analyze how different variables were verified in the HRRR for
 Temperature
 ------------
 
-To begin examining the temperature variable, navigate to ``path/to/2019103012/metprd``.Use ``vi`` to open ``PointStat/``, where a menu of files will appear. Navigate using the arrow and enter keys on your. Select this file:
+To begin examining the temperature variable, navigate to ``path/to/2019103012/metprd``. Use ``vi`` to open ``PointStat/``, where a menu of files will appear. Navigate using the arrow and enter keys on your. Select this file:
 
 .. code-block:: console
 
@@ -1069,6 +1069,8 @@ Dew Point
 ----------
 
 Good news! The DPT variable can be examined within the same point_stat file, so there is no need to switch files. DPT received an MBIAS score of 1.5978 and an RMSE score of 2.51836. Looking at these scores, we can see that, similar to temperature, the DPT was over forecasted and was greater than the observed dewpoint.
+
+.. _fcst5:
 
 Sample Forecast #5: Hurricane Barry
 =======================================
