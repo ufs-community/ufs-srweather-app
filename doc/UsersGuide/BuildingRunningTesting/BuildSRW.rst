@@ -318,14 +318,7 @@ This will work on Level 1 systems, where a modulefile is available in the ``modu
 
 .. note::
 
-   These instructions assume that Lmod (an SRW App prerequisite) is installed. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
-
-   .. code-block::
-
-      export <VARIABLE_NAME>=<PATH_TO_MODULE>
-      setenv <VARIABLE_NAME> <PATH_TO_MODULE>
-
-   However, building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
+   These instructions assume that Lmod (an SRW App prerequisite) is installed. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. Building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
 
 .. _BuildCMake:
 
