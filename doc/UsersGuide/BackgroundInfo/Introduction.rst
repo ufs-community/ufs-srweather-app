@@ -10,28 +10,59 @@ The UFS includes `multiple applications <https://ufs.epic.noaa.gov/applications/
 
 Since the last release, developers have added a variety of features:
 
-   * Bug fixes since the v2.1.0 release
-   * Addition of the supported ``FV3_RAP`` physics suite (:srw-repo:`PR #811 <pull/811>`) and support for the ``RRFS_NA_13km`` predefined grid
-   * Addition of ``FV3_GFS_v17_p8`` physics suite (:srw-repo:`PR #574 <pull/574>`)
-   * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.2.0 release.
-   * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Derecho, Hercules, and Gaea C5 (PRs :srw-repo:`#894 <pull/894>`, :srw-repo:`#898 <pull/898>`, :srw-repo:`#911 <pull/911>`)
-   * Transition to spack-stack modulefiles for most supported platforms to align with the UFS WM shift to spack-stack (PRs :srw-repo:`#913 <pull/913>` and :srw-repo:`#941 <pull/941>`)
-   * Overhaul of the WE2E testing suite (see, e.g., PRs :srw-repo:`#686 <pull/686>`, :srw-repo:`#732 <pull/732>`,  :srw-repo:`#864 <pull/864>`, :srw-repo:`#871 <pull/871>`)
-   * Improvements to the CI/CD automated testing pipeline (see, e.g., PRs :pull/707>` and :srw-repo:`#847 <pull/847>`)
-   * Incorporation of additional METplus verification capabilities (PRs :srw-repo:`#552 <pull/552>`, :srw-repo:`#614 <pull/614>`, :srw-repo:`#757 <pull/757>`, :srw-repo:`#853 <pull/853>`)
-   * Integration of the Unified Workflow's templater tool (:srw-repo:`PR #793 <pull/793>`)
-   * Ability to create a user-defined custom workflow (:srw-repo:`PR #676 <pull/676>`)
-   * Option to use a custom vertical coordinate file with different distribution of vertical layers (:srw-repo:`PR #813 <pull/813>`) and :ref:`documentation on how to use this feature <VerticalLevels>` (:srw-repo:`PR #888 <pull/888>`)
-   * Incorporation of plotting tasks into the workflow (PR :srw-repo:`#482 <pull/482>`); addition of ability to plot on both CONUS and smaller regional grid (:srw-repo:`PR #560 <pull/560>`)
-   * Addition of a sample verification case (:srw-repo:`PR #500 <pull/500>`) with :ref:`documentation <VXCases>` 
-   * A new :ref:`tutorial chapter <Tutorial>` in the documentation (:srw-repo:`PR #584 <pull/584>`)
-   * Incorporation of `UFS Case Studies <https://github.com/dtcenter/ufs-case-studies>`__ within the WE2E framework (PRs :srw-repo:`#736 <pull/736>` and :srw-repo:`#822 <pull/822>`)
-   * Air Quality Modeling (AQM) capabilities (unsupported but available; see :srw-repo:`PR #613 <pull/613>`)
-   * Miscellaneous documentation updates to reflect the changes above
+   * Smoke & Dust (SD) features, including:
+      * Addition of a sample SD configuration YAML file (``config.smoke_dust.yaml``), separate Conda environment (``sd_environment.yml``), and a new WE2E test for SD features (:srw-repo:`PR #1185 <pull/1185>`)
+      * Addition of the supported ``FV3_HRRR_gf`` physics suite (:srw-repo:`PR #1185 <pull/1185>`) for SD experiments
+      * Predefined grid support for smoke/dust component (:srw-repo:`PR #1190 <pull/1190>`)
+      * SD Verification (:srw-repo:`PR #1174 <pull/1174>`)
+      * Updates to SD namelist :srw-repo:`PR #1172 <pull/1172>`
+      * SD-secific bug fixes (:srw-repo:`PR #1146 <pull/1146>`, )
+      * Miscellaneous SD updates (PRs :srw-repo:`#1231 <pull/1231>`, :srw-repo:`#1153 <pull/1153>`, :srw-repo:`#1143 <pull/1143>`)
+   * Added the Community Fire Behavior Model (:srw-repo:`PR #1139 <pull/1139>`), which enables simulation of fires on a very high-resolution fire modeling grid nested within the atmospheric domain. This enhances model accuracy in simulating wildfire spread, smoke emissions, and their subsequent meteorological impacts.
+      * Allow two-way ATM/FIRE coupling/feedback (:srw-repo:`PR #1182 <pull/1182>`)
+      * Updated documentation and renamed a WE2E test to reflect the two-way coupling feature.
+      * Added ``SUBCONUS_CO_3km`` (3km grid over Colorado) and ``SUBCONUS_CO_1km`` (1km grid over Colorado) predefined grids for UFS FIRE that can be used by any experiments (:srw-repo:`<>`)
+   * Addition of the supported ``RRFS_sas`` (:srw-repo:`PR #1201 <pull/1201>`) physics suite (:srw-repo:`PR #1185 <pull/1185>`)
+   * Updated model and component hashes (e.g., PRs :srw-repo:`#1195 <pull/1195>`, :srw-repo:`#1185 <pull/1185>`, :srw-repo:`#1162 <pull/1162>`)
+   * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea C6 (PRs :srw-repo:`#1163 <pull/1163>` and :srw-repo:`#1177 <pull/1177>`)
+   * Continued Integration of Unified Workflow (UW) Tools (``uwtools``): 
+      * Replaced UW CLI with API calls in Python scripts (:srw-repo:`#1078 <pull/1078>`)
+      * Use UW config tool to configure namelists (:srw-repo:`#1054 <pull/1054>`)
+      * Integrate UW CLI tool for templater (:srw-repo:`#994 <pull/994>`)
+      * Added option to install Miniforge for SRW environments and added environments --- ``srw_app``, ``srw_graphics``, ``srw_aqm`` (:srw-repo:`PR #938 <pull/938>`).
+   * Documentation updates and enhancements:
+      * Documentation for Fire and SD capabilities (PRs :srw-repo:`#1149 <pull/1149>` and :srw-repo:`#1128 <pull/1128>`)
+      * New tutorials: 
+         * Halloween Storm (PRs :srw-repo:`#1124 <pull/1124>` and :srw-repo:`#1234 <pull/1234>`)
+         * Gulf Coast Blizzard (:srw-repo:`PR #_____ <pull/>`)
+      * Addition of technical documentation (:srw-repo:`PR #1131 <pull/1131>`) and documentation testing via GitHub Actions (:srw-repo:`PR #1152 <pull/1152>`)
+      * Contributor's Guide (:srw-repo:`PR #1046 <pull/1046>`)
+      * General updates (PRs :srw-repo:`#1184 <pull/1184>`, :srw-repo:`#1157 <pull/1157>`, :srw-repo:`#1133 <pull/1133>`)
+   * Upgraded SRW App to spack-stack 1.6.0 (:srw-repo:`PR #1093 <pull/1093>`)
+   * Ported SRW-AQM to Derecho (:srw-repo:`PR #1090 <pull/1090>`) and Orion/Hercules (:srw-repo:`PR #1067 <pull/1067>`)
+   * Verification updates (PRs :srw-repo:`#1082 <pull/1082>`, :srw-repo:`#1005 <pull/1005>`)
+   * Container updates (:srw-repo:`PR #1170 <pull/1170>`)
+   * Expand forecast fields for metrics test (:srw-repo:`PR #1048 <pull/1048>`)
+   * Miscellaneous bug fixes and enhancements since the v2.2.0 release (e.g., PRs :srw-repo:`#1230 <pull/1230>`, :srw-repo:`#1213 <pull/1213>`, :srw-repo:`#1169 <pull/1169>`, :srw-repo:`#1142<pull/1142>`, :srw-repo:`#1136 <pull/1136>`, :srw-repo:`#1104 <pull/1104>`, :srw-repo:`#1102 <pull/1102>`, :srw-repo:`#1098 <pull/1098>`, :srw-repo:`#1096 <pull/1096>`, :srw-repo:`#1089 <pull/1089>`, :srw-repo:`#1077 <pull/1077>`, :srw-repo:`#1074 <pull/1074>`, :srw-repo:`#1065 <pull/1065>`, :srw-repo:`#1062 <pull/1062>`, :srw-repo:`#1012 <pull/1012>`, :srw-repo:`#997 <pull/997>`, :srw-repo:`#977 <pull/977>`)
+      * Verification bug fixes (PRs :srw-repo:`PR #1235 <pull/1235>`, :srw-repo:`#1224 <pull/1224>`, :srw-repo:`#1137 <pull/1137>`, :srw-repo:`#973 <pull/973>`)
+      * Documentation bug fixes (e.g., PRs :srw-repo:`PR #1206 <pull/1206>`, :srw-repo:`#1103<pull/1103>`, :srw-repo:`#1097 <pull/1097>`, :srw-repo:`#1095 <pull/1095>`, :srw-repo:`#1085 <pull/1085>`, :srw-repo:`#1080 <pull/1080>`, :srw-repo:`#1071 <pull/1071>`, :srw-repo:`PR #1018 <pull/1018>`, :srw-repo:`#1014 <pull/1014>`)
+      * Workflow End-to-End (WE2E) testing enhancements: 
+         * Added three UFS case studies to WE2E framework (:srw-repo:`PR #1043 <pull/1043>`)
+         * Add integration test (:srw-repo:`PR #1042 <pull/1042>`)
+      * ParallelWorks updates (PRs :srw-repo:`#1167 <pull/1167>`, :srw-repo:`#1161 <pull/1161>`)
+      * CI/CD updates (PRs :srw-repo:`#1115 <pull/1115>`, :srw-repo:`#1087 <pull/1087>`, :srw-repo:`#1079 <pull/1079>`, :srw-repo:`#1058 <pull/1058>`)
+      * AQM enhancements (:srw-repo:`#1060 <pull/1060>`, :srw-repo:`#1056 <pull/1056>`, :srw-repo:`PR #1040 <pull/1040>`)
+      * OS Upgrade (PRs :srw-repo:`#1045 <pull/1045>`, :srw-repo:`#1041 <pull/1041>`)
+      * Reorganized S3 data bucket structure for better versioning and data management (:srw-repo:`PR #1104 <pull/1104>`)
+      * ``devclean.sh`` script and plotting improvements (:srw-repo:`PR #1100 <pull/1100>`)
+      * Modulefile updates (PR :srw-repo:`#1185 <pull/1185>`, :srw-repo:`#1163 <pull/1163>`)
+      * Added remaining UFS case studies as WE2E tests (:srw-repo:`#1081 <pull/1081>`)
+      * Add job cards for wrappers for individual machines and tasks (:srw-repo:`#924 <pull/924>`)
+
 
 The SRW App |latestr| citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2023, Oct. 31). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
+UFS Development Team. (2025, March. 26). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v3.0.0). Zenodo. https://doi.org/10.5281/zenodo.14834682
 
 .. _ug-organization:
 
@@ -57,13 +88,14 @@ Building, Running, and Testing the SRW App
    * :numref:`Section %s: Testing the SRW App <WE2E_tests>` explains how to run workflow end-to-end (WE2E) tests to ensure that new developments do not break the current workflow. 
    * :numref:`Section %s: Tutorials <Tutorial>` walks users through different SRW App experiment cases and analysis of results. 
    * :numref:`Section %s: METplus Verification Sample Cases <VXCases>` explains how to run METplus verification as part of the workflow. 
-   * :numref:`Section %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, so documentation may be behind the current state of development, which is progressing rapidly. However, this section is a starting point for those interested in AQM. 
-   * :numref:`Section %s: SRW Smoke & Dust <srw-sd>` provides information specific to smoke and dust modeling. This feature is currently only supported on Hera and Orion/Hercules, but it is a starting point for those interested in regional smoke & dust modeling. 
+   * :numref:`Section %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, but this section is a starting point for those interested in AQM. 
+   * :numref:`Section %s: SRW Smoke & Dust <srw-sd>` provides information specific to smoke and dust modeling. 
+   * :numref:`Section %s: SRW Smoke & Dust <UFS_FIRE>` provides information specific to fire behavior modeling. 
 
 .. hint:: 
    * To get started with the SRW App, it is recommended that users try one of the following options: 
 
-      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. Especially helpful for users with access to a :srw-wiki:`Level 1 platform <Supported-Platforms-and-Compilers>`.
+      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps --- especially helpful for users with access to a :srw-wiki:`Level 1 platform <Supported-Platforms-and-Compilers>`.
       #. To build the application in a container, which provides a more uniform work environment, users can refer to :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>`. 
       #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
 
@@ -116,15 +148,13 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - Documentation
      - Location
    * - spack-stack Documentation
-     - https://spack-stack.readthedocs.io/en/latest/
-   * - HPC-Stack Documentation
-     - https://hpc-stack.readthedocs.io/en/latest/
+     - https://spack-stack.readthedocs.io/en/1.6.0/
    * - UFS_UTILS Technical Documentation
-     - https://noaa-emcufs-utils.readthedocs.io/en/latest
+     - https://ufs-utils-epic.readthedocs.io/en/release-srw-v3.0.0/
    * - UFS_UTILS Scientific Documentation
      - https://ufs-community.github.io/UFS_UTILS/index.html
    * - UFS Weather Model User's Guide
-     - https://ufs-weather-model.readthedocs.io/en/latest
+     - https://ufs-weather-model.readthedocs.io/en/release-public-v3.0.0/
    * - FV3 Technical Documentation
      - https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html
    * - FV3 Scientific Documentation
@@ -134,17 +164,17 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - CCPP Scientific Documentation
      - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html
    * - Stochastic Physics Documentation
-     - https://stochastic-physics.readthedocs.io/en/latest/
+     - https://stochastic-physics.readthedocs.io/en/release-public-v3/
    * - ESMF manual
-     - https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/
+     - https://earthsystemmodeling.org/docs/release/ESMF_8_6_0/ESMF_refdoc/
    * - Unified Post Processor User's Guide
-     - https://upp.readthedocs.io/en/latest/
+     - https://upp.readthedocs.io/en/upp-srw-v3.0.0/
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
      - https://uwtools.readthedocs.io/en/main/
    * - METplus User's Guide
-     - https://metplus.readthedocs.io/en/latest/Users_Guide/index.html
+     - https://metplus.readthedocs.io/en/main_v6.0/Users_Guide/
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
      - https://hemco.readthedocs.io/en/stable/
 
@@ -196,7 +226,7 @@ Users can expect to see incremental improvements and additional capabilities in 
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
 * A more extensive set of supported developmental physics suites.
 * A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
-* Incorporation of additional `Unified Workflow <https://github.com/ufs-community/uwtools>`__ tools.
+* Incorporation of additional `Unified Workflow <https://github.com/ufs-community/uwtools>`_ tools.
 
 
 .. bibliography:: ../../references.bib
