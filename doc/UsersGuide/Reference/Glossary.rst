@@ -96,7 +96,7 @@ Glossary
       The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`_ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
 
    ESG
-      Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
+      Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2023`). 
 
    ESMF
       `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/>`__. The ESMF defines itself as "a suite of software tools for developing high-performance, multi-component Earth science modeling applications."
