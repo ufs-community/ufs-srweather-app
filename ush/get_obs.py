@@ -27,7 +27,7 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     Note that for cumulative fields (like CCPA and NOHRSC, as opposed to
     instantaneous ones like MRMS and NDAS), the archive files corresponding
     to hour 0 of the day represent accumulations over the previous day.  Thus,
-    here, we never return an archive hour of 0 for cumulative fields.  Instead,
+    here, we do not return an archive hour of 0 for cumulative fields.  Instead,
     if the specified hour-of-day is 0, we consider that to represent the 0th
     hour of the NEXT day (i.e. the 24th hour of the current day) and set the
     archive hour to 24.
@@ -453,7 +453,6 @@ def get_obs(config, obtype, yyyymmdd_task):
     # To generate this sequence, we first set the archive interval and then
     # set the starting and ending archive hour values.
     #
-    #
     #-----------------------------------------------------------------------
     #
     if obtype == 'CCPA':
@@ -475,7 +474,7 @@ def get_obs(config, obtype, yyyymmdd_task):
     arcv_intvl = dt.timedelta(hours=arcv_intvl_hrs)
 
     # Number of obs files within each archive.
-    num_obs_files_per_arcv = int(arcv_intvl/obs_avail_intvl)
+    num_obs_times_per_arcv = int(arcv_intvl/obs_avail_intvl)
 
     # Initial guess for starting archive hour.  This is set to the archive
     # hour containing obs at the first obs retrieval time of the day.
@@ -680,20 +679,20 @@ def get_obs(config, obtype, yyyymmdd_task):
         # so, set the flag (do_retrieve) to retrieve the files in the current
         # archive.
         if obtype == 'CCPA':
-            arcv_contents_start = yyyymmddhh_arcv - (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_start = yyyymmddhh_arcv - (num_obs_times_per_arcv - 1)*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv
         elif obtype == 'NOHRSC':
             arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
         elif obtype == 'MRMS':
             arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
         elif obtype == 'NDAS':
-            arcv_contents_start = yyyymmddhh_arcv - num_obs_files_per_arcv*obs_avail_intvl
+            arcv_contents_start = yyyymmddhh_arcv - num_obs_times_per_arcv*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv - obs_avail_intvl
         elif obtype in ['AERONET', 'AIRNOW']:
             arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_files_per_arcv - 1)*obs_avail_intvl
+            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
 
         do_retrieve = False
         for obs_retrieve_time in obs_retrieve_times_crnt_day:
@@ -737,7 +736,6 @@ def get_obs(config, obtype, yyyymmdd_task):
             os.chdir(basedir_raw)
 
             # Pull obs from HPSS or AWS based on OBS_DATA_STORE* setting.
-
             #
             # Note that for the specific case of NDAS obs, this will get all 7 obs
             # files in the current archive, although we will make use of only 6 of
@@ -757,19 +755,29 @@ def get_obs(config, obtype, yyyymmdd_task):
             # Get the list of times corresponding to the obs files in the current
             # archive.  This is a list of datetime objects.
             if obtype == 'CCPA':
-                obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'NOHRSC':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'MRMS':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'NDAS':
-                obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype in ['AERONET', 'AIRNOW']:
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_files_per_arcv)]
+                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             obs_times_in_arcv.sort()
 
-            # Loop over the raw obs files extracted from the current archive and
-            # generate from them the processed obs files.
+            # Construct the set of obs times over which to loop below when creating
+            # the processed obs files. This is the intersection of the obs times in the
+            # current archive and the obs retrieve times for the current day. Using the
+            # intersection is necessary because some files that contain observations for
+            # more than one hour may not be retrieved correctly otherwise.
+            obs_retrieve_times_crnt_day_in_arcv = [
+                yyyymmddhh for yyyymmddhh in obs_retrieve_times_crnt_day if yyyymmddhh in obs_times_in_arcv
+            ]
+
+            # Loop over the set of times in the current archive that are also required
+            # obs times for the current day.  Use the raw obs file for each such time
+            # extracted from the current archive to generate the processed obs file.
             #
             # Notes on each obs type:
             #
@@ -809,21 +817,37 @@ def get_obs(config, obtype, yyyymmdd_task):
             # the tm06 file in a contains more/better observations than the tm00 file
             # in the previous archive (their valid times being equivalent), so we always
             # use the tm06 files.
-            for yyyymmddhh in obs_times_in_arcv:
 
-                # Create the processed obs file from the raw one (by moving, copying, or
-                # otherwise) only if the time of the current file in the current archive
-                # also exists in the list of obs retrieval times for the current day.  We
-                # need to check this because it is possible that some of the obs retrieval
-                # times come before the range of times spanned by the current archive while
-                # the others come after, but none fall within that range.  This can happen
-                # because the set of archive hours over which we are looping were constructed
-                # above without considering whether there are obs retrieve time gaps that
-                # make it unnecessary to retrieve some of the archives between the first
-                # and last ones that must be retrieved.
-                if yyyymmddhh in obs_retrieve_times_crnt_day:
+            # Note that for some obs types (e.g. AERONET), each obs file extracted from the archive
+            # may contain observations for more than one time. To avoid errors and/or unnecesarily
+            # re-creating processed obs files, here we create a list to keep track
+            # of the processed obs files that have already been created in the loop
+            # below.
+            proc_files_created = []
 
-                    for i, fg in enumerate(field_groups_in_obs):
+            for yyyymmddhh in obs_retrieve_times_crnt_day_in_arcv:
+
+                for i, fg in enumerate(field_groups_in_obs):
+
+                    # Get the full path to the final processed obs file (fp_proc) we want to
+                    # create.
+                    indx = obs_retrieve_times_crnt_day.index(yyyymmddhh)
+                    fp_proc = all_fp_proc_dict[fg][indx]
+
+                    # Check whether the processed obs file has already been created in previous
+                    # iterations of this loop.
+                    if fp_proc in proc_files_created:
+
+                        msg = dedent(f"""
+                            The processed obs file (fp_proc) for this observation time (yyyymmddhh)
+                            has already been created:
+                                {fp_proc = }
+                                {yyyymmddhh = }
+                            Skipping to next observation time.
+                            """)
+                        logging.info(msg)
+
+                    else:
 
                         # For MRMS obs, first select from the set of raw files for the current day
                         # those that are nearest in time to the current hour.  Unzip these in a
@@ -880,14 +904,6 @@ def get_obs(config, obtype, yyyymmdd_task):
                                 fn_raw = f'HourlyData_{yyyymmddhh_str}.dat'
                         fp_raw = os.path.join(arcv_dir_raw, fn_raw)
 
-                        # Special logic for AERONET pulled from http: internet archives result
-                        # in weird filenames, rename them to the standard name before continuing
-
-                        # Get the full path to the final processed obs file (fp_proc) we want to
-                        # create.
-                        indx = obs_retrieve_times_crnt_day.index(yyyymmddhh)
-                        fp_proc = all_fp_proc_dict[fg][indx]
-
                         # Make sure the directory in which the processed file will be created exists.
                         dir_proc = os.path.dirname(fp_proc)
                         Path(dir_proc).mkdir(parents=True, exist_ok=True)
@@ -914,6 +930,17 @@ def get_obs(config, obtype, yyyymmdd_task):
                             shutil.move(fp_raw, fp_proc)
                         else:
                             shutil.copy(fp_raw, fp_proc)
+
+                        # Update list of already-created processed files to include the one just
+                        # created above.
+                        proc_files_created.append(fp_proc)
+
+                        msg = dedent(f"""
+                            Processed obs file (fp_proc) successfully created from raw obs file (fp_raw):
+                                {fp_raw = }
+                                {fp_proc = }
+                            """)
+                        logging.info(msg)
     #
     #-----------------------------------------------------------------------
     #

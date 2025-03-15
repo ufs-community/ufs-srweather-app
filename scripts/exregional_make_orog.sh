@@ -290,7 +290,7 @@ mv "${raw_orog_fp_orig}" "${raw_orog_fp}"
 #
 #-----------------------------------------------------------------------
 #
-suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
+suites=( "FV3_RAP" "FV3_HRRR" "FV3_HRRR_gf" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" "RRFS_sas" )
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   DATA="${DATA:-${OROG_DIR}/temp_orog_data}"
   mkdir -p ${DATA}

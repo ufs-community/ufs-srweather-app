@@ -37,7 +37,8 @@ valid_vals_CCPP_PHYS_SUITE: [
 "FV3_WoFS_v0",
 "FV3_HRRR",
 "FV3_HRRR_gf",
-"FV3_RAP"
+"FV3_RAP",
+"RRFS_sas"
 ] 
 valid_vals_GFDLgrid_NUM_CELLS: [48, 96, 192, 384, 768, 1152, 3072]
 valid_vals_EXTRN_MDL_NAME_ICS: ["GSMGFS", "FV3GFS", "UFS-CASE-STUDY", "GEFS", "GDAS", "RAP", "HRRR", "RRFS", "NAM"]

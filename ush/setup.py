@@ -981,7 +981,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     grid_config = expt_config["task_make_grid"]
 
     # Warn if user has specified a large timestep inappropriately
-    hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
+    hires_ccpp_suites = ["FV3_RRFS_v1beta","FV3_WoFS_v0", "FV3_HRRR", "FV3_HRRR_gf", "RRFS_sas"]
     if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites:
         dt = fcst_config.get("DT_ATMOS")
         if dt:
@@ -1746,6 +1746,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 """
                 )
             )
+        # CCPP suite must have these schemes to work correctly with fire capability
+        if not ( has_tag_with_value(ccpp_suite_xml, "scheme", "rrfs_smoke_wrapper") and
+                 has_tag_with_value(ccpp_suite_xml, "scheme", "GFS_surface_composites_post") ):
+            raise ValueError(dedent(
+                  """
+                  UFS_FIRE can only work with smoke-enabled CCPP suites, including
+                  FV3_HRRR, FV3_HRRR_gf, and RRFS_sas""" ))
         if fire_conf["FIRE_NUM_TASKS"] < 1:
             raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
         elif fire_conf["FIRE_NUM_TASKS"] > 1:

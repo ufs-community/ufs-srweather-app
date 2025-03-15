@@ -14,7 +14,7 @@ Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurr
    * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HurricaneBarry_Making_Landfall.jpg
-   :alt: Radar animation of Hurricane Barry making landfall. 
+   :alt: Radar animation of Hurricane Barry making landfall
 
    *Hurricane Barry Making Landfall*
 

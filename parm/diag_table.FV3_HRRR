@@ -339,7 +339,7 @@
 "gfs_phys",    "spp_wts_rad",   "spp_wts_rad",   "fv3_history",  "all", .false., "none", 2
 "gfs_phys",    "spp_wts_gwd",   "spp_wts_gwd",   "fv3_history",  "all", .false., "none", 2
 
-# Additional entries from user-specified SRW settings (e.g. UFS-FIRE)
+# Additional entries from user-specified SRW settings (e.g. UFS-FIRE, smoke/dust)
 {{ additional_entries }}
 
 #=============================================================================================

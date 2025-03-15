@@ -197,7 +197,8 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_WoFS_v0" | \
   "FV3_HRRR" | \
   "FV3_HRRR_gf" | \
-  "FV3_RAP" )
+  "FV3_RAP" | \
+  "RRFS_sas" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "RRFS" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
@@ -528,7 +529,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
   tg3_from_soil=False
   ;;
 
-"HRRR"|"RRFS")
+"HRRR")
   external_model="HRRR"
 
   fn_grib2="${EXTRN_MDL_FNS[0]}"
@@ -541,6 +542,23 @@ case "${EXTRN_MDL_NAME_ICS}" in
 # files after mid-July 2019, and only so long as the record order didn't change afterward
   vgtyp_from_climo=True
   sotyp_from_climo=True
+  vgfrc_from_climo=True
+  minmax_vgfrc_from_climo=True
+  lai_from_climo=True
+  tg3_from_soil=True
+  convert_nst=False
+  ;;
+
+"RRFS")
+  external_model="RRFS"
+
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+#
+# Note that vgfrc, shdmin/shdmax (minmax_vgfrc), and lai fields are only available in HRRRX
+# files after mid-July 2019, and only so long as the record order didn't change afterward
+  vgtyp_from_climo=False
+  sotyp_from_climo=False
   vgfrc_from_climo=True
   minmax_vgfrc_from_climo=True
   lai_from_climo=True
