@@ -11,54 +11,46 @@ The UFS includes `multiple applications <https://ufs.epic.noaa.gov/applications/
 Since the last release, developers have added a variety of features:
 
    * Smoke & Dust (SD) features, including:
-      * Addition of a sample SD configuration YAML file (``config.smoke_dust.yaml``), separate Conda environment (``sd_environment.yml``), and a new WE2E test for SD features (:srw-repo:`PR #1185 <pull/1185>`)
-      * Addition of the supported ``FV3_HRRR_gf`` physics suite (:srw-repo:`PR #1185 <pull/1185>`) for SD experiments
-      * Predefined grid support for smoke/dust component (:srw-repo:`PR #1190 <pull/1190>`)
+      * A sample SD configuration YAML file (``config.smoke_dust.yaml``), a separate Conda environment (``sd_environment.yml``), the supported ``FV3_HRRR_gf`` physics suite for SD experiments, and a new WE2E test for SD features (:srw-repo:`PR #1185 <pull/1185>`)
+      * Predefined grid support for SD experiments (:srw-repo:`PR #1190 <pull/1190>`)
       * SD Verification (:srw-repo:`PR #1174 <pull/1174>`)
-      * Updates to SD namelist :srw-repo:`PR #1172 <pull/1172>`
-      * SD-secific bug fixes (:srw-repo:`PR #1146 <pull/1146>`, )
-      * Miscellaneous SD updates (PRs :srw-repo:`#1231 <pull/1231>`, :srw-repo:`#1153 <pull/1153>`, :srw-repo:`#1143 <pull/1143>`)
-   * Added the Community Fire Behavior Model (:srw-repo:`PR #1139 <pull/1139>`), which enables simulation of fires on a very high-resolution fire modeling grid nested within the atmospheric domain. This enhances model accuracy in simulating wildfire spread, smoke emissions, and their subsequent meteorological impacts.
-      * Allow two-way ATM/FIRE coupling/feedback (:srw-repo:`PR #1182 <pull/1182>`)
-      * Updated documentation and renamed a WE2E test to reflect the two-way coupling feature.
-      * Added ``SUBCONUS_CO_3km`` (3km grid over Colorado) and ``SUBCONUS_CO_1km`` (1km grid over Colorado) predefined grids for UFS FIRE that can be used by any experiments (:srw-repo:`<>`)
-   * Addition of the supported ``RRFS_sas`` (:srw-repo:`PR #1201 <pull/1201>`) physics suite (:srw-repo:`PR #1185 <pull/1185>`)
-   * Updated model and component hashes (e.g., PRs :srw-repo:`#1195 <pull/1195>`, :srw-repo:`#1185 <pull/1185>`, :srw-repo:`#1162 <pull/1162>`)
-   * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea C6 (PRs :srw-repo:`#1163 <pull/1163>` and :srw-repo:`#1177 <pull/1177>`)
+      * SD-specific bug fixes (:srw-repo:`PR #1146 <pull/1146>`)
+      * Miscellaneous SD updates (PRs :srw-repo:`#1231 <pull/1231>`, :srw-repo:`#1172 <pull/1172>`, :srw-repo:`#1153 <pull/1153>`, :srw-repo:`#1143 <pull/1143>`)
+   * Community Fire Behavior Model (:srw-repo:`PR #1139 <pull/1139>`) 
+      * Added ``SUBCONUS_CO_3km`` (3-km grid over Colorado) and ``SUBCONUS_CO_1km`` (1-km grid over Colorado) predefined grids for UFS FIRE that can be used by any SRW App experiments (:srw-repo:`PR #1139 <pull/1139>`) 
+      * Enabled two-way ATM/FIRE coupling/feedback (:srw-repo:`PR #1182 <pull/1182>`)
    * Continued Integration of Unified Workflow (UW) Tools (``uwtools``): 
       * Replaced UW CLI with API calls in Python scripts (:srw-repo:`#1078 <pull/1078>`)
       * Use UW config tool to configure namelists (:srw-repo:`#1054 <pull/1054>`)
       * Integrate UW CLI tool for templater (:srw-repo:`#994 <pull/994>`)
-      * Added option to install Miniforge for SRW environments and added environments --- ``srw_app``, ``srw_graphics``, ``srw_aqm`` (:srw-repo:`PR #938 <pull/938>`).
+      * Added environments --- ``srw_app``, ``srw_graphics``, ``srw_aqm`` --- and the option to install Miniforge for SRW environments (:srw-repo:`PR #938 <pull/938>`)
    * Documentation updates and enhancements:
-      * Documentation for Fire and SD capabilities (PRs :srw-repo:`#1149 <pull/1149>` and :srw-repo:`#1128 <pull/1128>`)
+      * Documentation updates for Fire and SD capabilities (PRs :srw-repo:`#1149 <pull/1149>`, :srw-repo:`#1128 <pull/1128>`, :srw-repo:`#1139 <pull/1139>`, and :srw-repo:`#1182 <pull/1182>`)
       * New tutorials: 
+
          * Halloween Storm (PRs :srw-repo:`#1124 <pull/1124>` and :srw-repo:`#1234 <pull/1234>`)
          * Gulf Coast Blizzard (:srw-repo:`PR #_____ <pull/>`)
       * Addition of technical documentation (:srw-repo:`PR #1131 <pull/1131>`) and documentation testing via GitHub Actions (:srw-repo:`PR #1152 <pull/1152>`)
       * Contributor's Guide (:srw-repo:`PR #1046 <pull/1046>`)
-      * General updates (PRs :srw-repo:`#1184 <pull/1184>`, :srw-repo:`#1157 <pull/1157>`, :srw-repo:`#1133 <pull/1133>`)
-   * Upgraded SRW App to spack-stack 1.6.0 (:srw-repo:`PR #1093 <pull/1093>`)
-   * Ported SRW-AQM to Derecho (:srw-repo:`PR #1090 <pull/1090>`) and Orion/Hercules (:srw-repo:`PR #1067 <pull/1067>`)
-   * Verification updates (PRs :srw-repo:`#1082 <pull/1082>`, :srw-repo:`#1005 <pull/1005>`)
-   * Container updates (:srw-repo:`PR #1170 <pull/1170>`)
-   * Expand forecast fields for metrics test (:srw-repo:`PR #1048 <pull/1048>`)
-   * Miscellaneous bug fixes and enhancements since the v2.2.0 release (e.g., PRs :srw-repo:`#1230 <pull/1230>`, :srw-repo:`#1213 <pull/1213>`, :srw-repo:`#1169 <pull/1169>`, :srw-repo:`#1142<pull/1142>`, :srw-repo:`#1136 <pull/1136>`, :srw-repo:`#1104 <pull/1104>`, :srw-repo:`#1102 <pull/1102>`, :srw-repo:`#1098 <pull/1098>`, :srw-repo:`#1096 <pull/1096>`, :srw-repo:`#1089 <pull/1089>`, :srw-repo:`#1077 <pull/1077>`, :srw-repo:`#1074 <pull/1074>`, :srw-repo:`#1065 <pull/1065>`, :srw-repo:`#1062 <pull/1062>`, :srw-repo:`#1012 <pull/1012>`, :srw-repo:`#997 <pull/997>`, :srw-repo:`#977 <pull/977>`)
-      * Verification bug fixes (PRs :srw-repo:`PR #1235 <pull/1235>`, :srw-repo:`#1224 <pull/1224>`, :srw-repo:`#1137 <pull/1137>`, :srw-repo:`#973 <pull/973>`)
-      * Documentation bug fixes (e.g., PRs :srw-repo:`PR #1206 <pull/1206>`, :srw-repo:`#1103<pull/1103>`, :srw-repo:`#1097 <pull/1097>`, :srw-repo:`#1095 <pull/1095>`, :srw-repo:`#1085 <pull/1085>`, :srw-repo:`#1080 <pull/1080>`, :srw-repo:`#1071 <pull/1071>`, :srw-repo:`PR #1018 <pull/1018>`, :srw-repo:`#1014 <pull/1014>`)
-      * Workflow End-to-End (WE2E) testing enhancements: 
-         * Added three UFS case studies to WE2E framework (:srw-repo:`PR #1043 <pull/1043>`)
-         * Add integration test (:srw-repo:`PR #1042 <pull/1042>`)
+      * General updates (e.g., PRs :srw-repo:`#1184 <pull/1184>`, :srw-repo:`#1157 <pull/1157>`)
+      * Documentation bug fixes (e.g., PRs :srw-repo:`#1206 <pull/1206>`, :srw-repo:`#1103<pull/1103>`, :srw-repo:`#1097 <pull/1097>`)
+   * Miscellaneous bug fixes and enhancements since the v2.2.0 release, including: 
+      * Addition of the supported ``RRFS_sas`` physics suite (:srw-repo:`PR #1201 <pull/1201>`)
+      * Model and component hash updates (e.g., PRs :srw-repo:`#1195 <pull/1195>`, :srw-repo:`#1185 <pull/1185>`)
+      * Upgrade to spack-stack 1.6.0 (:srw-repo:`PR #1093 <pull/1093>`)
+      * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea C6 (PRs :srw-repo:`#1163 <pull/1163>` and :srw-repo:`#1177 <pull/1177>`)
+      * Porting of SRW-AQM to Derecho (:srw-repo:`PR #1090 <pull/1090>`) and Orion/Hercules (:srw-repo:`PR #1067 <pull/1067>`)
+      * Verification updates (PRs :srw-repo:`#1082 <pull/1082>`, :srw-repo:`#1005 <pull/1005>`)
+      * Verification bug fixes (PRs :srw-repo:`#1235 <pull/1235>`, :srw-repo:`#1224 <pull/1224>`, :srw-repo:`#1137 <pull/1137>`, :srw-repo:`#973 <pull/973>`)
+      * Container updates (PRs :srw-repo:`#1234 <pull/1234>`, :srw-repo:`#1170 <pull/1170>`)
+      * Expansion of forecast fields for metrics test (:srw-repo:`PR #1048 <pull/1048>`)
       * ParallelWorks updates (PRs :srw-repo:`#1167 <pull/1167>`, :srw-repo:`#1161 <pull/1161>`)
       * CI/CD updates (PRs :srw-repo:`#1115 <pull/1115>`, :srw-repo:`#1087 <pull/1087>`, :srw-repo:`#1079 <pull/1079>`, :srw-repo:`#1058 <pull/1058>`)
-      * AQM enhancements (:srw-repo:`#1060 <pull/1060>`, :srw-repo:`#1056 <pull/1056>`, :srw-repo:`PR #1040 <pull/1040>`)
-      * OS Upgrade (PRs :srw-repo:`#1045 <pull/1045>`, :srw-repo:`#1041 <pull/1041>`)
-      * Reorganized S3 data bucket structure for better versioning and data management (:srw-repo:`PR #1104 <pull/1104>`)
+      * Air Quality Modeling (AQM) enhancements (PRs :srw-repo:`#1060 <pull/1060>`, :srw-repo:`#1056 <pull/1056>`, :srw-repo:`#1040 <pull/1040>`)
+      * S3 data bucket reorganization for better versioning and data management (:srw-repo:`PR #1104 <pull/1104>`)
       * ``devclean.sh`` script and plotting improvements (:srw-repo:`PR #1100 <pull/1100>`)
-      * Modulefile updates (PR :srw-repo:`#1185 <pull/1185>`, :srw-repo:`#1163 <pull/1163>`)
-      * Added remaining UFS case studies as WE2E tests (:srw-repo:`#1081 <pull/1081>`)
-      * Add job cards for wrappers for individual machines and tasks (:srw-repo:`#924 <pull/924>`)
-
+      * Inclusion of UFS case studies as WE2E tests (PRs :srw-repo:`#1081 <pull/1081>`, :srw-repo:`#1043 <pull/1043>`)
+      * Option to use RRFS external model files as ICS and LBCS (:srw-repo:`#1089 <pull/1089>`)
 
 The SRW App |latestr| citation is as follows and should be used when presenting results based on research conducted with the App:
 
