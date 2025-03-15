@@ -158,7 +158,7 @@ This process will likely take 20-30 min. Users who do not have access to a :srw-
 Create a Regional Grid
 ------------------------
 
-The SRW App already contains several predefined grids, which are well-tested with the supported physics and data sources. While these are a great start for new users, they cover a narrow set of possible grid configurations. Users may be interested in creating their own custom grid instead. :numref:`Section %s <UserDefinedGrid>` explains how to create a custom Extended Schmidt Gnomonic grid (ESGgrid), which is the supported grid type for the SRW App. For this example, we created a grid centered over New Orleans, LA (NOLA), which is located at 29.9509º N, 90.0758º W (29.9509, -90.0758). We thank our colleagues at the Developmental Testbed Center (DTC) for their `guidance on this process <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_. 
+The SRW App already contains several predefined grids, which are well-tested with the supported physics and data sources. While these are a great start for new users, they cover a narrow set of possible grid configurations. Users may be interested in creating their own custom grid instead. :numref:`Section %s <UserDefinedGrid>` explains how to create a custom Extended Schmidt Gnomonic grid (ESGgrid), which is the supported grid type for the SRW App. For this example, we created a grid centered over New Orleans, LA (NOLA), which is located at 29.9509º N, 90.0758º W (29.9509, -90.0758). We thank our colleagues at the Developmental Testbed Center (DTC) for their :srw-wiki:`guidance on this process <Tutorial/DTC_Defining_Custom_Regional_ESGGrid.pdf>`. 
 
 For a custom ESGgrid, users must define three sets of parameters:
 
@@ -262,7 +262,7 @@ Additionally, adjust the following parameters:
 * ``WRTCMP_stdlat1`` and ``WRTCMP_stdlat2``: The first and second standard latitudes associated with a Lambert conformal coordinate system. For simplicity, use the latitude of the center of the ESGgrid for both. Using off-center standard latitude values will skew the write-component grid to the east or west, somewhat similar to ``ESGgrid_PAZI``.
 * ``WRTCMP_nx`` and ``WRTCMP_ny``: To ensure that the write-component grid lies completely within the ESG grid, set these to ~95% of ``ESGgrid_NX`` and ``ESGgrid_NY``, respectively. 
 
-Then, calculate the values of ``WRTCMP_lon_lwr_left`` and ``WRTCMP_lat_lwr_left``. According to the `DTC guidance <https://dtcenter.org/ufs-short-range-weather-srw-practical-session-guide/session-2/3-defining-custom-regional-esg-grid>`_, "approximate values (from a linearization that is more accurate the smaller the horizontal extent of the grid) for these quantities can be obtained using the formulas (for reference)":
+Then, calculate the values of ``WRTCMP_lon_lwr_left`` and ``WRTCMP_lat_lwr_left``. According to the :srw-wiki:`DTC guidance <Tutorial/DTC_Defining_Custom_Regional_ESGGrid.pdf>`, "approximate values (from a linearization that is more accurate the smaller the horizontal extent of the grid) for these quantities can be obtained using the formulas (for reference)":
 
 * :math:`WRTCMP\_lon\_lwr\_left = WRTCMP\_cen\_lon - (degs\_per\_meter/(2*cos\_phi\_ctr))*WRTCMP\_nx*WRTCMP\_dx`
 * :math:`WRTCMP\_lat\_lwr\_left = WRTCMP\_cen\_lat - (degs\_per\_meter/2)*WRTCMP\_ny*WRTCMP\_dy`

@@ -51,6 +51,7 @@ nitpick_ignore = [
     ('py:class', 'pydantic.BaseModel'),
     ('py:class', 'esmpy.Grid'),
     ('py:class', 'esmpy.StaggerLoc'),
+    ('py:class', 'pathlib._local.Path'),
 ]
 
 # -- General configuration ---------------------------------------------------
@@ -118,6 +119,7 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://glossary.ametsoc.org/.*',
                     r'https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana',
                     #r'https://readthedocs.org/projects/ufs-srweather-app/',
+                    r'https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf'
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
