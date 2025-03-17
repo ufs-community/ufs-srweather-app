@@ -119,7 +119,6 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://glossary.ametsoc.org/.*',
                     r'https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana',
                     #r'https://readthedocs.org/projects/ufs-srweather-app/',
-                    r'https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf'
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
@@ -143,6 +142,8 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                  r"https://github\.com/login\?return\_to\=https.*",
                                r"https://mrms\.ncep\.noaa\.gov/data/": 
                                  r"https://mrms\.ncep\.noaa\.gov",
+                               r"https://github\.com/ufs-community/ufs/wiki/.*": 
+                                 r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs/.*",
                                }
 
 
