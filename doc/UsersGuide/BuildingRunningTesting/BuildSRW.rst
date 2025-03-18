@@ -43,18 +43,12 @@ Currently, installation of the prerequisite software stack is supported via spac
 Background
 ----------------
 
-SRW App components, including the UFS :term:`WM`, draw on over 50 code libraries to run. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third-party libraries (e.g., netCDF). Individual installation of these libraries is not practical, so `spack-stack <https://github.com/JCSDA/spack-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of spack-stack (or its predecessor, :term:`HPC-Stack`) is required to run the SRW App.
+SRW App components, including the UFS :term:`WM`, draw on over 50 code libraries to run. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third-party libraries (e.g., netCDF). Individual installation of these libraries is not practical, so `spack-stack <https://github.com/JCSDA/spack-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of spack-stack is required to run the SRW App.
 
 Instructions
 -------------------------
 
-.. attention::
-
-   Spack-stack is the fully-supported software stack validated by the UFS WM as of `PR #1707 <https://github.com/ufs-community/ufs-weather-model/pull/1707>`__ on August 24, 2023. UFS applications are therefore shifting to :term:`spack-stack`, too. When all systems have shifted to spack-stack, support for HPC-Stack will be deprecated. Users are encouraged to check out `spack-stack <https://github.com/JCSDA/spack-stack>`__ to prepare for this shift in support from HPC-Stack to spack-stack even if their system currently has support for HPC-Stack. 
-
-   As of the v2.2.0 release, spack-stack is supported in the SRW App on most Level 1 systems with the exception of Derecho, which uses HPC-Stack. Transition to spack-stack is underway for Derecho. Users on generic MacOS and Linux systems will find HPC-Stack-based modulefiles in the v2.2.0 release but can expect that these will also shift to spack-stack in the ``develop`` branch in the coming months. 
-
-Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack or HPC-Stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing spack-stack or HPC-Stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
+Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing spack-stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
 
 .. code-block:: console
 
@@ -64,7 +58,7 @@ Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supporte
    # MacOS, this corresponds to 65MB
    ulimit -S -s unlimited
 
-For a detailed description of installation options, see :doc:`spack-stack instructions for configuring the stack on a new platform <spack-stack:NewSiteConfigs>` or :ref:`HPC-Stack installation instructions <InstallBuildHPCstack>`.
+For a detailed description of installation options, see :doc:`spack-stack instructions for configuring the stack on a new platform <spack-stack:NewSiteConfigs>`.
 
 After completing installation, continue to the :ref:`next section <DownloadSRWApp>` to download the UFS SRW Application Code. 
 
@@ -196,9 +190,6 @@ pre-installed conda installation at ``/path/to/conda``
 Running ``./devbuild.sh`` without any arguments will show the usage statement for all available
 flags and targets for this script.
 
-.. note::
-   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacLinuxDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
-
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
 .. code-block:: console
@@ -290,7 +281,6 @@ Set Up the Build Environment
 
 .. attention::
    * If users successfully built the executables listed in :numref:`Table %s <ExecDescription>`, they can skip to step :numref:`Section %s: Running the SRW App <RunSRW>`.
-   * Users who want to build the SRW App on MacOS or generic Linux systems should skip to :numref:`Section %s <MacLinuxDetails>` and follow the approach there. 
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users with a bash shell environment can run:
 
