@@ -29,7 +29,7 @@ Since the last release, developers have added a variety of features:
       * New tutorials: 
 
          * Halloween Storm (PRs :srw-repo:`#1124 <pull/1124>` and :srw-repo:`#1234 <pull/1234>`)
-         * Gulf Coast Blizzard (:srw-repo:`PR #_____ <pull/>`)
+         * Gulf Coast Blizzard (:srw-repo:`PR #1226 <pull/1226>`)
       * Addition of technical documentation (:srw-repo:`PR #1131 <pull/1131>`) and documentation testing via GitHub Actions (:srw-repo:`PR #1152 <pull/1152>`)
       * Contributor's Guide (:srw-repo:`PR #1046 <pull/1046>`)
       * General updates (e.g., PRs :srw-repo:`#1184 <pull/1184>`, :srw-repo:`#1157 <pull/1157>`)
