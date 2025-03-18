@@ -158,7 +158,9 @@ def awscli_get_file(bucket,fname):
             text=True
         )
     except subprocess.CalledProcessError as err:
-        logging.info(err)
+        logging.error(err)
+        if err.returncode == 127:
+            logging.error("AWS CLI is not is available in your environment!")
         return False
     except:
         logging.error("Command failed!")

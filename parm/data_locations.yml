@@ -459,7 +459,7 @@ AIRNOW_obs:
         - "HourlyData_{fyyyymmdd}{fhh}.dat"
         - "Monitoring_Site_Locations_V2.dat"
 
-GOESABI:
+GOES_AOD:
   aws:
     protocol: awscli
     # Data description including repositories/buckets can be found in
@@ -467,8 +467,23 @@ GOESABI:
     #
     # Product descriptions can be found in https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf
     # File names specifically in Appendix A
-    bucket: "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}"
+    bucket:
+      - "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}"
     file_names:
       obs:
         - "OR_ABI-L2-AODF-M[3-6]_G16_s{fyyyy}{fjjj}{fhh}*.nc"
+
+GOES_ADP:
+  aws:
+    protocol: awscli
+    # Data description including repositories/buckets can be found in
+    # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01511
+    #
+    # Product descriptions can be found in https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf
+    # File names specifically in Appendix A
+    bucket:
+      - "s3://noaa-goes16/ABI-L2-ADPF/{fyyyy}/{fjjj}/{fhh}" # Aerosol detection product
+    file_names:
+      obs:
+        - "OR_ABI-L2-ADPF-M[3-6]_G16_s{fyyyy}{fjjj}{fhh}*.nc"
 
