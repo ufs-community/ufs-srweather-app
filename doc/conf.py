@@ -118,6 +118,7 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
                     r'https://glossary.ametsoc.org/.*',
                     r'https://readthedocs.org/projects/ufs-srweather-app/',
+                    r'https://doi.org/10.5281/zenodo.14834682',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.

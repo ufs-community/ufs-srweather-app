@@ -17,13 +17,13 @@ Since the last release, developers have added a variety of features:
       * SD-specific bug fixes (:srw-repo:`PR #1146 <pull/1146>`)
       * Miscellaneous SD updates (PRs :srw-repo:`#1231 <pull/1231>`, :srw-repo:`#1172 <pull/1172>`, :srw-repo:`#1153 <pull/1153>`, :srw-repo:`#1143 <pull/1143>`)
    * Community Fire Behavior Model (:srw-repo:`PR #1139 <pull/1139>`) 
-      * Added ``SUBCONUS_CO_3km`` (3-km grid over Colorado) and ``SUBCONUS_CO_1km`` (1-km grid over Colorado) predefined grids for UFS FIRE that can be used by any SRW App experiments (:srw-repo:`PR #1139 <pull/1139>`) 
+      * Added ``SUBCONUS_CO_3km`` (3-km grid over Colorado) and ``SUBCONUS_CO_1km`` (1-km grid over Colorado) predefined grids for UFS FIRE that can be used by any SRW App experiment (:srw-repo:`PR #1139 <pull/1139>`) 
       * Enabled two-way ATM/FIRE coupling/feedback (:srw-repo:`PR #1182 <pull/1182>`)
    * Continued Integration of Unified Workflow (UW) Tools (``uwtools``): 
       * Replaced UW CLI with API calls in Python scripts (:srw-repo:`#1078 <pull/1078>`)
-      * Use UW config tool to configure namelists (:srw-repo:`#1054 <pull/1054>`)
-      * Integrate UW CLI tool for templater (:srw-repo:`#994 <pull/994>`)
-      * Added environments --- ``srw_app``, ``srw_graphics``, ``srw_aqm`` --- and the option to install Miniforge for SRW environments (:srw-repo:`PR #938 <pull/938>`)
+      * Incorporated UW config tool to configure namelists (:srw-repo:`#1054 <pull/1054>`)
+      * Integrated UW CLI for UW template tool (:srw-repo:`#994 <pull/994>`)
+      * Added conda environments --- ``srw_app``, ``srw_graphics``, ``srw_aqm`` --- and the option to install Miniforge for SRW environments (:srw-repo:`PR #938 <pull/938>`)
    * Documentation updates and enhancements:
       * Documentation updates for Fire and SD capabilities (PRs :srw-repo:`#1149 <pull/1149>`, :srw-repo:`#1128 <pull/1128>`, :srw-repo:`#1139 <pull/1139>`, and :srw-repo:`#1182 <pull/1182>`)
       * New tutorials: 
@@ -37,24 +37,22 @@ Since the last release, developers have added a variety of features:
    * Miscellaneous bug fixes and enhancements since the v2.2.0 release, including: 
       * Addition of the supported ``RRFS_sas`` physics suite (:srw-repo:`PR #1201 <pull/1201>`)
       * Model and component hash updates (e.g., PRs :srw-repo:`#1195 <pull/1195>`, :srw-repo:`#1185 <pull/1185>`)
-      * Upgrade to spack-stack 1.6.0 (:srw-repo:`PR #1093 <pull/1093>`)
-      * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea C6 (PRs :srw-repo:`#1163 <pull/1163>` and :srw-repo:`#1177 <pull/1177>`)
-      * Porting of SRW-AQM to Derecho (:srw-repo:`PR #1090 <pull/1090>`) and Orion/Hercules (:srw-repo:`PR #1067 <pull/1067>`)
+      * Upgrade to spack-stack v1.6.0 (:srw-repo:`PR #1093 <pull/1093>`)
+      * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea C6 (:srw-repo:`PR #1163 <pull/1163>`)
       * Verification updates (PRs :srw-repo:`#1082 <pull/1082>`, :srw-repo:`#1005 <pull/1005>`)
       * Verification bug fixes (PRs :srw-repo:`#1235 <pull/1235>`, :srw-repo:`#1224 <pull/1224>`, :srw-repo:`#1137 <pull/1137>`, :srw-repo:`#973 <pull/973>`)
-      * Container updates (PRs :srw-repo:`#1234 <pull/1234>`, :srw-repo:`#1170 <pull/1170>`)
+      * Container updates (:srw-repo:`PR #1170 <pull/1170>`)
       * Expansion of forecast fields for metrics test (:srw-repo:`PR #1048 <pull/1048>`)
-      * ParallelWorks updates (PRs :srw-repo:`#1167 <pull/1167>`, :srw-repo:`#1161 <pull/1161>`)
-      * CI/CD updates (PRs :srw-repo:`#1115 <pull/1115>`, :srw-repo:`#1087 <pull/1087>`, :srw-repo:`#1079 <pull/1079>`, :srw-repo:`#1058 <pull/1058>`)
-      * Air Quality Modeling (AQM) enhancements (PRs :srw-repo:`#1060 <pull/1060>`, :srw-repo:`#1056 <pull/1056>`, :srw-repo:`#1040 <pull/1040>`)
+      * ParallelWorks & CI/CD updates (e.g., PRs :srw-repo:`#1167 <pull/1167>`, :srw-repo:`#1161 <pull/1161>`, :srw-repo:`#1115 <pull/1115>`, :srw-repo:`#1087 <pull/1087>`, :srw-repo:`#1058 <pull/1058>`)
       * S3 data bucket reorganization for better versioning and data management (:srw-repo:`PR #1104 <pull/1104>`)
-      * ``devclean.sh`` script and plotting improvements (:srw-repo:`PR #1100 <pull/1100>`)
       * Inclusion of UFS case studies as WE2E tests (PRs :srw-repo:`#1081 <pull/1081>`, :srw-repo:`#1043 <pull/1043>`)
       * Option to use RRFS external model files as ICS and LBCS (:srw-repo:`#1089 <pull/1089>`)
 
+View the full changelog on GitHub: :srw-repo:`v2.2.0...v3.0.0 <compare/release/public-v2.2.0...release/public-v3.0.0>`.
+
 The SRW App |latestr| citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2025, March. 26). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v3.0.0). Zenodo. https://doi.org/10.5281/zenodo.14834682
+UFS Development Team. (2025, April 4). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v3.0.0). Zenodo. https://doi.org/10.5281/zenodo.14834682
 
 .. _ug-organization:
 
@@ -81,15 +79,17 @@ Building, Running, and Testing the SRW App
    * :numref:`Section %s: Tutorials <Tutorial>` walks users through different SRW App experiment cases and analysis of results. 
    * :numref:`Section %s: METplus Verification Sample Cases <VXCases>` explains how to run METplus verification as part of the workflow. 
    * :numref:`Section %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, but this section is a starting point for those interested in AQM. 
-   * :numref:`Section %s: SRW Smoke & Dust <srw-sd>` provides information specific to smoke and dust modeling. 
-   * :numref:`Section %s: SRW Smoke & Dust <UFS_FIRE>` provides information specific to fire behavior modeling. 
+   * :numref:`Section %s: SRW Smoke & Dust <srw-sd>` provides information specific to smoke and dust (SD) modeling. 
+   * :numref:`Section %s: UFS FIRE <UFS_FIRE>` provides information specific to fire behavior modeling. 
 
 .. hint:: 
-   * To get started with the SRW App, it is recommended that users try one of the following options: 
+   To get started with the SRW App, it is recommended that users try one of the following options: 
 
-      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps --- especially helpful for users with access to a :srw-wiki:`Level 1 platform <Supported-Platforms-and-Compilers>`.
-      #. To build the application in a container, which provides a more uniform work environment, users can refer to :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>`. 
-      #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
+   #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps --- especially helpful for users with access to a :srw-wiki:`Level 1 platform <Supported-Platforms-and-Compilers>`.
+   #. To build the application in a container, which provides a more uniform work environment for users on any system, users can refer to :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>`. 
+   #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
+
+   Users are encouraged to check out the :ref:`Tutorials <Tutorial>` chapter after building the SRW App and running the basic "out-of-the-box" case. 
 
 Customizing the Workflow
 ---------------------------
@@ -103,7 +103,7 @@ Customizing the Workflow
 Reference Information
 -----------------------
 
-   * :numref:`Section %s: Rocoto Introductory Information <RocotoInfo>` provides an introduction to standard Rocoto commands with examples. 
+   * :numref:`Section %s: Rocoto Introductory Information <RocotoInfo>` provides an introduction to standard Rocoto (workflow manager) commands with examples. 
    * :numref:`Section %s: FAQ <FAQ>` answers users' frequently asked questions. 
    * :numref:`Section %s: Glossary <Glossary>` defines important terms related to the SRW App. 
 
@@ -164,11 +164,16 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
-     - https://uwtools.readthedocs.io/en/main/
+     - https://uwtools.readthedocs.io/en/2.3.4/
+   * - MET User's Guide
+     - https://metplus.readthedocs.io/projects/met/en/main_v12.0/Users_Guide/
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/main_v6.0/Users_Guide/
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
-     - https://hemco.readthedocs.io/en/stable/
+     - https://hemco.readthedocs.io/en/3.6.2/
+
+.. COMMENT:
+   Add links for CCPP tech docs, CCPP scientific docs, and UFS_UTILS sci docs
 
 .. _user-support:
 
@@ -182,12 +187,12 @@ The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweathe
 
 When posting a question, it is recommended that users provide the following information: 
 
-* The platform or system being used (e.g., Hera, Orion, MacOS, Linux)
-* The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.2.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
+* The platform or system being used (e.g., Hera, Orion, Derecho)
+* The version of the SRW Application being used (e.g., ``develop``, ``release/public-v3.0.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
 * Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
 * Configuration file contents (e.g., ``config.yaml`` contents)
 * Full error message (preferably in text form rather than a screenshot)
-* Current shell (e.g., bash, csh) and modules loaded
+* Current shell (e.g., bash) and modules loaded
 * Compiler + MPI combination being used
 
 Bug Reports
@@ -216,9 +221,11 @@ Future Direction
 Users can expect to see incremental improvements and additional capabilities in upcoming releases of the SRW Application to enhance research opportunities and support operational forecast implementations. Planned enhancements include:
 
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
-* A more extensive set of supported developmental physics suites.
+* Expanded support for SRW-AQM
+* Full integration of `Unified Workflow <https://github.com/ufs-community/uwtools>`_ tools.
 * A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
-* Incorporation of additional `Unified Workflow <https://github.com/ufs-community/uwtools>`_ tools.
+
+.. COMMENT: Anything else to add?
 
 
 .. bibliography:: ../../references.bib
