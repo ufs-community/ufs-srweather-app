@@ -12,16 +12,17 @@ pipeline {
     parameters {
         // Allow job runner to filter based on platform
         // Use the line below to enable all PW clusters
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaeac5', 'gaeac6','hera', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaeac5', 'gaeac6','hera', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable the PW AWS cluster
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaeac5', 'gaeac6', 'hera', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaeac5', 'gaeac6', 'hera', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaeac5', 'gaeac6', 'hera', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Workflow Wrapper test depth {0..9}, 0=none, 1=simple, 9=all [default]
         choice(name: 'SRW_WRAPPER_TASK_DEPTH', choices: ['9', '1', '0'], description: '0=none, 1=simple, 9=all [default]')
         // WE2E Tests ?
         choice(name: 'SRW_WE2E_SINGLE_TEST', choices: ['coverage', 'none', 'skill-score', 'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0'], description: 'Specify the WE2E test to use')
+        text(name: 'SRW_WE2E_USER_INPUT_TEST', defaultValue: '', description: 'Enter a single WE2E test or multiple using this format Test-1\nTest-2\nTest-3\n')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
     }
 
@@ -59,7 +60,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'pclusternoaav2use1' //, 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'
                     }
                 }
 
@@ -75,6 +76,18 @@ pipeline {
             }
         }
         */
+
+        stage('Check Nodes') {
+            steps {
+                script {
+                    build job: '/infrastructure/is_up', parameters: [string(name: 'NODE_CHOICE', value: 'pclusternoaav2use1'  ?: 'none')], wait: false
+                    build job: '/infrastructure/is_up', parameters: [string(name: 'NODE_CHOICE', value: 'azclusternoaav2use1' ?: 'none')], wait: false
+                    build job: '/infrastructure/is_up', parameters: [string(name: 'NODE_CHOICE', value: 'gclusternoaav2usc1'  ?: 'none')], wait: false
+                    sleep time: 240, unit: 'SECONDS'
+                }
+            }
+        }
+
 
         // Build and test the SRW application on all supported platforms using the supported compilers for each platform
         stage('Build and Test') {
@@ -103,7 +116,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'derecho', 'gaeac5', 'gaeac6', 'hera', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'derecho', 'gaeac5', 'gaeac6', 'hera', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -117,7 +130,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'derecho', 'gaeac5', 'gaeac6', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'derecho', 'gaeac5', 'gaeac6', 'orion', 'hercules', 'pclusternoaav2use1' , 'azclusternoaav2use1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -239,6 +252,22 @@ pipeline {
                                     }
                                 }
 
+                                // Check if there is a user input WE2E test(s)
+                                if (params.SRW_WE2E_USER_INPUT_TEST != null && !params.SRW_WE2E_USER_INPUT_TEST.isEmpty()) {
+                                    echo "${params.SRW_WE2E_USER_INPUT_TEST}"    
+                                    // Create empty txt test file and set it as the test type
+                                    // sh "echo ${params.SRW_WE2E_USER_INPUT_TEST} > ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
+                                    sh "> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
+                                    single_test = "user_input_test.txt"
+
+                                    // Create user input list and add tests to txt file
+                                    def user_input_list = params.SRW_WE2E_USER_INPUT_TEST.split('\n')
+                                    echo "${user_input_list}"
+                                    for (test in user_input_list) {
+                                        sh "echo ${test} >> ${WORKSPACE}/${SRW_PLATFORM}/tests/WE2E/user_input_test.txt"
+                                    }
+                                }
+
                                 sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests} SRW_WE2E_SINGLE_TEST=${single_test}" + ' bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_test.sh"'
 
                                 }
@@ -282,7 +311,7 @@ pipeline {
     // Uncomment the following block to re-enable PW clusters
     /*
             // Stop any Parallel Works clusters that were started during the pipeline execution
-                // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1']
+                // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2use1', 'gclusternoaav2usc1']
                 def pw_clusters = ['pclusternoaav2use1']
                 def clusters = []
 
