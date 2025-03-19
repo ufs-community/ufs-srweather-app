@@ -245,23 +245,14 @@
           ],
           "type": "array"
         },
-        "VX_FIELDS": {
-          "enum": [
-            "ADPSFC",
-            "ADPUPA",
-            "APCP",
-            "ASNOW",
-            "REFC",
-            "RETOP"
-          ],
-          "type": "string"
-        },
         "VX_FIELD_GROUPS": {
           "prefixItems": [
             { "enum": [
               "AOD",
               "APCP",
               "ASNOW",
+              "GOESADP",
+              "GOESAOD",
               "PM10",
               "PM25",
               "REFC",

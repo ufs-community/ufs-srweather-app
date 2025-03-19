@@ -748,6 +748,14 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         vx_metatasks_all_by_obtype["AIRNOW"] \
         = ["task_get_obs_airnow"]
 
+        vx_field_groups_all_by_obtype["GOESAOD"] = ["GOESAOD"]
+        vx_metatasks_all_by_obtype["GOESAOD"] \
+        = ["task_get_obs_goesaod"]
+
+        vx_field_groups_all_by_obtype["GOESADP"] = ["GOESADP"]
+        vx_metatasks_all_by_obtype["GOESADP"] \
+        = ["task_get_obs_goesadp"]
+
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.
         vx_field_groups = vx_config["VX_FIELD_GROUPS"]
@@ -782,7 +790,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # -----------------------------------------------------------------------
         #
         if vx_field_groups:
-            obtypes_all = ["CCPA", "NOHRSC", "MRMS", "NDAS", "AERONET", "AIRNOW", "GOESABI"]
+            obtypes_all = ["CCPA", "NOHRSC", "MRMS", "NDAS", "AERONET", "AIRNOW", "GOESAOD"]
             obs_basedir_var_names = [f"{obtype}_OBS_DIR" for obtype in obtypes_all]
             obs_basedirs_dict = {key: vx_config[key] for key in obs_basedir_var_names}
             obs_basedirs_orig = list(obs_basedirs_dict.values())

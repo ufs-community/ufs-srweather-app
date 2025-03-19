@@ -52,18 +52,6 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
             the obs file for the given hour of day.
     """
 
-    valid_obtypes = ['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW']
-
-    if obtype not in valid_obtypes:
-        msg = dedent(f"""
-            The specified observation type is not supported:
-                {obtype = }
-            Valid observation types are:
-                {valid_obtypes}
-        """)
-        logging.error(msg)
-        raise ValueError(msg)
-
     # Ensure that the archive interval divides evenly into 24 hours.
     remainder = 24 % arcv_intvl_hrs
     if remainder != 0:
@@ -100,7 +88,7 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
             arcv_hr = 24
         else:
             arcv_hr = floor(hod/arcv_intvl_hrs)*arcv_intvl_hrs
-    elif obtype in ['MRMS']:
+    elif obtype in ['MRMS', 'GOESAOD', 'GOESADP']:
         arcv_hr = (floor(hod/arcv_intvl_hrs))*arcv_intvl_hrs
     elif obtype in ['NDAS']:
         arcv_hr = (floor(hod/arcv_intvl_hrs) + 1)*arcv_intvl_hrs
@@ -469,6 +457,8 @@ def get_obs(config, obtype, yyyymmdd_task):
             arcv_intvl_hrs = 24
         else:
             arcv_intvl_hrs = 1
+    elif obtype in ['GOESAOD', 'GOESADP']:
+        arcv_intvl_hrs = 1
 
     arcv_intvl = dt.timedelta(hours=arcv_intvl_hrs)
 
@@ -662,7 +652,7 @@ def get_obs(config, obtype, yyyymmdd_task):
         # Same as for MRMS
         #
 
-        if obtype in ['CCPA', 'NDAS']:
+        if obtype in ['CCPA', 'NDAS', 'GOESAOD', 'GOESADP']:
             arcv_subdir_raw = yyyymmddhh_arcv_str
         elif obtype == 'NOHRSC':
             arcv_subdir_raw = yyyymmdd_arcv_str
@@ -680,16 +670,10 @@ def get_obs(config, obtype, yyyymmdd_task):
         if obtype == 'CCPA':
             arcv_contents_start = yyyymmddhh_arcv - (num_obs_times_per_arcv - 1)*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv
-        elif obtype == 'NOHRSC':
-            arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
-        elif obtype == 'MRMS':
-            arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
         elif obtype == 'NDAS':
             arcv_contents_start = yyyymmddhh_arcv - num_obs_times_per_arcv*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv - obs_avail_intvl
-        elif obtype in ['AERONET', 'AIRNOW']:
+        elif obtype in ['AERONET', 'AIRNOW', 'GOESAOD', 'GOESADP', 'MRMS', 'NOHRSC']:
             arcv_contents_start = yyyymmddhh_arcv
             arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
 
@@ -755,13 +739,9 @@ def get_obs(config, obtype, yyyymmdd_task):
             # archive.  This is a list of datetime objects.
             if obtype == 'CCPA':
                 obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
-            elif obtype == 'NOHRSC':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
-            elif obtype == 'MRMS':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'NDAS':
                 obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
-            elif obtype in ['AERONET', 'AIRNOW']:
+            elif obtype in ['AERONET', 'AIRNOW', 'GOESAOD', 'GOESADP', 'MRMS', 'NOHRSC']:
                 obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             obs_times_in_arcv.sort()
 
@@ -965,8 +945,8 @@ def parse_args(argv):
         "--obtype",
         type=str,
         required=True,
-        choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW'],
-        help="Cumulative observation type.",
+        choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW', 'GOESAOD', 'GOESADP'],
+        help="Observation type.",
     )
 
     parser.add_argument(

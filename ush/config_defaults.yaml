@@ -2477,7 +2477,7 @@ verification:
   # *_OBS_AVAIL_INTVL_HRS:
   # Time interval (in hours) at which various types of obs are available
   #
-  # Note that MRMS and GOESABI files are in fact available every few minutes, but here
+  # Note that MRMS, GOESAOD and GOESADP files are in fact available every few minutes, but here
   # we set the obs availability interval to 1 hour because currently that
   # is the shortest output interval for forecasts, i.e. the forecasts cannot
   # (yet) support sub-hourly output.
@@ -2488,7 +2488,8 @@ verification:
   NDAS_OBS_AVAIL_INTVL_HRS: 1
   AERONET_OBS_AVAIL_INTVL_HRS: 1
   AIRNOW_OBS_AVAIL_INTVL_HRS: 1
-  GOESABI_OBS_AVAIL_INTVL_HRS: 1
+  GOESAOD_OBS_AVAIL_INTVL_HRS: 1
+  GOESADP_OBS_AVAIL_INTVL_HRS: 1
   #
   # *_OBS_DIR:
   # Base directory in which observation files needed by verification tasks are
@@ -2507,13 +2508,15 @@ verification:
   #   that need to be corrected during obs retrieval.  This is described
   #   in more detail in the script ush/get_obs.py.
   #
+  # * GOESADP obs are only ever used with GOESAOD, so this obs type uses GOESAOD_OBS_DIR
+  #
   CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa"
   NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc"
   MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms"
   NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas"
   AERONET_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/aeronet"
   AIRNOW_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/airnow"
-  GOESABI_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/goesabi"
+  GOESAOD_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/goesaod"
   #
   # OBS_[CCPA|NOHRSC|MRMS|NDAS]_FN_TEMPLATES:
   # File name templates for various obs types.  These are meant to be used
@@ -2616,7 +2619,8 @@ verification:
   # default value for OBS_AIRNOW_FN_TEMPLATES should be replaced with
   # '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat'
   OBS_AIRNOW_FN_TEMPLATES: [ 'PM', '{valid?fmt=%Y%m%d}/HourlyAQObs_{valid?fmt=%Y%m%d%H}.dat' ]
-  OBS_GOESABI_FN_TEMPLATES: [ 'AOD', '{valid?fmt=%Y%m%d}/OR_ABI-L2-AODF_G16_{valid?fmt=%Y%m%d%H}.nc' ]
+  OBS_GOESAOD_FN_TEMPLATES: [ 'GOESAOD', '{valid?fmt=%Y%m%d}/OR_ABI-L2-AODF_G16_{valid?fmt=%Y%m%d%H}.nc' ]
+  OBS_GOESADP_FN_TEMPLATES: [ 'GOESADP', '{valid?fmt=%Y%m%d}/OR_ABI-L2-ADPF_G16_{valid?fmt=%Y%m%d%H}.nc' ]
   #
   # REMOVE_RAW_OBS_DIRS
   # Flag specifying whether to remove the "raw" observation directories

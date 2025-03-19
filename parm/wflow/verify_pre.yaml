@@ -28,6 +28,32 @@ default_task_verify_pre: &default_task_verify_pre
   partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
+task_get_obs_goes_aod:
+  <<: *default_task_verify_pre
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&GOESAOD_OBS_DIR;'
+    OBTYPE: 'GOESAOD'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 02:00:00
+
+task_get_obs_goes_adp:
+  <<: *default_task_verify_pre
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&GOESAOD_OBS_DIR;'
+    OBTYPE: 'GOESADP'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 02:00:00
+
 task_get_obs_aeronet:
   <<: *default_task_verify_pre
   command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'

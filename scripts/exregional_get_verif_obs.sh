@@ -58,15 +58,6 @@ done
 #-----------------------------------------------------------------------
 #
 set -x
-valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC" "AERONET" "AIRNOW")
-if [[ ! ${valid_obtypes[@]} =~ ${OBTYPE} ]]; then
-  print_err_msg_exit "\
-Invalid observation type (OBTYPE) specified for script:
-  OBTYPE = \"${OBTYPE}\"
-Valid observation types are:
-  $(printf "\"%s\" " ${valid_obtypes[@]})
-"
-fi
 
 cmd="\
 python3 -u ${USHdir}/get_obs.py \

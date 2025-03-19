@@ -10,6 +10,7 @@ rocoto:
     COLDSTART: '{{ workflow.COLDSTART }}'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
+    GOESAOD_OBS_DIR: '{{ verification.GOESAOD_OBS_DIR }}'
     HOMEdir: '{{ user.HOMEdir }}'
     JOBSdir: '{{ user.JOBSdir }}'
     KEEPDATA: '{{ nco.KEEPDATA_default }}'

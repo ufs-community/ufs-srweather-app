@@ -459,7 +459,7 @@ AIRNOW_obs:
         - "HourlyData_{fyyyymmdd}{fhh}.dat"
         - "Monitoring_Site_Locations_V2.dat"
 
-GOES_AOD:
+GOESAOD:
   aws:
     protocol: awscli
     # Data description including repositories/buckets can be found in
@@ -468,12 +468,12 @@ GOES_AOD:
     # Product descriptions can be found in https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf
     # File names specifically in Appendix A
     bucket:
-      - "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}"
+      - "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}" # AOD obs
     file_names:
       obs:
         - "OR_ABI-L2-AODF-M[3-6]_G16_s{fyyyy}{fjjj}{fhh}*.nc"
 
-GOES_ADP:
+GOESADP:
   aws:
     protocol: awscli
     # Data description including repositories/buckets can be found in
