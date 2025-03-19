@@ -21,19 +21,14 @@ Download the Code
 
 Clone the |branch| branch of the authoritative SRW App repository:
 
-.. code-block:: console
-
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app
-   cd ufs-srweather-app
+.. include:: ../../doc-snippets/clone.rst
 
 Checkout Externals
 ---------------------
 
 Users must run the ``checkout_externals`` script to collect (or "check out") the individual components of the SRW App from their respective GitHub repositories.
 
-.. code-block:: console
-
-   ./manage_externals/checkout_externals
+.. include:: ../../doc-snippets/externals.rst
 
 Build the SRW App with Fire Behavior Enabled
 --------------------------------------------

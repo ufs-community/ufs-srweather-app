@@ -534,7 +534,7 @@ Grid Generation Parameters
 ``GRID_GEN_METHOD``: (Default: "")
    This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at :srw-wiki:`Purser_UIFCW_2023.pdf`.
+   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2023`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at :srw-wiki:`Purser_UIFCW_2023.pdf`.
 
 .. attention::
 
@@ -767,7 +767,7 @@ The following parameters must be set if using the "ESGgrid" method to generate a
    A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell-wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that users eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
 
 ``ESGgrid_PAZI``: (Default: "")
-   The rotational parameter for the "ESGgrid" (in degrees).
+   The rotational parameter for the "ESGgrid" (in degrees). It represents the rotation of the grid from true north. 
 
 .. _make-orog:
  
@@ -1545,6 +1545,8 @@ Pressure Tendency Diagnostic
 ------------------------------
 ``PRINT_DIFF_PGR``: (Default: false)
    Option to turn on/off the pressure tendency diagnostic. 
+
+.. _VXParams:
 
 Verification (VX) Parameters
 =================================
