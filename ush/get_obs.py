@@ -730,7 +730,7 @@ def get_obs(config, obtype, yyyymmdd_task):
                     '--config', os.path.join(parmdir, 'data_locations.yml'), \
                     '--cycle_date', yyyymmddhh_arcv_str, \
                     '--data_stores', vx_config[f'OBS_DATA_STORE_{obtype}'], \
-                    '--data_type', obtype + '_obs', \
+                    '--data_type', obtype, \
                     '--output_path', arcv_dir_raw, \
                     '--summary_file', 'retrieve_data.log']
             retrieve_data.main(args)

@@ -331,7 +331,7 @@ UFS-CASE-STUDY:
 ##########################
 ##########################
 
-CCPA_obs:
+CCPA:
   hpss:
     protocol: htar
     archive_format: tar
@@ -351,7 +351,7 @@ CCPA_obs:
       obs:
         - "ccpa.t*z.01h.hrap.conus.gb2"
 
-MRMS_obs:
+MRMS:
   hpss:
     protocol: htar
     archive_format: tar
@@ -375,7 +375,7 @@ MRMS_obs:
         - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"
         - "EchoTop_18_00.50_{yyyymmdd}-*.grib2.gz"
 
-NDAS_obs:
+NDAS:
   hpss:
     protocol: htar
     archive_format: tar
@@ -397,7 +397,7 @@ NDAS_obs:
       obs:
         - "./nam.t{hh}z.prepbufr.tm*.nr"
 
-NOHRSC_obs:
+NOHRSC:
   hpss:
     protocol: htar
     archive_format: tar
@@ -413,7 +413,7 @@ NOHRSC_obs:
     archive_internal_dir:
       - ./wgrbbul/nohrsc_snowfall/
 
-AERONET_obs:
+AERONET:
   hpss:
     protocol: htar
     archive_format: tar
@@ -435,7 +435,7 @@ AERONET_obs:
       obs:
         - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&AOD15=1&AVG=10"
 
-AIRNOW_obs:
+AIRNOW:
   hpss:
     protocol: htar
     archive_format: tar
