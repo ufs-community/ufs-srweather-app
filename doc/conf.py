@@ -323,11 +323,11 @@ intersphinx_mapping = {
    'spack-stack': ('https://spack-stack.readthedocs.io/en/1.6.0/', None),
    'met': ('https://metplus.readthedocs.io/projects/met/en/main_v12.0/', None),
    'metplus': ('https://metplus.readthedocs.io/en/main_v6.0/', None),
-   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/develop/', None),
+   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/release-public-v3.0.0/', None),
    'upp': ('https://upp.readthedocs.io/en/upp-srw-v3.0.0/', None),
-   'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/latest/', None),
+   'ufs-utils': ('https://ufs-utils-epic.readthedocs.io/en/release-srw-v3.0.0/', None),
    'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None), # Update!
-   'stochphys': ('https://stochastic-physics.readthedocs.io/en/latest/', None),
+   'stochphys': ('https://stochastic-physics.readthedocs.io/en/release-public-v3/', None),
    'srw_v3.0.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v3.0.0/', None),
 }
 
