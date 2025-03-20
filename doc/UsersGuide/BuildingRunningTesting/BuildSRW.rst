@@ -74,9 +74,7 @@ Download the UFS SRW Application Code
 ======================================
 The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the |branch| branch of the repository:
 
-.. code-block:: console
-
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
+.. include:: ../../doc-snippets/clone.rst
 
 The cloned repository contains the configuration files and sub-directories shown in
 :numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
@@ -148,10 +146,7 @@ The SRW App relies on a variety of components (e.g., UFS_UTILS, ufs-weather-mode
 
 Run the executable that pulls in SRW App components from external repositories:
 
-.. code-block:: console
-
-   cd /path/to/ufs-srweather-app/
-   ./manage_externals/checkout_externals
+.. include:: ../../doc-snippets/externals.rst
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
 
@@ -186,11 +181,7 @@ Set Up the Environment and Build the Executables
 
 On Level 1 systems for which a modulefile is provided under the ``modulefiles`` directory, users can build the SRW App binaries with the following command:
 
-.. code-block:: console
-
-   ./devbuild.sh --platform=<machine_name>
-
-where ``<machine_name>`` is replaced with the name of the platform the user is working on. See :numref:`Section %s <user>` for all valid ``MACHINE`` options.
+.. include:: ../../doc-snippets/devbuild.rst
 
 Directly following the release of SRW v2.2.0, the App will install miniconda and SRW environments as part
 of the build process. The location defaults to inside the SRW clone in ``ufs-srweather-app/conda``,
@@ -301,16 +292,15 @@ Set Up the Build Environment
    * If users successfully built the executables listed in :numref:`Table %s <ExecDescription>`, they can skip to step :numref:`Section %s: Running the SRW App <RunSRW>`.
    * Users who want to build the SRW App on MacOS or generic Linux systems should skip to :numref:`Section %s <MacLinuxDetails>` and follow the approach there. 
 
-If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users can run one of the following two commands depending on whether they have a bash or csh shell, respectively:
+If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users with a bash shell environment can run:
 
 .. code-block:: console
 
    source /path/to/ufs-srweather-app/etc/lmod-setup.sh gaea
-   source /path/to/ufs-srweather-app/etc/lmod-setup.csh gaea
 
 .. note::
 
-   If users execute one of the above commands on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). 
+   If users source the lmod-setup file on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). 
 
 From here, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in the ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using a given ``<compiler>``, run:
 
@@ -321,18 +311,11 @@ From here, ``Lmod`` is ready to load the modulefiles needed by the SRW App. Thes
 
 where ``/path/to/ufs-srweather-app/modulefiles/`` is the full path to the ``modulefiles`` directory.
 
-This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. Users on Level 2-4 systems (including generic Linux/MacOS systems) will need to modify an appropriate ``build_<platform>_<compiler>`` modulefile. One of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. However, users will need to adjust certain environment variables in their modulefile, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. 
+This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. Users on Level 2-4 systems (including generic Linux/MacOS systems) will need to modify an appropriate ``build_<platform>_<compiler>`` modulefile. One of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. However, users will need to adjust certain environment variables in their modulefile, such as the path to the software stack, so that the SRW App can find and load the appropriate modules. 
 
 .. note::
 
-   These instructions assume that Lmod (an SRW App prerequisite) is installed. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. On systems without Lmod, users can modify or set the required environment variables with the ``export`` or ``setenv`` commands, depending on whether they are using a bash or csh/tcsh shell, respectively: 
-
-   .. code-block::
-
-      export <VARIABLE_NAME>=<PATH_TO_MODULE>
-      setenv <VARIABLE_NAME> <PATH_TO_MODULE>
-
-   However, building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
+   These instructions assume that Lmod (an SRW App prerequisite) is installed. To check whether Lmod is installed, run ``echo $LMOD_PKG``, and see if it outputs a path to the Lmod package. Building the SRW App without Lmod is not supported at this time. It should be possible to do so, but it has not been tested. Users are encouraged to install Lmod on their system. 
 
 .. _BuildCMake:
 
@@ -360,6 +343,42 @@ The build will take a few minutes to complete. When it starts, a random number i
 .. hint::
 
    If you see the ``build.out`` file, but there is no ``ufs-srweather-app/exec`` directory, wait a few more minutes for the build to complete.
+
+.. _install-uw:
+
+Install ``uwtools``
+^^^^^^^^^^^^^^^^^^^^
+
+The :uw:`UW Tools documentation <sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. See :numref:`Section %s <uwtools>` for more information on ``uwtools`` in the SRW App.
+
+For convenience, a suggested procedure is included below for users who do not have ``uwtools`` or ``conda`` installed. However, in the event of problems, refer to the UW Tools documentation and forums. 
+
+#. Run ``uname -om`` to determine the system's operating system and architecture.
+#. Go to the `Miniforge releases page <https://github.com/conda-forge/miniforge/releases>`_ and download the desired version of Miniforge. For example:
+
+   .. code-block:: console
+      
+      wget https://github.com/conda-forge/miniforge/releases/download/24.11.2-1/Miniforge3-24.11.2-1-Linux-x86_64.sh
+
+#. Run the shell script to install ``conda``. For example:
+
+   .. code-block:: console
+
+      bash Miniforge3-24.11.2-1-Linux-x86_64.sh -bfp $PWD/conda 
+   
+   Users should replace ``Miniforge3-24.11.2-1-Linux-x86_64.sh`` with the name of the file they downloaded. 
+#. Remove the installation script, e.g., by running: ``rm Miniforge3-24.11.2-1-Linux-x86_64.sh``.
+#. Run: 
+
+   .. code-block:: console
+      
+      source conda/etc/profile.d/conda.sh
+      conda activate
+      cd ufs-srweather-app/conda/envs
+      conda create -n srw_app -c ufs-community -c conda-forge --override-channels uwtools=<X.Y.Z>
+   
+   where ``<X.Y.Z>`` is the desired version number. (It may be necessary to create the ``conda/envs`` directory within the ``ufs-srweather-app`` using the ``mkdir`` command if it does not already exist.)
+   Hit ``y`` to continue installation. 
 
 .. _MacLinuxDetails:
 
@@ -394,9 +413,7 @@ Next, users must source the Lmod setup file, just as they would on other systems
    module load build_<platform>_gnu
    export LDFLAGS+=" -L${MPI_ROOT}/lib "
 
-In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh <platform>`` in place of the first line in the code block above. The last line is primarily needed for the MacOS platforms.
-
-Proceed to building the executables using the process outlined in :numref:`Step %s <BuildCMake>`.
+The last line is primarily needed for the MacOS platforms.
 
 Run an Experiment
 =====================

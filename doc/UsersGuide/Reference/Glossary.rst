@@ -96,7 +96,7 @@ Glossary
       The `Earth Prediction Innovation Center <https://epic.noaa.gov/>`_ seeks to accelerate scientific research and modeling contributions through continuous and sustained community engagement in order to produce the most accurate and reliable operational modeling system in the world. 
 
    ESG
-      Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2020`). 
+      Extended Schmidt Gnomonic (ESG) grid. The ESG grid uses the map projection developed by Jim Purser of NOAA :term:`EMC` (:cite:t:`Purser_2023`). 
 
    ESMF
       `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/>`__. The ESMF defines itself as "a suite of software tools for developing high-performance, multi-component Earth science modeling applications."
@@ -181,7 +181,7 @@ Glossary
       A namelist defines a group of variables or arrays. Namelists are an I/O feature for format-free input and output of variables by key-value assignments in Fortran compilers. Fortran variables can be read from and written to plain-text files in a standardised format, usually with a ``.nml`` file ending.
 
    NCAR
-      The `National Center for Atmospheric Research <https://ncar.ucar.edu/>`__. 
+      The `National Center for Atmospheric Research <https://ncar.ucar.edu/>`_. 
 
    NCEP
       National Centers for Environmental Prediction (NCEP) is an arm of the National Weather Service

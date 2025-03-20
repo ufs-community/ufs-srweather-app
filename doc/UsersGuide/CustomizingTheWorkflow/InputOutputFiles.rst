@@ -329,51 +329,48 @@ If users want to run the SRW Application for dates other than June 15-16, 2019, 
 Users will need to ensure that the initial and lateral boundary condition files are available
 in the specified path for their new date, cycle, and forecast length.
 
+.. _stage-ics-manually:
+
 Staging Initial Conditions Manually
 -----------------------------------
 If users want to run the SRW Application with raw model files for dates other than those that
 are currently available on the preconfigured platforms, they need to stage the data manually.
 The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (which may be the same directory). The path to these variables can be set in the ``config.yaml`` file as shown :ref:`above <ICS-LBCS>`. Raw model files are available from a number of sources. A few examples are provided here for convenience.
 
-NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
+**NOMADS:** https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 
-* GFS (GRIB2 or NEMSIO) - available for the last 10 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/ 
-* GDAS (NETCDF) sfc files - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod
-* NAM - available for the last 8 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/  
-* RAP - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/ 
-* HRRR - available for the last 2 days
-  https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/
+   * GFS (GRIB2 or NEMSIO): https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/ (available for the last 10 days)
+   * GDAS (NETCDF) sfc files: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod (available for the last 2 days)
+   * NAM: https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/ (available for the last 8 days)  
+   * RAP: https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/ (available for the last 2 days)
+   * HRRR: https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/ (available for the last 2 days)
 
 AWS S3 Data Buckets:
+   * GFS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
+   * GEFS: https://registry.opendata.aws/noaa-gefs/
+   * GDAS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
+   * HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
+   * A list of the NOAA Open Data Dissemination (NODD) datasets can be found here: https://www.noaa.gov/nodd/datasets
+   * RRFS: https://registry.opendata.aws/noaa-rrfs/ --- `Experimental data <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`_ for the Rapid Refresh Forecast System (RRFS) prototype is available for deterministic forecasts starting hourly for many dates from 04/29/2024 to 12/03/2024. Forecast data are available out to 60 hours for 00, 06, 12, and 18 UTC starting times (cycles), and out to 18 hours for other cycles. Earlier dates may contain only forecasts at 00, 06, 12, 18 UTC; the user needs to verify that data exist for needed dates.
 
-* GFS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
-* GEFS: https://registry.opendata.aws/noaa-gefs/
-* GDAS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
-* HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
-* A list of the NOAA Open Data Dissemination (NODD) datasets can be found here: https://www.noaa.gov/nodd/datasets
-* RRFS - experimental data is available starting 02/01/2024 for deteministic forecasts starting hourly. Forecast data are available out to 60 hours for 00, 06, 12, and 18 UTC starting times (cycles), and out to 18 hours for other cycles. Earlier dates, from 05/01/2023 to 01/31/2024, may contain only forecasts at 00, 06, 12, 18 UTC; user needs to verify that data exist for needed dates.
-  https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/
+Planetary Computer Data:
+   * GFS: https://planetarycomputer.microsoft.com/dataset/storage/noaa-gfs
+   * HRRR: https://planetarycomputer.microsoft.com/dataset/storage/noaa-hrrr
+   * RAP: https://planetarycomputer.microsoft.com/dataset/storage/noaa-rap
 
 NCEI Archive:
-
-* GFS: https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast
-* NAM: https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale
-* RAP: https://www.ncei.noaa.gov/products/weather-climate-models/rapid-refresh-update
+   * GFS: https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast
+   * NAM: https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale
+   * RAP: https://www.ncei.noaa.gov/products/weather-climate-models/rapid-refresh-update
 
 Google Cloud:
-
-* HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
+   * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
 Others: 
-
-* University of Utah HRRR archive: https://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi
-* NAM nest archive: https://www.ready.noaa.gov/archives.php
-* NAM data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=NAM218&subqueryby=STATION&applname=&outdest=FILE
-* RAP isobaric data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=RAP130&subqueryby=STATION&applname=&outdest=FILE
+   * University of Utah HRRR archive: https://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi
+   * NAM nest archive: https://www.ready.noaa.gov/archives.php
+   * NAM data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=NAM218&subqueryby=STATION&applname=&outdest=FILE
+   * RAP isobaric data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=RAP130&subqueryby=STATION&applname=&outdest=FILE
 
 Coexistence of Multiple Files for the Same Date
 -------------------------------------------------

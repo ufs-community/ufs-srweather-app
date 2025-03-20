@@ -8,6 +8,7 @@ set -eo pipefail
 pip install Sphinx==7.4.7
 pip install sphinx-rtd-theme
 pip install sphinxcontrib-bibtex
+pip install sphinxcontrib-plantuml
 
 # Regenerate tech docs in ush and tests/WE2E based on current state of scripts in those directories.
 cd doc/TechDocs

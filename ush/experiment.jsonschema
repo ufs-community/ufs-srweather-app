@@ -322,7 +322,6 @@
         "GRID_GEN_METHOD": {
           "enum": [
             "",
-            "GFDLgrid",
             "ESGgrid"
           ],
           "type": "string"
@@ -331,8 +330,6 @@
           "enum": [
             "",
             "AQM_NA_13km",
-            "CONUS_25km_GFDLgrid",
-            "CONUS_3km_GFDLgrid",
             "GSD_HRRR_25km",
             "RRFS_AK_13km",
             "RRFS_AK_3km",

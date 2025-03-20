@@ -1,0 +1,8 @@
+Grib2 name,NetCDF name,Definition,Units
+AEMFLX,ebu_smoke (phyf file),Smoke Emissions,kg/m^2/s
+WFIREPOT (or var discipline=2 master_table=2 parmcat=4 parm=26),hwp (phyf file),Hourly wildfire potential index,unitless
+COLMD:entire atmosphere (considered as a single layer):anl:chemical=Particulate Organic Matter Dry,NA,Vertically integrated smoke,kg/m^2
+MASSDEN:8 m above ground:anl:chemical=Particulate Organic Matter Dry:aerosol_size <2.5e-06,smoke (dynf file),Smoke (PM2.5),kg/m^3
+MASSDEN:8 m above ground:anl:chemical=Dust Dry:aerosol_size <2.5e-06,dust (dynf file),Fine dust,kg/m^3
+"MASSDEN:65 hybrid level:anl:aerosol=Dust dry:aerosol_size >=2.5e-06,<1e-05",coarsepm (dynf file),Coarse dust,kg/m^3
+AOTK,ext550,AOD,unitless
