@@ -133,7 +133,7 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu20.04-intel-srwapp-release-public-v3.0.0 docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-release3
+   sudo singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0 docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-release3
 
 For easier reference, users can set an environment variable to point to the container: 
 
