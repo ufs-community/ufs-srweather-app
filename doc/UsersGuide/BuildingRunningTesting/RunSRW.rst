@@ -424,6 +424,27 @@ Users can omit specific tasks from a task group by including them under the list
    * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
+.. _PlotOutput:
+
+Plotting Configuration (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An optional Python plotting task (plot_allvars) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
+
+   * 2-m temperature
+   * 2-m dew point temperature
+   * 10-m winds
+   * 250 hPa winds
+   * Accumulated precipitation
+   * Composite reflectivity
+   * Surface-based :term:`CAPE`/:term:`CIN`
+   * Max/Min 2-5 km updraft helicity
+   * Sea level pressure (SLP)
+
+This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two experiments. When plotting the difference, the two experiments must be on the same domain and available for 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
+
 .. _Cartopy:
 
 Cartopy Shapefiles
