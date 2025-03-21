@@ -752,7 +752,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         #
         # -----------------------------------------------------------------------
         #
-        # Remove all verification (meta)tasks for which no fields are specified.
+        # Remove all verification (meta)tasks which are not needed for the specified
+        # list of verification field groups.
+        # Note that if the metatask specification depends on the field group, it
+        # does not need to be listed here because those metatasks will be removed
+        # later by clean_rocoto_dict()
         #
         # -----------------------------------------------------------------------
         #
@@ -780,28 +784,21 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         vx_field_groups_all_by_obtype["MRMS"] = ["REFC", "RETOP"]
         vx_metatasks_all_by_obtype["MRMS"] \
         = ["task_get_obs_mrms",
-           "metatask_GridStat_REFC_RETOP_all_mems",
-           "metatask_GenEnsProd_EnsembleStat_REFC_RETOP",
-           "metatask_GridStat_REFC_RETOP_ensprob"]
+           "metatask_GridStat_REFC_RETOP_all_mems"]
     
         vx_field_groups_all_by_obtype["NDAS"] = ["SFC", "UPA"]
         vx_metatasks_all_by_obtype["NDAS"] \
         = ["task_get_obs_ndas",
            "task_run_MET_Pb2nc_obs_NDAS",
-           "metatask_PointStat_SFC_UPA_all_mems",
-           "metatask_GenEnsProd_EnsembleStat_SFC_UPA",
            "metatask_PointStat_SFC_UPA_ensmeanprob"]
 
         vx_field_groups_all_by_obtype["AERONET"] = ["AOD"]
         vx_metatasks_all_by_obtype["AERONET"] \
-        = ["task_get_obs_aeronet",
-           "metatask_ASCII2nc_obs"]
+        = ["task_get_obs_aeronet"]
 
         vx_field_groups_all_by_obtype["AIRNOW"] = ["PM25", "PM10"]
         vx_metatasks_all_by_obtype["AIRNOW"] \
-        = ["task_get_obs_airnow",
-           "metatask_ASCII2nc_obs",
-           "metatask_PcpCombine_fcst_PM_all_mems"]
+        = ["task_get_obs_airnow"]
 
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.
@@ -1877,16 +1874,28 @@ def clean_rocoto_dict(rocotodict):
     """Removes any invalid entries from ``rocotodict``. Examples of invalid entries are:
 
     1. A task dictionary containing no "command" key
-    2. A metatask dictionary containing no task dictionaries
+    2. A metatask definition dependent on a variable with no entries
+    3. A metatask dictionary containing no task dictionaries
 
     Args:
         rocotodict (dict): A dictionary containing Rocoto workflow settings
     """
 
-    # Loop 1: search for tasks with no command key, iterating over metatasks
+
+    # Loop 1: search for tasks with no command key, iterating over metatasks, and popping metatasks with
+    # var keys having empty values
     for key in list(rocotodict.keys()):
         if key.split("_", maxsplit=1)[0] == "metatask":
             clean_rocoto_dict(rocotodict[key])
+            # After checking for metatasks with no command key, now check for empty var entries
+            if rocotodict.get(key).get('var'):
+                for varkey in list(rocotodict[key]['var'].keys()):
+                    if not rocotodict[key]['var'][varkey]:
+                        popped = rocotodict.pop(key)
+                        logging.warning(f"Invalid metatask {key} removed due to empty/unset var: {varkey}")
+                        logging.debug(f"Removed entry:\n{popped}")
+                        break
+
         elif key.split("_", maxsplit=1)[0] in ["task"]:
             if not rocotodict[key].get("command"):
                 popped = rocotodict.pop(key)
