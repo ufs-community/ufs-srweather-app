@@ -62,7 +62,7 @@ metatask_run_ens_post:
       fhr: '{% for h in range(workflow.FCST_LEN_HRS) %}{{ " %03d" % h }}{% endfor %}'
     metatask_sub_hourly_post:
       var:
-        fmn: '{% for min in range(0, 60, task_run_post.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
+        fmn: '{% for min in range(0, 60, task_run_post.envvars.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
       task_run_post_mem#mem#_f#fhr##fmn#: &subhourly_run_post_task
         <<: *default_task
         envars:

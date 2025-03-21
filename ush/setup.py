@@ -1195,7 +1195,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         # Subhourly post should be set with minutes between 1 and 59 for
         # real subhourly post to be performed.
-        dt_subhourly_post_mnts = post_config["DT_SUBHOURLY_POST_MNTS"]
+        dt_subhourly_post_mnts = post_config["envvars"]["DT_SUBHOURLY_POST_MNTS"]
         if dt_subhourly_post_mnts == 0:
             logger.warning(
                 f"""
