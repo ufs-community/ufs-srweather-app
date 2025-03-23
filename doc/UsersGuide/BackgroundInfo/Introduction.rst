@@ -144,7 +144,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - UFS_UTILS Technical Documentation
      - https://ufs-utils-epic.readthedocs.io/en/release-srw-v3.0.0/
    * - UFS_UTILS Scientific Documentation
-     - https://ufs-community.github.io/UFS_UTILS/index.html
+     - https://noaa-epic.github.io/UFS_UTILS/ver-srw-3.0.0/index.html
    * - UFS Weather Model User's Guide
      - https://ufs-weather-model.readthedocs.io/en/release-public-v3.0.0/
    * - FV3 Technical Documentation
