@@ -334,7 +334,8 @@ intersphinx_mapping = {
 # -- Options for extlinks extension ---------------------------------------
 
 extlinks_detect_hardcoded_links = True
-extlinks = {'github-docs': ('https://docs.github.com/en/%s', '%s'),
+extlinks = {'ccpp-scm': ('https://ccpp-scm.readthedocs.io/en/latest/%s','%s'),
+            'github-docs': ('https://docs.github.com/en/%s', '%s'),
             'nco': ('https://www.nco.ncep.noaa.gov/idsb/implementation_standards/%s', '%s'),
             "rst": ("https://www.sphinx-doc.org/en/master/usage/restructuredtext/%s", "%s"),
             "rtd": ("https://readthedocs.org/projects/ufs-srweather-app/%s", "%s"),
