@@ -8,7 +8,7 @@ The Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application 
 
 .. attention::
 
-   The SRW Application has :srw-wiki:`four levels of support <Supported-Platforms-and-Compilers>`. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. This chapter also provides guidance for running the SRW App on other systems (including generic Linux/Mac systems), but the user may need to perform additional steps and/or troubleshooting. 
+   The SRW Application has :srw-wiki:`four levels of support <Supported-Platforms-and-Compilers>`. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems.  
 
 .. note::
    The :ref:`container approach <QuickstartC>` is recommended for a smoother first-time build and run experience. Building without a container may allow for more customization. However, the non-container approach requires more in-depth system-based knowledge, especially on Level 3 and 4 systems, so it is less appropriate for beginners. 
@@ -48,15 +48,7 @@ SRW App components, including the UFS :term:`WM`, draw on over 50 code libraries
 Instructions
 -------------------------
 
-Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. Before installing spack-stack, users on both Linux and MacOS systems should set the stack size to "unlimited" (if allowed) or to the largest possible value:
-
-.. code-block:: console
-
-   # Linux, if allowed
-   ulimit -s unlimited
-
-   # MacOS, this corresponds to 65MB
-   ulimit -S -s unlimited
+Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system. 
 
 For a detailed description of installation options, see :doc:`spack-stack instructions for configuring the stack on a new platform <spack-stack:NewSiteConfigs>`.
 
@@ -301,7 +293,7 @@ From here, ``Lmod`` is ready to load the modulefiles needed by the SRW App. Thes
 
 where ``/path/to/ufs-srweather-app/modulefiles/`` is the full path to the ``modulefiles`` directory.
 
-This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. Users on Level 2-4 systems (including generic Linux/MacOS systems) will need to modify an appropriate ``build_<platform>_<compiler>`` modulefile. One of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. However, users will need to adjust certain environment variables in their modulefile, such as the path to the software stack, so that the SRW App can find and load the appropriate modules. 
+This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. Users on Level 2-4 systems will need to modify an appropriate ``build_<platform>_<compiler>`` modulefile. One of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. However, users will need to adjust certain environment variables in their modulefile, such as the path to the software stack (spack-stack), so that the SRW App can find and load the appropriate modules. 
 
 .. note::
 

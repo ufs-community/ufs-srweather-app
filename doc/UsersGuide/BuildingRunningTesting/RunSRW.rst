@@ -69,8 +69,6 @@ The SRW App requires input files to run. These include static datasets, initial 
      - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
    * - Orion
      - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
-   * - WCOSS2
-     - /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/
 
 For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s: Input Files <Input>` and :numref:`%s: Output Files <OutputFiles>` contain useful background information on the input and output files used in the SRW App.
 
@@ -283,10 +281,10 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
       EXPT_SUBDIR: test_community
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_data/develop/input_model_data/<model_type>/<data_type>/${yyyymmddhh}"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_data/v3p0/input_model_data/<model_type>/<data_type>/${yyyymmddhh}"
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_data/develop/input_model_data/<model_type>/<data_type>/${yyyymmddhh}"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_data/v3p0/input_model_data/<model_type>/<data_type>/${yyyymmddhh}"
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
@@ -421,126 +419,8 @@ Users can omit specific tasks from a task group by including them under the list
        task_bias_correction_pm25:
 
 **Next Steps:**
-
-   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacExptConfig>` for additional required steps. 
+ 
    * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
-   * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
-   * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
-
-.. _LinuxMacExptConfig:
-
-Configuring an Experiment on General Linux and MacOS Systems
-``````````````````````````````````````````````````````````````
-
-.. note::
-    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
-
-**Optional: Install Rocoto**
-
-.. note::
-   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not yet been tested on MacOS and has had limited testing on general Linux plaforms.
-
-
-**Configure the SRW App:**
-
-After following the steps in :numref:`Section %s: General Configuration <GeneralConfig>` above, users should have a ``config.yaml`` file with settings from ``community.config.yaml`` and updates similar to this: 
-
-.. code-block:: console
-
-   user:
-      MACHINE: macos
-      ACCOUNT: user 
-   workflow:
-      EXPT_SUBDIR: my_test_expt
-      COMPILER: gnu
-   task_get_extrn_ics:
-      USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/input_model_data/FV3GFS/grib2/2019061518
-   task_get_extrn_lbcs:
-      USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/input_model_data/FV3GFS/grib2/2019061518
-
-Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition parameters directly in the section of the ``predef_grid_params.yaml`` file pertaining to the grid they want to use. Domain decomposition needs to take into account the number of available CPUs and configure the variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group`` accordingly. 
-
-The example below is for systems with 8 CPUs:
-
-.. code-block:: console
-
-   task_run_fcst:
-      LAYOUT_X: 3
-      LAYOUT_Y: 2
-      WRTCMP_write_tasks_per_group: 2
-
-.. note::
-   The number of MPI processes required by the forecast will be equal to ``LAYOUT_X`` * ``LAYOUT_Y`` + ``WRTCMP_write_tasks_per_group``. 
-
-For a machine with 4 CPUs, the following domain decomposition could be used:
-
-.. code-block:: console
-
-   task_run_fcst:
-      LAYOUT_X: 3
-      LAYOUT_Y: 1
-      WRTCMP_write_tasks_per_group: 1
-
-**Configure the Machine File**
-
-Configure the ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
-
-.. code-block:: console
-
-   platform:
-      # Architecture information
-      WORKFLOW_MANAGER: none
-      NCORES_PER_NODE: 8
-      SCHED: none
-      # Run commands for executables
-      RUN_CMD_FCST: 'mpirun -np ${PE_MEMBER01}'
-      RUN_CMD_POST: 'mpirun -np 4'
-      RUN_CMD_SERIAL: time
-      RUN_CMD_UTILS: 'mpirun -np 4'
-      # Commands to run at the start of each workflow task.
-      PRE_TASK_CMDS: '{ ulimit -a; }'
-      FIXaer: /path/to/FIXaer/files
-      FIXgsm: /path/to/FIXgsm/files
-      FIXlut: /path/to/FIXlut/files
-
-      # Path to location of static input files used by the make_orog task
-      FIXorg: path/to/FIXorg/files 
-
-      # Path to location of static surface climatology input fields used by sfc_climo_gen
-      FIXsfc: path/to/FIXsfc/files 
-
-      #Path to location of NaturalEarth shapefiles used for plotting
-      FIXshp: /Users/username/DATA/UFS/NaturalEarth
-
-   task_run_fcst:
-      FIXaer: /path/to/FIXaer/files
-      FIXgsm: /path/to/FIXgsm/files
-      FIXlut: /path/to/FIXlut/files
-
-   data:
-      # Used by setup.py to set the values of EXTRN_MDL_SOURCE_BASEDIR_ICS and EXTRN_MDL_SOURCE_BASEDIR_LBCS
-      FV3GFS: /Users/username/DATA/UFS/FV3GFS 
-
-The ``data:`` section of the machine file can point to various data sources that the user has pre-staged on disk. For example:
-
-.. code-block:: console
-
-   data:
-      FV3GFS:
-         nemsio: /Users/username/DATA/UFS/FV3GFS/nemsio
-         grib2: /Users/username/DATA/UFS/FV3GFS/grib2
-         netcdf: /Users/username/DATA/UFS/FV3GFS/netcdf
-      RAP: /Users/username/DATA/UFS/RAP/grib2
-      HRRR: /Users/username/DATA/UFS/HRRR/grib2
-      RRFS: /Users/username/DATA/UFS/RRFS/grib2
-
-This can be helpful when conducting multiple experiments with different types of data. 
-
-**Next Steps:**
-
-   * To add the graphics plotting tasks to the experiment workflow, go to the next section :ref:`Plotting Configuration <PlotOutput>`. 
    * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
@@ -884,12 +764,12 @@ and ``OBS_*_FN_TEMPLATES`` might be set as follows:
 
    verification:
 
-      CCPA_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ccpa
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/nohrsc
-      MRMS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/mrms
-      NDAS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ndas
-      AERONET_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/aeronet
-      AIRNOW_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/airnow
+      CCPA_OBS_DIR: /path/to/UFS_SRW_data/v3p0/obs_data/ccpa
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/v3p0/obs_data/nohrsc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_data/v3p0/obs_data/mrms
+      NDAS_OBS_DIR: /path/to/UFS_SRW_data/v3p0/obs_data/ndas
+      AERONET_OBS_DIR: /path/to/UFS_SRW_data/v3p0/obs_data/aeronet
+      AIRNOW_OBS_DIR: /path/to/UFS_SRW_data/v3p0/obs_data/airnow
 
       OBS_CCPA_FN_TEMPLATES: [ 'APCP', '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2' ]
       OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW', 'sfav2_CONUS_6h_{valid?fmt=%Y%m%d%H}_grid184.grb2' ]
@@ -909,7 +789,7 @@ Now further consider the CCPA obs type.  If one of the days encompassed by the f
 then the ``get_obs_ccpa`` task associated with this day will check for the existence of the set of obs
 files given by
 
-``/path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t{HH}z.01h.hrap.conus.gb2``
+``/path/to/UFS_SRW_data/v3p0/obs_data/ccpa/20240429/ccpa.t{HH}z.01h.hrap.conus.gb2``
 
 where ``{HH}`` takes on all hours of this day at which the verification requires CCPA obs.  For example,
 if performing (deterministic or ensemble) VX on 1-hour APCP for a 3-hour forecast that starts at 06z,
@@ -918,9 +798,9 @@ are:
 
 .. code-block:: console
 
-   /path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t07z.01h.hrap.conus.gb2
-   /path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t08z.01h.hrap.conus.gb2
-   /path/to/UFS_SRW_data/develop/obs_data/ccpa/20240429/ccpa.t09z.01h.hrap.conus.gb2
+   /path/to/UFS_SRW_data/v3p0/obs_data/ccpa/20240429/ccpa.t07z.01h.hrap.conus.gb2
+   /path/to/UFS_SRW_data/v3p0/obs_data/ccpa/20240429/ccpa.t08z.01h.hrap.conus.gb2
+   /path/to/UFS_SRW_data/v3p0/obs_data/ccpa/20240429/ccpa.t09z.01h.hrap.conus.gb2
 
 If all these exist, ``get_obs_ccpa`` will simply confirm their existence and will not need to retrieve
 any files.  If not, it will try to retrieve the files from a data store such as NOAA HPSS and place them
