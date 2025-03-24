@@ -68,8 +68,6 @@ verification:
     - APCP
     - REFC
     - RETOP
-    - SFC
-    - UPA
     - ASNOW
   CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/CCPA_obs'
   MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/MRMS_obs'

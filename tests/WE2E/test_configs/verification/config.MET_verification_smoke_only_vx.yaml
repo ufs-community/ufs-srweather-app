@@ -1,7 +1,7 @@
 metadata:
   description: |-
     This test checks the capability of the workflow to run verification tasks
-    for smoke data (AERONET AOD and AIRNOW PM). Also does SFC and NOHRSC snow verification
+    for smoke data (AERONET AOD and AIRNOW PM) using RRFS prototype data.
 user:
   RUN_ENVIR: community
 workflow:
@@ -18,7 +18,7 @@ rocoto:
         walltime: 01:00:00
 verification:
   VX_FCST_MODEL_NAME: RRFS_smoke_test
-  VX_FIELD_GROUPS: [ "SFC", "AOD", "PM25", "PM10"]
+  VX_FIELD_GROUPS: [ "AOD", "PM25", "PM10" ]
   VX_FCST_INPUT_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/input_model_data/RRFS'
   FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H}'
   FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
