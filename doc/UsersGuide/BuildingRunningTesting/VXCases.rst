@@ -111,14 +111,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       MACHINE: <your_machine_name>
       ACCOUNT: <my_account>
    platform:
-      MODEL: FV3_GFS_v16_SUBCONUS_3km
-      MET_INSTALL_DIR: /path/to/met/x.x.x           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-      METPLUS_PATH: /path/to/METplus/METplus-x.x.x  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
-      # Add MET_BIN_EXEC variable to config.yaml
-      MET_BIN_EXEC: bin
-      CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
-      MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
+      EXTRN_MDL_DATA_STORES: aws
    workflow:
       EXPT_SUBDIR: <any_name_you_like>
       CCPP_PHYS_SUITE: FV3_RRFS_v1beta
@@ -141,6 +134,9 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
      PLOT_DOMAINS: ["regional"]
    verification:
      VX_FCST_MODEL_NAME: FV3_RRFS_v1beta_SUBCONUS_Ind_3km
+     CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
+     MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
+     NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
    rocoto:
      tasks:
        metatask_run_ensemble:
