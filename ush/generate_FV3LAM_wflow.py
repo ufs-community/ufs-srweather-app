@@ -436,7 +436,7 @@ def generate_FV3LAM_wflow(
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
         realize(
-            input_config=fv3_nml_fp,
+            input_config=FV3_NML_FP,
             input_format="nml",
             output_file=workflow_config["FV3_NML_STOCH_FP"],
             output_format="nml",

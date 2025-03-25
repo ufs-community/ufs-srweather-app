@@ -7,6 +7,8 @@ To create the experiment directory and workflow when running the SRW Application
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define a variable in the ``config.yaml`` script, its value in ``config_defaults.yaml`` will be used, or the value will be reset depending on other parameters, such as the platform (``MACHINE``) selected for the experiment. 
 
+When a Jinja expression is used to refer to other values, it will be evaluated by ``uwtools`` as a string. In some cases, it is important that the value is appropriately typed. The ``uwtools`` YAML language supports several pyYAML tags that apply appropriate typing. You can find more information about the Custom Tags in the `uwtools docs <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html>__`. For example, those may be ``!int``, ``!float``, ``!bool``, etc.
+
 .. note::
    The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception of the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>`.
 
