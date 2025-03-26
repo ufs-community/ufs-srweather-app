@@ -705,6 +705,7 @@ def setup_fv3_namelist(expt_config,debug):
         gfs_physics_nml_dict.update({
             "ebb_dcycle": EBB_DCYCLE,
             "rrfs_sd": True,
+            "dust_opt": DUST_OPTION,
     })
 
     if CPL_AQM:

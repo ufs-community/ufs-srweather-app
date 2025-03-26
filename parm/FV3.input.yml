@@ -778,7 +778,6 @@ RRFS_sas:
     do_ugwp_v0_nst_only : false
     do_ugwp_v0_orog_only : false
     dt_inner : 36
-    ebb_dcycle : 1
     effr_in: true
     gwd_opt: 3
     fhlwr: 900.0
