@@ -186,4 +186,4 @@ class TestSmokeDustRegridProcessor:  # pylint: disable=too-few-public-methods
         assert len(interpolated_files) == 24
         for intp_file in interpolated_files:
             fpath = tmp_path / intp_file
-            assert create_file_hash(fpath) == "8e90b769137aad054a2e49559d209c4d"
+            assert create_file_hash(fpath) == "3605f5fc9bba74626b72b9adeadc0abe"

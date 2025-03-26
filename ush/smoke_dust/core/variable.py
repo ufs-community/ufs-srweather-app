@@ -13,6 +13,7 @@ class SmokeDustVariable(BaseModel):
     units: str = Field(description="Units for the variable.")
     fill_value_str: str = Field(description="Fill value for the variable in string format.")
     fill_value_float: float = Field(description="Fill value for the variable in float format.")
+    fill_value_actual: float = Field(description="Value to fill arrays with using numpy array set.")
 
 
 SmokeDustVariablesType = Tuple[SmokeDustVariable, ...]
@@ -50,6 +51,7 @@ SD_VARS = SmokeDustVariables(
             units="degrees_north",
             fill_value_str="-9999.f",
             fill_value_float=-9999.0,
+            fill_value_actual=-9999.0,
         ),
         SmokeDustVariable(
             name="geolon",
@@ -57,62 +59,71 @@ SD_VARS = SmokeDustVariables(
             units="degrees_east",
             fill_value_str="-9999.f",
             fill_value_float=-9999.0,
+            fill_value_actual=-9999.0,
         ),
         SmokeDustVariable(
             name="frp_avg_hr",
             long_name="Mean Fire Radiative Power",
             units="MW",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="ebb_smoke_hr",
             long_name="EBB emissions",
             units="ug m-2 s-1",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="frp_davg",
             long_name="Daily mean Fire Radiative Power",
             units="MW",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="ebb_rate",
             long_name="Total EBB emission",
             units="ug m-2 s-1",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="fire_end_hr",
             long_name="Hours since fire was last detected",
             units="hrs",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="hwp_davg",
             long_name="Daily mean Hourly Wildfire Potential",
             units="none",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="totprcp_24hrs",
             long_name="Sum of precipitation",
             units="m",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
         SmokeDustVariable(
             name="FRE",
             long_name="FRE",
             units="MJ",
-            fill_value_str="0.f",
-            fill_value_float=0.0,
+            fill_value_str="-1.f",
+            fill_value_float=-1.0,
+            fill_value_actual=0.0,
         ),
     )
 )

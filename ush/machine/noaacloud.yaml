@@ -35,6 +35,8 @@ platform:
   FIXupp: /contrib/EPIC/UFS_SRW_data/v3p0/fix/fix_upp
   FIXcrtm: /contrib/EPIC/UFS_SRW_data/v3p0/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws nomads
+task_run_fcst:
+  OMP_NUM_THREADS_RUN_FCST: 1
 data:
   ics_lbcs:
     FV3GFS:

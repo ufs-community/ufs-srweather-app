@@ -68,8 +68,8 @@ class GridSpec(BaseModel):
     y_corner: Union[str, None] = None
     x_corner_dim: Union[NameListType, None] = None
     y_corner_dim: Union[NameListType, None] = None
-    x_index: int = 0
-    y_index: int = 1
+    x_index: int = 1
+    y_index: int = 0
 
     @model_validator(mode="after")
     def _validate_model_(self) -> "GridSpec":
