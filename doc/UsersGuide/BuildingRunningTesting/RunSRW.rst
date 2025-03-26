@@ -331,10 +331,10 @@ For example, to run the out-of-the-box experiment on Hercules using cron to auto
          CRON_RELAUNCH_INTVL_MNTS: 3
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/v3p0/input_model_data/FV3GFS/grib2/2019061518
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/v3p0/input_model_data/FV3GFS/grib2/2019061518
 
 .. hint::
 
@@ -343,20 +343,6 @@ For example, to run the out-of-the-box experiment on Hercules using cron to auto
    * Various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
    * Users can find detailed information on configuration parameter options in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. 
-
-.. COMMENT: Add back if script is fixed: 
-   To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
-
-   .. code-block:: console
-
-      ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
-
-   A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
-
-   .. code-block:: console
-
-      INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-      FAILURE
 
 .. _ConfigTasks:
 
