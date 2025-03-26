@@ -171,11 +171,6 @@ if [ $(boolify "${PRINT_ESMF}") = "TRUE" ]; then
   export ESMF_RUNTIME_PROFILE=ON
   export ESMF_RUNTIME_PROFILE_OUTPUT="SUMMARY"
 fi
-# Add variables to run smoother on PW NOAA Cloud platforms
-if [ ${MACHINE} == "NOAACLOUD" ]; then
-  export UCX_TLS=tcp
-  export HDF5_USE_FILE_LOCKING="FALSE"
-fi
 #
 #-----------------------------------------------------------------------
 #
