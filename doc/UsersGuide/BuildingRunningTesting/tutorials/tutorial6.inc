@@ -53,10 +53,8 @@ Fix files are publicly available in the `SRW App Data Bucket <https://registry.o
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
    tar -xzf fix_data.tgz
-
-.. COMMENT: Update path for SRW v3.0.0 release
 
 Initial and Boundary Conditions Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -120,6 +118,8 @@ Users will need to adjust this command for the specific date(s) and forecast hou
 
 However, users are encouraged to experiment with downloading their own data for a case of interest!
 
+.. COMMENT: This data should probably be placed in a v3.0.0 location and the link updated here. 
+
 Natural Earth Shapefiles
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -127,7 +127,7 @@ The small set of Natural Earth shapefiles required for SRW App plotting tasks is
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth/NaturalEarth.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/NaturalEarth/NaturalEarth.tar.gz
    tar -xzf NaturalEarth.tgz
 
 The full set of Natural Earth shapefiles can also be downloaded from the `Natural Earth website <https://www.naturalearthdata.com/downloads/>`_. 
