@@ -45,7 +45,7 @@ On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can fi
 
 On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
-   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/METplus-vx-sample.
+   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/METplus-vx-sample/.
 
    #. Download from a terminal using the AWS command line interface (CLI), if installed:
 
