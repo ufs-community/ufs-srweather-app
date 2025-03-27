@@ -48,7 +48,7 @@ task_smoke_dust:
         datadep_grid:
           attrs:
             age: 00:00:00:05
-          value: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+          value: '{{ task_make_grid.envvars.GRID_DIR }}/make_grid_task_complete.txt'
         streq:
           left: staged_grid
           right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
@@ -56,7 +56,7 @@ task_smoke_dust:
         datadep_orog:
           attrs:
             age: 00:00:00:05
-          value: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+          value: '{{ task_make_orog.envvars.OROG_DIR }}/make_orog_task_complete.txt'
         streq:
           left: staged_orog
           right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
@@ -64,7 +64,7 @@ task_smoke_dust:
         datadep_sfc_climo:
           attrs:
             age: 00:00:00:05
-          value: '{{ task_make_sfc_climo.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
+          value: '{{ task_make_sfc_climo.envvars.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
         streq:
           left: staged_sfc_climo
           right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'

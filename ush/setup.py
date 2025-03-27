@@ -1247,12 +1247,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             )
         post_output_domain_name = predef_grid_name
 
-    if not isinstance(post_output_domain_name, int):
-        post_output_domain_name = post_output_domain_name.lower()
-
-    # Write updated value of POST_OUTPUT_DOMAIN_NAME back to dictionary
-    post_config["envvars"]["POST_OUTPUT_DOMAIN_NAME"] = post_output_domain_name
-
     #
     # -----------------------------------------------------------------------
     #
@@ -1391,28 +1385,26 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # file from the staged files.
         if not task_defs.get(sect_key):
             dir_key = f"{prep_task}_DIR"
-            task_dir = expt_config[sect_key]["envvars"][dir_key]
 
-            if not task_dir:
-                task_dir = Path(pregen_basedir, predef_grid)
-                expt_config[sect_key][dir_key] = str(task_dir)
-                msg = dedent(
-                    f"""
-                   {dir_key} will point to a location containing pre-generated files.
-                   Setting {dir_key} = {task_dir}
-                   """
-                )
-                logger.warning(msg)
-
+            task_dir = Path(pregen_basedir, predef_grid)
             if not Path(task_dir).exists():
                 msg = dedent(
                     f"""
                     The directory ({dir_key}) that should contain the pregenerated
                     {prep_task.lower()} files does not exist:
-                      {dir_key} = \"{task_dir}\"'''
+                      {dir_key} = \"{task_dir}\"
                     """
                 )
                 raise FileNotFoundError(msg)
+
+            expt_config[sect_key][dir_key] = str(task_dir)
+            msg = dedent(
+                f"""
+               {dir_key} will point to a location containing pre-generated files.
+               Setting {dir_key} = {task_dir}
+               """
+            )
+            logger.warning(msg)
 
             # Link the fix files and check that their resolution is
             # consistent
