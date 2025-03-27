@@ -30,10 +30,10 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the :srw-wiki:`SRW App Wiki page <Supported-Platforms-and-Compilers>`. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C6"`` |  ``"NOAACLOUD"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the :srw-wiki:`SRW App Wiki page <Supported-Platforms-and-Compilers>`. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C6"`` |  ``"NOAACLOUD"`` | ``"SINGULARITY"`` |  (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
-      Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
+      Users who are NOT on a named, supported Level 1 or 2 platform will need to set their own ``MACHINE`` variable. To combine the use of an unsupported platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
 
 ``ACCOUNT``: (Default: "")
    The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
@@ -500,7 +500,7 @@ CCPP Parameter
    | ``"FV3_WoFS_v0"``
    | ``"FV3_RAP"``
 
-   Other valid values can be found in the ``ush/valid_param_vals.yaml`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/release/public-v2.2.0/ush/valid_param_vals.yaml>`__, but users cannot expect full support for these schemes.
+   Other valid values can be found in the ``ush/valid_param_vals.yaml`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/release/public-v3.0.0/ush/valid_param_vals.yaml>`__, but users cannot expect full support for these schemes.
 
 ``CCPP_PHYS_SUITE_FN``: (Default: ``'suite_{{ CCPP_PHYS_SUITE }}.xml'``)
    The name of the suite definition file (SDF) used for the experiment. 
@@ -565,6 +565,8 @@ Predefined Grid Parameters
    **Other valid values include:**
 
    | ``"AQM_NA_13km"``
+     ``"SUBCONUS_CO_3km"``
+     ``"SUBCONUS_CO_1km"``
    | ``"CONUS_25km_GFDLgrid"`` 
    | ``"CONUS_3km_GFDLgrid"``
    | ``"GSD_HRRR_25km"``

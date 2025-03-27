@@ -107,8 +107,6 @@ Initial and boundary condition files
 The external model data used by ``chgres_cube`` (as part of the pre-processing utilities) are located
 in the experiment directory under ``$EXPTDIR/YYYYMMDDHH/EXTRN_MDL_NAME/{for_ICS/for_LBCS}``.
 
-.. COMMENT: This is confusing bc it sounds like these are input files, not output files. Does chgres_cube output these? In which tasks?
-
 Pre-processing (UFS_UTILS)
 --------------------------
 The files output by the other pre-processing utilities reside in the ``INPUT`` directory under the
@@ -147,9 +145,7 @@ where ``HHH`` corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
-
-.. COMMENT: Add crosslink in UPP docs; add ref here. 
+Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__. 
 
 For the SRW Application, the Weather Model netCDF output files are written to ``$EXPTDIR/YYYYMMDDHH/postprd`` and have the naming convention (file->linked to):
 
@@ -173,8 +169,6 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
    * :doc:`3D Pressure Level Fields <../../tables/SRW_PRSLEV_table>`
 
 Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
-
-.. COMMENT: Add crosslink to UPP docs; then update here. 
 
 After creating the new flat text file to reflect the changes, users will need to modify their ``config.yaml`` to point the workflow to the new text file. In ``config.yaml``, set the following:
 
@@ -226,14 +220,14 @@ A set of input files, including static (fix) data and raw initial and lateral bo
 Static Files
 --------------
 
-Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/fix/>`__ of the SRW App Data Bucket. Users can download the full set of fix files as a tar file:
+Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/fix/>`__ of the SRW App Data Bucket. Users can download the full set of fix files as a tar file:
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
    tar -xzf fix_data.tgz
 
-Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__.
+Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__.
 
 The environment variables ``FIXgsm``, ``FIXorg``, and ``FIXsfc`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``task_run_fcst:`` section of the ``config.yaml`` file, and alter the variable paths accordingly:
 
@@ -253,7 +247,7 @@ To download the model input data for the 12-hour "out-of-the-box" experiment con
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/gst_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/gst_data.tgz
    tar -xzf gst_data.tgz
 
 To download data for different dates, model types, and formats, users can explore the ``input_model_data`` section of the data bucket and replace the links above with ones that fetch their desired data. 
