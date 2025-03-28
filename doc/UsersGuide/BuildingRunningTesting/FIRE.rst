@@ -99,7 +99,7 @@ The fire module has the ability to print out additional messages to the log file
 
 Additional boundary conditions file
 -----------------------------------
-The CFBM, as an independent, coupled component, runs separately from the atmospheric component of the weather model, requires an additional input file (``geo_em.d01.nc``) that contains fire-specific boundary conditions such as fuel properties. On Level 1 systems, users can find an example file in the usual :ref:`input data locations <Data>` under ``LOCATION``. Users can also download the data required for the community experiment from the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20250321/input_model_data/fire>`__.
+The CFBM, as an independent, coupled component, runs separately from the atmospheric component of the weather model, requires an additional input file (``geo_em.d01.nc``) that contains fire-specific boundary conditions such as fuel properties. On Level 1 systems, users can find an example file in the usual :ref:`input data locations <Data>` under ``LOCATION``. Users can also download the data required for the community experiment from the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/input_model_data/fire>`__.
 
 
 Instructions on how to create this file for your own experiment can be found in the :fire-ug:`CFBM Users Guide <Configuration.html#configuring-a-domain-with-the-wrf-pre-processing-system-wps>`.
