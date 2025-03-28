@@ -27,12 +27,12 @@ On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can fi
 
    * FV3GFS data for the first forecast (``control``) is located at: 
    
-      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/input_model_data/FV3GFS/grib2/2019061518/
+      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/input_model_data/FV3GFS/grib2/2019061518/
 
    * HRRR and RAP data for the second forecast (``test_expt``) is located at: 
       
-      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/input_model_data/HRRR/2019061518/
-      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#develop-20240618/input_model_data/RAP/2019061518/
+      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/input_model_data/HRRR/2019061518/
+      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v3.0.0/input_model_data/RAP/2019061518/
 
 Load the Workflow
 --------------------
@@ -125,7 +125,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      EXTRN_MDL_NAME_ICS: FV3GFS
      FV3GFS_FILE_FMT_ICS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/v3p0/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
@@ -138,7 +138,7 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      LBC_SPEC_INTVL_HRS: 6
      FV3GFS_FILE_FMT_LBCS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/v3p0/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
@@ -210,10 +210,10 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: HRRR
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/v3p0/input_model_data/HRRR/${yyyymmddhh}
    task_get_extrn_lbcs:
      EXTRN_MDL_NAME_LBCS: RAP
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/v3p0/input_model_data/RAP/${yyyymmddhh}
      EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
 
 HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
