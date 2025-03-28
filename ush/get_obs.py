@@ -824,22 +824,33 @@ def get_obs(config, obtype, yyyymmdd_task):
                             # file names.
                             yyyymmddhh_str = dt.datetime.strftime(yyyymmddhh, '%Y%m%d%H')
                             if fg == 'REFC':
+                                file_template='MergedReflectivityQCComposite_00.50_[%Y%m%d-%H%M%S].grib2.gz'
                                 valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
-                                                source=basedir_raw,
+                                                source=arcv_dir_raw,
                                                 outdir=os.path.join(basedir_raw, 'topofhour'),
-                                                product='MergedReflectivityQCComposite',
-                                                level='_00.50_')
+                                                in_template=file_template,
+                                                out_template=file_template)
                             elif fg == 'RETOP':
+                                file_template='EchoTop_18_00.50_[%Y%m%d-%H%M%S].grib2.gz'
                                 valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
-                                                source=basedir_raw,
+                                                source=arcv_dir_raw,
                                                 outdir=os.path.join(basedir_raw, 'topofhour'),
-                                                product='EchoTop',
-                                                level='_18_00.50_')
-                            else:
+                                                in_template=file_template,
+                                                out_template=file_template)
+                            elif fg == 'GOESAOD':
+                                file_template='OR_ABI-L2-AODF-M*_G16_s[%Y%j%H%M%S]*.nc'
                                 valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
-                                                source=basedir_raw,
+                                                source=arcv_dir_raw,
                                                 outdir=os.path.join(basedir_raw, 'topofhour'),
-                                                product='OR_ABI-L2-AODF-M6_G16')
+                                                in_template=file_template,
+                                                out_template='OR_ABI-L2-AODF_%Y%m%d-%H%M%S.nc')
+                            elif fg == 'GOESADP':
+                                file_template='OR_ABI-L2-ADPF-M*_G16_s[%Y%j%H%M%S]*.nc'
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=arcv_dir_raw,
+                                                outdir=os.path.join(basedir_raw, 'topofhour'),
+                                                in_template=file_template,
+                                                out_template='OR_ABI-L2-ADPF_%Y%m%d-%H%M%S.nc')
 
                         # The raw file name needs to be the same as what the retrieve_data.py
                         # script called above ends up retrieving.  The list of possible templates
@@ -858,8 +869,6 @@ def get_obs(config, obtype, yyyymmdd_task):
                             with gzip.open(valid_file_name, 'rb') as f_in:
                                 with open(fn_raw:=valid_file_name.replace(".gz",""), 'wb') as f_out:
                                     shutil.copyfileobj(f_in, f_out)
-#                            fn_raw = f'{mrms_fields_in_obs_filenames[i]}_{mrms_levels_in_obs_filenames[i]}' \
-#                                   + f'_{yyyymmdd_task_str}-{hr:02d}0000.grib2'
                             fn_raw = os.path.join('topofhour', fn_raw)
                         elif obtype == 'NDAS':
                             time_ago = yyyymmddhh_arcv - yyyymmddhh
@@ -878,6 +887,9 @@ def get_obs(config, obtype, yyyymmdd_task):
                                 fn_raw = f'HourlyAQObs_{yyyymmddhh_str}.dat'
                             elif vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourly':
                                 fn_raw = f'HourlyData_{yyyymmddhh_str}.dat'
+                        elif obtype in ['GOESAOD', 'GOESADP']:
+                            fn_raw = os.path.join('topofhour',valid_file_name)
+
                         fp_raw = os.path.join(arcv_dir_raw, fn_raw)
 
                         # Make sure the directory in which the processed file will be created exists.
