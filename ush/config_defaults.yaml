@@ -1686,6 +1686,7 @@ task_run_fcst:
     PRINT_ESMF: false
     DO_FCST_RESTART: false
     USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE in ["FV3_GFS_v15_thompson_mynn_lam3km", "FV3_HRRR_gf", "FV3_GFS_v17_p8", "RRFS_sas"] }}'
+    IO_LAYOUT_Y: '{{ task_run_fcst.IO_LAYOUT_Y }}'
 
   ITASKS: 1
   #
