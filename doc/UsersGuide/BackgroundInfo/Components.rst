@@ -22,14 +22,14 @@ UFS Preprocessing Utilities (UFS_UTILS)
 
 The SRW Application includes a number of pre-processing utilities (UFS_UTILS) that initialize and prepare the model. Since the SRW App provides forecast predictions over a limited area (rather than globally), these utilities generate a regional grid (``regional_esg_grid/make_hgrid``) along with :term:`orography` (``orog``) and surface climatology (``sfc_climo_gen``) files on that grid. Grids include a strip, or "halo," of six cells that surround the regional grid and feed in lateral boundary condition data. Since different grid and orography files require different numbers of :term:`halo` cells, additional utilities handle topography filtering and shave the number of halo points (based on downstream workflow component requirements). The pre-processing software :term:`chgres_cube` is used to convert the raw external model data into initial and lateral boundary condition files in :term:`netCDF` format. These are needed as input to the :term:`FV3` limited area model (:term:`LAM`). Additional information about the UFS pre-processing utilities can be found in the :doc:`UFS_UTILS Technical Documentation <ufs-utils:index>` and in the `UFS_UTILS Scientific Documentation <https://noaa-epic.github.io/UFS_UTILS/ver-srw-3.0.0/index.html>`_.
 
-.. COMMENT: Check path to EPIC UFS_UTILS sci docs once merged
+
 
 The SRW Application can be initialized from a range of operational initial conditions files. It is possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), High-Resolution Rapid Refresh (:term:`HRRR`), and Rapid Refresh Forecast System (:term:`RRFS`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
 
 .. WARNING::
    For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
 
-.. COMMENT: Add link to I/O chapter? Add info there, too? 
+
 
 Forecast Model
 ==============
@@ -43,12 +43,12 @@ Model Physics
 
 The Common Community Physics Package (CCPP), described `here <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_, supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The most recent SRW App release (|latestr|) included five supported physics suites: FV3_RRFS_v1beta, FV3_GFS_v16, FV3_WoFS_v0, FV3_HRRR, and FV3_RAP. The FV3_RRFS_v1beta physics suite is being tested for use in the future operational implementation of the Rapid Refresh Forecast System (:term:`RRFS`) planned for 2023-2024, and the FV3_GFS_v16 is an updated version of the physics suite used in the operational Global Forecast System (GFS) v16. A detailed list of CCPP updates since the SRW App v2.2.0 release is available :ref:`here <CCPPUpdates>`. A full scientific description of CCPP parameterizations and suites can be found in the `CCPP Scientific Documentation <https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html>`_, and CCPP technical aspects are described in the :doc:`CCPP Technical Documentation <ccpp-techdoc:index>`. The model namelist has many settings beyond the physics options that can optimize various aspects of the model for use with each of the supported suites. Additional information on Stochastic Physics options is available :doc:`here <stochphys:index>`. 
 
-.. Add CCPP sci doc and tech doc links
+
 
 .. note::
    :ref:`Stochastically Perturbed Parameterizations (SPP) <SPP>` are currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which physics suite definition file (:term:`SDF`) is chosen when turning this option on. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` and ``FV3_HRRR_gf`` options for ``CCPP_PHYS_SUITE``.
 
-.. COMMENT: Is this still true?
+
 
 Additionally, a CCPP single-column model (`CCPP-SCM <https://github.com/NCAR/ccpp-scm>`_) option has been developed as a CCPP child repository. Users can refer to the `CCPP Single Column Model User and Technical Guide <https://ccpp-scm.readthedocs.io/en/latest/>`_ for more details. This CCPP-SCM user guide contains a Quick Start Guide with instructions for obtaining the code, compiling it, and running test cases, which include five standard test cases and two additional FV3 replay cases (refer to :ccpp-scm:`section 5.2 <chap_quick.html#run-the-scm-with-a-supplied-case>` in the CCPP-SCM user guide for more details). Moreover, the CCPP-SCM supports a precompiled version in a docker container, allowing it to be easily executed on NOAA's cloud computing platforms without any issues (see :ccpp-scm:`section 5.3 <chap_quick.html#creating-and-using-a-docker-container-with-scm-and-ccpp>` in the CCPP-SCM user guide for more details).
 

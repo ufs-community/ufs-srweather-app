@@ -283,7 +283,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    * - task_skip_coldstart_YYYYMMDDHHmm.txt
      - Flag file for cold start 
      
-         .. COMMENT: Do we have more info on this...?
+         
 
 Once the workflow is launched, several files and directories are generated. A log file named ``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``$EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbcs``) are preprocessing tasks, and these tasks also result in the creation of new files and subdirectories, described in :numref:`Table %s <CreatedByWorkflow>`.
 

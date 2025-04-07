@@ -172,8 +172,6 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
      - https://hemco.readthedocs.io/en/3.6.2/
 
-.. COMMENT:
-   Add links for CCPP tech docs, CCPP scientific docs, and UFS_UTILS sci docs
 
 .. _user-support:
 
@@ -225,7 +223,7 @@ Users can expect to see incremental improvements and additional capabilities in 
 * Full integration of `Unified Workflow <https://github.com/ufs-community/uwtools>`_ tools.
 * A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
 
-.. COMMENT: Anything else to add?
+
 
 
 .. bibliography:: ../../references.bib
