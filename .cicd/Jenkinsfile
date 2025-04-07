@@ -156,7 +156,7 @@ pipeline {
                     // Clean the workspace, checkout the repository, and run checkout_externals
                     stage('Initialize') {
                         when {
-                           expression { params.SKIP_BUILD == 'false' }
+                           expression { params.SKIP_BUILD == false }
                         }
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
@@ -183,7 +183,7 @@ pipeline {
                         }
                         
                         when {
-                            expression { params.SKIP_BUILD == 'false' }
+                            expression { params.SKIP_BUILD == false }
                         }
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
