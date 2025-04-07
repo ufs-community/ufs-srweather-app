@@ -22,8 +22,9 @@ pipeline {
         choice(name: 'SRW_WRAPPER_TASK_DEPTH', choices: ['9', '1', '0'], description: '0=none, 1=simple, 9=all [default]')
         // WE2E Tests ?
         choice(name: 'SRW_WE2E_SINGLE_TEST', choices: ['coverage', 'none', 'skill-score', 'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0'], description: 'Specify the WE2E test to use')
-        text(name: 'SRW_WE2E_USER_INPUT_TEST', defaultValue: '', description: 'Enter a single WE2E test or multiple using this format Test-1\nTest-2\nTest-3\n')
+        text(name: 'SRW_WE2E_USER_INPUT_TEST', defaultValue: '', description: 'Enter a single WE2E test or multiple by placing each test on a new line')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
+        booleanParam name: 'SKIP_BUILD', defaultValue: false, description: 'Keep build from previous job. Should only be used to rerun failed coverage suite tests'
     }
 
     stages {
@@ -154,6 +155,9 @@ pipeline {
                 stages {
                     // Clean the workspace, checkout the repository, and run checkout_externals
                     stage('Initialize') {
+                        when {
+                           expression { params.SKIP_BUILD == 'false' }
+                        }
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "${env.STAGE_NAME} SRW (${env.SRW_COMPILER}) build environment on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
@@ -178,6 +182,9 @@ pipeline {
                             timeout(time: 4, unit: 'HOURS')
                         }
                         
+                        when {
+                            expression { params.SKIP_BUILD == 'false' }
+                        }
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "${env.STAGE_NAME} SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
