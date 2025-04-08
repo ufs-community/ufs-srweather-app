@@ -320,13 +320,13 @@ From the build directory, run the following commands to build the pre-processing
 
 ``-DCMAKE_INSTALL_PREFIX`` specifies the location where the ``exec``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the ``build`` directory. In the next line, the ``make`` argument ``-j 4`` indicates that the build will run in parallel with four threads. Although users can specify a larger or smaller number of threads (e.g., ``-j 8``, ``-j 2``), it is highly recommended to use at least four parallel threads to prevent overly long installation times.
 
-There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec directory``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
-
 The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/exec`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
 
 .. hint::
 
    If you see the ``build.out`` file, but there is no ``ufs-srweather-app/exec`` directory, wait a few more minutes for the build to complete.
+
+There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec directory``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
 
 .. _install-uw:
 
