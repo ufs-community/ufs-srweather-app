@@ -19,6 +19,7 @@ default_task_verify_det: &default_task_verify_det
       cyclestr:
         value: '&LOGDIR;'
     SLASH_ENSMEM_SUBDIR_OR_NULL: '{{ "/mem#mem#" if global.DO_ENSEMBLE }}'
+    nprocs: '{{ verification_resources.execution.nodes * verification_resources.execution.tasks_per_node }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'

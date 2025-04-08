@@ -18,6 +18,7 @@ default_task_verify_pre: &default_task_verify_pre
     LOGDIR:
       cyclestr:
         value: '&LOGDIR;'
+    nprocs: '{{ verification_resources.execution.nodes * verification_resources.execution.tasks_per_node }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'

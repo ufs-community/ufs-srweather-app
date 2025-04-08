@@ -67,6 +67,7 @@ task_make_sfc_climo:
   command: '&LOAD_MODULES_RUN_TASK; "make_sfc_climo" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"'
   envars:
     <<: *default_envars
+    nprocs: '{{ task_make_sfc_climo.execution.batchargs.nodes * task_make_sfc_climo.execution.batchargs.tasks_per_node }}'
   join:
     cyclestr:
       value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'

@@ -26,7 +26,7 @@ default_smoke_dust_task: &default_smoke_dust
     LOGDIR:
       cyclestr: 
         value:  "&LOGDIR;"
-    nodes: '{{ task_smoke_dust.execution.batchargs.nodes * task_smoke_dust.execution.batchargs.tasks_per_node }}'
+    nprocs: '{{ task_smoke_dust.execution.batchargs.nodes * task_smoke_dust.execution.batchargs.tasks_per_node }}'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
