@@ -154,7 +154,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - CCPP Technical Documentation
      - https://ccpp-techdoc.readthedocs.io/en/latest/
    * - CCPP Scientific Documentation
-     - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html
+     - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v3.0.0/sci_doc/index.html
    * - Stochastic Physics Documentation
      - https://stochastic-physics.readthedocs.io/en/release-public-v3/
    * - ESMF manual
