@@ -69,6 +69,7 @@ verification:
     - REFC
     - RETOP
     - ASNOW
+  VX_MASK: ["CONUS","ECA"]
   CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/CCPA_obs'
   MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/MRMS_obs'
   NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/NDAS_obs'

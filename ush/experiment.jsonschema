@@ -263,6 +263,46 @@
             }
           ],
           "type": "array"
+        },
+        "VX_MASK": {
+          "prefixItems": [
+            { "enum": [
+              "APL",
+              "ATC",
+              "AZCA",
+              "CAM",
+              "CAR",
+              "CONUS",
+              "EAST",
+              "EAST_ROCKIES",
+              "ECA",
+              "GLF",
+              "GMC",
+              "GRB",
+              "HWI",
+              "LMV",
+              "MDW",
+              "MEX",
+              "NAK",
+              "NAO",
+              "NEC",
+              "NMT",
+              "NPL",
+              "NSA",
+              "NWC",
+              "PRI",
+              "SAO",
+              "SEC",
+              "SMT",
+              "SPL",
+              "SWC",
+              "SWD",
+              "WCA",
+              "WEST",
+              ]
+            }
+          ],
+          "type": "array"
         }
       }
     },

@@ -69,8 +69,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
                      description="Plots METplus polyfiles on a map")
 
-#    parser.add_argument('-i', '--input_file', default='latlon.txt',
-#                        help='Name of METplus polyfile')
+    parser.add_argument('-i', '--input_file', default='latlon.txt',
+                        help='Name of METplus polyfile')
 #    parser.add_argument('-o', '--output_file', default='map.png',
 #                        help='Name of output file')
     parser.add_argument('-t', '--threshold', default=80, help='Threshold +/- latitude; if there are plot points closer to the pole than this latitude, a polar projection will be used')
@@ -78,7 +78,7 @@ if __name__ == "__main__":
                         help='Script will be run in debug mode with more verbose output')
     pargs = parser.parse_args()
 
-    for polyfile in list(glob.glob("/contrib/spack-stack/spack-stack-1.6.0/envs/fms-2024.01/install/intel/2021.5.0/met-12.0.1-iw45pz7/share/met/poly/*poly")):
+    for polyfile in list(glob.glob(pargs.input_file)):
 
         output_file = Path(polyfile).stem
         lats, lons = read_latlon_file(polyfile)

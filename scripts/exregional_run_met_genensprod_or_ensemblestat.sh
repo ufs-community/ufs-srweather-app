@@ -307,6 +307,24 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Populate VX_MASK_FILE_LIST based on user selections
+#
+#-----------------------------------------------------------------------
+#
+# This weird logic is needed because in older versions of bash empty arrays are treated as unset
+if [ ${VX_MASK[@]} ]; then
+  VX_MASK_FILE_LIST=""
+  for i in "${VX_MASK[@]}"; do
+    if [ -f "${PARMdir}/${VX_MASK[i]}.poly" ]; then
+      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, ${PARMdir}/${VX_MASK[i]}.poly"
+    else
+      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, {MET_INSTALL_DIR}/share/met/poly/${VX_MASK[i]}.poly"
+    fi
+  done
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the names of the template METplus configuration file, the METplus
 # configuration file generated from this template, and the METplus log
 # file.
@@ -400,6 +418,11 @@ settings="\
 'input_field_group': '${FIELD_GROUP:-}'
 'input_level_fcst': '${FCST_LEVEL:-}'
 'input_thresh_fcst': '${FCST_THRESH:-}'
+#
+# Verification mask settings
+#
+'vx_mask': '${VX_MASK_FILE_LIST:-}'
+#
 #
 # Verification configuration dictionary.
 #

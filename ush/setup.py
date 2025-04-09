@@ -750,11 +750,11 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         vx_field_groups_all_by_obtype["GOESAOD"] = ["GOESAOD"]
         vx_metatasks_all_by_obtype["GOESAOD"] \
-        = ["task_get_obs_goesaod"]
+        = ["task_get_obs_goes_aod"]
 
         vx_field_groups_all_by_obtype["GOESADP"] = ["GOESADP"]
         vx_metatasks_all_by_obtype["GOESADP"] \
-        = ["task_get_obs_goesadp"]
+        = ["task_get_obs_goes_adp"]
 
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.

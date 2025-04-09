@@ -2765,6 +2765,11 @@ verification:
   #
   NUM_MISSING_FCST_FILES_MAX: 0
 
+  # Name(s) of the sub-grid(s) of the forecast domain to verify on. Valid grids are found in the MET users
+  # guide (https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixB.html#grids)
+  # or under ufs-srweather-app/parm/metplus/GRIDNAME.poly
+  VX_MASK: []
+
 #----------------------------
 # CPL_AQM config parameters
 #-----------------------------
