@@ -6,7 +6,7 @@
 CCPP Updates for the SRW App v3.0.0 Release
 ================================================
 
-Here is what's new in CCPP Physics for the UFS SRW v3.0.0 public release. For a more expanded look and to view the bibliography please view the CCPP UFS-SRW v3.0.0 documentation `here <https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v3.0.0/sci_doc/index.html>`__
+Here is what's new in CCPP Physics for the UFS SRW v3.0.0 public release. For a more expanded look and to view the bibliography, please view the CCPP UFS-SRW v3.0.0 documentation `here <https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v3.0.0/sci_doc/index.html>`__.
 
 General Updates
 =================
