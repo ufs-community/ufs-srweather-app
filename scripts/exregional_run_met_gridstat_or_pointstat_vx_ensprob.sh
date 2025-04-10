@@ -278,10 +278,10 @@ metplus_log_fn="metplus.log.${metplus_log_bn}"
 if [ ${VX_MASK[@]} ]; then
   VX_MASK_FILE_LIST=""
   for i in "${VX_MASK[@]}"; do
-    if [ -f "${PARMdir}/${VX_MASK[i]}.poly" ]; then
-      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, ${PARMdir}/${VX_MASK[i]}.poly"
+    if [ -f "${METPLUS_CONF}/${i}.poly" ]; then
+      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, ${METPLUS_CONF}/${i}.poly"
     else
-      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, {MET_INSTALL_DIR}/share/met/poly/${VX_MASK[i]}.poly"
+      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, {MET_INSTALL_DIR}/share/met/poly/${i}.poly"
     fi
   done
 fi
