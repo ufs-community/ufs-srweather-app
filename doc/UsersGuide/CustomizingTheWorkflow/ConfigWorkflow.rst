@@ -2056,7 +2056,7 @@ Non-default parameters for Smoke and Dust tasks are set in the ``smoke_dust_parm
    Flag for smoke and dust tasks.
 
 ``EBB_DCYCLE``: (Default: 1)
-   Options for EBB cycle (1: Retro, 2: Forecast).
+   Options for EBB cycle (1: Retro, 2: Forecast). ``2`` is considered experimental in the SRW App.
 
 ``PERSISTENCE``: (Default: true)
    Flag for emission persistence method. If false, same day FRP is used.
@@ -2078,6 +2078,10 @@ Non-default parameters for Smoke and Dust tasks are set in the ``smoke_dust_parm
 
 ``LOG_LEVEL``: (Default: info)
    Options for logging level of the preprocessor. (info or debug)
+
+``DUST_OPTION``: (Default: ``-1``)
+  Set to ``1`` to enable (``-1`` to disable) dust simulation. Disabled by default as it may affect
+  the SRW PM2.5 simulation.
 
 .. _fire-parameters:
 

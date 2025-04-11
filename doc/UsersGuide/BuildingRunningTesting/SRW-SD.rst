@@ -41,7 +41,7 @@ Smoke simulations can be performed in three ways:
 
 #. Current-day emissions: Using emissions estimated from satellite observations on the same day as the simulation (``EBB_DCYCLE=1, PERSISTENCE=false``).
 #. Traditional persistence: Using biomass burning emissions estimated from satellite observations of the previous day (a method commonly used in most smoke forecasting systems, ``EBB_DCYCLE=1, PERSISTENCE=true``).
-#. Modulated persistence: The approach currently used by the RRFS-Smoke model, where emissions are forecasted based on a fire weather index that dictates the diurnal cycle (``EBB_DCYCLE=2, PERSISTENCE=true``).
+#. Modulated persistence (*considered experimental in the SRW App*): The approach currently used by the RRFS-Smoke model, where emissions are forecasted based on a fire weather index that dictates the diurnal cycle (``EBB_DCYCLE=2, PERSISTENCE=true``).
 
 Predefined Grid Support in SRW-SD
 ---------------------------------
