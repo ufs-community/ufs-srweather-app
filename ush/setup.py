@@ -403,8 +403,8 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     # (e.g. metatasks with no tasks, tasks with no associated commands)
     clean_rocoto_dict(expt_config["rocoto"]["tasks"])
 
-    rocoto_config = expt_config.get('rocoto', {})
-    rocoto_tasks = rocoto_config.get("tasks")
+    rocoto_config = expt_config["rocoto"]
+    rocoto_tasks = rocoto_config["tasks"]
     run_make_grid = rocoto_tasks.get("task_make_grid") is not None
     run_make_orog = rocoto_tasks.get("task_make_orog") is not None
     run_make_sfc_climo = rocoto_tasks.get("task_make_sfc_climo") is not None
@@ -1012,146 +1012,147 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         raise KeyError(errmsg) from None
 
     # Check to make sure that mandatory forecast variables are set.
-    vlist = [
-        "LAYOUT_X",
-        "LAYOUT_Y",
-        "BLOCKSIZE",
-    ]
-    msg = "Mandatory variable task_run_fcst.{val} has not been set."
-    for val in vlist:
-        if not fcst_config.get(val):
-            raise ValueError(msg.format(val=val))
-    if not isinstance(fcst_config["envvars"]["DT_ATMOS"], int):
-        raise ValueError(msg.format(val="envvars.DT_ATMOS"))
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
-    # being used. This is required at the moment, since "do_shum/sppt/skeb"
-    # does not override the use of the scheme unless the magnitude is also
-    # specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
-    # "false," then none will run, regardless of the magnitude values.
-    #
-    # -----------------------------------------------------------------------
-    #
     global_sect = expt_config["global"]
-    if not global_sect.get("DO_SHUM"):
-        global_sect["SHUM_MAG"] = -999.0
-    if not global_sect.get("DO_SKEB"):
-        global_sect["SKEB_MAG"] = -999.0
-    if not global_sect.get("DO_SPPT"):
-        global_sect["SPPT_MAG"] = -999.0
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or
-    # RRTMG, count the number of entries in SPP_VAR_LIST to correctly set
-    # N_VAR_SPP, otherwise set it to zero.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if global_sect["DO_SPP"]:
-        global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
-    else:
-        global_sect["N_VAR_SPP"] = 0
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with SPP, confirm that each SPP-related namelist value
-    # contains the same number of entries as N_VAR_SPP (set above to be equal
-    # to the number of entries in SPP_VAR_LIST).
-    #
-    # -----------------------------------------------------------------------
-    #
-    spp_vars = [
-        "SPP_MAG_LIST",
-        "SPP_LSCALE",
-        "SPP_TSCALE",
-        "SPP_SIGTOP1",
-        "SPP_SIGTOP2",
-        "SPP_STDDEV_CUTOFF",
-        "ISEED_SPP",
-    ]
+    if run_run_fcst:
+        vlist = [
+            "LAYOUT_X",
+            "LAYOUT_Y",
+            "BLOCKSIZE",
+        ]
+        msg = "Mandatory variable task_run_fcst.{val} has not been set."
+        for val in vlist:
+            if not fcst_config.get(val):
+                raise ValueError(msg.format(val=val))
+        if not isinstance(fcst_config["envvars"]["DT_ATMOS"], int):
+            raise ValueError(msg.format(val="envvars.DT_ATMOS"))
 
-    if global_sect["DO_SPP"]:
-        for spp_var in spp_vars:
-            if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
-                raise ValueError(
-                    f"""
-                    All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                    variables must be of equal length to SPP_VAR_LIST:
-                      SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
-                      {spp_var} (length {len(global_sect[spp_var])})
-                    """
-                )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with Noah or RUC-LSM SPP, count the number of entries in
-    # LSM_SPP_VAR_LIST to correctly set N_VAR_LNDP, otherwise set it to zero.
-    # Also set LNDP_TYPE to 2 for LSM SPP, otherwise set it to zero.  Finally,
-    # initialize an "FHCYC_LSM_SPP" variable to 0 and set it to 999 if LSM SPP
-    # is turned on.  This requirement is necessary since LSM SPP cannot run with
-    # FHCYC=0 at the moment, but FHCYC cannot be set to anything less than the
-    # length of the forecast either.  A bug fix will be submitted to
-    # ufs-weather-model soon, at which point, this requirement can be removed
-    # from regional_workflow.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if global_sect["DO_LSM_SPP"]:
-        global_sect["N_VAR_LNDP"] = len(global_sect["LSM_SPP_VAR_LIST"])
-        global_sect["LNDP_TYPE"] = 2
-        global_sect["LNDP_MODEL_TYPE"] = 2
-        global_sect["FHCYC_LSM_SPP_OR_NOT"] = 999
-    else:
-        global_sect["N_VAR_LNDP"] = 0
-        global_sect["LNDP_TYPE"] = 0
-        global_sect["LNDP_MODEL_TYPE"] = 0
-        global_sect["FHCYC_LSM_SPP_OR_NOT"] = 0
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with LSM SPP, confirm that each LSM SPP-related namelist
-    # value contains the same number of entries as N_VAR_LNDP (set above to
-    # be equal to the number of entries in LSM_SPP_VAR_LIST).
-    #
-    # -----------------------------------------------------------------------
-    #
-    lsm_spp_vars = [
-        "LSM_SPP_MAG_LIST",
-        "LSM_SPP_LSCALE",
-        "LSM_SPP_TSCALE",
-    ]
-    if global_sect["DO_LSM_SPP"]:
-        for lsm_spp_var in lsm_spp_vars:
-            if len(global_sect[lsm_spp_var]) != global_sect["N_VAR_LNDP"]:
-                raise ValueError(
-                    f"""
-                    All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                    variables must be of equal length to SPP_VAR_LIST:
-                    All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
-                    must be equal of equal length to LSM_SPP_VAR_LIST:
-                      LSM_SPP_VAR_LIST (length {global_sect['N_VAR_LNDP']})
-                      {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
-                      """
-                )
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
+        # being used. This is required at the moment, since "do_shum/sppt/skeb"
+        # does not override the use of the scheme unless the magnitude is also
+        # specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
+        # "false," then none will run, regardless of the magnitude values.
+        #
+        # -----------------------------------------------------------------------
+        #
+        if not global_sect.get("DO_SHUM"):
+            global_sect["SHUM_MAG"] = -999.0
+        if not global_sect.get("DO_SKEB"):
+            global_sect["SKEB_MAG"] = -999.0
+        if not global_sect.get("DO_SPPT"):
+            global_sect["SPPT_MAG"] = -999.0
+        #
+        # -----------------------------------------------------------------------
+        #
+        # If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or
+        # RRTMG, count the number of entries in SPP_VAR_LIST to correctly set
+        # N_VAR_SPP, otherwise set it to zero.
+        #
+        # -----------------------------------------------------------------------
+        #
+        if global_sect["DO_SPP"]:
+            global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
+        else:
+            global_sect["N_VAR_SPP"] = 0
+        #
+        # -----------------------------------------------------------------------
+        #
+        # If running with SPP, confirm that each SPP-related namelist value
+        # contains the same number of entries as N_VAR_SPP (set above to be equal
+        # to the number of entries in SPP_VAR_LIST).
+        #
+        # -----------------------------------------------------------------------
+        #
+        spp_vars = [
+            "SPP_MAG_LIST",
+            "SPP_LSCALE",
+            "SPP_TSCALE",
+            "SPP_SIGTOP1",
+            "SPP_SIGTOP2",
+            "SPP_STDDEV_CUTOFF",
+            "ISEED_SPP",
+        ]
 
-    # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
-    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
-    # array of forecast hours at which the boundary values will be updated.
+        if global_sect["DO_SPP"]:
+            for spp_var in spp_vars:
+                if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
+                    raise ValueError(
+                        f"""
+                        All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                        variables must be of equal length to SPP_VAR_LIST:
+                          SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
+                          {spp_var} (length {len(global_sect[spp_var])})
+                        """
+                    )
+        #
+        # -----------------------------------------------------------------------
+        #
+        # If running with Noah or RUC-LSM SPP, count the number of entries in
+        # LSM_SPP_VAR_LIST to correctly set N_VAR_LNDP, otherwise set it to zero.
+        # Also set LNDP_TYPE to 2 for LSM SPP, otherwise set it to zero.  Finally,
+        # initialize an "FHCYC_LSM_SPP" variable to 0 and set it to 999 if LSM SPP
+        # is turned on.  This requirement is necessary since LSM SPP cannot run with
+        # FHCYC=0 at the moment, but FHCYC cannot be set to anything less than the
+        # length of the forecast either.  A bug fix will be submitted to
+        # ufs-weather-model soon, at which point, this requirement can be removed
+        # from regional_workflow.
+        #
+        # -----------------------------------------------------------------------
+        #
+        if global_sect["DO_LSM_SPP"]:
+            global_sect["N_VAR_LNDP"] = len(global_sect["LSM_SPP_VAR_LIST"])
+            global_sect["LNDP_TYPE"] = 2
+            global_sect["LNDP_MODEL_TYPE"] = 2
+            global_sect["FHCYC_LSM_SPP_OR_NOT"] = 999
+        else:
+            global_sect["N_VAR_LNDP"] = 0
+            global_sect["LNDP_TYPE"] = 0
+            global_sect["LNDP_MODEL_TYPE"] = 0
+            global_sect["FHCYC_LSM_SPP_OR_NOT"] = 0
+        #
+        # -----------------------------------------------------------------------
+        #
+        # If running with LSM SPP, confirm that each LSM SPP-related namelist
+        # value contains the same number of entries as N_VAR_LNDP (set above to
+        # be equal to the number of entries in LSM_SPP_VAR_LIST).
+        #
+        # -----------------------------------------------------------------------
+        #
+        lsm_spp_vars = [
+            "LSM_SPP_MAG_LIST",
+            "LSM_SPP_LSCALE",
+            "LSM_SPP_TSCALE",
+        ]
+        if global_sect["DO_LSM_SPP"]:
+            for lsm_spp_var in lsm_spp_vars:
+                if len(global_sect[lsm_spp_var]) != global_sect["N_VAR_LNDP"]:
+                    raise ValueError(
+                        f"""
+                        All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                        variables must be of equal length to SPP_VAR_LIST:
+                        All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
+                        must be equal of equal length to LSM_SPP_VAR_LIST:
+                          LSM_SPP_VAR_LIST (length {global_sect['N_VAR_LNDP']})
+                          {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
+                          """
+                    )
 
-    rem = fcst_len_hrs % lbc_spec_intvl_hrs
-    if rem != 0 and fcst_len_hrs > 0:
-        raise ValueError(
-            f"""
-            The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
-            boundary conditions update interval (LBC_SPEC_INTVL_HRS):
-              FCST_LEN_HRS = {fcst_len_hrs}
-              LBC_SPEC_INTVL_HRS = {lbc_spec_intvl_hrs}
-              rem = FCST_LEN_HRS%%LBC_SPEC_INTVL_HRS = {rem}"""
-        )
+        # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
+        # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
+        # array of forecast hours at which the boundary values will be updated.
+
+        rem = fcst_len_hrs % lbc_spec_intvl_hrs
+        if rem != 0 and fcst_len_hrs > 0:
+            raise ValueError(
+                f"""
+                The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
+                boundary conditions update interval (LBC_SPEC_INTVL_HRS):
+                  FCST_LEN_HRS = {fcst_len_hrs}
+                  LBC_SPEC_INTVL_HRS = {lbc_spec_intvl_hrs}
+                  rem = FCST_LEN_HRS%%LBC_SPEC_INTVL_HRS = {rem}"""
+            )
 
     #
     # -----------------------------------------------------------------------
@@ -1375,7 +1376,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     # These consider dependencies of other tasks on each pre-processing task.
     fixed_files = expt_config["fixed_files"]
 
-    task_defs = rocoto_config.get("tasks")
+    task_defs = rocoto_config["tasks"]
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
@@ -1383,7 +1384,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         sect_key = f"task_make_{prep_task.lower()}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if not task_defs.get(sect_key):
+        if not task_defs.get(sect_key) and run_run_fcst:
             dir_key = f"{prep_task}_DIR"
 
             task_dir = Path(pregen_basedir, predef_grid)

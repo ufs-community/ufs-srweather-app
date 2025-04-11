@@ -10,7 +10,7 @@ workflow:
   DATE_LAST_CYCL: '2024011100'
   FCST_LEN_HRS: 18
   PREEXISTING_DIR_METHOD: rename
-  task_groups:
+  taskgroups:
     - parm/wflow/verify_pre.yaml
     - parm/wflow/verify_det.yaml
 verification:

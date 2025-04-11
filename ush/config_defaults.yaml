@@ -2371,6 +2371,8 @@ verification_resources:
         walltime: 02:00:00
     pb2nc:
       walltime: 00:30:00
+    ascii2nc:
+      walltime: 00:30:00
     pcpcombine:
       ensemble:
         walltime: 00:30:00

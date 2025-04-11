@@ -144,6 +144,7 @@ metatask_ASCII2nc_obs:
       cycledefs: cycledefs_obs_days_inst
       maxtries: '2'
     command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_ASCII2NC_OBS"'
+    walltime: "{{ verification_resources.execution.ascii2nc.walltime }}"
     envars:
       <<: *default_vars
       OBTYPE: '#METAOBTYPE#'
@@ -152,7 +153,7 @@ metatask_ASCII2nc_obs:
     dependency:
       and:
         datadep:
-          text: '#METAOBS_DIR#'
+          value: '#METAOBS_DIR#'
         or:
           not:
             taskvalid:
@@ -333,5 +334,7 @@ metatask_PcpCombine_fcst_PM_all_mems:
         datadep:
           attrs:
             age: 00:00:00:30
-          text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+          value:
+            cyclestr:
+              value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
       walltime: '{{ verification_resources.execution.pcpcombine.ensemble.walltime }}'

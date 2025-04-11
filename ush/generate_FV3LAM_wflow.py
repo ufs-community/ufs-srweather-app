@@ -304,6 +304,129 @@ def generate_FV3LAM_wflow(
         #
         setup_fv3_namelist(expt_config,debug)
 
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Add the relevant tendency-based stochastic physics namelist variables to
+        # "settings" when running with SPPT, SHUM, or SKEB turned on. If running
+        # with SPP or LSM SPP, set the "new_lscale" variable.  Otherwise only
+        # include an empty "nam_stochy" stanza.
+        #
+        # -----------------------------------------------------------------------
+        #
+
+        # From here on out, going back to setting variables for everything in the global section
+        import_vars(dictionary=expt_config["global"])
+        # pylint: disable=undefined-variable
+        settings = {}
+        settings["gfs_physics_nml"] = {
+            "do_shum": DO_SHUM,
+            "do_sppt": DO_SPPT,
+            "do_skeb": DO_SKEB,
+            "do_spp": DO_SPP,
+            "n_var_spp": N_VAR_SPP,
+            "n_var_lndp": N_VAR_LNDP,
+            "lndp_type": LNDP_TYPE,
+            "fhcyc": FHCYC_LSM_SPP_OR_NOT,
+        }
+        nam_stochy_dict = {}
+        if DO_SPPT:
+            nam_stochy_dict.update(
+                {
+                    "iseed_sppt": ISEED_SPPT,
+                    "new_lscale": NEW_LSCALE,
+                    "sppt": SPPT_MAG,
+                    "sppt_logit": SPPT_LOGIT,
+                    "sppt_lscale": SPPT_LSCALE,
+                    "sppt_sfclimit": SPPT_SFCLIMIT,
+                    "sppt_tau": SPPT_TSCALE,
+                    "spptint": SPPT_INT,
+                    "use_zmtnblck": USE_ZMTNBLCK,
+                }
+            )
+
+        if DO_SHUM:
+            nam_stochy_dict.update(
+                {
+                    "iseed_shum": ISEED_SHUM,
+                    "new_lscale": NEW_LSCALE,
+                    "shum": SHUM_MAG,
+                    "shum_lscale": SHUM_LSCALE,
+                    "shum_tau": SHUM_TSCALE,
+                    "shumint": SHUM_INT,
+                }
+            )
+
+        if DO_SKEB:
+            nam_stochy_dict.update(
+                {
+                    "iseed_skeb": ISEED_SKEB,
+                    "new_lscale": NEW_LSCALE,
+                    "skeb": SKEB_MAG,
+                    "skeb_lscale": SKEB_LSCALE,
+                    "skebnorm": SKEBNORM,
+                    "skeb_tau": SKEB_TSCALE,
+                    "skebint": SKEB_INT,
+                    "skeb_vdof": SKEB_VDOF,
+                }
+            )
+
+        if DO_SPP or DO_LSM_SPP:
+            nam_stochy_dict.update({"new_lscale": NEW_LSCALE})
+
+        settings["nam_stochy"] = nam_stochy_dict
+        #
+        # Add the relevant SPP namelist variables to "settings" when running with
+        # SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
+        #
+        nam_sppperts_dict = {}
+        if DO_SPP:
+            nam_sppperts_dict = {
+                "iseed_spp": ISEED_SPP,
+                "spp_lscale": SPP_LSCALE,
+                "spp_prt_list": SPP_MAG_LIST,
+                "spp_sigtop1": SPP_SIGTOP1,
+                "spp_sigtop2": SPP_SIGTOP2,
+                "spp_stddev_cutoff": SPP_STDDEV_CUTOFF,
+                "spp_tau": SPP_TSCALE,
+                "spp_var_list": SPP_VAR_LIST,
+            }
+
+        settings["nam_sppperts"] = nam_sppperts_dict
+        #
+        # Add the relevant LSM SPP namelist variables to "settings" when running with
+        # LSM SPP turned on.
+        #
+        nam_sfcperts_dict = {}
+        if DO_LSM_SPP:
+            nam_sfcperts_dict = {
+                "lndp_type": LNDP_TYPE,
+                "lndp_model_type": LNDP_MODEL_TYPE,
+                "lndp_tau": LSM_SPP_TSCALE,
+                "lndp_lscale": LSM_SPP_LSCALE,
+                "iseed_lndp": ISEED_LSM_SPP,
+                "lndp_var_list": LSM_SPP_VAR_LIST,
+                "lndp_prt_list": LSM_SPP_MAG_LIST,
+            }
+
+        settings["nam_sfcperts"] = nam_sfcperts_dict
+
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Generate namelist files with stochastic physics if needed
+        #
+        # -----------------------------------------------------------------------
+        #
+        if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
+            realize(
+                input_config=FV3_NML_FP,
+                input_format="nml",
+                output_file=workflow_config["FV3_NML_STOCH_FP"],
+                output_format="nml",
+                update_config=get_nml_config(settings),
+            )
+        # pylint: enable=undefined-variable
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -320,129 +443,6 @@ def generate_FV3LAM_wflow(
          dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") ):
         set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Add the relevant tendency-based stochastic physics namelist variables to
-    # "settings" when running with SPPT, SHUM, or SKEB turned on. If running
-    # with SPP or LSM SPP, set the "new_lscale" variable.  Otherwise only
-    # include an empty "nam_stochy" stanza.
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    # From here on out, going back to setting variables for everything in the global section
-    export_vars(source_dict=expt_config["global"])
-    # pylint: disable=undefined-variable
-    settings = {}
-    settings["gfs_physics_nml"] = {
-        "do_shum": DO_SHUM,
-        "do_sppt": DO_SPPT,
-        "do_skeb": DO_SKEB,
-        "do_spp": DO_SPP,
-        "n_var_spp": N_VAR_SPP,
-        "n_var_lndp": N_VAR_LNDP,
-        "lndp_type": LNDP_TYPE,
-        "fhcyc": FHCYC_LSM_SPP_OR_NOT,
-    }
-    nam_stochy_dict = {}
-    if DO_SPPT:
-        nam_stochy_dict.update(
-            {
-                "iseed_sppt": ISEED_SPPT,
-                "new_lscale": NEW_LSCALE,
-                "sppt": SPPT_MAG,
-                "sppt_logit": SPPT_LOGIT,
-                "sppt_lscale": SPPT_LSCALE,
-                "sppt_sfclimit": SPPT_SFCLIMIT,
-                "sppt_tau": SPPT_TSCALE,
-                "spptint": SPPT_INT,
-                "use_zmtnblck": USE_ZMTNBLCK,
-            }
-        )
-
-    if DO_SHUM:
-        nam_stochy_dict.update(
-            {
-                "iseed_shum": ISEED_SHUM,
-                "new_lscale": NEW_LSCALE,
-                "shum": SHUM_MAG,
-                "shum_lscale": SHUM_LSCALE,
-                "shum_tau": SHUM_TSCALE,
-                "shumint": SHUM_INT,
-            }
-        )
-
-    if DO_SKEB:
-        nam_stochy_dict.update(
-            {
-                "iseed_skeb": ISEED_SKEB,
-                "new_lscale": NEW_LSCALE,
-                "skeb": SKEB_MAG,
-                "skeb_lscale": SKEB_LSCALE,
-                "skebnorm": SKEBNORM,
-                "skeb_tau": SKEB_TSCALE,
-                "skebint": SKEB_INT,
-                "skeb_vdof": SKEB_VDOF,
-            }
-        )
-
-    if DO_SPP or DO_LSM_SPP:
-        nam_stochy_dict.update({"new_lscale": NEW_LSCALE})
-
-    settings["nam_stochy"] = nam_stochy_dict
-    #
-    # Add the relevant SPP namelist variables to "settings" when running with
-    # SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
-    #
-    nam_sppperts_dict = {}
-    if DO_SPP:
-        nam_sppperts_dict = {
-            "iseed_spp": ISEED_SPP,
-            "spp_lscale": SPP_LSCALE,
-            "spp_prt_list": SPP_MAG_LIST,
-            "spp_sigtop1": SPP_SIGTOP1,
-            "spp_sigtop2": SPP_SIGTOP2,
-            "spp_stddev_cutoff": SPP_STDDEV_CUTOFF,
-            "spp_tau": SPP_TSCALE,
-            "spp_var_list": SPP_VAR_LIST,
-        }
-
-    settings["nam_sppperts"] = nam_sppperts_dict
-    #
-    # Add the relevant LSM SPP namelist variables to "settings" when running with
-    # LSM SPP turned on.
-    #
-    nam_sfcperts_dict = {}
-    if DO_LSM_SPP:
-        nam_sfcperts_dict = {
-            "lndp_type": LNDP_TYPE,
-            "lndp_model_type": LNDP_MODEL_TYPE,
-            "lndp_tau": LSM_SPP_TSCALE,
-            "lndp_lscale": LSM_SPP_LSCALE,
-            "iseed_lndp": ISEED_LSM_SPP,
-            "lndp_var_list": LSM_SPP_VAR_LIST,
-            "lndp_prt_list": LSM_SPP_MAG_LIST,
-        }
-
-    settings["nam_sfcperts"] = nam_sfcperts_dict
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate namelist files with stochastic physics if needed
-    #
-    # -----------------------------------------------------------------------
-    #
-    if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
-        realize(
-            input_config=FV3_NML_FP,
-            input_format="nml",
-            output_file=workflow_config["FV3_NML_STOCH_FP"],
-            output_format="nml",
-            update_config=get_nml_config(settings),
-        )
-    # pylint: enable=undefined-variable
     #
     # -----------------------------------------------------------------------
     #
