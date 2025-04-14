@@ -7,7 +7,8 @@
         "MACHINE": {
           "enum": [
             "DERECHO",
-            "GAEA",
+            "GAEAC5",
+            "GAEAC6",
             "HERA",
             "HERCULES",
             "JET",
