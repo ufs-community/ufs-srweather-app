@@ -6,18 +6,19 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     import_vars,
-    load_yaml_config,
     lowercase,
     print_info_msg,
     print_input_args,
     str_to_type,
 )
+
+from uwtools.api.config import get_yaml_config
+from uwtools.api.template import render
 
 
 def create_model_configure_file(
@@ -294,8 +295,8 @@ def _parse_args(argv):
 
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
-    cfg = load_yaml_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
+    cfg = get_yaml_config(args.path_to_defns)
+    cfg = flatten_dict({**cfg["task_run_fcst"], **cfg["workflow"]})
     import_vars(dictionary=cfg)
     create_model_configure_file(
         run_dir=args.run_dir,

@@ -15,7 +15,9 @@ workflow:
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: GSMGFS
+  envvars:
+    EXTRN_MDL_NAME_ICS: GSMGFS
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: GSMGFS
-  LBC_SPEC_INTVL_HRS: 6
+  envvars:
+    EXTRN_MDL_NAME_LBCS: GSMGFS
+    LBC_SPEC_INTVL_HRS: 6

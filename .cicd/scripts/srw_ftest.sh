@@ -53,35 +53,32 @@ pwd
 #     "Run the Workflow Using Stand-Alone Scripts".
 echo "BRANCH=${BRANCH}"
 
-# Set the ACCOUNT to use for this PLATFORM ...
-sed "s|^  ACCOUNT: \"\"|  ACCOUNT: \"${SRW_PROJECT}\"|1" -i ush/config_defaults.yaml
-sed "s|hera|${platform,,}|1" ush/config.community.yaml | sed "s|an_account|${SRW_PROJECT}|1" > ush/config.yaml
-
-# Set directory paths ...
+# Set test settings for the platform and account
 export EXPTDIR=${workspace}/expt_dirs/test_community
-echo "EXPTDIR=${EXPTDIR}"
-sed "s|^workflow:|workflow:\n  EXPT_BASEDIR: ${workspace}/expt_dirs|1" -i ush/config.yaml
-sed "s|^workflow:|workflow:\n  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}/exec|1" -i ush/config.yaml
-
-# Decrease forecast length since we are running all the steps
-sed "s|^  FCST_LEN_HRS: 12|  FCST_LEN_HRS: 6|g" -i ush/config.yaml
-
-# Update compiler 
-sed "s|^  COMPILER: intel|  COMPILER: ${SRW_COMPILER}|g" -i ush/config.yaml
 
 # DATA_LOCATION differs on each platform ... find it.
-export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform,,}.yaml | awk '{printf "%s", $2}')
+DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform,,}.yaml | awk '{printf "%s", $2}')
 echo "DATA_LOCATION=${DATA_LOCATION}"
 
-# Configure a default test ...
-sed "s|^task_get_extrn_ics:|task_get_extrn_ics:\n  EXTRN_MDL_SOURCE_BASEDIR_ICS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
-sed "s|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  EXTRN_MDL_SOURCE_BASEDIR_LBCS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
-
-# Use staged data for HPSS supported machines
-sed 's|^platform:|platform:\n  EXTRN_MDL_DATA_STORES: disk|g' -i ush/config.yaml
-
-# Set OMP_NUM_THREADS_RUN_FCST to 1 in config.yaml
-sed 's|^task_run_fcst:|task_run_fcst:\n  OMP_NUM_THREADS_RUN_FCST: 1|1' -i ush/config.yaml
+user_settings="
+user:
+  ACCOUNT: ${SRW_PROJECT}
+  MACHINE: ${platform^^}
+workflow:
+  EXPT_BASEDIR: ${workspace}/expt_dirs
+  EXEC_SUBDIR: install_${SRW_COMPILER}/exec
+  FCST_LEN_HRS: 6
+  COMPILER: ${SRW_COMPILER}
+task_get_extrn_ics:
+  envvars:
+    EXTRN_MDL_SOURCE_BASEDIR_ICS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518
+task_get_extrn_lbcs:
+  envvars:
+    EXTRN_MDL_SOURCE_BASEDIR_LBCS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518
+task_run_fcst:
+  envvars:
+    OMP_NUM_THREADS_RUN_FCST: 1
+"
 
 # Activate the workflow environment ...
 source etc/lmod-setup.sh ${platform,,}
@@ -95,8 +92,10 @@ module load wflow_${platform,,}
 conda activate srw_app
 set -e -u
 
-# Adjust for strict limitation of stack size 
-sed "s|ulimit -s unlimited;|ulimit -S -s unlimited;|" -i ${workspace}/ush/machine/hera.yaml
+echo "${user_settings}" | uw config realize \
+  -i ${workspace}/ush/config.community.yaml \
+  -o ${workspace}/ush/config.yaml \
+  --update-format yaml
 
 cd ${workspace}/ush
         # Consistency check ...

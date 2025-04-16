@@ -7,6 +7,8 @@ To create the experiment directory and workflow when running the SRW Application
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define a variable in the ``config.yaml`` script, its value in ``config_defaults.yaml`` will be used, or the value will be reset depending on other parameters, such as the platform (``MACHINE``) selected for the experiment. 
 
+When a Jinja expression is used to refer to other values, it will be evaluated by ``uwtools`` as a string. In some cases, it is important that the value is appropriately typed. The ``uwtools`` YAML language supports several pyYAML tags that apply appropriate typing. You can find more information about the Custom Tags in the `uwtools docs <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html>`__. For example, those may be ``!int``, ``!float``, ``!bool``, etc.
+
 .. note::
    The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception of the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>`.
 
@@ -47,31 +49,31 @@ Application Directories
 ``USHdir``: (Default: ``'{{ user.USHdir }}'``)
    The path to the user's ``ush`` directory in their ``ufs-srweather-app`` clone. This path is set automatically in the main function of ``setup.py`` and corresponds to the location of ``setup.py`` (i.e., the ``ush`` directory).
 
-``SCRIPTSdir``: (Default: ``'{{ [HOMEdir, "scripts"]|path_join }}'``)
+``SCRIPTSdir``: (Default: ``'{{ user.HOMEdir }}/scripts'``)
    The path to the user's ``scripts`` directory in their ``ufs-srweather-app`` clone.
 
-``JOBSdir``: (Default: ``'{{ [HOMEdir, "jobs"]|path_join }}'``)
+``JOBSdir``: (Default: ``'{{ user.HOMEdir }}/jobs'``)
    The path to the user's ``jobs`` directory in their ``ufs-srweather-app`` clone.
 
-``SORCdir``: (Default: ``'{{ [HOMEdir, "sorc"]|path_join }}'``)
+``SORCdir``: (Default: ``'{{ user.HOMEdir }}/sorc'``)
    The path to the user's ``sorc`` directory in their ``ufs-srweather-app`` clone.
 
-``PARMdir``: (Default: ``'{{ [HOMEdir, "parm"]|path_join }}'``)
+``PARMdir``: (Default: ``'{{ user.HOMEdir }}/parm'``)
    The path to the user's ``parm`` directory in their ``ufs-srweather-app`` clone.
 
-``MODULESdir``: (Default: ``'{{ [HOMEdir, "modulefiles"]|path_join }}'``)
+``MODULESdir``: (Default: ``'{{ user.HOMEdir }}/modulefiles'``)
    The path to the user's ``modulefiles`` directory in their ``ufs-srweather-app`` clone.
 
-``EXECdir``: (Default: ``'{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'``)
+``EXECdir``: (Default: ``'{{ user.HOMEdir }}/{{ workflow.EXEC_SUBDIR }}'``)
    The path to the user's ``exec`` directory in their ``ufs-srweather-app`` clone.
 
-``METPLUS_CONF``: (Default: ``'{{ [PARMdir, "metplus"]|path_join }}'``)
+``METPLUS_CONF``: (Default: ``'{{ user.PARMdir }}/metplus'``)
    The path to the directory where the user's final METplus configuration file resides. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``. 
 
 ``UFS_WTHR_MDL_DIR``: (Default: ``'{{ userUFS_WTHR_MDL_DIR }}'``)
    The path to the location where the UFS Weather Model code is located within the ``ufs-srweather-app`` clone. This parameter is set in ``setup.py`` and uses information from the ``Externals.cfg`` file to build the correct path. It is built with knowledge of ``HOMEdir`` and often corresponds to ``ufs-srweather-app/sorc/ufs-weather-model``.
 
-``ARL_NEXUS_DIR``: (Default: ``'{{ [SORCdir, "arl_nexus"]|path_join }}'``)
+``ARL_NEXUS_DIR``: (Default: ``'{{ user.SORCdir }}/arl_nexus'``)
    The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/arl_nexus``.
 
 .. _PlatformConfig:
@@ -258,6 +260,26 @@ WORKFLOW Configuration Parameters
 
 If non-default parameters are selected for the variables in this section, they should be added to the ``workflow:`` section of the ``config.yaml`` file. 
 
+``taskgroups``: (Default:
+
+.. code-block:: console
+
+     - parm/wflow/prep.yaml
+     - parm/wflow/coldstart.yaml
+     - parm/wflow/post.yaml
+     - parm/wflow/test.yaml
+
+)
+   Users are most likely to use the ``taskgroups:`` entry to add or delete groups of tasks from the default list of tasks. For example, to add plotting tasks, users would set:
+
+.. code-block:: console
+
+   taskgroups: 
+     - parm/wflow/prep.yaml
+     - parm/wflow/coldstart.yaml
+     - parm/wflow/post.yaml
+     - parm/wflow/plot.yaml
+
 ``WORKFLOW_ID``: (Default: "")
    Unique ID for the workflow run that will be set in ``setup.py``.
 
@@ -280,7 +302,7 @@ Cron is a job scheduler accessed through the command-line on UNIX-like operating
 ``CRONTAB_LINE``: (Default: "")
    The launch command that will appear in the crontab (e.g., ``*/3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"``).
 
-``LOAD_MODULES_RUN_TASK_FP``: (Default: ``'{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'``)
+``LOAD_MODULES_RUN_TASK_FP``: (Default: ``'{{ user.USHdir }}/load_modules_run_task.sh'``)
    Path to the ``load_modules_run_task.sh`` file. 
 
 .. _DirParams:
@@ -297,10 +319,10 @@ Directory Parameters
 ``EXEC_SUBDIR``: (Default: "exec")
    The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
 
-``EXPTDIR``: (Default: ``'{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'``)
+``EXPTDIR``: (Default: ``'{{ workflow.EXPT_BASEDIR }}/{{ workflow.EXPT_SUBDIR }}'``)
    The full path to the experiment directory. By default, this value will point to ``"${EXPT_BASEDIR}/${EXPT_SUBDIR}"``, but the user can define it differently in the configuration file if desired. 
 
-``WFLOW_FLAG_FILES_DIR``: (Default: ``'{{ [workflow.EXPTDIR, "wflow_flag_files"]|path_join }}'``)
+``WFLOW_FLAG_FILES_DIR``: (Default: ``'{{ workflow.EXPTDIR }}/wflow_flag_files'``)
     Directory in which flag files marking completion of various workflow tasks can be placed.
 
 Pre-Processing File Separator Parameters
@@ -321,13 +343,13 @@ Set File Name Parameters
 ``FV3_NML_FN``: (Default: "input.nml")
    Name of the forecast model's namelist file. It includes the information in ``FV3_NML_BASE_SUITE_FN`` (i.e., ``input.nml.FV3``),  ``FV3_NML_YAML_CONFIG_FN`` (i.e., ``FV3.input.yml``), and the user configuration file (i.e., ``config.yaml``).
 
-``FV3_NML_BASE_SUITE_FN``: (Default: ``"{{ FV3_NML_FN }}.FV3"``)
+``FV3_NML_BASE_SUITE_FN``: (Default: ``"{{ workflow.FV3_NML_FN }}.FV3"``)
    Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites). By default, it will be named ``input.nml.FV3``. 
 
 ``FV3_NML_YAML_CONFIG_FN``: (Default: ``"FV3.input.yml"``)
    Name of the YAML configuration file containing the forecast model's namelist settings for various physics suites.
 
-``FV3_NML_BASE_ENS_FN``: (Default: ``"{{ FV3_NML_FN }}.base_ens"``)
+``FV3_NML_BASE_ENS_FN``: (Default: ``"{{ workflow.FV3_NML_FN }}.base_ens"``)
    Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
 
 ``FV3_EXEC_FN``: (Default: "ufs_model")
@@ -348,10 +370,10 @@ Set File Name Parameters
 
    For the file names below, the SRW App expects to read in the default value set in ``setup.py`` (e.g., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for these variables in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the corresponding files in the ``ufs-srweather-app/parm`` directory (e.g., change the names of ``diag_table`` options in ``parm`` when setting ``DIAG_TABLE_TMPL_FN``).
 
-``DIAG_TABLE_TMPL_FN``: (Default: ``'diag_table.{{ CCPP_PHYS_SUITE }}'``)
+``DIAG_TABLE_TMPL_FN``: (Default: ``'diag_table.{{ workflow.CCPP_PHYS_SUITE }}'``)
    Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
-``FIELD_TABLE_TMPL_FN``: (Default: ``'field_table.{{ CCPP_PHYS_SUITE }}'``)
+``FIELD_TABLE_TMPL_FN``: (Default: ``'field_table.{{ workflow.CCPP_PHYS_SUITE }}'``)
    Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <ICs/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``MODEL_CONFIG_FN``: (Default: "model_configure")
@@ -372,34 +394,34 @@ Set File Name Parameters
 Set File Path Parameters
 ----------------------------
 
-``FV3_NML_BASE_SUITE_FP``: (Default: ``'{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'``)
+``FV3_NML_BASE_SUITE_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.FV3_NML_BASE_SUITE_FN }}'``)
    Path to the ``FV3_NML_BASE_SUITE_FN`` file. 
 
-``FV3_NML_YAML_CONFIG_FP``: (Default: ``'{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'``)
+``FV3_NML_YAML_CONFIG_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.FV3_NML_YAML_CONFIG_FN }}'``)
    Path to the ``FV3_NML_YAML_CONFIG_FN`` file. 
 
-``FV3_NML_BASE_ENS_FP``: (Default: ``'{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'``)
+``FV3_NML_BASE_ENS_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_BASE_ENS_FN }}'``)
    Path to the ``FV3_NML_BASE_ENS_FN`` file. 
 
-``DATA_TABLE_TMPL_FP``: (Default: ``'{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'``)
+``DATA_TABLE_TMPL_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.DATA_TABLE_FN }}'``)
    Path to the ``DATA_TABLE_FN`` file. 
 
-``DIAG_TABLE_TMPL_FP``: (Default: ``'{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'``)
+``DIAG_TABLE_TMPL_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.DIAG_TABLE_TMPL_FN }}'``)
    Path to the ``DIAG_TABLE_TMPL_FN`` file. 
 
-``FIELD_TABLE_TMPL_FP``: (Default: ``'{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'``)
+``FIELD_TABLE_TMPL_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.FIELD_TABLE_TMPL_FN }}'``)
    Path to the ``FIELD_TABLE_TMPL_FN`` file. 
 
-``MODEL_CONFIG_TMPL_FP``: (Default: ``'{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'``) 
+``MODEL_CONFIG_TMPL_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.MODEL_CONFIG_FN }}'``) 
    Path to the ``MODEL_CONFIG_FN`` file.
 
-``UFS_CONFIG_TMPL_FP``: (Default: ``'{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'``) 
+``UFS_CONFIG_TMPL_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.UFS_CONFIG_FN }}'``) 
    Path to the ``UFS_CONFIG_FN`` file. 
 
-``AQM_RC_TMPL_FP``: (Default: ``'{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'``) 
+``AQM_RC_TMPL_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.AQM_RC_TMPL_FN }}'``) 
    Path to the ``AQM_RC_TMPL_FN`` file. 
 
-``FIRE_NML_BASE_FP``: (Default: ``'{{ [user.PARMdir, FIRE_NML_FN]|path_join }}'``)
+``FIRE_NML_BASE_FP``: (Default: ``'{{ user.PARMdir }}/{{ workflow.FIRE_NML_FN }}'``)
    Path to the ``FIRE_NML_FN`` file in the ``parm`` directory.
 
 *Experiment Directory* Files and Paths
@@ -407,22 +429,22 @@ Set File Path Parameters
 
 This section contains files and paths to files that are staged in the experiment directory at configuration time. 
 
-``DATA_TABLE_FP``: (Default: ``'{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'``)
+``DATA_TABLE_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.DATA_TABLE_FN }}'``)
    Path to the data table in the experiment directory. 
 
-``FIELD_TABLE_FP``: (Default: ``'{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'``)
+``FIELD_TABLE_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.FIELD_TABLE_FN }}'``)
    Path to the field table in the experiment directory. (The field table specifies tracers that the forecast model reads in.)
 
-``UFS_CONFIG_FP``: (Default: ``'{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'``)
+``UFS_CONFIG_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.UFS_CONFIG_FN }}'``)
    Path to the ``UFS_CONFIG_FN`` file in the experiment directory. 
 
-``FV3_NML_FP``: (Default: ``'{{ [EXPTDIR, FV3_NML_FN]|path_join }}'``)
+``FV3_NML_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_FN }}'``)
    Path to the ``FV3_NML_FN`` file in the experiment directory.
 
-``FV3_NML_STOCH_FP``: (Default: ``'{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'``)
+``FV3_NML_STOCH_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_FN }}_stoch'``)
    Path to a namelist file that includes stochastic physics namelist parameters. 
 
-``FIRE_NML_FP``: (Default: ``'{{ [EXPTDIR, FIRE_NML_FN]|path_join }}'``)
+``FIRE_NML_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.FIRE_NML_FN }}'``)
    Path to the ``FIRE_NML_FN`` file in the experiment directory.
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
@@ -446,16 +468,16 @@ This section contains files and paths to files that are staged in the experiment
 ``WFLOW_LAUNCH_LOG_FN``: (Default: "log.launch_FV3LAM_wflow")
    Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
 
-``GLOBAL_VAR_DEFNS_FP``: (Default: ``'{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'``) 
+``GLOBAL_VAR_DEFNS_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.GLOBAL_VAR_DEFNS_FN }}'``) 
    Path to the global variable definition file (``GLOBAL_VAR_DEFNS_FN``) in the experiment directory. 
 
-``ROCOTO_YAML_FP``: (Default: ``'{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}'``)
+``ROCOTO_YAML_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.ROCOTO_YAML_FN }}'``)
    Path to the Rocoto YAML configuration file (``ROCOTO_YAML_FN``) in the experiment directory. 
 
-``WFLOW_LAUNCH_SCRIPT_FP``: (Default: ``'{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'``) 
+``WFLOW_LAUNCH_SCRIPT_FP``: (Default: ``'{{ user.USHdir }}/{{ workflow.WFLOW_LAUNCH_SCRIPT_FN }}'``) 
    Path to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``) in the experiment directory. 
 
-``WFLOW_LAUNCH_LOG_FP``: (Default: ``'{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'``) 
+``WFLOW_LAUNCH_LOG_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.WFLOW_LAUNCH_LOG_FN }}'``) 
    Path to the log file (``WFLOW_LAUNCH_LOG_FN``) in the experiment directory that contains output from successive calls to the workflow launch script. 
 
 Experiment Fix File Paths
@@ -463,22 +485,22 @@ Experiment Fix File Paths
 
 These parameters are associated with the fixed (i.e., static) files. Unlike the file path parameters in :numref:`Section %s <SystemFixedFiles>`, which pertain to the locations of system data, the parameters in this section indicate fix file paths within the experiment directory (``$EXPTDIR``).  
 
-``FIXdir``: (Default: ``'{{ EXPTDIR }}'``)
+``FIXdir``: (Default: ``'{{ workflow.EXPTDIR }}'``)
    Location where fix files will be stored for a given experiment.
 
-``FIXam``: (Default: ``'{{ [FIXdir, "fix_am"]|path_join }}'``)
+``FIXam``: (Default: ``'{{ workflow.FIXdir }}/fix_am'``)
    Directory containing the fixed files (or symlinks to fixed files) for various fields on global grids (which are usually much coarser than the native FV3-LAM grid).
 
-``FIXclim``: (Default: ``'{{ [FIXdir, "fix_clim"]|path_join }}'``)
+``FIXclim``: (Default: ``'{{ workflow.FIXdir }}/fix_clim'``)
    Directory containing the MERRA2 aerosol climatology data file and lookup tables for optics properties.
 
-``FIXlam``: (Default: ``'{{ [FIXdir, "fix_lam"]|path_join }}'``)
+``FIXlam``: (Default: ``'{{ workflow.FIXdir }}/fix_lam'``)
    Directory containing the fixed files (or symlinks to fixed files) for the grid, orography, and surface climatology on the native FV3-LAM grid.
 
 ``THOMPSON_MP_CLIMO_FN``: (Default: "Thompson_MP_MONTHLY_CLIMO.nc")
    Name of file that contains aerosol climatology data. It can be used to generate approximate versions of the aerosol fields needed by Thompson microphysics. This file will be used to generate such approximate aerosol fields in the :term:`ICs` and :term:`LBCs` if Thompson MP is included in the physics suite and if the external model for ICs or LBCs does not already provide these fields.
    
-``THOMPSON_MP_CLIMO_FP``: (Default: ``'{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'``)
+``THOMPSON_MP_CLIMO_FP``: (Default: ``'{{ workflow.FIXam }}/{{ workflow.THOMPSON_MP_CLIMO_FN }}'``)
    Path to the file that contains aerosol climatology data (i.e., path to ``THOMPSON_MP_CLIMO_FN``). 
 
 .. _CCPP_Params:
@@ -502,16 +524,16 @@ CCPP Parameter
 
    Other valid values can be found in the ``ush/valid_param_vals.yaml`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/release/public-v2.2.0/ush/valid_param_vals.yaml>`__, but users cannot expect full support for these schemes.
 
-``CCPP_PHYS_SUITE_FN``: (Default: ``'suite_{{ CCPP_PHYS_SUITE }}.xml'``)
+``CCPP_PHYS_SUITE_FN``: (Default: ``'suite_{{ workflow.CCPP_PHYS_SUITE }}.xml'``)
    The name of the suite definition file (SDF) used for the experiment. 
 
-``CCPP_PHYS_SUITE_IN_CCPP_FP``: (Default: ``'{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'``)
+``CCPP_PHYS_SUITE_IN_CCPP_FP``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'``)
    The full path to the suite definition file (SDF) in the forecast model's directory structure (e.g., ``/path/to/ufs-srweather-app/sorc/ufs-weather-model/FV3/ccpp/suites/$CCPP_PHYS_SUITE_FN``). 
 
-``CCPP_PHYS_SUITE_FP``: (Default: ``'{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'``)
+``CCPP_PHYS_SUITE_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.CCPP_PHYS_SUITE_FN }}'``)
    The full path to the suite definition file (SDF) in the experiment directory. 
 
-``CCPP_PHYS_DIR``: (Default: ``'{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics", "SFC_Models", "Land", "Noahmp"] |path_join }}'``)
+``CCPP_PHYS_DIR``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/physics/physics/SFC_Models/Land/Noahmp'``)
    The directory containing the CCPP physics source code. This is needed to link table(s) contained in that repository. 
 
 Field Dictionary Parameters
@@ -520,10 +542,10 @@ Field Dictionary Parameters
 ``FIELD_DICT_FN``: (Default: "fd_ufs.yaml")
    The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields and is automatically generated by the :term:`NUOPC` Layer. 
 
-``FIELD_DICT_IN_UWM_FP``: (Default: ``'{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'``)
+``FIELD_DICT_IN_UWM_FP``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/tests/parm/{{ workflow.FIELD_DICT_FN }}'``)
    The full path to ``FIELD_DICT_FN`` within the forecast model's directory structure (e.g., ``/path/to/ufs-srweather-app/sorc/ufs-weather-model/tests/parm/$FIELD_DICT_FN``).
 
-``FIELD_DICT_FP``: (Default: ``'{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'``)
+``FIELD_DICT_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.FIELD_DICT_FN }}'``)
    The full path to ``FIELD_DICT_FN`` in the experiment directory.
 
 .. _GridGen:
@@ -730,7 +752,7 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
 
-   ``GRID_DIR``: (Default: ``'{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks.get("task_make_grid") else "" }}'``)
+   ``GRID_DIR``: (Default: ``'{{ workflow.EXPTDIR + "/grid" if rocoto.tasks.get("task_make_grid") }}'``)
       The directory containing pre-generated grid files when the ``MAKE_GRID`` task is not meant to run.
 
 .. _ESGgrid:
@@ -785,7 +807,7 @@ Non-default parameters for the ``make_orog`` task are set in the ``task_make_oro
 ``OMP_STACKSIZE_MAKE_OROG``: (Default: "2048m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
-``OROG_DIR``: (Default: ``'{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks.get("task_make_orog") else "" }}'``)
+``OROG_DIR``: (Default: ``'{{ workflow.EXPTDIR + "/orog" if rocoto.tasks.get("task_make_orog") }}'``)
    The directory containing pre-generated orography files to use when the ``MAKE_OROG`` task is not meant to run.
 
 .. _make-sfc-climo:
@@ -804,7 +826,7 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
 ``OMP_STACKSIZE_MAKE_SFC_CLIMO``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
-``SFC_CLIMO_DIR``: (Default: ``'{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks.get("task_make_sfc_climo") else "" }}'``)
+``SFC_CLIMO_DIR``: (Default: ``'{{ workflow.EXPTDIR + "/sfc_climo" if rocoto.tasks.get("task_make_sfc_climo") }}'``)
    The directory containing pre-generated surface climatology files to use when the ``MAKE_SFC_CLIMO`` task is not meant to run.
 
 .. _task_get_extrn_ics:
@@ -989,13 +1011,13 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
-``NNODES_RUN_FCST``: (Default: ``'{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'``)
+``NNODES_RUN_FCST``: (Default: ``!int '{{ (task_run_fcst.PE_MEMBER01 + task_run_fcst.fv3.execution.batchargs.tasks_per_node - 1) // task_run_fcst.fv3.execution.batchargs.tasks_per_node }}'``)
    The number of nodes to request from the job scheduler for the forecast task. 
 
-``PPN_RUN_FCST``: (Default: ``'{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'``)
+``PPN_RUN_FCST``: (Default: ``!int '{{ platform.NCORES_PER_NODE // task_run_fcst.envvars.OMP_NUM_THREADS_RUN_FCST }}'``)
    Processes per node for the forecast task. 
 
-``FV3_EXEC_FP``: (Default: ``'{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'``)
+``FV3_EXEC_FP``: (Default: ``'{{ user.EXECdir }}/{{ workflow.FV3_EXEC_FN }}'``)
    Full path to the forecast model executable.
 
 ``IO_LAYOUT_Y``: (Default: 1)
@@ -1031,7 +1053,7 @@ Model Configuration Parameters
 
 These parameters set values in the Weather Model's ``model_configure`` file.
 
-``DT_ATMOS``: (Default: "")
+``DT_ATMOS``: (Default: !int "")
    The main forecast model integration time step (positive integer value). This is the time step for the outermost atmospheric model loop in seconds. It corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, :term:`tracer` transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.yaml`` script, but a different value can be set in ``config.yaml``. In general, the smaller the grid cell size is, the smaller this value needs to be in order to avoid numerical instabilities during the forecast.
 
 ``FHROT``: (Default: 0)
@@ -1058,14 +1080,17 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 Computational Parameters
 ----------------------------
 
-``LAYOUT_X``: (Default: ``'{{ LAYOUT_X }}'``)
+``LAYOUT_X``: (Default: ``!int '{{ task_run_fcst.LAYOUT_X }}'``)
    The number of :term:`MPI` tasks (processes) to use in the x direction of the regional grid when running the forecast model.
 
-``LAYOUT_Y``: (Default: ``'{{ LAYOUT_Y }}'``)
+``LAYOUT_Y``: (Default: ``!int '{{ task_run_fcst.LAYOUT_Y }}'``)
    The number of :term:`MPI` tasks (processes) to use in the y direction of the regional grid when running the forecast model.
 
-``BLOCKSIZE``: (Default: ``'{{ BLOCKSIZE }}'``)
+``BLOCKSIZE``: (Default: ``!int '{{ task_run_fcst.BLOCKSIZE }}'``)
    The amount of data that is passed into the cache at a time.
+
+.. note::
+   The values above use the custom uwtools ``!int`` tag to explicitly set the type on the value. You can find more information about the Custom Tags in the `uwtools docs <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html>`__.
 
 .. _WriteComp:
 
@@ -1085,20 +1110,23 @@ Write-Component (Quilting) Parameters
 ``PRINT_ESMF``: (Default: false)
    Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory). Valid values: ``True`` | ``False``
 
-``PE_MEMBER01``: (Default: ``'{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if QUILTING else OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X) + fire.FIRE_NUM_TASKS}}'``)
+``PE_MEMBER01``: (Default: ``!int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + fire.FIRE_NUM_TASKS }}'``)
    The number of MPI processes required by the forecast. When QUILTING is true, it is calculated as: 
-   
+
    .. math::
-      
+
       OMP\_NUM\_THREADS\_RUN\_FCST * (LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group)
 
 ``WRTCMP_write_groups``: (Default: "")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.
 
-``WRTCMP_write_tasks_per_group``: (Default: "")
-   The number of MPI tasks to allocate for each write group.
+.. note::
+   The Jinja references in many of the default values use custom uwtools tags to explicitly define the type of the variable. In this section, that will be ``!int`` and ``!float``. See more about custom uwtools tags `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html>`__.
 
-``WRTCMP_output_grid``: (Default: "''")
+``WRTCMP_write_tasks_per_group``: (Default: "")
+   The number of MPI tasks to allocate for each write group. Defaults to the integer number of LAYOUT_Y for the grid. The type is determined by the custom uwtools ``!int`` tag.
+
+``WRTCMP_output_grid``: (Default: "")
    Sets the type (coordinate system) of the write component grid. The default empty string forces the user to set a valid value for ``WRTCMP_output_grid`` in ``config.yaml`` if specifying a *custom* grid. When creating an experiment with a user-defined grid, this parameter must be specified or the experiment will fail. Valid values: ``"lambert_conformal"`` | ``"regional_latlon"`` | ``"rotated_latlon"``
 
 ``WRTCMP_cen_lon``: (Default: "")
@@ -1267,8 +1295,8 @@ Typically, the following parameters must be set explicitly by the user in the ``
 ``PLOT_FCST_INC``: (Default: 3)
    Forecast hour increment for the plotting task. For example, if the user wants plots for each forecast hour, they should set ``PLOT_FCST_INC: 1``. If the user only wants plots for some of the output (e.g., every 6 hours), they should set ``PLOT_FCST_INC: 6``. 
   
-``PLOT_FCST_END``: (Default: "")
-   The last forecast hour for the plotting task. By default, ``PLOT_FCST_END`` is set to the same value as ``FCST_LEN_HRS``. For example, if a forecast runs for 24 hours, and the user wants plots for each available hour of forecast output, they do not need to set ``PLOT_FCST_END``, and it will automatically be set to 24. If the user only wants plots from the first 12 hours of the forecast, the "last forecast hour" should be 12 (i.e., ``PLOT_FCST_END: 12``).
+``PLOT_FCST_END``: (Default: !int "{{ workflow.FCST_LEN_HRS }}")
+   The last forecast hour for the plotting task. By default, ``PLOT_FCST_END`` is set to the same value as ``FCST_LEN_HRS`` and is transformed to an integer explicitly with the custom ``!int`` uwtools tag. For example, if a forecast runs for 24 hours, and the user wants plots for each available hour of forecast output, they do not need to set ``PLOT_FCST_END``, and it will automatically be set to 24. If the user only wants plots from the first 12 hours of the forecast, the "last forecast hour" should be 12 (i.e., ``PLOT_FCST_END: 12``).
 
 ``PLOT_DOMAINS``: (Default: ["conus"])
    Domains to plot. Currently supported options are ["conus"], ["regional"], or both (i.e., ["conus", "regional"]).
@@ -1362,13 +1390,10 @@ Set parameters associated with running ensembles.
 ``NUM_ENS_MEMBERS``: (Default: 0)
    The number of ensemble members to run if ``DO_ENSEMBLE`` is set to true. This variable also controls the naming of the ensemble member directories. For example, if ``NUM_ENS_MEMBERS`` is set to 8, the member directories will be named *mem1, mem2, ..., mem8*. This variable is not used unless ``DO_ENSEMBLE`` is set to true.
 
-``ENSMEM_NAMES``: (Default: ``'{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'``)
+``ENSMEM_NAMES``: (Default: ``'{% for m in range(global.NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'``)
    A list of names for the ensemble member names following the format mem001, mem002, etc.
-   
-``FV3_NML_ENSMEM_FPS``: (Default: ``'{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'``)
-   Paths to the corresponding ensemble member namelists in the experiment directory
 
-``ENS_TIME_LAG_HRS``: (Default: ``'[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'``)
+``ENS_TIME_LAG_HRS``: (Default: ``'[ {% for m in range([1,global.NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'``)
    Time lag (in hours) to use for each ensemble member. For a deterministic forecast, this is a one-element array. Default values of array elements are zero.
 
 
@@ -1606,7 +1631,7 @@ General VX Parameters
    located.  They may include leading relative paths before the file
    names, e.g. ``some_dir/another_dir/vx_config_det.yaml``.
 
-``VX_OUTPUT_BASEDIR``: (Default: ``'{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'``)
+``VX_OUTPUT_BASEDIR``: (Default: ``'{{ "$COMOUT/metout" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'``)
    Template for base (i.e. top-level) directory in which METplus will place
    its output.
 
@@ -1666,15 +1691,13 @@ VX Parameters for Observations
         .. code-block:: console
 
            [ 'APCP',
-             '{%- set obs_avail_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
-              {{- "{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z." ~ obs_avail_intvl_hrs ~ "h.hrap.conus.gb2" }}' ]
+           '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.{{ "%02d" % verification.CCPA_OBS_AVAIL_INTVL_HRS }}h.hrap.conus.gb2']
 
      ``OBS_NOHRSC_FN_TEMPLATES``:
         .. code-block:: console
 
            [ 'ASNOW',
-             '{%- set obs_avail_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
-              {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2" }}' ]
+             'sfav2_CONUS_{{ verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}h_{valid?fmt=%Y%m%d%H}_grid184.grb2' ]
 
      ``OBS_MRMS_FN_TEMPLATES``:
         .. code-block:: console
@@ -1801,8 +1824,7 @@ VX Parameters for Observations
 
    .. code-block:: console
 
-      {%- set obs_avail_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
-      {{- "ccpa.t{valid?fmt=%H}z." ~ obs_avail_intvl_hrs ~ "h.hrap.conus.gb2_a${ACCUM_HH}h.nc" }}
+      ccpa.hrap.conus.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc
 
    METplus template for the names of the NetCDF files generated by the
    workflow verification tasks that call METplus's PcpCombine tool on
@@ -1814,8 +1836,7 @@ VX Parameters for Observations
 
    .. code-block:: console
 
-      {%- set obs_avail_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
-      {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc" }}
+      sfav2_CONUS_{{ "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS }}h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc
 
    METplus template for the names of the NetCDF files generated by the
    workflow verification tasks that call METplus's PcpCombine tool on
@@ -1861,7 +1882,7 @@ VX Parameters for Observations
 VX Parameters for Forecasts
 ----------------------------------
 
-``VX_FCST_MODEL_NAME``: (Default: ``'{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'``)
+``VX_FCST_MODEL_NAME``: (Default: ``'{{ nco.NET_default }}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}'``)
    String that specifies a descriptive name for the model being verified.
    This is used in forming the names of the verification output files and
    is also included in the contents of those files.
@@ -1875,7 +1896,7 @@ VX Parameters for Forecasts
       the forecast output interval for native SRW forecasts, it should be
       used as the default value of this variable.
 
-``VX_FCST_INPUT_BASEDIR``: (Default: ``'{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'``)
+``VX_FCST_INPUT_BASEDIR``: (Default: ``'{{ "$COMOUT/../.." if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'``)
    METplus template for the name of the base (i.e. top-level) directory
    containing the forecast files to use as inputs to the verification
    tasks.
@@ -1885,15 +1906,7 @@ VX Parameters for Forecasts
 
    .. code-block:: console
  
-      {%- if user.RUN_ENVIR == "nco" %}
-        {{- "${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}" }}
-      {%- else %}
-        {{- "{init?fmt=%Y%m%d%H?shift=-${time_lag}}" }}
-        {%- if global.DO_ENSEMBLE %}
-          {{- "/${ensmem_name}" }}
-        {%- endif %}
-        {{- "/postprd" }}
-      {%- endif %}
+      {% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{{ "/${ensmem_name}" if global.DO_ENSEMBLE }}/postprd{% endif %}
 
    METplus template for the name of the subdirectory containing forecast
    files to use as inputs to the verification tasks.
@@ -1903,11 +1916,7 @@ VX Parameters for Forecasts
 
    .. code-block:: console
  
-      {{- "${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z" }}
-      {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
-        {{- ".${ensmem_name}" }}
-      {%- endif %}
-      {{- ".prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2" }}
+      ${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.grib2
 
    METplus template for the names of the forecast files to use as inputs
    to the verification tasks.
@@ -1917,11 +1926,7 @@ VX Parameters for Forecasts
 
    .. code-block:: console
  
-      {{- "${NET_default}.t{init?fmt=%H}z" }}
-      {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
-        {{- ".${ensmem_name}" }}
-      {%- endif %}
-      {{- ".prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc" }}
+      ${NET_default}.t{init?fmt=%H}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc
 
    METplus template for the names of the NetCDF files generated by the
    workflow verification tasks that call METplus's PcpCombine tool on
@@ -2203,16 +2208,7 @@ Non-default Rocoto workflow parameters are set in the ``rocoto:`` section of the
      entities: ""
      log: ""
      tasks:
-       taskgroups: ""
 
-Users are most likely to use the ``taskgroups:`` component of the ``rocoto:`` section to add or delete groups of tasks from the default list of tasks. For example, to add plotting tasks, users would add: 
-
-.. code-block:: console
-
-   rocoto:
-     ...
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
 See :numref:`Section %s <DefineWorkflow>` for more information on the components of the ``rocoto:`` section and how to define a Rocoto workflow. 
 

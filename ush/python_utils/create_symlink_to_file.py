@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import os
 import glob
+import os
+from pathlib import Path
 
 from .print_input_args import print_input_args
 from .print_msg import print_err_msg_exit
-from .filesys_cmds_vrfy import ln_vrfy
 
 
 def create_symlink_to_file(target, symlink, relative=True):
@@ -37,7 +37,10 @@ def create_symlink_to_file(target, symlink, relative=True):
               symlink = '{symlink}'"""
         )
 
-    if not os.path.exists(target):
+    target = Path(target)
+    symlink = Path(symlink)
+
+    if not target.exists():
         if glob.glob(target):
             for wildtarget in glob.glob(target):
                 create_symlink_to_file(wildtarget,symlink,relative)
@@ -49,10 +52,13 @@ def create_symlink_to_file(target, symlink, relative=True):
                     target = '{target}'"""
             )
 
-    relative_flag = ""
     if relative:
-        RELATIVE_LINK_FLAG = os.getenv("RELATIVE_LINK_FLAG")
-        if RELATIVE_LINK_FLAG is not None:
-            relative_flag = f"{RELATIVE_LINK_FLAG}"
+        # Find the relative path from the target to its symbolic link name
+        target = os.path.relpath(target, symlink.parent)
 
-    ln_vrfy(f"-sf {relative_flag} {target} {symlink}")
+    # The Path becomes symbolic link to the target
+    if symlink.exists():
+        symlink.unlink()
+    symlink.symlink_to(target)
+    if not symlink.exists():
+        print_err_msg_exit(f"broken link {str(symlink)} to target {str(target)}")

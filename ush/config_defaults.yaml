@@ -89,15 +89,15 @@ user:
 
   HOMEdir: '{{ user.HOMEdir }}'
   USHdir: '{{ user.USHdir }}'
-  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
-  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
-  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
-  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
-  MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
-  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
-  METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
+  SCRIPTSdir: '{{ user.HOMEdir }}/scripts'
+  JOBSdir: '{{ user.HOMEdir }}/jobs'
+  SORCdir: '{{ user.HOMEdir }}/sorc'
+  PARMdir: '{{ user.HOMEdir }}/parm'
+  MODULESdir: '{{ user.HOMEdir }}/modulefiles'
+  EXECdir: '{{ user.HOMEdir }}/{{ workflow.EXEC_SUBDIR }}'
+  METPLUS_CONF: '{{ user.PARMdir }}/metplus'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
-  ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
+  ARL_NEXUS_DIR: '{{ user.SORCdir }}/arl_nexus'
 
 #----------------------------
 # PLATFORM config parameters
@@ -417,6 +417,18 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # Set the default workflow tasks to run in the experiment.
+  #
+  #-----------------------------------------------------------------------
+  #
+  taskgroups:
+    - parm/wflow/prep.yaml
+    - parm/wflow/coldstart.yaml
+    - parm/wflow/post.yaml
+    - parm/wflow/test.yaml
+  #
+  #-----------------------------------------------------------------------
+  #
   # Unique ID for workflow run that will be set in setup.py
   #
   #-----------------------------------------------------------------------
@@ -456,7 +468,7 @@ workflow:
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   CRONTAB_LINE: ""
-  LOAD_MODULES_RUN_TASK_FP: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'
+  LOAD_MODULES_RUN_TASK_FP: '{{ user.USHdir }}/load_modules_run_task.sh'
 
   #
   #-----------------------------------------------------------------------
@@ -490,9 +502,9 @@ workflow:
   #
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: 'experiment'
-  EXEC_SUBDIR: "exec"
-  EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
-  WFLOW_FLAG_FILES_DIR: '{{ [workflow.EXPTDIR, "wflow_flag_files"]|path_join }}'
+  EXEC_SUBDIR: 'exec'
+  EXPTDIR: '{{ workflow.EXPT_BASEDIR }}/{{ workflow.EXPT_SUBDIR }}'
+  WFLOW_FLAG_FILES_DIR: '{{ workflow.EXPTDIR }}/wflow_flag_files'
   #
   #-----------------------------------------------------------------------
   #
@@ -589,20 +601,20 @@ workflow:
   #-----------------------------------------------------------------------
   #
   CONSTANTS_FN: "constants.yaml"
-  
+
   RGNL_GRID_NML_FN: "regional_grid.nml"
-  
+
   FV3_NML_FN: "input.nml"
-  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
+  FV3_NML_BASE_SUITE_FN: "{{ workflow.FV3_NML_FN }}.FV3"
   FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
+  FV3_NML_BASE_ENS_FN: "{{ workflow.FV3_NML_FN }}.base_ens"
   FV3_EXEC_FN: "ufs_model"
 
   DATA_TABLE_FN: "data_table"
   DIAG_TABLE_FN: "diag_table"
   FIELD_TABLE_FN: "field_table"
-  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
-  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
+  DIAG_TABLE_TMPL_FN: 'diag_table.{{ workflow.CCPP_PHYS_SUITE }}'
+  FIELD_TABLE_TMPL_FN: 'field_table.{{ workflow.CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
   UFS_CONFIG_FN: "ufs.configure"
   AQM_RC_FN: "aqm.rc"
@@ -640,17 +652,16 @@ workflow:
   #  
   #-----------------------------------------------------------------------
   #
-
-  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
-  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
-  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
-  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
-  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
-  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
-  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
-  UFS_CONFIG_TMPL_FP: '{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'
-  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
-  FIRE_NML_BASE_FP: '{{ [user.PARMdir, FIRE_NML_FN]|path_join }}'
+  FV3_NML_BASE_SUITE_FP: '{{ user.PARMdir }}/{{ workflow.FV3_NML_BASE_SUITE_FN }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ user.PARMdir }}/{{ workflow.FV3_NML_YAML_CONFIG_FN }}'
+  FV3_NML_BASE_ENS_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_BASE_ENS_FN }}'
+  DATA_TABLE_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.DATA_TABLE_FN }}'
+  DIAG_TABLE_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.DIAG_TABLE_TMPL_FN }}'
+  FIELD_TABLE_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.FIELD_TABLE_TMPL_FN }}'
+  MODEL_CONFIG_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.MODEL_CONFIG_FN }}'
+  UFS_CONFIG_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.UFS_CONFIG_FN }}'
+  AQM_RC_TMPL_FP: '{{ user.PARMdir }}/{{ workflow.AQM_RC_TMPL_FN }}'
+  FIRE_NML_BASE_FP: '{{ user.PARMdir }}/{{ workflow.FIRE_NML_FN }}'
 
   # 
   #-----------------------------------------------------------------------
@@ -720,12 +731,12 @@ workflow:
   # 
   #-----------------------------------------------------------------------
   #
-  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
-  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
-  UFS_CONFIG_FP: '{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'
-  FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
-  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
-  FIRE_NML_FP: '{{ [EXPTDIR, FIRE_NML_FN]|path_join }}'
+  DATA_TABLE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.DATA_TABLE_FN }}'
+  FIELD_TABLE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FIELD_TABLE_FN }}'
+  UFS_CONFIG_FP: '{{ workflow.EXPTDIR }}/{{ workflow.UFS_CONFIG_FN }}'
+  FV3_NML_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_FN }}'
+  FV3_NML_STOCH_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FV3_NML_FN }}_stoch'
+  FIRE_NML_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FIRE_NML_FN }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -735,10 +746,10 @@ workflow:
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
 
-  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
-  ROCOTO_YAML_FP: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}'
-  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
-  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
+  GLOBAL_VAR_DEFNS_FP: '{{ workflow.EXPTDIR }}/{{ workflow.GLOBAL_VAR_DEFNS_FN }}'
+  ROCOTO_YAML_FP: '{{ workflow.EXPTDIR }}/{{ workflow.ROCOTO_YAML_FN }}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ user.USHdir }}/{{ workflow.WFLOW_LAUNCH_SCRIPT_FN }}'
+  WFLOW_LAUNCH_LOG_FP: '{{ workflow.EXPTDIR }}/{{ workflow.WFLOW_LAUNCH_LOG_FN }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -769,13 +780,13 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR }}'
-  FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
-  FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
-  FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
+  FIXdir: '{{ workflow.EXPTDIR }}'
+  FIXam: '{{ workflow.FIXdir }}/fix_am'
+  FIXclim: '{{ workflow.FIXdir }}/fix_clim'
+  FIXlam: '{{ workflow.FIXdir }}/fix_lam'
 
   THOMPSON_MP_CLIMO_FN: "Thompson_MP_MONTHLY_CLIMO.nc"
-  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'
+  THOMPSON_MP_CLIMO_FP: '{{ workflow.FIXam }}/{{ workflow.THOMPSON_MP_CLIMO_FN }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -807,10 +818,10 @@ workflow:
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
-  CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
-  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
-  CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
-  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics", "SFC_Models", "Land", "Noahmp"] |path_join }}'
+  CCPP_PHYS_SUITE_FN: 'suite_{{ workflow.CCPP_PHYS_SUITE }}.xml'
+  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'
+  CCPP_PHYS_SUITE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.CCPP_PHYS_SUITE_FN }}'
+  CCPP_PHYS_DIR: '{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/physics/physics/SFC_Models/Land/Noahmp'
   #
   #-----------------------------------------------------------------------
   #
@@ -831,8 +842,8 @@ workflow:
   #-----------------------------------------------------------------------
   #
   FIELD_DICT_FN: "fd_ufs.yaml"
-  FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
-  FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
+  FIELD_DICT_IN_UWM_FP: '{{ user.UFS_WTHR_MDL_DIR }}/tests/parm/{{ workflow.FIELD_DICT_FN }}'
+  FIELD_DICT_FP: '{{ workflow.EXPTDIR }}/{{ workflow.FIELD_DICT_FN }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -932,7 +943,7 @@ workflow:
   # than one day the entries must include the length of each cycle to be
   # run. By default, it is set to a 1-item list containing the standard
   # fcst length.
-  #
+  
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -940,8 +951,8 @@ workflow:
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
   FCST_LEN_CYCL:
-    - '{{ FCST_LEN_HRS }}'
-  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
+    - !int '{{ workflow.FCST_LEN_HRS }}'
+  LONG_FCST_LEN: !int '{{ workflow.FCST_LEN_CYCL|max if workflow.FCST_LEN_HRS < 0 else workflow.FCST_LEN_HRS }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1127,16 +1138,22 @@ nco:
 # MAKE GRID config parameters
 #-----------------------------
 task_make_grid:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # GRID_DIR:
-  # The directory containing pregenerated grid files when the
-  # make_grid task is not set to run.
-  # 
-  #-----------------------------------------------------------------------
-  # 
-  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks.get("task_make_grid") else "" }}'
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 24
+      walltime: 00:20:00
+  envvars:
+    #
+    #-----------------------------------------------------------------------
+    #
+    # GRID_DIR:
+    # The directory containing pregenerated grid files when the
+    # make_grid task is not set to run.
+    #
+    #-----------------------------------------------------------------------
+    #
+    GRID_DIR: '{{ workflow.EXPTDIR + "/grid" if rocoto.tasks.get("task_make_grid")}}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1218,10 +1235,19 @@ task_make_grid:
 # the MAKE_OROG task is not meant to run.
 #-----------------------------------------------------------------------
 task_make_orog:
-  KMP_AFFINITY_MAKE_OROG: "disabled"
-  OMP_NUM_THREADS_MAKE_OROG: 6
-  OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks.get("task_make_orog") else "" }}'
+  orog:
+    execution:
+      batchargs:
+        nodes: 1
+        tasks_per_node: 24
+        walltime: 00:20:00
+      threads: !int '{{ task_make_orog.envvars.OMP_NUM_THREADS_MAKE_OROG }}'
+
+  envvars:
+    KMP_AFFINITY_MAKE_OROG: "disabled"
+    OMP_NUM_THREADS_MAKE_OROG: 6
+    OMP_STACKSIZE_MAKE_OROG: "2048m"
+    OROG_DIR: '{{ workflow.EXPTDIR + "/orog" if rocoto.tasks.get("task_make_orog") }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1242,186 +1268,211 @@ task_make_orog:
 # to use when the MAKE_SFC_CLIMO task is not meant to run.
 #-----------------------------------------------------------------------
 task_make_sfc_climo:
-  KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
-  OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
-  OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks.get("task_make_sfc_climo") else "" }}'
+  sfc_climo_gen:
+    execution:
+      batchargs:
+        nodes: 2
+        tasks_per_node: 24
+        walltime: 00:20:00
+  envvars:
+    # This section is a placeholder and will be removed with make_sfc_climo
+    # integration
+    SFC_CLIMO_DIR: '{{ workflow.EXPTDIR + "/sfc_climo" if rocoto.tasks.get("task_make_sfc_climo") }}'
 
 #----------------------------
 # EXTRN ICS config parameters
 #-----------------------------
 task_get_extrn_ics:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set initial and lateral boundary condition generation parameters.  
-  # Definitions:
-  #
-  # EXTRN_MDL_NAME_ICS:
-  # The name of the external model that will provide fields from which initial
-  # condition files, surface files, and 0-th hour boundary condition files will 
-  # be generated for input into the forecast model.
-  #
-  # EXTRN_MDL_ICS_OFFSET_HRS:
-  # Users may wish to start a forecast using forecast data from a previous cycle
-  # of an external model. This variable indicates how many hours earlier
-  # the external model started than the FV3 forecast configured here.
-  # For example, if the forecast should start from a 6-hour
-  # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS: "6".
-  #
-  # FV3GFS_FILE_FMT_ICS:
-  # If using the FV3GFS model as the source of the ICs (i.e., if EXTRN_MDL_NAME_ICS
-  # is set to "FV3GFS"), this variable specifies the format of the model
-  # files to use when generating the ICs.
-  #
-  #-----------------------------------------------------------------------
-  #
-  EXTRN_MDL_NAME_ICS: "FV3GFS"
-  EXTRN_MDL_ICS_OFFSET_HRS: 0
-  FV3GFS_FILE_FMT_ICS: "netcdf"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Base directories in which to search for external model files.
-  #
-  # EXTRN_MDL_SYSBASEDIR_ICS:
-  # A known location of a real data stream on a given platform. This is typically 
-  # a real-time data stream as on Hera, Jet, or WCOSS. External model files 
-  # for generating ICs on the native grid should be accessible via this data stream. 
-  # The way the full path containing these files is constructed depends on the 
-  # user-specified external model for ICs, i.e. EXTRN_MDL_NAME_ICS.
-  #
-  # Note that this must be defined as a null string here so that if it is 
-  # specified by the user in the experiment configuration file, it remains 
-  # set to those values, and if not, it gets set to machine-dependent 
-  # values.
-  #
-  #-----------------------------------------------------------------------
-  # 
-  EXTRN_MDL_SYSBASEDIR_ICS: ''
-  #
-  #-----------------------------------------------------------------------
-  #
-  # User-staged external model directories and files.  Definitions:
-  #
-  # USE_USER_STAGED_EXTRN_FILES:
-  # Flag that determines whether or not the workflow will look for the 
-  # external model files needed for generating ICs in user-specified
-  # directories.
-  #
-  # EXTRN_MDL_SOURCE_BASEDIR_ICS:
-  # Directory in which to look for external model files for generating ICs.
-  # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in 
-  # this directory for a subdirectory named "YYYYMMDDHH" consisting of the 
-  # starting date and cycle hour of 
-  # the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
-  # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
-  # the external model files specified by the array EXTRN_MDL_FILES_ICS 
-  # (these files will be used to generate the ICs on the native FV3-LAM 
-  # grid). This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
-  # set to false.
-  # 
-  # EXTRN_MDL_FILES_ICS:
-  # Array containing templates of the names of the files to search for in
-  # the directory specified by EXTRN_MDL_SOURCE_BASEDIR_ICS.  This
-  # variable is not used if USE_USER_STAGED_EXTRN_FILES is set to false.
-  # A single template should be used for each model file type that is
-  # used. You may use any of the Python-style templates
-  # allowed in the ush/retrieve_data.py script. To see the full list of
-  # supported templates, run that script with a -h option. For example, to 
-  # set FV3GFS nemsio input files, add:
-  #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio \
-  #   gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio )
-  # Or for FV3GFS grib files:
-  #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
-  #
-  #-----------------------------------------------------------------------
-  #
-  USE_USER_STAGED_EXTRN_FILES: false
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
-  EXTRN_MDL_FILES_ICS: ""
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 01:30:00
+  envvars:
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Set initial and lateral boundary condition generation parameters.  
+    # Definitions:
+    #
+    # EXTRN_MDL_NAME_ICS:
+    # The name of the external model that will provide fields from which initial
+    # condition files, surface files, and 0-th hour boundary condition files will 
+    # be generated for input into the forecast model.
+    #
+    # EXTRN_MDL_ICS_OFFSET_HRS:
+    # Users may wish to start a forecast using forecast data from a previous cycle
+    # of an external model. This variable indicates how many hours earlier
+    # the external model started than the FV3 forecast configured here.
+    # For example, if the forecast should start from a 6-hour
+    # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS: "6".
+    #
+    # FV3GFS_FILE_FMT_ICS:
+    # If using the FV3GFS model as the source of the ICs (i.e., if EXTRN_MDL_NAME_ICS
+    # is set to "FV3GFS"), this variable specifies the format of the model
+    # files to use when generating the ICs.
+    #
+    #-----------------------------------------------------------------------
+    #
+    EXTRN_MDL_NAME_ICS: "FV3GFS"
+    EXTRN_MDL_ICS_OFFSET_HRS: 0
+    FV3GFS_FILE_FMT_ICS: "netcdf"
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Base directories in which to search for external model files.
+    #
+    # EXTRN_MDL_SYSBASEDIR_ICS:
+    # A known location of a real data stream on a given platform. This is typically 
+    # a real-time data stream as on Hera, Jet, or WCOSS. External model files 
+    # for generating ICs on the native grid should be accessible via this data stream. 
+    # The way the full path containing these files is constructed depends on the 
+    # user-specified external model for ICs, i.e. EXTRN_MDL_NAME_ICS.
+    #
+    # Note that this must be defined as a null string here so that if it is 
+    # specified by the user in the experiment configuration file, it remains 
+    # set to those values, and if not, it gets set to machine-dependent 
+    # values.
+    #
+    #-----------------------------------------------------------------------
+    # 
+    EXTRN_MDL_SYSBASEDIR_ICS: ''
+    #
+    #-----------------------------------------------------------------------
+    #
+    # User-staged external model directories and files.  Definitions:
+    #
+    # USE_USER_STAGED_EXTRN_FILES:
+    # Flag that determines whether or not the workflow will look for the 
+    # external model files needed for generating ICs in user-specified
+    # directories.
+    #
+    # EXTRN_MDL_SOURCE_BASEDIR_ICS:
+    # Directory in which to look for external model files for generating ICs.
+    # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in 
+    # this directory for a subdirectory named "YYYYMMDDHH" consisting of the 
+    # starting date and cycle hour of 
+    # the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
+    # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
+    # the external model files specified by the array EXTRN_MDL_FILES_ICS 
+    # (these files will be used to generate the ICs on the native FV3-LAM 
+    # grid). This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
+    # set to false.
+    # 
+    # EXTRN_MDL_FILES_ICS:
+    # Array containing templates of the names of the files to search for in
+    # the directory specified by EXTRN_MDL_SOURCE_BASEDIR_ICS.  This
+    # variable is not used if USE_USER_STAGED_EXTRN_FILES is set to false.
+    # A single template should be used for each model file type that is
+    # used. You may use any of the Python-style templates
+    # allowed in the ush/retrieve_data.py script. To see the full list of
+    # supported templates, run that script with a -h option. For example, to 
+    # set FV3GFS nemsio input files, add:
+    #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio \
+    #   gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio )
+    # Or for FV3GFS grib files:
+    #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
+    #
+    #-----------------------------------------------------------------------
+    #
+    USE_USER_STAGED_EXTRN_FILES: false
+    EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
+    EXTRN_MDL_FILES_ICS: ""
 
 #----------------------------
 # EXTRN LBCS config parameters
 #-----------------------------
 task_get_extrn_lbcs:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # EXTRN_MDL_NAME_LBCS:
-  # The name of the external model that will provide fields from which 
-  # lateral boundary condition (LBC) files (except for the 0-th hour LBC 
-  # file) will be generated for input into the forecast model.
-  #
-  # LBC_SPEC_INTVL_HRS:
-  # The interval (in integer hours) with which LBC files will be generated.
-  # We will refer to this as the boundary update interval.  Note that the
-  # model specified in EXTRN_MDL_NAME_LBCS must have data available at a
-  # frequency greater than or equal to that implied by LBC_SPEC_INTVL_HRS.
-  # For example, if LBC_SPEC_INTVL_HRS is set to 6, then the model must have
-  # data availble at least every 6 hours. It is up to the user to ensure 
-  # that this is the case.
-  #
-  # EXTRN_MDL_LBCS_OFFSET_HRS:
-  # Users may wish to use lateral boundary conditions from a forecast that
-  # was started earlier than the initial time for the forecast
-  # configured here. This variable indicates how many hours earlier
-  # the external model started than the forecast configured here.
-  # For example, the forecast should use lateral boundary
-  # conditions from a GFS forecast started 6 hours earlier, then
-  # EXTRN_MDL_LBCS_OFFSET_HRS: 6. Defaults to 0 except for RAP, which
-  # uses a 3 hour offset. The default value is model-dependent and is set 
-  # in ush/set_extrn_mdl_params.py.
-  #
-  # FV3GFS_FILE_FMT_LBCS:
-  # If using the FV3GFS model as the source of the LBCs (i.e., if 
-  # EXTRN_MDL_NAME_LBCS is set to "FV3GFS"), this variable specifies the 
-  # format of the model files to use when generating the LBCs.
-  #
-  #-----------------------------------------------------------------------
-  #
-  EXTRN_MDL_NAME_LBCS: "FV3GFS"
-  LBC_SPEC_INTVL_HRS: 6
-  EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
-  FV3GFS_FILE_FMT_LBCS: "netcdf"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # EXTRN_MDL_SYSBASEDIR_LBCS:
-  # Same as EXTRN_MDL_SYSBASEDIR_ICS but for LBCs.
-  #
-  # Note that this variable must be defined as a null string here so that if it is 
-  # specified by the user in the experiment configuration file, it remains 
-  # set to those values, and if not, it gets set to machine-dependent 
-  # values.
-  #
-  #-----------------------------------------------------------------------
-  #
-  EXTRN_MDL_SYSBASEDIR_LBCS: ''
-  #
-  #-----------------------------------------------------------------------
-  #
-  # User-staged external model directories and files.  Definitions:
-  #
-  # USE_USER_STAGED_EXTRN_FILES:
-  # Analogous to USE_USER_STAGED_EXTRN_FILES in ICS but for LBCs.
-  #
-  # EXTRN_MDL_SOURCE_BASEDIR_LBCS:
-  # Analogous to EXTRN_MDL_SOURCE_BASEDIR_ICS but for LBCs instead of ICs.
-  #
-  # EXTRN_MDL_FILES_LBCS:
-  # Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
-  #
-  #-----------------------------------------------------------------------
-  #
-  USE_USER_STAGED_EXTRN_FILES: false
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
-  EXTRN_MDL_FILES_LBCS: ""
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 01:30:00
+  envvars:
+    #
+    #-----------------------------------------------------------------------
+    #
+    # EXTRN_MDL_NAME_LBCS:
+    # The name of the external model that will provide fields from which 
+    # lateral boundary condition (LBC) files (except for the 0-th hour LBC 
+    # file) will be generated for input into the forecast model.
+    #
+    # LBC_SPEC_INTVL_HRS:
+    # The interval (in integer hours) with which LBC files will be generated.
+    # We will refer to this as the boundary update interval.  Note that the
+    # model specified in EXTRN_MDL_NAME_LBCS must have data available at a
+    # frequency greater than or equal to that implied by LBC_SPEC_INTVL_HRS.
+    # For example, if LBC_SPEC_INTVL_HRS is set to 6, then the model must have
+    # data availble at least every 6 hours. It is up to the user to ensure 
+    # that this is the case.
+    #
+    # EXTRN_MDL_LBCS_OFFSET_HRS:
+    # Users may wish to use lateral boundary conditions from a forecast that
+    # was started earlier than the initial time for the forecast
+    # configured here. This variable indicates how many hours earlier
+    # the external model started than the forecast configured here.
+    # For example, the forecast should use lateral boundary
+    # conditions from a GFS forecast started 6 hours earlier, then
+    # EXTRN_MDL_LBCS_OFFSET_HRS: 6. Defaults to 0 except for RAP, which
+    # uses a 3 hour offset. The default value is model-dependent and is set 
+    # in ush/set_extrn_mdl_params.py.
+    #
+    # FV3GFS_FILE_FMT_LBCS:
+    # If using the FV3GFS model as the source of the LBCs (i.e., if 
+    # EXTRN_MDL_NAME_LBCS is set to "FV3GFS"), this variable specifies the 
+    # format of the model files to use when generating the LBCs.
+    #
+    #-----------------------------------------------------------------------
+    #
+    EXTRN_MDL_NAME_LBCS: "FV3GFS"
+    LBC_SPEC_INTVL_HRS: 6
+    EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if task_get_extrn_lbcs.envvars.EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
+    FV3GFS_FILE_FMT_LBCS: "netcdf"
+    #
+    #-----------------------------------------------------------------------
+    #
+    # EXTRN_MDL_SYSBASEDIR_LBCS:
+    # Same as EXTRN_MDL_SYSBASEDIR_ICS but for LBCs.
+    #
+    # Note that this variable must be defined as a null string here so that if it is 
+    # specified by the user in the experiment configuration file, it remains 
+    # set to those values, and if not, it gets set to machine-dependent 
+    # values.
+    #
+    #-----------------------------------------------------------------------
+    #
+    EXTRN_MDL_SYSBASEDIR_LBCS: ''
+    #
+    #-----------------------------------------------------------------------
+    #
+    # User-staged external model directories and files.  Definitions:
+    #
+    # USE_USER_STAGED_EXTRN_FILES:
+    # Analogous to USE_USER_STAGED_EXTRN_FILES in ICS but for LBCs.
+    #
+    # EXTRN_MDL_SOURCE_BASEDIR_LBCS:
+    # Analogous to EXTRN_MDL_SOURCE_BASEDIR_ICS but for LBCs instead of ICs.
+    #
+    # EXTRN_MDL_FILES_LBCS:
+    # Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
+    #
+    #-----------------------------------------------------------------------
+    #
+    USE_USER_STAGED_EXTRN_FILES: false
+    EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
+    EXTRN_MDL_FILES_LBCS: ""
 
 #----------------------------
 # MAKE ICS config parameters
 #-----------------------------
 task_make_ics:
+  chgres_cube:
+    execution:
+      batchargs:
+        nodes: 4
+        tasks_per_node: 12
+        walltime: 00:30:00
+      threads: !int '{{ task_make_ics.envvars.OMP_NUM_THREADS_MAKE_ICS }}'
   #-----------------------------------------------------------------------
   # KMP_AFFINITY_MAKE_ICS: 
   # Intel Thread Affinity Interface for the make_ics task. 
@@ -1433,59 +1484,67 @@ task_make_ics:
   # Controls the size of the stack for threads created by the OpenMP 
   # implementation.
   #-----------------------------------------------------------------------
-  KMP_AFFINITY_MAKE_ICS: "scatter"
-  OMP_NUM_THREADS_MAKE_ICS: 1
-  OMP_STACKSIZE_MAKE_ICS: "1024m"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # USE_FVCOM:
-  # Flag set to update surface conditions in FV3-LAM with fields generated
-  # from the Finite Volume Community Ocean Model (FVCOM). This will
-  # replace lake/sea surface temperature, ice surface temperature, and ice
-  # placement. This flag will be used in make_ics to modify sfc_data.nc
-  # after chgres_cube is run by running the routine process_FVCOM.exe 
-  # FVCOM data must already be interpolated to the desired FV3-LAM grid. 
-  #
-  # FVCOM_WCSTART:
-  # Define whether this is a "warm" start or a "cold" start. Setting this to 
-  # "warm" will read in the sfc_data.nc file generated in a RESTART directory.
-  # Setting this to "cold" will read in the sfc_data.nc file generated from 
-  # chgres_cube in the make_ics portion of the workflow.
-  #
-  # FVCOM_DIR:
-  # User defined directory where FVCOM data already interpolated to FV3-LAM
-  # grid is located. The file in this directory must be named fvcom.nc
-  #
-  # FVCOM_FILE:
-  # Name of file located in FVCOM_DIR that has FVCOM data interpolated to 
-  # FV3-LAM grid. This file will be copied later to a new location and name
-  # changed to fvcom.nc
-  #
-  # LEVP:
-  # Number of vertical levels in the atmosphere. In order to change this
-  # number, the user will additionally need to create a vertical coordinate
-  # distribution file; this process is described in the Users Guide section
-  # "Changing the Number of Vertical Levels". This value should be the same
-  # in both make_ics and make_lbcs.
-  #
-  # VCOORD_FILE:
-  # Full path to the vertical coordinate distribution file. This file should
-  # be the same in both make_ics and make_lbcs.
-  #
-  #------------------------------------------------------------------------
-  #
-  USE_FVCOM: false
-  FVCOM_WCSTART: "cold"
-  FVCOM_DIR: ""
-  FVCOM_FILE: "fvcom.nc"
-  LEVP: 65
-  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
+  envvars:
+    KMP_AFFINITY_MAKE_ICS: "scatter"
+    OMP_NUM_THREADS_MAKE_ICS: 1
+    OMP_STACKSIZE_MAKE_ICS: "1024m"
+    #
+    #-----------------------------------------------------------------------
+    #
+    # USE_FVCOM:
+    # Flag set to update surface conditions in FV3-LAM with fields generated
+    # from the Finite Volume Community Ocean Model (FVCOM). This will
+    # replace lake/sea surface temperature, ice surface temperature, and ice
+    # placement. This flag will be used in make_ics to modify sfc_data.nc
+    # after chgres_cube is run by running the routine process_FVCOM.exe 
+    # FVCOM data must already be interpolated to the desired FV3-LAM grid. 
+    #
+    # FVCOM_WCSTART:
+    # Define whether this is a "warm" start or a "cold" start. Setting this to 
+    # "warm" will read in the sfc_data.nc file generated in a RESTART directory.
+    # Setting this to "cold" will read in the sfc_data.nc file generated from 
+    # chgres_cube in the make_ics portion of the workflow.
+    #
+    # FVCOM_DIR:
+    # User defined directory where FVCOM data already interpolated to FV3-LAM
+    # grid is located. The file in this directory must be named fvcom.nc
+    #
+    # FVCOM_FILE:
+    # Name of file located in FVCOM_DIR that has FVCOM data interpolated to 
+    # FV3-LAM grid. This file will be copied later to a new location and name
+    # changed to fvcom.nc
+    #
+    # LEVP:
+    # Number of vertical levels in the atmosphere. In order to change this
+    # number, the user will additionally need to create a vertical coordinate
+    # distribution file; this process is described in the Users Guide section
+    # "Changing the Number of Vertical Levels". This value should be the same
+    # in both make_ics and make_lbcs.
+    #
+    # VCOORD_FILE:
+    # Full path to the vertical coordinate distribution file. This file should
+    # be the same in both make_ics and make_lbcs.
+    #
+    #------------------------------------------------------------------------
+    #
+    USE_FVCOM: false
+    FVCOM_WCSTART: "cold"
+    FVCOM_DIR: ""
+    FVCOM_FILE: "fvcom.nc"
+    VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
+    LEVP: 65
 
 #----------------------------
 # MAKE LBCS config parameters
 #-----------------------------
 task_make_lbcs:
+  chgres_cube:
+    execution:
+      batchargs:
+        nodes: 4
+        tasks_per_node: 12
+        walltime: 01:00:00
+      threads: !int '{{ task_make_lbcs.envvars.OMP_NUM_THREADS_MAKE_ICS }}'
   #------------------------------------------------------------------------
   #
   # KMP_AFFINITY_MAKE_LBCS: 
@@ -1502,16 +1561,24 @@ task_make_lbcs:
   # This file should be the same in both make_ics and make_lbcs.
   #
   #------------------------------------------------------------------------
-  KMP_AFFINITY_MAKE_LBCS: "scatter"
-  OMP_NUM_THREADS_MAKE_LBCS: 1
-  OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  envvars:
+    KMP_AFFINITY_MAKE_LBCS: "scatter"
+    OMP_NUM_THREADS_MAKE_LBCS: 1
+    OMP_STACKSIZE_MAKE_LBCS: "1024m"
+    VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
   LEVP: 65
-  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # IO_LAYOUT_Y FORECAST config parameters
 #-----------------------------
 task_run_fcst:
+  fv3:
+    execution:
+      batchargs:
+        nodes: !int '{{ (task_run_fcst.PE_MEMBER01 + task_run_fcst.fv3.execution.batchargs.tasks_per_node - 1) // task_run_fcst.fv3.execution.batchargs.tasks_per_node }}'
+        tasks_per_node: !int '{{ platform.NCORES_PER_NODE // task_run_fcst.fv3.execution.threads }}'
+        walltime: 04:30:00
+      threads: !int '{{ task_run_fcst.envvars.OMP_NUM_THREADS_RUN_FCST }}'
   #------------------------------------------------------------------------
   #
   # NNODES_RUN_FCST: 
@@ -1521,17 +1588,13 @@ task_run_fcst:
   # PPN_RUN_FCST: 
   # Processes per node for the forecast task. 
   #
-  # FV3_EXEC_FP: 
-  # Full path to the forecast model executable.
-  #
   # IO_LAYOUT_Y: 
   # Specifies how many MPI ranks to use in the Y direction for 
   # input/output (I/O). (X direction is assumed to be 1.)
   #
   #------------------------------------------------------------------------
-  NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
-  PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
-  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
+  NNODES_RUN_FCST: !int '{{ (task_run_fcst.PE_MEMBER01 + task_run_fcst.PPN_RUN_FCST - 1) // task_run_fcst.PPN_RUN_FCST }}'
+  PPN_RUN_FCST: !int '{{ platform.NCORES_PER_NODE // task_run_fcst.envvars.OMP_NUM_THREADS_RUN_FCST }}'
   IO_LAYOUT_Y: 1
   #
   #-----------------------------------------------------------------------
@@ -1561,15 +1624,8 @@ task_run_fcst:
   # Controls the size of the stack for threads created by the OpenMP 
   # implementation.
   #
-  #-----------------------------------------------------------------------
-  #
-  KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 2    # ATM_omp_num_threads in ufs.configure
-  OMP_STACKSIZE_RUN_FCST: "1024m"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set model_configure parameters.  Definitions:
+  # FV3_EXEC_FP: 
+  # Full path to the forecast model executable.
   #
   # DT_ATMOS:
   # The main forecast model integration time step.  As described in the 
@@ -1602,12 +1658,36 @@ task_run_fcst:
   # Note that 2D decomposition does not yet work with GNU compilers, so this value 
   # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
   #
+  # PRINT_ESMF:
+  # Flag that determines whether to output extra (debugging) information from
+  # ESMF routines. Must be true or false. Note that the write
+  # component uses ESMF library routines to interpolate from the native
+  # forecast model grid to the user-specified output grid (which is defined 
+  # in the model configuration file "model_configure" in the forecast's  
+  # run directory).
+  #
+  # USE_MERRA_CLIMO: Flag that determines whether MERRA2 aerosol climatology 
+  # data and lookup tables for optics properties are obtained
+  #
+  # DO_FCST_RESTART:
+  # Flag to turn on/off restart capability of forecast task
+  #
   #-----------------------------------------------------------------------
   #
-  DT_ATMOS: ""
-  FHROT: 0
-  RESTART_INTERVAL: 0
-  WRITE_DOPOST: false
+  envvars:
+    KMP_AFFINITY_RUN_FCST: "scatter"
+    OMP_NUM_THREADS_RUN_FCST: 2    # ATM_omp_num_threads in ufs.configure
+    OMP_STACKSIZE_RUN_FCST: "1024m"
+    FV3_EXEC_FP: '{{ user.EXECdir }}/{{ workflow.FV3_EXEC_FN }}'
+    DT_ATMOS: !int ""
+    FHROT: 0
+    RESTART_INTERVAL: 0
+    WRITE_DOPOST: false
+    PRINT_ESMF: false
+    DO_FCST_RESTART: false
+    USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE in ["FV3_GFS_v15_thompson_mynn_lam3km", "FV3_HRRR_gf", "FV3_GFS_v17_p8", "RRFS_sas"] }}'
+    IO_LAYOUT_Y: '{{ task_run_fcst.IO_LAYOUT_Y }}'
+
   ITASKS: 1
   #
   #-----------------------------------------------------------------------
@@ -1641,9 +1721,9 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  LAYOUT_X: '{{ LAYOUT_X }}'
-  LAYOUT_Y: '{{ LAYOUT_Y }}'
-  BLOCKSIZE: '{{ BLOCKSIZE }}'
+  LAYOUT_X: !int '{{ task_run_fcst.LAYOUT_X }}'
+  LAYOUT_Y: !int '{{ task_run_fcst.LAYOUT_Y }}'
+  BLOCKSIZE: !int '{{ task_run_fcst.BLOCKSIZE }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1666,14 +1746,6 @@ task_run_fcst:
   # When set to true, the forecast model will output files named dynf$HHH.nc 
   # and phyf$HHH.nc (where HHH is the 3-digit forecast hour) containing dynamics 
   # and physics fields, respectively, on the write-component grid. 
-  # 
-  # PRINT_ESMF:
-  # Flag that determines whether to output extra (debugging) information from
-  # ESMF routines. Must be true or false. Note that the write
-  # component uses ESMF library routines to interpolate from the native
-  # forecast model grid to the user-specified output grid (which is defined 
-  # in the model configuration file "model_configure" in the forecast's  
-  # run directory).
   # 
   # WRTCMP_write_groups:
   # The number of write groups (i.e. groups of MPI tasks) to use in the
@@ -1758,14 +1830,13 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   QUILTING: true
-  PRINT_ESMF: false
 
-  PE_MEMBER01: '{{ OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if QUILTING else OMP_NUM_THREADS_RUN_FCST * (LAYOUT_Y * LAYOUT_X) + fire.FIRE_NUM_TASKS }}'
-  
+  PE_MEMBER01: !int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + fire.FIRE_NUM_TASKS }}'
+
   WRTCMP_write_groups: ""
   WRTCMP_write_tasks_per_group: ""
-  
-  WRTCMP_output_grid: "''"
+
+  WRTCMP_output_grid: ""
   WRTCMP_cen_lon: ""
   WRTCMP_cen_lat: ""
   WRTCMP_lon_lwr_left: ""
@@ -1788,29 +1859,19 @@ task_run_fcst:
   WRTCMP_ny: ""
   WRTCMP_dx: ""
   WRTCMP_dy: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # USE_MERRA_CLIMO: Flag that determines whether MERRA2 aerosol climatology 
-  # data and lookup tables for optics properties are obtained
-  #
-  #-----------------------------------------------------------------------
-  #
-  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_HRRR_gf" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" or workflow.CCPP_PHYS_SUITE == "RRFS_sas" }}'
-  #
-  #-----------------------------------------------------------------------
-  #
-  # DO_FCST_RESTART:
-  # Flag to turn on/off restart capability of forecast task
-  #
-  #-----------------------------------------------------------------------
-  #
-  DO_FCST_RESTART: false
 
 #----------------------------
 # POST config parameters
 #-----------------------------
 task_run_post:
+  upp:
+    execution:
+      batchargs:
+        nodes: 1
+        tasks_per_node: 24
+        walltime: 00:15:00
+      threads: !int '{{ task_run_post.envvars.OMP_NUM_THREADS_RUN_POST }}'
+  #-----------------------------------------------------------------------
   #-----------------------------------------------------------------------
   # KMP_AFFINITY_RUN_POST: 
   # Intel Thread Affinity Interface for the run_post task. 
@@ -1821,86 +1882,103 @@ task_run_post:
   # OMP_STACKSIZE_RUN_POST: 
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-----------------------------------------------------------------------
-  KMP_AFFINITY_RUN_POST: "scatter"
-  OMP_NUM_THREADS_RUN_POST: 1
-  OMP_STACKSIZE_RUN_POST: "1024m"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set parameters associated with subhourly forecast model output and 
-  # post-processing.
-  #
-  # SUB_HOURLY_POST:
-  # Flag that indicates whether the forecast model will generate output 
-  # files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes).
-  # This will also cause the post-processor to process these sub-hourly
-  # files.  If ths is set to true, then DT_SUBHOURLY_POST_MNTS should be 
-  # set to a value between 1 and 59.
-  #
-  # DT_SUB_HOURLY_POST_MNTS:
-  # Time interval in minutes between the forecast model output files 
-  # (only used if SUB_HOURLY_POST is set to true). If 
-  # SUB_HOURLY_POST is set to true, this needs to be set to a valid 
-  # integer between 1 and 59. Note that if SUB_HOURLY_POST is set to true, but
-  # DT_SUB_HOURLY_POST_MNTS is set to 0, SUB_HOURLY_POST will be reset
-  # to false in the experiment generation scripts (there will be an 
-  # informational message in the log file to emphasize this).
-  #
-  #-----------------------------------------------------------------------
-  #
-  SUB_HOURLY_POST: false
-  DT_SUBHOURLY_POST_MNTS: 0
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set parameters for customizing the post-processor (UPP).  Definitions:
-  #
-  # USE_CUSTOM_POST_CONFIG_FILE:
-  # Flag that determines whether a user-provided custom configuration file
-  # should be used for post-processing the model data. If this is set to
-  # true, then the workflow will use the custom post-processing (UPP) 
-  # configuration file specified in CUSTOM_POST_CONFIG_FP. Otherwise, a 
-  # default configuration file provided in the UPP repository will be 
-  # used.
-  #
-  # CUSTOM_POST_CONFIG_FP:
-  # The full path to the custom post flat file, including filename, to be 
-  # used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
-  # is set to true.
-  #
-  # POST_OUTPUT_DOMAIN_NAME:
-  # Domain name (in lowercase) used to construct the names of the output files
-  # generated by the UPP. If using a predefined grid, this variable defaults to PREDEF_GRID_NAME. 
-  # 
-  # If using a custom grid, POST_OUTPUT_DOMAIN_NAME must be specified by 
-  # the user. Note that this variable is first changed to lowercase
-  # before being used to construct the file names.
-  # The post output files are named as follows:
-  # 
-  #   ${NET_default}.tHHz.[var_name].f###.${POST_OUTPUT_DOMAIN_NAME}.grib2
-  #
-  # TESTBED_FIELDS_FN
-  # The file that lists grib2 fields to be extracted for testbed files.
-  # An empty string means no need to generate testbed files.
-  #
-  # NUMX:
-  # The number of i regions in a 2D decomposition.  Each i row is 
-  # distibuted to numx ranks. Default value of numx is 1.
-  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
-  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
-  #
-  #-----------------------------------------------------------------------
-  #
-  USE_CUSTOM_POST_CONFIG_FILE: true
-  CUSTOM_POST_CONFIG_FP: "{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt"
-  POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
-  TESTBED_FIELDS_FN: ""
-  NUMX: 1
+  envvars:
+    KMP_AFFINITY_RUN_POST: "scatter"
+    OMP_NUM_THREADS_RUN_POST: 1
+    OMP_STACKSIZE_RUN_POST: "1024m"
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Set parameters associated with subhourly forecast model output and 
+    # post-processing.
+    #
+    # SUB_HOURLY_POST:
+    # Flag that indicates whether the forecast model will generate output 
+    # files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes).
+    # This will also cause the post-processor to process these sub-hourly
+    # files.  If ths is set to true, then DT_SUBHOURLY_POST_MNTS should be 
+    # set to a value between 1 and 59.
+    #
+    # DT_SUB_HOURLY_POST_MNTS:
+    # Time interval in minutes between the forecast model output files 
+    # (only used if SUB_HOURLY_POST is set to true). If 
+    # SUB_HOURLY_POST is set to true, this needs to be set to a valid 
+    # integer between 1 and 59. Note that if SUB_HOURLY_POST is set to true, but
+    # DT_SUB_HOURLY_POST_MNTS is set to 0, SUB_HOURLY_POST will be reset
+    # to false in the experiment generation scripts (there will be an 
+    # informational message in the log file to emphasize this).
+    #
+    #-----------------------------------------------------------------------
+    #
+    SUB_HOURLY_POST: false
+    DT_SUBHOURLY_POST_MNTS: 0
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Set parameters for customizing the post-processor (UPP).  Definitions:
+    #
+    # USE_CUSTOM_POST_CONFIG_FILE:
+    # Flag that determines whether a user-provided custom configuration file
+    # should be used for post-processing the model data. If this is set to
+    # true, then the workflow will use the custom post-processing (UPP) 
+    # configuration file specified in CUSTOM_POST_CONFIG_FP. Otherwise, a 
+    # default configuration file provided in the UPP repository will be 
+    # used.
+    #
+    # CUSTOM_POST_CONFIG_FP:
+    # The full path to the custom post flat file, including filename, to be 
+    # used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
+    # is set to true.
+    #
+    # POST_OUTPUT_DOMAIN_NAME:
+    # Domain name (in lowercase) used to construct the names of the output files
+    # generated by the UPP. If using a predefined grid, this variable defaults to PREDEF_GRID_NAME. 
+    # 
+    # If using a custom grid, POST_OUTPUT_DOMAIN_NAME must be specified by 
+    # the user. Note that this variable is first changed to lowercase
+    # before being used to construct the file names.
+    # The post output files are named as follows:
+    # 
+    #   ${NET_default}.tHHz.[var_name].f###.${POST_OUTPUT_DOMAIN_NAME}.grib2
+    #
+    # TESTBED_FIELDS_FN
+    # The file that lists grib2 fields to be extracted for testbed files.
+    # An empty string means no need to generate testbed files.
+    #
+    # NUMX:
+    # The number of i regions in a 2D decomposition.  Each i row is 
+    # distibuted to numx ranks. Default value of numx is 1.
+    # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+    # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
+    #
+    #-----------------------------------------------------------------------
+    #
+    USE_CUSTOM_POST_CONFIG_FILE: true
+    CUSTOM_POST_CONFIG_FP: "{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt"
+    POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME | lower() }}'
+    TESTBED_FIELDS_FN: ""
+    NUMX: 1
 
-#----------------------------
+#-----------------------------
+# Integration test resources
+#-----------------------------
+
+task_integration_test:
+  execution:
+    batchargs:
+      walltime: 00:05:00
+      nodes: 1
+      tasks_per_node: 1
+
+#-----------------------------
 # RUN PRDGEN config parameters
 #-----------------------------
 task_run_prdgen:
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 22
+      walltime: 00:30:00
   #-----------------------------------------------------------------------
   # KMP_AFFINITY_RUN_PRDGEN: 
   # Intel Thread Affinity Interface for the run_prdgen task. 
@@ -1911,44 +1989,51 @@ task_run_prdgen:
   # OMP_STACKSIZE_RUN_PRDGEN: 
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-----------------------------------------------------------------------
-  KMP_AFFINITY_RUN_PRDGEN: "scatter"
-  OMP_NUM_THREADS_RUN_PRDGEN: 1
-  OMP_STACKSIZE_RUN_PRDGEN: "1024m"
-  #-----------------------------------------------------------------------
-  # DO_PARALLEL_PRDGEN:
-  # Flag that determines whether to use CFP to run the product generation
-  # job in parallel. This should be used with the RRFS_NA_3km grid.
-  #
-  #-----------------------------------------------------------------------
-  DO_PARALLEL_PRDGEN: false
-  #
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set additional output grids for wgrib2 remapping, if any.
-  # Space-separated list of strings, e.g., ( "130" "242" "clue" )
-  # Default is no additional grids
-  #
-  # Current options as of 23 Apr 2021:
-  #  "130"   (CONUS 13.5 km)
-  #  "200"   (Puerto Rico 16 km)
-  #  "221"   (North America 32 km)
-  #  "242"   (Alaska 11.25 km)
-  #  "243"   (Pacific 0.4-deg)
-  #  "clue"  (NSSL/SPC 3-km CLUE grid for 2020/2021)
-  #  "hrrr"  (HRRR 3-km CONUS grid)
-  #  "hrrre" (HRRRE 3-km CONUS grid)
-  #  "rrfsak" (RRFS 3-km Alaska grid)
-  #  "hrrrak" (HRRR 3-km Alaska grid)
-  #
-  #-----------------------------------------------------------------------
-  #
-  ADDNL_OUTPUT_GRIDS: []
+  envvars:
+    KMP_AFFINITY_RUN_PRDGEN: "scatter"
+    OMP_NUM_THREADS_RUN_PRDGEN: 1
+    OMP_STACKSIZE_RUN_PRDGEN: "1024m"
+    #-----------------------------------------------------------------------
+    # DO_PARALLEL_PRDGEN:
+    # Flag that determines whether to use CFP to run the product generation
+    # job in parallel. This should be used with the RRFS_NA_3km grid.
+    #
+    #-----------------------------------------------------------------------
+    DO_PARALLEL_PRDGEN: false
+    #
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Set additional output grids for wgrib2 remapping, if any.
+    # Space-separated list of strings, e.g., ( "130" "242" "clue" )
+    # Default is no additional grids
+    #
+    # Current options as of 23 Apr 2021:
+    #  "130"   (CONUS 13.5 km)
+    #  "200"   (Puerto Rico 16 km)
+    #  "221"   (North America 32 km)
+    #  "242"   (Alaska 11.25 km)
+    #  "243"   (Pacific 0.4-deg)
+    #  "clue"  (NSSL/SPC 3-km CLUE grid for 2020/2021)
+    #  "hrrr"  (HRRR 3-km CONUS grid)
+    #  "hrrre" (HRRRE 3-km CONUS grid)
+    #  "rrfsak" (RRFS 3-km Alaska grid)
+    #  "hrrrak" (HRRR 3-km Alaska grid)
+    #
+    #-----------------------------------------------------------------------
+    #
+    ADDNL_OUTPUT_GRIDS: []
 
 #----------------------------
 # PLOT_ALLVARS config parameters
 #-----------------------------
 task_plot_allvars:
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      exclusive: True
+      walltime: 01:00:00
   #-------------------------------------------------------------------------
   # Path to the reference experiment's COMOUT directory. This is where the GRIB2 files 
   # from postprocessing are located. Make this a template to compare
@@ -1957,20 +2042,21 @@ task_plot_allvars:
   #    community mode: $PDY$cyc/postprd
   # We don't do this inside the code, so that we can compare nco vs com runs.
   #-------------------------------------------------------------------------
-  COMOUT_REF: ""
-  #------------------------------
-  # Plot fcts start and increment
-  #------------------------------
-  PLOT_FCST_START: 0
-  PLOT_FCST_INC: 3
-  #-----------------------------------
-  # By default the end is FCST_LEN_HRS
-  #-----------------------------------
-  PLOT_FCST_END: ""
-  #------------------------------------------------------------------------------
-  # Domains to plot. Currently supported are either "conus" or "regional" or both
-  #-------------------------------------------------------------------------------
-  PLOT_DOMAINS: ["conus"]
+  envvars:
+    COMOUT_REF: ""
+    #------------------------------
+    # Plot fcts start and increment
+    #------------------------------
+    PLOT_FCST_START: 0
+    PLOT_FCST_INC: 3
+    #-----------------------------------
+    # By default the end is FCST_LEN_HRS
+    #-----------------------------------
+    PLOT_FCST_END: !int "{{ workflow.FCST_LEN_HRS }}"
+    #------------------------------------------------------------------------------
+    # Domains to plot. Currently supported are either "conus" or "regional" or both
+    #-------------------------------------------------------------------------------
+    PLOT_DOMAINS: ["conus"]
 
 #-----------------------------
 # NEXUS_EMISSION config parameters
@@ -1993,58 +2079,84 @@ task_nexus_emission:
   # OMP_STACKSIZE_NEXUS_EMISSION: 
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
-  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
-  NNODES_NEXUS_EMISSION: 4
-  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
-  OMP_NUM_THREADS_NEXUS_EMISSION: 2
-  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+  execution:
+    batchargs:
+      memory: 2G
+      nodes: 4
+      tasks_per_node: !int '{{ platform.NCORES_PER_NODE // task_nexus_emission.envvars.OMP_NUM_THREADS_NEXUS_EMISSION }}'
+      walltime: 01:00:00
+    threads: !int '{{ task_nexus_emission.envvars.OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  envvars:
+    KMP_AFFINITY_NEXUS_EMISSION: "scatter"
+    OMP_NUM_THREADS_NEXUS_EMISSION: 2
+    OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
 
 #-----------------------------
 # POINT_SOURCE config parameters
 #-----------------------------
 task_point_source:
-  #-------------------------------------------------------------------------------
-  # PT_SRC_SUBDIR:
-  # Sub-directory structure of point source data under FIXemis.
-  # Full path: FIXemis/PT_SRC_SUBDIR
-  #-------------------------------------------------------------------------------
-  PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"  
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+  envvars:
+    #-------------------------------------------------------------------------------
+    # PT_SRC_SUBDIR:
+    # Sub-directory structure of point source data under FIXemis.
+    # Full path: FIXemis/PT_SRC_SUBDIR
+    #-------------------------------------------------------------------------------
+    PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"  
 
 #----------------------------
 # BIAS_CORRECTION_O3 config parameters
 #-----------------------------
 task_bias_correction_o3:
-  #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_O3: 
-  # Intel Thread Affinity Interface for the bias_correction_o3 task. 
-  # 
-  # OMP_NUM_THREADS_BIAS_CORRECTION_O3: 
-  # The number of OpenMP threads to use for parallel regions.
-  # 
-  # OMP_STACKSIZE_BIAS_CORRECTION_O3: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
-  #-------------------------------------------------------------------------------
-  KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
-  OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
-  OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      memory: 120G
+      walltime: 00:30:00
+  envvars:
+    #-------------------------------------------------------------------------------
+    # KMP_AFFINITY_BIAS_CORRECTION_O3: 
+    # Intel Thread Affinity Interface for the bias_correction_o3 task. 
+    # 
+    # OMP_NUM_THREADS_BIAS_CORRECTION_O3: 
+    # The number of OpenMP threads to use for parallel regions.
+    # 
+    # OMP_STACKSIZE_BIAS_CORRECTION_O3: 
+    # Controls the size of the stack for threads created by the OpenMP implementation.
+    #-------------------------------------------------------------------------------
+    KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
+    OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
+    OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
 
 #----------------------------
 # BIAS_CORRECTION_PM25 config parameters
 #-----------------------------
 task_bias_correction_pm25:
-  #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_PM25: 
-  # Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
-  # 
-  # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 
-  # The number of OpenMP threads to use for parallel regions.
-  # 
-  # OMP_STACKSIZE_BIAS_CORRECTION_PM25: 
-  # Controls the size of the stack for threads created by the OpenMP implementation.
-  #-------------------------------------------------------------------------------
-  KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
-  OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
-  OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      memory: 120G
+      walltime: 00:30:00
+  envvars:
+    #-------------------------------------------------------------------------------
+    # KMP_AFFINITY_BIAS_CORRECTION_PM25: 
+    # Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
+    # 
+    # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 
+    # The number of OpenMP threads to use for parallel regions.
+    # 
+    # OMP_STACKSIZE_BIAS_CORRECTION_PM25: 
+    # Controls the size of the stack for threads created by the OpenMP implementation.
+    #-------------------------------------------------------------------------------
+    KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
+    OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
+    OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
 # global config parameters
@@ -2093,10 +2205,6 @@ global:
   # A list of names for the ensemble member names following the format
   # mem001, mem002, etc.
   #
-  # FV3_NML_ENSMEM_FPS:
-  # Paths to the ensemble member corresponding namelists in the
-  # experiment directory
-  #
   # ENS_TIME_LAG_HRS:
   # Time lag (in hours) to use for each ensemble member. For a deterministic
   # forecast, this is a one-element array. Default values of array elements
@@ -2106,9 +2214,8 @@ global:
   #
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
-  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
-  FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-  ENS_TIME_LAG_HRS: '[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
+  ENSMEM_NAMES: '{% for m in range(global.NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
+  ENS_TIME_LAG_HRS: '[ {% for m in range([1,global.NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
   #
   #-----------------------------------------------------------------------
   #
@@ -2220,6 +2327,60 @@ global:
   #
   PRINT_DIFF_PGR: false
 
+#
+#-----------------------------------------------------------------------
+#
+# Resources for tasks that run verification
+#
+#-----------------------------------------------------------------------
+#
+
+verification_resources:
+  execution:
+    nodes: 1
+    tasks_per_node: 1
+    deterministic:
+      gridstat:
+        walltime: 02:00:00
+      pointstat:
+        walltime: 01:00:00
+    ensemble:
+      genensprod:
+        default:
+          walltime: 04:45:00
+        ndas:
+          walltime: 02:30:00
+      ensemblestat:
+        walltime: 01:00:00
+      gridstat:
+        walltime: 01:00:00
+      pointstat:
+        walltime: 01:00:00
+    get_obs:
+      aeronet:
+        walltime: 02:00:00
+      airnow:
+        walltime: 00:45:00
+      ccpa:
+        walltime: 00:45:00
+      nohrsc:
+        walltime: 00:45:00
+      mrms:
+        walltime: 00:45:00
+      ndas:
+        walltime: 02:00:00
+    pb2nc:
+      walltime: 00:30:00
+    ascii2nc:
+      walltime: 00:30:00
+    pcpcombine:
+      ensemble:
+        walltime: 00:30:00
+      obs:
+        walltime: 00:10:00
+    check_post_output:
+      walltime: 00:30:00
+
 #----------------------------
 # Verification (VX) parameters
 #-----------------------------
@@ -2271,7 +2432,7 @@ verification:
   # Template for base (i.e. top-level) directory in which METplus will place
   # its output.
   #
-  VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
+  VX_OUTPUT_BASEDIR: '{{ "$COMOUT/metout" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'
   #
   # METplus-Specific Parameters
   # -------------------------------
@@ -2432,11 +2593,9 @@ verification:
   #   python dictionaries to bash variables.
   #
   OBS_CCPA_FN_TEMPLATES: [ 'APCP',
-                           '{%- set obs_avail_intvl_hrs = "%02d" % CCPA_OBS_AVAIL_INTVL_HRS %}
-                            {{- "{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z." ~ obs_avail_intvl_hrs ~ "h.hrap.conus.gb2" }}' ]
+                           '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.{{ "%02d" % verification.CCPA_OBS_AVAIL_INTVL_HRS }}h.hrap.conus.gb2']
   OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW',
-                             '{%- set obs_avail_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
-                              {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2" }}' ]
+                             'sfav2_CONUS_{{ verification.NOHRSC_OBS_AVAIL_INTVL_HRS  }}h_{valid?fmt=%Y%m%d%H}_grid184.grb2' ]
   OBS_MRMS_FN_TEMPLATES: [ 'REFC', '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2',
                            'RETOP', '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2' ]
   OBS_NDAS_FN_TEMPLATES: [ 'SFCandUPA', 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}' ]
@@ -2462,7 +2621,7 @@ verification:
   # CCPA observations.  These files will contain observed accumulated
   # precipitation in NetCDF format for various accumulation intervals.
   #
-  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- "ccpa.hrap.conus.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc" }}'
+  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: ccpa.hrap.conus.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc
   #
   # OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
   # METplus template for the names of the NetCDF files generated by the
@@ -2470,8 +2629,8 @@ verification:
   # NOHRSC observations.  These files will contain observed accumulated
   # snowfall for various accumulaton intervals.
   #
-  OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{%- set obs_avail_intvl_hrs = "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS %}
-                                                   {{- "sfav2_CONUS_" ~ obs_avail_intvl_hrs ~ "h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc" }}'
+  OBS_NOHRSC_ASNOW_FN_TEMPLATE_PCPCOMBINE_OUTPUT: sfav2_CONUS_{{ "%d" % NOHRSC_OBS_AVAIL_INTVL_HRS }}h_{valid?fmt=%Y%m%d%H}_grid184.grb2_a${ACCUM_HH}h.nc
+
   # OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT:
   # Template used to specify the names of the output NetCDF observation
   # files generated by the worfklow verification tasks that call the
@@ -2530,7 +2689,7 @@ verification:
   # This is used in forming the names of the verification output files and
   # is also included in the contents of those files.
   #
-  VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}'
   #
   # VX_FCST_OUTPUT_INTVL_HRS:
   # The forecast output interval (in hours) to assume for verification
@@ -2547,31 +2706,19 @@ verification:
   # containing the forecast files to use as inputs to the verification
   # tasks.
   #
-  VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
+  VX_FCST_INPUT_BASEDIR: '{{ "$COMOUT/../.." if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'
   #
   # FCST_SUBDIR_TEMPLATE:
   # METplus template for the name of the subdirectory containing forecast
   # files to use as inputs to the verification tasks.
-  # 
-  FCST_SUBDIR_TEMPLATE: '{%- if user.RUN_ENVIR == "nco" %}
-                           {{- "${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}" }}
-                         {%- else %}
-                           {{- "{init?fmt=%Y%m%d%H?shift=-${time_lag}}" }}
-                           {%- if global.DO_ENSEMBLE %}
-                             {{- "/${ensmem_name}" }}
-                           {%- endif %}
-                           {{- "/postprd" }}
-                         {%- endif %}'
+  #
+  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{{ "/${ensmem_name}" if global.DO_ENSEMBLE }}/postprd{% endif %}'
   #
   # FCST_FN_TEMPLATE:
   # METplus template for the names of the forecast files to use as inputs
   # to the verification tasks.
   # 
-  FCST_FN_TEMPLATE: '{{- "${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z" }}
-                     {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
-                       {{- ".${ensmem_name}" }}
-                     {%- endif %}
-                     {{- ".prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2" }}'
+  FCST_FN_TEMPLATE: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.grib2'
   #
   # FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT:
   # METplus template for the names of the NetCDF files generated by the
@@ -2579,11 +2726,7 @@ verification:
   # forecast output.  These files will contain forecast accumulated
   # precipitation in NetCDF format for various accumulation intervals.
   #
-  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '{{- "${NET_default}.t{init?fmt=%H}z" }}
-                                       {%- if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}
-                                         {{- ".${ensmem_name}" }}
-                                       {%- endif %}
-                                       {{- ".prslev.${POST_OUTPUT_DOMAIN_NAME}.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc" }}'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${NET_default}.t{init?fmt=%H}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc'
   #
   # VX_NDIGITS_ENSMEM_NAMES:
   # Number of digits to assume/use in the forecast ensemble member identifier
@@ -2746,9 +2889,86 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
+# AQM Task Resources
+task_pre_post_stat:
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_post_stat_o3:
+  execution:
+    batchargs:
+      memory: 120G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_post_stat_pm25:
+  execution:
+    batchargs:
+      memory: 120G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_nexus_gfs_sfc:
+  execution:
+    batchargs:
+      memory: 2G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_nexus_post_split:
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_fire_emission:
+  execution:
+    batchargs:
+      memory: 2G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_aqm_ics_ext:
+  execution:
+    batchargs:
+      memory: 64G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_aqm_ics:
+  execution:
+    batchargs:
+      memory: 64G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
+task_aqm_lbcs:
+  execution:
+    batchargs:
+      nodes: 1
+      tasks_per_node: 24
+      walltime: 00:30:00
+
+
 #------------------------------
 # Smoke/Dust config parameters
 #------------------------------
+task_smoke_dust:
+  execution:
+    batchargs:
+      memory: 120G
+      nodes: 1
+      tasks_per_node: 8
+      walltime: 00:30:00
+task_prepstart:
+  execution:
+    batchargs:
+      memory: 120G
+      nodes: 1
+      tasks_per_node: 1
+      walltime: 00:30:00
 smoke_dust_parm:
   #
   #-----------------------------------------------------------------------
@@ -2817,9 +3037,9 @@ fire:
   # FIRE_NUM_TASKS
   # Number of MPI tasks assigned to the FIRE_BEHAVIOR component.
   #
-
-  UFS_FIRE: False
-  FIRE_INPUT_DIR: ""
+  envvars:
+    UFS_FIRE: False
+    FIRE_INPUT_DIR: ""
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300
   FIRE_NUM_TASKS: 0
@@ -2913,11 +3133,3 @@ fire:
   FIRE_IGNITION_START_TIME: 6480
   FIRE_IGNITION_END_TIME: 7000
 
-
-rocoto:
-  attrs: ""
-  cycledefs: ""
-  entities: ""
-  log: ""
-  tasks:
-    taskgroups: ""

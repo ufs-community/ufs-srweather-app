@@ -6,30 +6,42 @@ default_aqm_task: &default_aqm
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     HOMEdir: '&HOMEdir;'
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
-    subcyc: !cycstr "@M"
-    LOGDIR: !cycstr "&LOGDIR;"
+    PDY:
+      cyclestr:
+        value:  "@Y@m@d"
+    cyc:
+      cyclestr:
+        value:  "@H"
+    subcyc:
+      cyclestr:
+        value:  "@M"
+    LOGDIR:
+      cyclestr:
+        value:  "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nnodes: 1
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  ppn: 1
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: 00:30:00
 
 task_pre_post_stat:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "pre_post_stat" "&HOMEdir;/jobs/JSRW_PRE_POST_STAT"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_pre_post_stat.execution.batchargs.nodes * task_pre_post_stat.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_pre_post_stat.execution.batchargs.nodes }}:ppn={{ task_pre_post_stat.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_pre_post_stat.execution.batchargs.walltime }}'
   dependency:
     or:
       datadep:
         attrs:
           age: 00:00:00:05
-        text: !cycstr '&DATAROOT;/DATA_SHARE/@Y@m@d@H/post_@Y@m@d@H_task_complete.txt'
+        value:
+          cyclestr:
+            value:  '&DATAROOT;/DATA_SHARE/@Y@m@d@H/post_@Y@m@d@H_task_complete.txt'
       metataskdep:
         attrs:
           metatask: run_ens_post
@@ -37,8 +49,15 @@ task_pre_post_stat:
 task_post_stat_o3:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "post_stat_o3" "&HOMEdir;/jobs/JSRW_POST_STAT_O3"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_post_stat_o3.execution.batchargs.nodes * task_post_stat_o3.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_post_stat_o3.execution.batchargs.nodes }}:ppn={{ task_post_stat_o3.execution.batchargs.tasks_per_node }}'
   memory: 120G
+  walltime: '{{ task_post_stat_o3.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:
@@ -47,8 +66,15 @@ task_post_stat_o3:
 task_post_stat_pm25:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "post_stat_pm25" "&HOMEdir;/jobs/JSRW_POST_STAT_PM25"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_post_stat_pm25.execution.batchargs.nodes * task_post_stat_pm25.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_post_stat_pm25.execution.batchargs.nodes }}:ppn={{ task_post_stat_pm25.execution.batchargs.tasks_per_node }}'
   memory: 120G
+  walltime: '{{ task_post_stat_pm25.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:
@@ -57,8 +83,15 @@ task_post_stat_pm25:
 task_bias_correction_o3:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "bias_correction_o3" "&HOMEdir;/jobs/JSRW_BIAS_CORRECTION_O3"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_bias_correction_o3.execution.batchargs.nodes * task_bias_correction_o3.execution.batchargs.tasks_per_node }}'
   memory: 120G
+  nodes: '{{ task_bias_correction_o3.execution.batchargs.nodes }}:ppn={{ task_bias_correction_o3.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_bias_correction_o3.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:
@@ -67,8 +100,15 @@ task_bias_correction_o3:
 task_bias_correction_pm25:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "bias_correction_pm25" "&HOMEdir;/jobs/JSRW_BIAS_CORRECTION_PM25"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_bias_correction_pm25.execution.batchargs.nodes * task_bias_correction_pm25.execution.batchargs.tasks_per_node }}'
   memory: 120G
+  nodes: '{{ task_bias_correction_pm25.execution.batchargs.nodes }}:ppn={{ task_bias_correction_pm25.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_bias_correction_pm25.execution.batchargs.walltime }}'
   dependency:
     taskdep:
       attrs:

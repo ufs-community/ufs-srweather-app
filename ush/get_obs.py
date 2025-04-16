@@ -12,10 +12,9 @@ from pprint import pprint
 from math import ceil, floor
 import subprocess
 import retrieve_data
-from python_utils import (
-    load_yaml_config,
-)
 from mrms_pull_topofhour import mrms_pull_topofhour
+
+from uwtools.api.config import get_yaml_config
 
 def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
     """
@@ -1032,7 +1031,7 @@ if __name__ == "__main__":
     else:
         logging.basicConfig(level=log_level, format=msg_format)
 
-    cfg = load_yaml_config(args.var_defns_path)
+    cfg = get_yaml_config(args.var_defns_path)
     get_obs(cfg, args.obtype, args.obs_day)
 
 

@@ -10,19 +10,17 @@ configuration file.
 import argparse
 import logging
 import os
+import shutil
 import sys
+from glob import glob
+from pathlib import Path
 from stat import S_IXUSR
 from string import Template
 from textwrap import dedent
 
-from uwtools.api.config import get_nml_config, get_yaml_config, realize
-from uwtools.api.template import render
-
 from python_utils import (
     cfg_to_yaml_str,
     check_for_preexist_dir_file,
-    cp_vrfy,
-    create_symlink_to_file,
     dict_find,
     export_vars,
     find_pattern_in_str,
@@ -30,8 +28,6 @@ from python_utils import (
     import_vars,
     list_to_str,
     log_info,
-    mkdir_vrfy,
-    mv_vrfy
 )
 
 from setup import setup
@@ -39,14 +35,19 @@ from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
 
+from uwtools.api.config import get_nml_config, get_yaml_config, realize
+from uwtools.api import rocoto as uwrocoto
+
+
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
-        ushdir,
-        config: str = "config.yaml",
-        logfile: str = "log.generate_FV3LAM_wflow",
-        debug: bool = False) -> str:
+    ushdir: str,
+    config: str = "config.yaml",
+    logfile: str = "log.generate_FV3LAM_wflow",
+    debug: bool = False,
+) -> str:
     """
-    Sets up a forecast experiment and creates a workflow (according to the parameters specified 
+    Sets up a forecast experiment and creates a workflow (according to the parameters specified
     in the configuration file)
 
     Args:
@@ -73,7 +74,7 @@ def generate_FV3LAM_wflow(
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(ushdir,user_config_fn=config,debug=debug)
+    expt_config = setup(ushdir, user_config_fn=config, debug=debug)
 
     #
     # -----------------------------------------------------------------------
@@ -84,44 +85,22 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
+    exptdir = expt_config["workflow"]["EXPTDIR"]
     wflow_xml_fn = expt_config["workflow"]["WFLOW_XML_FN"]
-    wflow_xml_fp = os.path.join(
-        expt_config["workflow"]["EXPTDIR"],
-        wflow_xml_fn,
-    )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Create a multiline variable that consists of a yaml-compliant string
-    # specifying the values that the jinja variables in the template rocoto
-    # XML should be set to.  These values are set either in the user-specified
-    # workflow configuration file (config) or in the setup() function
-    # called above.  Then call the python script that generates the XML.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
+    wflow_xml_fp = Path(exptdir, wflow_xml_fn)
 
-        template_xml_fp = os.path.join(
-            expt_config["user"]["PARMdir"],
-            wflow_xml_fn,
-        )
+    if (wflow_manager := expt_config["platform"]["WORKFLOW_MANAGER"]) == "rocoto":
 
         log_info(
             f"""
             Creating rocoto workflow XML file (WFLOW_XML_FP):
               WFLOW_XML_FP = '{wflow_xml_fp}'"""
         )
-
-        #
-        # Call the python script to generate the experiment's XML file
-        #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        render(
-            input_file = template_xml_fp,
-            output_file = wflow_xml_fp,
-            values_src = rocoto_yaml_fp,
-            )
+        uwrocoto.realize(
+            config=rocoto_yaml_fp,
+            output_file=wflow_xml_fp,
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -130,7 +109,6 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    exptdir = expt_config["workflow"]["EXPTDIR"]
     wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
     wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
     log_info(
@@ -142,22 +120,27 @@ def generate_FV3LAM_wflow(
         verbose=debug,
     )
 
-    with open(wflow_launch_script_fp, "r", encoding='utf-8') as launch_script_file:
+    with open(wflow_launch_script_fp, "r", encoding="utf-8") as launch_script_file:
         launch_script_content = launch_script_file.read()
 
     # Stage an experiment-specific launch file in the experiment directory
     template = Template(launch_script_content)
 
     # The script needs several variables from the workflow and user sections
-    template_variables = {**expt_config["user"], **expt_config["workflow"],
-            "valid_vals_BOOLEAN": list_to_str(expt_config["constants"]["valid_vals_BOOLEAN"])}
-    launch_content =  template.safe_substitute(template_variables)
+    template_variables = {
+        **expt_config["user"],
+        **expt_config["workflow"],
+        "valid_vals_BOOLEAN": list_to_str(
+            expt_config["constants"]["valid_vals_BOOLEAN"]
+        ),
+    }
+    launch_content = template.safe_substitute(template_variables)
 
     launch_fp = os.path.join(exptdir, wflow_launch_script_fn)
-    with open(launch_fp, "w", encoding='utf-8') as expt_launch_fn:
+    with open(launch_fp, "w", encoding="utf-8") as expt_launch_fn:
         expt_launch_fn.write(launch_content)
 
-    os.chmod(launch_fp, os.stat(launch_fp).st_mode|S_IXUSR)
+    os.chmod(launch_fp, os.stat(launch_fp).st_mode | S_IXUSR)
 
     #
     # -----------------------------------------------------------------------
@@ -168,18 +151,26 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-
-    if expt_config["workflow"]["USE_CRON_TO_RELAUNCH"]:
-        add_crontab_line(called_from_cron=False,machine=expt_config["user"]["MACHINE"],
-                         crontab_line=expt_config["workflow"]["CRONTAB_LINE"],
-                         exptdir=exptdir,debug=debug)
+    workflow_config = expt_config["workflow"]
+    if workflow_config["USE_CRON_TO_RELAUNCH"]:
+        add_crontab_line(
+            called_from_cron=False,
+            machine=expt_config["user"]["MACHINE"],
+            crontab_line=workflow_config["CRONTAB_LINE"],
+            exptdir=exptdir,
+            debug=debug,
+        )
 
     #
     # Copy or symlink fix files
     #
-    fixgsm = expt_config["platform"]["FIXgsm"]
-    fixam = expt_config["workflow"]["FIXam"]
-    if expt_config["workflow"]["SYMLINK_FIX_FILES"]:
+    platform_config = expt_config["platform"]
+    fixgsm = platform_config["FIXgsm"]
+    fixam = workflow_config["FIXam"]
+    fixgsm_files_to_copy_to_fixam = expt_config["fixed_files"][
+        "FIXgsm_FILES_TO_COPY_TO_FIXam"
+    ]
+    if symlink_fix_files := workflow_config["SYMLINK_FIX_FILES"]:
         log_info(
             f"""
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
@@ -188,7 +179,7 @@ def generate_FV3LAM_wflow(
             verbose=debug,
         )
 
-        create_symlink_to_file(fixgsm,fixam,False)
+        Path(fixam).symlink_to(fixgsm, target_is_directory=True)
     else:
 
         log_info(
@@ -200,13 +191,9 @@ def generate_FV3LAM_wflow(
         )
 
         check_for_preexist_dir_file(fixam, "delete")
-        mkdir_vrfy("-p", fixam)
-        mkdir_vrfy("-p", os.path.join(fixam, "fix_co2_proj"))
-
-        num_files = len(expt_config["fixed_files"]["FIXgsm_FILES_TO_COPY_TO_FIXam"])
-        for i in range(num_files):
-            fn = f"{expt_config['fixed_files']['FIXgsm_FILES_TO_COPY_TO_FIXam'][i]}"
-            cp_vrfy(os.path.join(fixgsm, fn), os.path.join(fixam, fn))
+        Path(fixam, "fix_co2_proj").mkdir(parents=True, exist_ok=True)
+        for fixfile in fixgsm_files_to_copy_to_fixam:
+            shutil.copy(Path(fixgsm, fixfile), Path(fixam, fixfile))
     #
     # -----------------------------------------------------------------------
     #
@@ -214,11 +201,10 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    fixaer = expt_config["platform"]["FIXaer"]
-    fixlut = expt_config["platform"]["FIXlut"]
-    fixclim = expt_config["workflow"]["FIXclim"]
-
-    if expt_config["task_run_fcst"]["USE_MERRA_CLIMO"]:
+    if expt_config["task_run_fcst"]["envvars"]["USE_MERRA_CLIMO"]:
+        fixaer = platform_config["FIXaer"]
+        fixlut = platform_config["FIXlut"]
+        fixclim = workflow_config["FIXclim"]
         log_info(
             f"""
             Copying MERRA2 aerosol climatology data files from system directory
@@ -230,14 +216,17 @@ def generate_FV3LAM_wflow(
         )
 
         check_for_preexist_dir_file(fixclim, "delete")
-        mkdir_vrfy("-p", fixclim)
+        fixclim = Path(fixclim)
+        fixclim.mkdir(parents=True, exist_ok=True)
 
-        if expt_config["workflow"]["SYMLINK_FIX_FILES"]:
-            create_symlink_to_file(os.path.join(fixaer, "merra2.aerclim*.nc"), fixclim)
-            create_symlink_to_file(os.path.join(fixlut, "optics*.dat"), fixclim)
-        else:
-            cp_vrfy(os.path.join(fixaer, "merra2.aerclim*.nc"), fixclim)
-            cp_vrfy(os.path.join(fixlut, "optics*.dat"), fixclim)
+        merra_files = glob(Path(fixaer, "merra2.aerclim*.nc").as_posix())
+        optics_files = glob(Path(fixlut, "optics*.dat").as_posix())
+        for fpath in merra_files + optics_files:
+            path = Path(fpath)
+            if symlink_fix_files:
+                (fixclim / path.name).symlink_to(path)
+            else:
+                shutil.copy(path, fixclim / path.name)
     #
     # -----------------------------------------------------------------------
     #
@@ -250,32 +239,23 @@ def generate_FV3LAM_wflow(
         logging.debug("Copying templates of various input files to the experiment directory...")
 
         logging.debug("Copying the template data table file to the experiment directory...")
-        cp_vrfy(expt_config["workflow"]["DATA_TABLE_TMPL_FP"],
-                expt_config["workflow"]["DATA_TABLE_FP"])
+        shutil.copy(workflow_config["DATA_TABLE_TMPL_FP"], workflow_config["DATA_TABLE_FP"])
 
         logging.debug("Copying the template field table file to the experiment directory...")
-        cp_vrfy(expt_config["workflow"]["FIELD_TABLE_TMPL_FP"],
-                expt_config["workflow"]["FIELD_TABLE_FP"])
-
-        #
-        # Copy the CCPP physics suite definition file from its location in the
-        # clone of the FV3 code repository to the experiment directory (EXPT-
-        # DIR).
-        #
-        logging.debug("Copying CCPP suite definition file from forecast model repository")
-        cp_vrfy(expt_config["workflow"]["CCPP_PHYS_SUITE_IN_CCPP_FP"],
-                expt_config["workflow"]["CCPP_PHYS_SUITE_FP"])
+        shutil.copy(
+            workflow_config["FIELD_TABLE_TMPL_FP"], workflow_config["FIELD_TABLE_FP"]
+        )
 
         # If UFS_FIRE or smoke/dust, update FIELD_TABLE
         field_table_append=""
-        if expt_config['fire'].get('UFS_FIRE'):
+        if expt_config['fire']['envvars']['UFS_FIRE']:
             field_table_append = """# smoke tracer for UFS_FIRE
  "TRACER", "atmos_mod", "fsmoke"
            "longname",     "fire smoke"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=0.0" /\n"""
 
-        elif expt_config['smoke_dust_parm'].get('DO_SMOKE_DUST'):
+        elif expt_config['smoke_dust_parm']['DO_SMOKE_DUST']:
             field_table_append = """# prognostic smoke mixing ratio tracer
   "TRACER", "atmos_mod", "smoke"
             "longname",     "smoke mixing ratio"
@@ -291,16 +271,29 @@ def generate_FV3LAM_wflow(
             "longname",     "coarsepm mixing ratio"
             "units",        "ug/kg"
        "profile_type", "fixed", "surface_value=1.e-12" /\n"""
-        with open(expt_config["workflow"]["FIELD_TABLE_FP"], "a", encoding='UTF-8') as file:
+        with open(workflow_config["FIELD_TABLE_FP"], "a+", encoding="UTF-8") as file:
             file.write(field_table_append)
+
+        #
+        # Copy the CCPP physics suite definition file from its location in the
+        # clone of the FV3 code repository to the experiment directory (EXPT-
+        # DIR).
+        #
+        logging.debug("Copying CCPP suite definition file from forecast model repository")
+        shutil.copy(
+            workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"],
+            workflow_config["CCPP_PHYS_SUITE_FP"],
+        )
 
         #
         # Copy the field dictionary file from its location in the
         # clone of the FV3 code repository to the experiment directory
         #
         logging.debug("Copying field dictionary file from forecast model repository")
-        cp_vrfy(expt_config["workflow"]["FIELD_DICT_IN_UWM_FP"],
-                expt_config["workflow"]["FIELD_DICT_FP"])
+        shutil.copy(
+            workflow_config["FIELD_DICT_IN_UWM_FP"], workflow_config["FIELD_DICT_FP"]
+        )
+
 
         #
         # -----------------------------------------------------------------------
@@ -311,6 +304,129 @@ def generate_FV3LAM_wflow(
         #
         setup_fv3_namelist(expt_config,debug)
 
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Add the relevant tendency-based stochastic physics namelist variables to
+        # "settings" when running with SPPT, SHUM, or SKEB turned on. If running
+        # with SPP or LSM SPP, set the "new_lscale" variable.  Otherwise only
+        # include an empty "nam_stochy" stanza.
+        #
+        # -----------------------------------------------------------------------
+        #
+
+        # From here on out, going back to setting variables for everything in the global section
+        import_vars(dictionary=expt_config["global"])
+        # pylint: disable=undefined-variable
+        settings = {}
+        settings["gfs_physics_nml"] = {
+            "do_shum": DO_SHUM,
+            "do_sppt": DO_SPPT,
+            "do_skeb": DO_SKEB,
+            "do_spp": DO_SPP,
+            "n_var_spp": N_VAR_SPP,
+            "n_var_lndp": N_VAR_LNDP,
+            "lndp_type": LNDP_TYPE,
+            "fhcyc": FHCYC_LSM_SPP_OR_NOT,
+        }
+        nam_stochy_dict = {}
+        if DO_SPPT:
+            nam_stochy_dict.update(
+                {
+                    "iseed_sppt": ISEED_SPPT,
+                    "new_lscale": NEW_LSCALE,
+                    "sppt": SPPT_MAG,
+                    "sppt_logit": SPPT_LOGIT,
+                    "sppt_lscale": SPPT_LSCALE,
+                    "sppt_sfclimit": SPPT_SFCLIMIT,
+                    "sppt_tau": SPPT_TSCALE,
+                    "spptint": SPPT_INT,
+                    "use_zmtnblck": USE_ZMTNBLCK,
+                }
+            )
+
+        if DO_SHUM:
+            nam_stochy_dict.update(
+                {
+                    "iseed_shum": ISEED_SHUM,
+                    "new_lscale": NEW_LSCALE,
+                    "shum": SHUM_MAG,
+                    "shum_lscale": SHUM_LSCALE,
+                    "shum_tau": SHUM_TSCALE,
+                    "shumint": SHUM_INT,
+                }
+            )
+
+        if DO_SKEB:
+            nam_stochy_dict.update(
+                {
+                    "iseed_skeb": ISEED_SKEB,
+                    "new_lscale": NEW_LSCALE,
+                    "skeb": SKEB_MAG,
+                    "skeb_lscale": SKEB_LSCALE,
+                    "skebnorm": SKEBNORM,
+                    "skeb_tau": SKEB_TSCALE,
+                    "skebint": SKEB_INT,
+                    "skeb_vdof": SKEB_VDOF,
+                }
+            )
+
+        if DO_SPP or DO_LSM_SPP:
+            nam_stochy_dict.update({"new_lscale": NEW_LSCALE})
+
+        settings["nam_stochy"] = nam_stochy_dict
+        #
+        # Add the relevant SPP namelist variables to "settings" when running with
+        # SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
+        #
+        nam_sppperts_dict = {}
+        if DO_SPP:
+            nam_sppperts_dict = {
+                "iseed_spp": ISEED_SPP,
+                "spp_lscale": SPP_LSCALE,
+                "spp_prt_list": SPP_MAG_LIST,
+                "spp_sigtop1": SPP_SIGTOP1,
+                "spp_sigtop2": SPP_SIGTOP2,
+                "spp_stddev_cutoff": SPP_STDDEV_CUTOFF,
+                "spp_tau": SPP_TSCALE,
+                "spp_var_list": SPP_VAR_LIST,
+            }
+
+        settings["nam_sppperts"] = nam_sppperts_dict
+        #
+        # Add the relevant LSM SPP namelist variables to "settings" when running with
+        # LSM SPP turned on.
+        #
+        nam_sfcperts_dict = {}
+        if DO_LSM_SPP:
+            nam_sfcperts_dict = {
+                "lndp_type": LNDP_TYPE,
+                "lndp_model_type": LNDP_MODEL_TYPE,
+                "lndp_tau": LSM_SPP_TSCALE,
+                "lndp_lscale": LSM_SPP_LSCALE,
+                "iseed_lndp": ISEED_LSM_SPP,
+                "lndp_var_list": LSM_SPP_VAR_LIST,
+                "lndp_prt_list": LSM_SPP_MAG_LIST,
+            }
+
+        settings["nam_sfcperts"] = nam_sfcperts_dict
+
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Generate namelist files with stochastic physics if needed
+        #
+        # -----------------------------------------------------------------------
+        #
+        if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
+            realize(
+                input_config=FV3_NML_FP,
+                input_format="nml",
+                output_file=workflow_config["FV3_NML_STOCH_FP"],
+                output_format="nml",
+                update_config=get_nml_config(settings),
+            )
+        # pylint: enable=undefined-variable
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -330,186 +446,70 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # Add the relevant tendency-based stochastic physics namelist variables to
-    # "settings" when running with SPPT, SHUM, or SKEB turned on. If running
-    # with SPP or LSM SPP, set the "new_lscale" variable.  Otherwise only
-    # include an empty "nam_stochy" stanza.
-    #
-    # -----------------------------------------------------------------------
-    #
-    # From here on out, going back to setting variables for everything
-    # in the flattened expt_config dictionary
-    # TODO: Reference all these variables in their respective
-    # dictionaries, instead.
-    # pylint: disable=undefined-variable
-    import_vars(dictionary=flatten_dict(expt_config))
-    export_vars(source_dict=expt_config["global"])
-    settings = {}
-    settings["gfs_physics_nml"] = {
-        "do_shum": DO_SHUM,
-        "do_sppt": DO_SPPT,
-        "do_skeb": DO_SKEB,
-        "do_spp": DO_SPP,
-        "n_var_spp": N_VAR_SPP,
-        "n_var_lndp": N_VAR_LNDP,
-        "lndp_type": LNDP_TYPE,
-        "fhcyc": FHCYC_LSM_SPP_OR_NOT,
-    }
-    nam_stochy_dict = {}
-    if DO_SPPT:
-        nam_stochy_dict.update(
-            {
-                "iseed_sppt": ISEED_SPPT,
-                "new_lscale": NEW_LSCALE,
-                "sppt": SPPT_MAG,
-                "sppt_logit": SPPT_LOGIT,
-                "sppt_lscale": SPPT_LSCALE,
-                "sppt_sfclimit": SPPT_SFCLIMIT,
-                "sppt_tau": SPPT_TSCALE,
-                "spptint": SPPT_INT,
-                "use_zmtnblck": USE_ZMTNBLCK,
-            }
-        )
-
-    if DO_SHUM:
-        nam_stochy_dict.update(
-            {
-                "iseed_shum": ISEED_SHUM,
-                "new_lscale": NEW_LSCALE,
-                "shum": SHUM_MAG,
-                "shum_lscale": SHUM_LSCALE,
-                "shum_tau": SHUM_TSCALE,
-                "shumint": SHUM_INT,
-            }
-        )
-
-    if DO_SKEB:
-        nam_stochy_dict.update(
-            {
-                "iseed_skeb": ISEED_SKEB,
-                "new_lscale": NEW_LSCALE,
-                "skeb": SKEB_MAG,
-                "skeb_lscale": SKEB_LSCALE,
-                "skebnorm": SKEBNORM,
-                "skeb_tau": SKEB_TSCALE,
-                "skebint": SKEB_INT,
-                "skeb_vdof": SKEB_VDOF,
-            }
-        )
-
-    if DO_SPP or DO_LSM_SPP:
-        nam_stochy_dict.update({"new_lscale": NEW_LSCALE})
-
-    settings["nam_stochy"] = nam_stochy_dict
-    #
-    # Add the relevant SPP namelist variables to "settings" when running with
-    # SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
-    #
-    nam_sppperts_dict = {}
-    if DO_SPP:
-        nam_sppperts_dict = {
-            "iseed_spp": ISEED_SPP,
-            "spp_lscale": SPP_LSCALE,
-            "spp_prt_list": SPP_MAG_LIST,
-            "spp_sigtop1": SPP_SIGTOP1,
-            "spp_sigtop2": SPP_SIGTOP2,
-            "spp_stddev_cutoff": SPP_STDDEV_CUTOFF,
-            "spp_tau": SPP_TSCALE,
-            "spp_var_list": SPP_VAR_LIST,
-        }
-
-    settings["nam_sppperts"] = nam_sppperts_dict
-    #
-    # Add the relevant LSM SPP namelist variables to "settings" when running with
-    # LSM SPP turned on.
-    #
-    nam_sfcperts_dict = {}
-    if DO_LSM_SPP:
-        nam_sfcperts_dict = {
-            "lndp_type": LNDP_TYPE,
-            "lndp_model_type": LNDP_MODEL_TYPE,
-            "lndp_tau": LSM_SPP_TSCALE,
-            "lndp_lscale": LSM_SPP_LSCALE,
-            "iseed_lndp": ISEED_LSM_SPP,
-            "lndp_var_list": LSM_SPP_VAR_LIST,
-            "lndp_prt_list": LSM_SPP_MAG_LIST,
-        }
-
-    settings["nam_sfcperts"] = nam_sfcperts_dict
-
-    #
-    #-----------------------------------------------------------------------
-    #
-    # Generate namelist files with stochastic physics if needed
-    #
-    #-----------------------------------------------------------------------
-    #
-    if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
-        realize(
-            input_config=FV3_NML_FP,
-            input_format="nml",
-            output_file=FV3_NML_STOCH_FP,
-            output_format="nml",
-            update_config=get_nml_config(settings),
-            )
-    #
-    #-----------------------------------------------------------------------
-    #
     # Generate UFS_FIRE namelist if needed. Most variables in the &time section
     # will be updated at the run_fcst step
     #
-    #-----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     #
-    if expt_config['fire'].get('UFS_FIRE'):
+    if expt_config["fire"]["envvars"]["UFS_FIRE"]:
         logging.debug("Setting fire namelist values")
         fire_nml_dict = {}
-        fire_nml_dict['atm'] = {}
-        fire_nml_dict['time'] = {}
-        fire_nml_dict['fire'] = {}
+        fire_nml_dict["atm"] = {}
+        fire_nml_dict["time"] = {}
+        fire_nml_dict["fire"] = {}
         # Fill in &atm variables
-        fire_nml_dict['atm']['interval_atm'] = expt_config['task_run_fcst']['DT_ATMOS']
-        fire_nml_dict['atm']['kde'] = expt_config['task_make_ics']['LEVP']
+        fire_nml_dict["atm"]["interval_atm"] = expt_config["task_run_fcst"]["envvars"][
+            "DT_ATMOS"
+        ]
+        fire_nml_dict["atm"]["kde"] = expt_config["task_make_ics"]["envvars"]["LEVP"]
         # Fill in &fire and static &time variables
 
         # These settings must be handled specially below
-        each_ignit = ["FIRE_IGNITION_ROS", "FIRE_IGNITION_START_LAT", "FIRE_IGNITION_START_LON",
-                      "FIRE_IGNITION_RADIUS", "FIRE_IGNITION_START_TIME", "FIRE_IGNITION_END_TIME",
-                      "FIRE_IGNITION_END_LAT", "FIRE_IGNITION_END_LON"]
+        each_ignit = [
+            "FIRE_IGNITION_ROS",
+            "FIRE_IGNITION_START_LAT",
+            "FIRE_IGNITION_START_LON",
+            "FIRE_IGNITION_RADIUS",
+            "FIRE_IGNITION_START_TIME",
+            "FIRE_IGNITION_END_TIME",
+            "FIRE_IGNITION_END_LAT",
+            "FIRE_IGNITION_END_LON",
+        ]
 
         # These settings do not get added to namelist, or are handled elsewhere
-        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS"]
+        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "envvars"]
         pass_settings.extend(each_ignit)
 
-        for setting in expt_config['fire']:
+        for setting in expt_config["fire"]:
             if setting in pass_settings:
                 pass
             elif setting == "DT_FIRE":
-                fire_nml_dict['time']['dt'] = expt_config['fire'][setting]
+                fire_nml_dict["time"]["dt"] = expt_config["fire"][setting]
             elif setting == "OUTPUT_DT_FIRE":
-                fire_nml_dict['time']['interval_output'] = expt_config['fire'][setting]
+                fire_nml_dict["time"]["interval_output"] = expt_config["fire"][setting]
             else:
                 # For all other settings in config.yaml, convert to lowercase
                 # and enter into namelist.fire's &fire section
-                fire_nml_dict['fire'][setting.lower()] = expt_config['fire'][setting]
+                fire_nml_dict["fire"][setting.lower()] = expt_config["fire"][setting]
 
         # The variables specific to each ignition need special handling: SRW uses a list, but the
         # fire model has these settings as separate namelist entries
-        for i in range(expt_config['fire']['FIRE_NUM_IGNITIONS']):
+        for i in range(expt_config["fire"]["FIRE_NUM_IGNITIONS"]):
             for setting in each_ignit:
                 # If not a list, convert to a 1-element list
-                if not isinstance(expt_config['fire'][setting], list):
-                    expt_config['fire'][setting] = [ expt_config['fire'][setting] ]
+                if not isinstance(expt_config["fire"][setting], list):
+                    expt_config["fire"][setting] = [expt_config["fire"][setting]]
 
                 nmle = f"{setting.lower()}{i+1}"
-                fire_nml_dict['fire'][nmle] = expt_config['fire'][setting][i]
+                fire_nml_dict["fire"][nmle] = expt_config["fire"][setting][i]
 
         realize(
-            input_config=expt_config['workflow']['FIRE_NML_BASE_FP'],
+            input_config=expt_config["workflow"]["FIRE_NML_BASE_FP"],
             input_format="nml",
-            output_file=expt_config['workflow']['FIRE_NML_FP'],
+            output_file=expt_config["workflow"]["FIRE_NML_FP"],
             output_format="nml",
             update_config=get_nml_config(fire_nml_dict),
-            )
+        )
 
     #
     # -----------------------------------------------------------------------
@@ -520,7 +520,7 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(ushdir, config), EXPTDIR)
+    shutil.copy(os.path.join(ushdir, config), exptdir)
 
     #
     # -----------------------------------------------------------------------
@@ -532,18 +532,19 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    if WORKFLOW_MANAGER == "rocoto":
-        wflow_db_fn = f"{os.path.splitext(WFLOW_XML_FN)[0]}.db"
-        rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
-        rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
+    if wflow_manager == "rocoto":
+        wflow_db_fn = f"{os.path.splitext(wflow_xml_fn)[0]}.db"
+        rocotorun_cmd = f"rocotorun -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
+        rocotostat_cmd = f"rocotostat -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
 
+        cron_relaunch_intvl_mnts = workflow_config["CRON_RELAUNCH_INTVL_MNTS"]
         # pylint: disable=line-too-long
         log_info(
             f"""
             To launch the workflow, change location to the experiment directory
             (EXPTDIR) and issue the rocotrun command, as follows:
 
-              > cd {EXPTDIR}
+              > cd {exptdir}
               > {rocotorun_cmd}
 
             To check on the status of the workflow, issue the rocotostat command
@@ -561,30 +562,28 @@ def generate_FV3LAM_wflow(
                the rocotorun command must be issued immediately before issuing the
                rocotostat command.
 
-            For automatic resubmission of the workflow (say every {CRON_RELAUNCH_INTVL_MNTS} minutes), the
+            For automatic resubmission of the workflow (say every {cron_relaunch_intvl_mnts} minutes), the
             following line can be added to the user's crontab (use 'crontab -e' to
             edit the cron table):
 
-            */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+            */{cron_relaunch_intvl_mnts} * * * * cd {exptdir} && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
             """
         )
         # pylint: enable=line-too-long
 
     # If we got to this point everything was successful: move the log
     # file to the experiment directory.
-    mv_vrfy(logfile, EXPTDIR)
+    shutil.move(logfile, exptdir)
 
-    return EXPTDIR
+    return exptdir
 
 def setup_fv3_namelist(expt_config,debug):
     """
     Updates parameters specific to the FV3ATM namelist for the run_fcst step.
 
     Args:
-        expt_dict (dict): The full experiment configuration dictionary
-        debug    (bool): Enable extra output for debugging
-    Returns:
-        EXPTDIR (str) : The full path of the directory where this experiment has been generated
+        expt_config (dict): The full experiment configuration dictionary
+        debug       (bool): Enable extra output for debugging
     """
 
     # From here on out, going back to setting variables for everything
@@ -607,8 +606,9 @@ def setup_fv3_namelist(expt_config,debug):
     # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
     #
+    workflow_config = expt_config["workflow"]
     kice = None
-    if SDF_USES_RUC_LSM:
+    if sdf_uses_ruc_lsm := workflow_config["SDF_USES_RUC_LSM"]:
         kice = 9
     #
     # Set lsoil, which is the number of input soil levels provided in the
@@ -625,9 +625,14 @@ def setup_fv3_namelist(expt_config,debug):
     # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
     #
     lsoil = 4
-    if EXTRN_MDL_NAME_ICS in ("HRRR", "RAP") and SDF_USES_RUC_LSM:
+    if (
+        expt_config["task_get_extrn_ics"]["envvars"]["EXTRN_MDL_NAME_ICS"]
+        in ("HRRR", "RAP")
+        and sdf_uses_ruc_lsm
+    ):
         lsoil = 9
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
+    ccpp_phys_suite = workflow_config["CCPP_PHYS_SUITE"]
+    if ccpp_phys_suite == "FV3_GFS_v15_thompson_mynn_lam3km":
         lsoil = ""
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -638,76 +643,74 @@ def setup_fv3_namelist(expt_config,debug):
     #
     settings = {}
     settings["atmos_model_nml"] = {
-        "blocksize": BLOCKSIZE,
-        "ccpp_suite": CCPP_PHYS_SUITE,
+        "blocksize": expt_config["task_run_fcst"]["BLOCKSIZE"],
+        "ccpp_suite": ccpp_phys_suite,
     }
 
     fv_core_nml_dict = {}
-    fv_core_nml_dict.update({
-        "target_lon": LON_CTR,
-        "target_lat": LAT_CTR,
-        "nrows_blend": HALO_BLEND,
-        #
-        # Question:
-        # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
-        # on how the FV3 code uses the stretch_fac parameter in the namelist file.
-        # Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
-        # to something like 0.9999, but is it ok to set it to that here in the
-        # FV3 namelist file?
-        #
-        "stretch_fac": STRETCH_FAC,
-        "npx": NX + 1,
-        "npy": NY + 1,
-        "layout": [LAYOUT_X, LAYOUT_Y],
-        "bc_update_interval": LBC_SPEC_INTVL_HRS,
-        "npz": LEVP - 1,
-    })
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "dnats": 5
-            })
+    fv_core_nml_dict.update(
+        {
+            "target_lon": expt_config["grid_params"]["LON_CTR"],
+            "target_lat": expt_config["grid_params"]["LAT_CTR"],
+            "nrows_blend": expt_config["global"]["HALO_BLEND"],
+            #
+            # Question:
+            # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
+            # on how the FV3 code uses the stretch_fac parameter in the namelist file.
+            # Recall that for a ESGgrid, it gets set in the function set_gridparams_ESGgrid(.sh)
+            # to something like 0.9999, but is it ok to set it to that here in the
+            # FV3 namelist file?
+            #
+            "stretch_fac": expt_config["grid_params"]["STRETCH_FAC"],
+            "npx": expt_config["grid_params"]["NX"] + 1,
+            "npy": expt_config["grid_params"]["NY"] + 1,
+            "layout": [
+                expt_config["task_run_fcst"]["LAYOUT_X"],
+                expt_config["task_run_fcst"]["LAYOUT_Y"],
+            ],
+            "bc_update_interval": expt_config["task_get_extrn_lbcs"]["envvars"][
+                "LBC_SPEC_INTVL_HRS"
+            ],
+            "npz": expt_config["task_make_lbcs"]["LEVP"] - 1,
+        }
+    )
+    cpl_aqm = expt_config["cpl_aqm_parm"]["CPL_AQM"]
+    if ccpp_phys_suite == "FV3_GFS_v15p2":
+        if cpl_aqm:
+            fv_core_nml_dict.update({"dnats": 5})
         else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "hord_tr": 8,
-                "dnats": 5,
-                "nord": 2
-            })
+            fv_core_nml_dict.update({"dnats": 1})
+    elif ccpp_phys_suite == "FV3_GFS_v16":
+        if cpl_aqm:
+            fv_core_nml_dict.update({"hord_tr": 8, "dnats": 5, "nord": 2})
         else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v17_p8":
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "dnats": 4
-            })
+            fv_core_nml_dict.update({"dnats": 1})
+    elif ccpp_phys_suite == "FV3_GFS_v17_p8":
+        if cpl_aqm:
+            fv_core_nml_dict.update({"dnats": 4})
         else:
-            fv_core_nml_dict.update({
-                "dnats": 0
-            })
+            fv_core_nml_dict.update({"dnats": 0})
 
     settings["fv_core_nml"] = fv_core_nml_dict
 
     gfs_physics_nml_dict = {}
-    gfs_physics_nml_dict.update({
-        "kice": kice or None,
-        "lsoil": lsoil or None,
-        "print_diff_pgr": PRINT_DIFF_PGR,
-    })
+    gfs_physics_nml_dict.update(
+        {
+            "kice": kice or None,
+            "lsoil": lsoil or None,
+            "print_diff_pgr": expt_config["global"]["PRINT_DIFF_PGR"],
+        }
+    )
 
-    if DO_SMOKE_DUST:
-        gfs_physics_nml_dict.update({
-            "ebb_dcycle": EBB_DCYCLE,
-            "rrfs_sd": True,
-    })
+    if expt_config["smoke_dust_parm"]["DO_SMOKE_DUST"]:
+        gfs_physics_nml_dict.update(
+            {
+                "ebb_dcycle": expt_config["smoke_dust_parm"]["EBB_DCYCLE"],
+                "rrfs_sd": True,
+            }
+        )
 
-    if CPL_AQM:
+    if cpl_aqm:
         gfs_physics_nml_dict.update({
             "cplaqm": True,
             "cplocn2atm": False,
@@ -732,16 +735,15 @@ def setup_fv3_namelist(expt_config,debug):
         })
 
     # If UFS_FIRE, activate appropriate flags
-    if expt_config['fire'].get('UFS_FIRE'):
+    if expt_config["fire"]["envvars"]["UFS_FIRE"]:
         gfs_physics_nml_dict.update({
             "cpl_fire": True,
         })
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
-    # Update levp in external_ic_nml; this should be the only variable that needs changing
-
-    settings["external_ic_nml"] = {"levp": LEVP}
+    # Update levp in external_ic_nml
+    settings["external_ic_nml"] = {"levp": expt_config["task_make_lbcs"]["LEVP"]}
 
     #
     # Add to "settings" the values of those namelist variables that specify
@@ -753,19 +755,15 @@ def setup_fv3_namelist(expt_config,debug):
     # in the FIXam directory.  Here, we loop through this array and process
     # each element to construct each line of "settings".
     #
-    dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
-    if DO_ENSEMBLE:
-        dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
+    dummy_run_dir = Path(expt_config["workflow"]["EXPTDIR"], "any_cyc")
+    if expt_config["global"]["DO_ENSEMBLE"]:
+        dummy_run_dir = dummy_run_dir / "any_ensmem"
 
     regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-    num_nml_vars = len(FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING)
     namsfc_dict = {}
-    for i in range(num_nml_vars):
+    for mapping in expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]:
 
-        mapping = f"{FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[i]}"
-        tup = find_pattern_in_str(regex_search, mapping)
-        nml_var_name = tup[0]
-        FIXam_fn = tup[1]
+        nml_var_name, FIXam_fn = find_pattern_in_str(regex_search, mapping)
 
         fp = '""'
         if FIXam_fn:
@@ -775,7 +773,7 @@ def setup_fv3_namelist(expt_config,debug):
             # is a relative path (relative to any cycle directory immediately under
             # the experiment directory).
             #
-            if RUN_ENVIR != "nco":
+            if expt_config["user"]["RUN_ENVIR"] != "nco":
                 fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant
@@ -790,7 +788,7 @@ def setup_fv3_namelist(expt_config,debug):
     #
     # Use netCDF4 when running the North American 3-km domain due to file size.
     #
-    if PREDEF_GRID_NAME == "RRFS_NA_3km":
+    if workflow_config["PREDEF_GRID_NAME"] == "RRFS_NA_3km":
         settings["fms2_io_nml"] = {"netcdf_default_format": "netcdf4"}
 
     settings_str = cfg_to_yaml_str(settings)
@@ -810,10 +808,10 @@ def setup_fv3_namelist(expt_config,debug):
     # -----------------------------------------------------------------------
     #
 
-    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
-    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
-    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
-    base_namelist.update_values(settings)
+    physics_cfg = get_yaml_config(workflow_config["FV3_NML_YAML_CONFIG_FP"])
+    base_namelist = get_nml_config(workflow_config["FV3_NML_BASE_SUITE_FP"])
+    base_namelist.update_from(physics_cfg[ccpp_phys_suite])
+    base_namelist.update_from(settings)
     for sect, values in base_namelist.copy().items():
         if not values:
             del base_namelist[sect]
@@ -821,10 +819,12 @@ def setup_fv3_namelist(expt_config,debug):
         for k, v in values.copy().items():
             if v is None:
                 del base_namelist[sect][k]
-    base_namelist.dump(FV3_NML_FP)
+    base_namelist.dump(Path(FV3_NML_FP))
 
 
-def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
+def setup_logging(
+    logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False
+) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen and printing all
     messages with detailed timing and routine info in the specified text file. If ``debug = True``,
@@ -841,7 +841,7 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
 
     formatter = logging.Formatter("%(name)-22s %(levelname)-8s %(message)s")
 
-    fh = logging.FileHandler(logfile, mode='w')
+    fh = logging.FileHandler(logfile, mode="w")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     logging.getLogger().addHandler(fh)
@@ -864,15 +864,24 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
 
 if __name__ == "__main__":
 
-    #Parse arguments
+    # Parse arguments
     parser = argparse.ArgumentParser(
-                     description="Script for setting up a forecast and creating a workflow"\
-                     "according to the parameters specified in the config file\n")
+        description="Script for setting up a forecast and creating a workflow"
+        "according to the parameters specified in the config file\n"
+    )
 
-    parser.add_argument('-c', '--config', default='config.yaml',
-                        help='Name of experiment config file in YAML format')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='Script will be run in debug mode with more verbose output')
+    parser.add_argument(
+        "-c",
+        "--config",
+        default="config.yaml",
+        help="Name of experiment config file in YAML format",
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Script will be run in debug mode with more verbose output",
+    )
     pargs = parser.parse_args()
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
@@ -881,8 +890,10 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        expt_dir = generate_FV3LAM_wflow(USHdir, pargs.config, wflow_logfile, pargs.debug)
-    except: # pylint: disable=bare-except
+        expt_dir = generate_FV3LAM_wflow(
+            USHdir, pargs.config, wflow_logfile, pargs.debug
+        )
+    except:  # pylint: disable=bare-except
         logging.exception(
             dedent(
                 f"""

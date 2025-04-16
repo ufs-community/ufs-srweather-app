@@ -12,7 +12,7 @@ dependencies:
   - pytest=7.2.*
   - pytest-mock=3.14.*
   - scipy=1.10.*
-  - uwtools=2.3.*
+  - uwtools=2.6*
   - xarray=2022.11.*
   - typer=0.15.*
   - sphinx=7.4.*

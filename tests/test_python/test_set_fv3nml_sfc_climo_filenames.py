@@ -3,13 +3,12 @@
 #pylint: disable=invalid-name
 
 import os
+import shutil
 import tempfile
 import unittest
 
 from python_utils import (
-    cp_vrfy,
     define_macos_utilities,
-    mkdir_vrfy,
     set_env_var,
     )
 from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
@@ -37,8 +36,8 @@ class Testing(unittest.TestCase):
         EXPTDIR = self.tmp_dir.name
         FIXlam = os.path.join(EXPTDIR, "fix_lam")
 
-        mkdir_vrfy("-p", FIXlam)
-        cp_vrfy(
+        os.makedirs(FIXlam)
+        shutil.copy(
             os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )

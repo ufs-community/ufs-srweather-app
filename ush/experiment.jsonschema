@@ -1,0 +1,367 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "cpl_aqm_parm": {
+      "additionalProperties": true,
+      "properties": {
+        "CPL_AQM": {
+          "type": "boolean"
+        },
+        "DO_AQM_CANOPY": {
+          "type": "boolean"
+        },
+        "DO_AQM_CHEM_LBCS": {
+          "type": "boolean"
+        },
+        "DO_AQM_DUST": {
+          "type": "boolean"
+        },
+        "DO_AQM_GEFS_LBCS": {
+          "type": "boolean"
+        },
+        "DO_AQM_PRODUCT": {
+          "type": "boolean"
+        },
+        "DO_AQM_SAVE_AIRNOW_HIST": {
+          "type": "boolean"
+        }
+      }
+    },
+    "global": {
+      "additionalProperties": true,
+      "properties": {
+        "": {
+          "type": "boolean"
+        },
+        "DO_ENSEMBLE": {
+          "type": "boolean"
+        },
+        "DO_LSM_SPP": {
+          "type": "boolean"
+        },
+        "DO_SHUM": {
+          "type": "boolean"
+        },
+        "DO_SKEB": {
+          "type": "boolean"
+        },
+        "DO_SPP": {
+          "type": "boolean"
+        },
+        "DO_SPPT": {
+          "type": "boolean"
+        },
+        "USE_CRTM": {
+          "type": "boolean"
+        },
+        "USE_ZMTNBLCK": {
+          "type": "boolean"
+        }
+      }
+    },
+    "platform": {
+      "additionalProperties": true,
+      "properties": {
+        "FIXaer": {
+          "type": "string"
+        },
+        "FIXgsm": {
+          "type": "string"
+        },
+        "FIXlut": {
+          "type": "string"
+        },
+        "FIXorg": {
+          "type": "string"
+        },
+        "FIXsfc": {
+          "type": "string"
+        },
+        "NCORES_PER_NODE": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "SCHED": {
+          "enum": [
+            "lsf",
+            "lsfcray",
+            "none",
+            "pbspro",
+            "slurm"
+          ],
+          "type": "string"
+        },
+        "WORKFLOW_MANAGER": {
+          "enum": [
+            "ecflow",
+            "none",
+            "rocoto"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "NCORES_PER_NODE",
+        "FIXaer",
+        "FIXgsm",
+        "FIXlut",
+        "FIXorg",
+        "FIXsfc"
+      ],
+      "type": "object"
+    },
+    "task_get_extrn_ics": {
+      "additionalProperties": true,
+      "properties": {
+        "envvars": {
+          "properties": {
+            "EXTRN_MDL_NAME_ICS": {
+              "enum": [
+                "FV3GFS",
+                "GDAS",
+                "GEFS",
+                "GSMGFS",
+                "HRRR",
+                "NAM",
+                "RAP",
+                "RRFS",
+                "UFS-CASE-STUDY"
+              ],
+              "type": "string"
+            },
+            "FV3GFS_FILE_FMT_ICS": {
+              "enum": [
+                "nemsio",
+                "grib2",
+                "netcdf"
+              ],
+              "type": "string"
+            },
+          "type": "object"
+          }
+        },
+        "USE_USER_STAGED_EXTRN_FILES": {
+          "type": "boolean"
+        }
+      }
+    },
+    "task_get_extrn_lbcs": {
+      "additionalProperties": true,
+      "properties": {
+        "envvars": {
+          "properties": {
+            "EXTRN_MDL_NAME_LBCS": {
+              "enum": [
+                "FV3GFS",
+                "GDAS",
+                "GEFS",
+                "GSMGFS",
+                "HRRR",
+                "NAM",
+                "RAP",
+                "RRFS",
+                "UFS-CASE-STUDY"
+              ],
+              "type": "string"
+            },
+            "FV3GFS_FILE_FMT_LBCS": {
+              "enum": [
+                "nemsio",
+                "grib2",
+                "netcdf"
+              ],
+              "type": "string"
+            },
+            "USE_USER_STAGED_EXTRN_FILES": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "user": {
+      "additionalProperties": true,
+      "properties": {
+        "MACHINE": {
+          "enum": [
+            "DERECHO",
+            "GAEAC5",
+            "GAEAC6",
+            "HERA",
+            "HERCULES",
+            "JET",
+            "LINUX",
+            "MACOS",
+            "NOAACLOUD",
+            "ORION",
+            "SINGULARITY",
+            "STAMPEDE",
+            "WCOSS2"
+          ],
+          "type": "string"
+        },
+        "RUN_ENVIR": {
+          "enum": [
+            "nco",
+            "community"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "verification": {
+      "additionalProperties": true,
+      "properties": {
+        "VX_APCP_ACCUMS_HRS": {
+          "prefixItems": [
+            {
+              "enum": [
+                1,
+                3,
+                6,
+                24
+              ]
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "type": "array"
+        },
+        "VX_ASNOW_ACCUMS_HRS": {
+          "prefixItems": [
+            {
+              "enum": [
+                6,
+                12,
+                18,
+                24
+              ]
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "type": "array"
+        },
+        "VX_FIELDS": {
+          "enum": [
+            "ADPSFC",
+            "ADPUPA",
+            "APCP",
+            "ASNOW",
+            "REFC",
+            "RETOP"
+          ],
+          "type": "string"
+        },
+        "VX_FIELD_GROUPS": {
+          "prefixItems": [
+            { "enum": [
+              "AOD",
+              "APCP",
+              "ASNOW",
+              "PM10",
+              "PM25",
+              "REFC",
+              "RETOP",
+              "SFC",
+              "UPA"
+              ]
+            }
+          ],
+          "type": "array"
+        }
+      }
+    },
+    "workflow": {
+      "additionalProperties": true,
+      "properties": {
+        "CCPP_PHYS_SUITE": {
+          "enum": [
+            "FV3_GFS_v15p2",
+            "FV3_GFS_v15_thompson_mynn_lam3km",
+            "FV3_GFS_v16",
+            "FV3_GFS_v17_p8",
+            "FV3_HRRR",
+            "FV3_HRRR_gf",
+            "FV3_RAP",
+            "FV3_RRFS_v1beta",
+            "FV3_WoFS_v0",
+            "RRFS_sas"
+          ],
+          "type": "string"
+        },
+        "COLDSTART": {
+          "type": "boolean"
+        },
+        "COMPILER": {
+          "enum": [
+            "intel",
+            "gnu"
+          ],
+          "type": "string"
+        },
+        "DATE_FIRST_CYCL": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "DATE_LAST_CYCL": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "DEBUG": {
+          "type": "boolean"
+        },
+        "FCST_MODEL": {
+          "enum": [
+            "ufs-weather-model"
+          ],
+          "type": "string"
+        },
+        "GRID_GEN_METHOD": {
+          "enum": [
+            "",
+            "ESGgrid"
+          ],
+          "type": "string"
+        },
+        "PREDEF_GRID_NAME": {
+          "enum": [
+            "",
+            "AQM_NA_13km",
+            "GSD_HRRR_25km",
+            "RRFS_AK_13km",
+            "RRFS_AK_3km",
+            "RRFS_CONUS_13km",
+            "RRFS_CONUS_25km",
+            "RRFS_CONUS_3km",
+            "RRFS_CONUScompact_13km",
+            "RRFS_CONUScompact_25km",
+            "RRFS_CONUScompact_3km",
+            "RRFS_NA_13km",
+            "RRFS_NA_3km",
+            "SUBCONUS_Ind_3km",
+            "WoFS_3km",
+            "SUBCONUS_CO_3km",
+            "SUBCONUS_CO_1km"
+          ],
+          "type": "string"
+        },
+        "PREEXISTING_DIR_METHOD": {
+          "enum": [
+            "delete",
+            "quit",
+            "rename",
+            "reuse"
+          ],
+          "type": "string"
+        },
+        "VERBOSE": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "type": "object"
+}

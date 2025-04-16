@@ -14,13 +14,13 @@ workflow:
   DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+  taskgroups:
+    - parm/wflow/verify_pre.yaml
+    - parm/wflow/verify_det.yaml
+    - parm/wflow/verify_ens.yaml
 
 nco:
   NET_default: rrfs
-
-rocoto:
-  tasks:
-    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
 
 global:
   DO_ENSEMBLE: true
@@ -28,4 +28,4 @@ global:
 
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
-  VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
+  VX_FCST_INPUT_BASEDIR: '{{ platform.TEST_VX_FCST_INPUT_BASEDIR }}'

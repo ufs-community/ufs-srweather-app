@@ -79,7 +79,7 @@ For Level 2-4 systems, the data must be added to the user's system. Detailed ins
 Grid Configuration
 =======================
 
-The SRW App officially supports the five predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the five predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
+The SRW App officially supports the five predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the five predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``experiment.jsonschema`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
 
 .. _PredefinedGrids:
 
@@ -173,7 +173,7 @@ Each experiment requires certain basic information to run (e.g., date, grid, phy
 Default configuration: ``config_defaults.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` and in the ``config_defaults.yaml`` file comments. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``.
+In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Each of the sections may have subsections describing run-time resource requirements in an ``execution:`` block with a structure described by the ``uwtools`` YAML documentation `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/components/execution.html>`__ and variables that are used as bash environment variables in the run scripts will appear under the ``envvars:`` block. Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` and in the ``config_defaults.yaml`` file comments. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``.
 
 .. _UserSpecificConfig:
 
@@ -340,7 +340,7 @@ For example, to run the out-of-the-box experiment on Hercules using cron to auto
 
 .. hint::
 
-   * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. 
+   * Valid values for configuration variables should be consistent with those in the ``ush/experiment.jsonschema`` script. 
 
    * Various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
@@ -999,12 +999,11 @@ The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py`` script: 
 
-   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads four other configuration scripts in order:
+   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads several other configuration scripts in order:
       
       a. ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`)
       b. ``${machine}.yaml`` (the machine configuration file)
       c. ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`) 
-      d. ``valid_param_vals.yaml``
 
    #. Symlinks the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). 
    #. Creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. 
@@ -1015,7 +1014,7 @@ The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASED
 .. _WorkflowGeneration:
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_regional_workflow_gen.png
-   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, valid_param_vals.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, fixorg, and FIXsfc variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file from the template file (by calling workflow-tools set_template). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
+   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_fv3nml_sfc_climo_filenames.py, set_fv3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, fixorg, and FIXsfc variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file by calling the uwtools rocoto realize tool. The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
 
    *Experiment Generation Description*
 
@@ -1088,14 +1087,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    * - plot_allvars
      - Run the plotting task and, optionally, the difference plotting task
 
-The METplus verification tasks and metatasks that are included by default in ``verify_*.yaml`` are described
-in :numref:`Table %s <VXWorkflowTasksTable>`. The ``taskgroup`` entry after the name of each (meta)task indicates
-the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:``
-in order for that (meta)task to be considered for inclusion in the workflow (see :numref:`Section %s <DefineWorkflow>`
-for details). As described in  :numref:`Section %s <defining_metatasks>`, metatasks define a set of tasks in the
-workflow based on multiple values of one or more parameters such as the ensemble member index, the accumulation
-interval (for cumulative fields such as accumulated precipitation), and the name of the verification field group
-(see description of ``VX_FIELD_GROUPS`` in :numref:`Section %s <GeneralVXParams>`).
+The METplus verification tasks and metatasks that are included by default in ``verify_*.yaml`` are described in :numref:`Table %s <VXWorkflowTasksTable>`. The ``taskgroup`` entry after the name of each (meta)task indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` in order for that (meta)task to be considered for inclusion in the workflow (see :numref:`Section %s <DefineWorkflow>` for details). Metatasks define a set of tasks in the workflow based on multiple values of one or more parameters such as the ensemble member index, the accumulation interval (for cumulative fields such as accumulated precipitation), and the name of the verification field group (see description of ``VX_FIELD_GROUPS`` in :numref:`Section %s <GeneralVXParams>`).
 
 .. _VXWorkflowTasksTable:
 

@@ -54,13 +54,9 @@
 #    FV3GFS_FILE_FMT_LBCS
 #
 #  task_make_lbcs:
-#    FVCOM_DIR
-#    FVCOM_FILE
-#    FVCOM_WCSTART
 #    KMP_AFFINITY_MAKE_LBCS
 #    OMP_NUM_THREADS_MAKE_LBCS
 #    OMP_STACKSIZE_MAKE_LBCS
-#    USE_FVCOM
 #    VCOORD_FILE
 #
 #  global:
@@ -86,9 +82,19 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-set -x
-for sect in user nco platform  workflow global cpl_aqm_parm smoke_dust_parm \
-  constants task_get_extrn_lbcs task_make_lbcs ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  cpl_aqm_parm
+  smoke_dust_parm
+  constants
+  task_get_extrn_lbcs.envvars
+  task_make_lbcs.envvars
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

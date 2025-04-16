@@ -6,17 +6,22 @@ default_task: &default_task
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
-    subcyc: !cycstr "@M"
-    LOGDIR: !cycstr "&LOGDIR;"
+    PDY:
+      cyclestr:
+        value: "@Y@m@d"
+    cyc:
+      cyclestr:
+        value: "@H"
+    subcyc:
+      cyclestr:
+        value: "@M"
+    LOGDIR:
+      cyclestr:
+        value: "&LOGDIR;"
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: 00:30:00
 
 task_get_extrn_ics:
   <<: *default_task
@@ -27,14 +32,16 @@ task_get_extrn_ics:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nprocs: '{{ task_get_extrn_ics.execution.batchargs.nodes * task_get_extrn_ics.execution.batchargs.tasks_per_node }}'
+  join:
+    cyclestr:
+      value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 4G
-  nnodes: 1
-  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
-  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  ppn: 1
+  native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD}}'
+  nodes: '{{ task_get_extrn_ics.execution.batchargs.nodes }}:ppn={{ task_get_extrn_ics.execution.batchargs.tasks_per_node }}'
+  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") }}'
   queue: '&QUEUE_HPSS;'
-  walltime: 01:30:00
+  walltime: '{{ task_get_extrn_ics.execution.batchargs.walltime }}'
   dependency:
     or:
       and:
@@ -43,8 +50,12 @@ task_get_extrn_ics:
           right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
         datadep_gfs:
           attrs:
-            age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+            age: "00:00:05"
+          value:
+            cyclestr:
+              attrs:
+                offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
+              value: "&COMINgfs;/gfs.@Y@m@d/@H/atmos"
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -58,14 +69,16 @@ task_get_extrn_lbcs:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nprocs: '{{ task_get_extrn_lbcs.execution.batchargs.nodes * task_get_extrn_lbcs.execution.batchargs.tasks_per_node }}'
+  join:
+    cyclestr:
+      value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 4G
-  nnodes: 1
-  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
-  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  ppn: 1
+  native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ task_get_extrn_lbcs.execution.batchargs.nodes }}:ppn={{ task_get_extrn_lbcs.execution.batchargs.tasks_per_node }}'
+  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") }}'
   queue: '&QUEUE_HPSS;'
-  walltime: 01:30:00
+  walltime: '{{ task_get_extrn_lbcs.execution.batchargs.walltime }}'
   dependency:
     or:
       and:
@@ -75,7 +88,11 @@ task_get_extrn_lbcs:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          value:
+            cyclestr:
+              attrs:
+                offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
+              value: '&COMINgfs;/gfs.@Y@m@d/@H/atmos'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -86,12 +103,18 @@ metatask_run_ensemble:
   task_make_ics_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_ICS"'
+    join:
+      cyclestr:
+        value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: 4
-    ppn: 12
+      nprocs: !int '{{ task_make_ics.chgres_cube.execution.batchargs.nodes * task_make_ics.chgres_cube.execution.batchargs.tasks_per_node // 1 }}'
+    join:
+      cyclestr:
+        value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nodes: '{{ task_make_ics.chgres_cube.execution.batchargs.nodes // 1 }}:ppn={{ task_make_ics.chgres_cube.execution.batchargs.tasks_per_node }}'
+    walltime: '{{ task_make_ics.chgres_cube.execution.batchargs.walltime }}'
     dependency:
       and: &make_ics_deps
         taskdep_get_extrn:
@@ -101,39 +124,44 @@ metatask_run_ensemble:
           datadep_grid:
             attrs:
               age: 00:00:00:05
-            text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+            value: '{{ task_make_grid.envvars.GRID_DIR }}/make_grid_task_complete.txt'
           streq:
             left: staged_grid
-            right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") is mapping %}staged_grid{% endif %}'
         or_orog:
           datadep_orog:
             attrs:
               age: 00:00:00:05
-            text: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+            value: '{{ task_make_orog.envvars.OROG_DIR }}/make_orog_task_complete.txt'
           streq:
             left: staged_orog
-            right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") is mapping %}staged_orog{% endif %}'
         or_sfc_climo:
           datadep_sfc_climo:
             attrs:
               age: 00:00:00:05
-            text: '{{ task_make_sfc_climo.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
+            value: '{{ task_make_sfc_climo.envvars.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
           streq:
             left: staged_sfc_climo
-            right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") is mapping %}staged_sfc_climo{% endif %}'
 
   task_make_lbcs_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK; "make_lbcs" "&JOBSdir;/JREGIONAL_MAKE_LBCS"'
+    command: '&LOAD_MODULES_RUN_TASK; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_LBCS"'
+    join:
+      cyclestr:
+        value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
       bcgrp: '00'
       bcgrpnum: '1'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: 4
-    ppn: 12
-    walltime: 01:00:00
+      nprocs: !int '{{ task_make_lbcs.chgres_cube.execution.batchargs.nodes * task_make_lbcs.chgres_cube.execution.batchargs.tasks_per_node // 1 }}'
+    join:
+      cyclestr:
+        value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nodes: '{{ task_make_lbcs.chgres_cube.execution.batchargs.nodes // 1 }}:ppn={{ task_make_lbcs.chgres_cube.execution.batchargs.tasks_per_node }}'
+    walltime: '{{ task_make_lbcs.chgres_cube.execution.batchargs.walltime }}'
     dependency:
       and:
         <<: *make_ics_deps
@@ -147,13 +175,14 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      nprocs:
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
-    partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
-    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+      nprocs: !int '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+    join:
+      cyclestr:
+        value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nodes: '{{ task_run_fcst.fv3.execution.batchargs.nodes // 1 }}:ppn={{ task_run_fcst.fv3.execution.batchargs.tasks_per_node // 1 }}'
+    partition: '{{ "&PARTITION_FCST;" if platform.get("PARTITION_FCST") }}'
     queue: '&QUEUE_FCST;'
-    walltime: 04:30:00
+    walltime: '{{ task_run_fcst.fv3.execution.batchargs.walltime }}'
     dependency:
       and:
         taskdep_make_ics:
