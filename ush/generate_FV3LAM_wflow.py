@@ -731,9 +731,9 @@ def setup_fv3_namelist(expt_config,debug):
                 "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
         if DO_AQM_CANOPY and CCPP_PHYS_SUITE in ("FV3_GFS_v16",  "FV3_GFS_v17_p8"):
-                  gfs_physics_nml_dict.update({
-                  "do_canopy": True
-                  })
+            gfs_physics_nml_dict.update({
+                "do_canopy": True
+            })
 
     # If UFS_FIRE, activate appropriate flags
     if expt_config['fire'].get('UFS_FIRE'):
