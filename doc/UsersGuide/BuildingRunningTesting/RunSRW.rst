@@ -69,8 +69,6 @@ The SRW App requires input files to run. These include static datasets, initial 
      - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
    * - Orion
      - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
-   * - WCOSS2
-     - /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/
 
 For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s: Input Files <Input>` and :numref:`%s: Output Files <OutputFiles>` contain useful background information on the input and output files used in the SRW App.
 
