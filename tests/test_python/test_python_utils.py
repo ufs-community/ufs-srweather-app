@@ -13,10 +13,11 @@ loaded first before executing unit tests.
 
 #pylint: disable=invalid-name
 
-import unittest
 import glob
-import tempfile
 import os
+import shutil
+import tempfile
+import unittest
 
 import python_utils as util
 
@@ -71,21 +72,13 @@ class Testing(unittest.TestCase):
             prefix="preexist_space",
             ) as tmp_dir:
 
-            # Check cmd_vrfy works
-            existing_dir = os.path.join(tmp_dir, "dir")
-            util.cmd_vrfy(f"mkdir -p {existing_dir}")
-            self.assertTrue(os.path.exists(existing_dir))
-
             # Given a preexisting directory, move it and test that they both
             # exist.
+            existing_dir = os.path.join(tmp_dir, "dir")
+            os.makedirs(existing_dir)
             util.check_for_preexist_dir_file(existing_dir, "rename")
             dirs = glob.glob(f"{existing_dir}_*")
             self.assertEqual(len(dirs), 1)
-
-            # Clean up the older version, and test rm_vrfy
-            util.rm_vrfy(f"-rf {existing_dir}_*")
-            dirs = glob.glob(f"{existing_dir}_*")
-            self.assertEqual(len(dirs), 0)
 
     def test_check_var_valid_value(self):
         """ Test that a string is available in a given list. """
@@ -105,17 +98,12 @@ class Testing(unittest.TestCase):
                 )
 
             # Make sure a desired path is created
-            util.mkdir_vrfy(testable_path)
+            os.makedirs(testable_path)
             self.assertTrue(os.path.exists(testable_path))
 
             # Make sure a file is copied
-            util.cp_vrfy(f"{self.ushdir}/python_utils/misc.py", f"{testable_path}/miscs.py")
+            shutil.copy(f"{self.ushdir}/python_utils/misc.py", f"{testable_path}/miscs.py")
             self.assertTrue(os.path.exists(f"{testable_path}/miscs.py"))
-
-            # Run a platform native command
-            util.cmd_vrfy(f"rm -rf {testable_path}")
-
-            self.assertFalse(os.path.exists(testable_path))
 
     def test_run_command(self):
         """ Test the return of the run_command task is as expected."""

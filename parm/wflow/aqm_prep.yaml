@@ -13,26 +13,36 @@ default_aqm_task: &default_aqm
     COMROOT: '&COMROOT;'
     DATAROOT: '&DATAROOT;'
     DCOMROOT: '&DCOMROOT;'
-    LOGDIR: !cycstr "&LOGDIR;"
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
-    subcyc: !cycstr "@M"
+    LOGDIR:
+      cyclestr:
+        value:  "&LOGDIR;"
+    PDY:
+      cyclestr:
+        value:  "@Y@m@d"
+    cyc:
+      cyclestr:
+        value:  "@H"
+    subcyc:
+      cyclestr:
+        value:  "@M"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nnodes: 1
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  ppn: 1
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: 00:30:00
 
 task_nexus_gfs_sfc:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "nexus_gfs_sfc" "&HOMEdir;/jobs/JSRW_NEXUS_GFS_SFC"'
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
-  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  partition: '{{ "&PARTITION_HPSS;" if platform.get("PARTITION_HPSS") }}'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_nexus_gfs_sfc.execution.batchargs.nodes * task_nexus_gfs_sfc.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_nexus_gfs_sfc.execution.batchargs.nodes }}:ppn={{ task_nexus_gfs_sfc.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_nexus_gfs_sfc.execution.batchargs.walltime }}'
   memory: 2G
   dependency:
     or:
@@ -43,7 +53,11 @@ task_nexus_gfs_sfc:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          value:
+            cyclestr:
+              attrs:
+                offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
+              value: '&COMINgfs;/gfs.@Y@m@d/@H/atmos'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -54,13 +68,15 @@ metatask_nexus_emission:
   task_nexus_emission_#nspt#:
     <<: *default_aqm
     command: '&LOAD_MODULES_RUN_TASK; "nexus_emission" "&HOMEdir;/jobs/JSRW_NEXUS_EMISSION"'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: '{{ task_nexus_emission.NNODES_NEXUS_EMISSION }}'
-    ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
-    walltime: 01:00:00
+    join:
+      cyclestr:
+        value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nodes: '{{ task_nexus_emission.execution.batchargs.nodes }}:ppn={{ task_nexus_emission.execution.batchargs.tasks_per_node }}'
+    walltime: '{{ task_nexus_emission.execution.batchargs.walltime }}'
     envars:
       <<: *default_vars
       nspt: "#nspt#"
+      nprocs: '{{ task_nexus_emission.execution.batchargs.nodes * task_nexus_emission.execution.batchargs.tasks_per_node }}'
     dependency:
       taskdep:
         attrs:
@@ -69,7 +85,15 @@ metatask_nexus_emission:
 task_nexus_post_split:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "nexus_post_split" "&HOMEdir;/jobs/JSRW_NEXUS_POST_SPLIT"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_nexus_post_split.execution.batchargs.nodes * task_nexus_post_split.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_nexus_post_split.execution.batchargs.nodes }}:ppn={{ task_nexus_post_split.execution.batchargs.tasks_per_node }}'
+  exclusive: "True"
+  walltime: '{{ task_nexus_post_split.execution.batchargs.walltime }}'
   dependency:
     metataskdep:
       attrs:
@@ -78,23 +102,36 @@ task_nexus_post_split:
 task_fire_emission:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "fire_emission" "&HOMEdir;/jobs/JSRW_FIRE_EMISSION"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_fire_emission.execution.batchargs.nodes * task_fire_emission.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_fire_emission.execution.batchargs.nodes }}:ppn={{ task_fire_emission.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_fire_emission.execution.batchargs.walltime }}'
 
 task_point_source:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "point_source" "&HOMEdir;/jobs/JSRW_POINT_SOURCE"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  walltime: 01:00:00
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_point_source.execution.batchargs.nodes * task_point_source.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_point_source.execution.batchargs.nodes }}:ppn={{ task_point_source.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_point_source.execution.batchargs.walltime }}'
   dependency:
     or_make_grid:
       datadep_grid:
         attrs:
           age: 00:00:00:05
-        text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+        value: '{{ task_make_grid.envvars.GRID_DIR }}/make_grid_task_complete.txt'
       streq:
         left: staged_grid
-        right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+        right: '{{ "staged_grid" if not rocoto.get("tasks", {}).get("task_make_grid") }}'
 
 task_aqm_ics_ext:
   <<: *default_aqm
@@ -105,7 +142,12 @@ task_aqm_ics_ext:
   envars:
     <<: *default_vars
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nprocs: '{{ task_aqm_ics_ext.execution.batchargs.nodes * task_aqm_ics_ext.execution.batchargs.tasks_per_node }}'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  nodes: '{{ task_aqm_ics_ext.execution.batchargs.nodes }}:ppn={{ task_aqm_ics_ext.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_aqm_ics_ext.execution.batchargs.walltime }}'
   memory: 64G
   dependency:
     and:
@@ -116,11 +158,15 @@ task_aqm_ics_ext:
         datadep_date_tag_tracer:
           attrs:
             age: 00:00:00:05
-          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
+          value:
+            cyclestr:
+              value:  '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
         datadep_tracer:
           attrs:
             age: 00:00:00:05
-          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc'
+          value:
+            cyclestr:
+              value:  '&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc'
 
 task_aqm_ics:
   <<: *default_aqm
@@ -130,8 +176,17 @@ task_aqm_ics:
   command: '&LOAD_MODULES_RUN_TASK; "aqm_ics" "&HOMEdir;/jobs/JSRW_AQM_ICS"'
   envars:
     <<: *default_vars
-    PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMIN_DIR;</cyclestr>'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    PREV_CYCLE_DIR:
+      cyclestr:
+        attrs:
+          offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
+        value: '&COMIN_DIR;'
+    nprocs: '{{ task_aqm_ics.execution.batchargs.nodes * task_aqm_ics.execution.batchargs.tasks_per_node }}'
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  nodes: '{{ task_aqm_ics.execution.batchargs.nodes }}:ppn={{ task_aqm_ics.execution.batchargs.tasks_per_node }}'
+  walltime: '{{ task_aqm_ics.execution.batchargs.walltime }}'
   memory: 64G
   dependency:
     and:
@@ -142,17 +197,34 @@ task_aqm_ics:
         datadep_date_tag_tracer:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+          value:
+            - cyclestr:
+                attrs:
+                  offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
+                value: '&COMIN_DIR;'
+            - '/RESTART/'
+            - cyclestr:
+                value: '@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
         datadep_tracer:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc'
+          value:
+            cyclestr:
+              attrs:
+                offset: "-{{ workflow.INCR_CYCL_FREQ }}:00:00"
+              value: '&COMIN_DIR;/RESTART/fv_tracer.res.tile1.nc'
 
 task_aqm_lbcs:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK; "aqm_lbcs" "&HOMEdir;/jobs/JSRW_AQM_LBCS"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  ppn: 24
+  join:
+    cyclestr:
+      value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  walltime: '{{ task_aqm_lbcs.execution.batchargs.walltime }}'
+  envars:
+    <<: *default_vars
+    nprocs: '{{ task_aqm_lbcs.execution.batchargs.nodes * task_aqm_lbcs.execution.batchargs.tasks_per_node }}'
+  nodes: '{{ task_aqm_lbcs.execution.batchargs.nodes }}:ppn={{ task_aqm_lbcs.execution.batchargs.tasks_per_node }}'
   dependency:
     taskdep:
       attrs:

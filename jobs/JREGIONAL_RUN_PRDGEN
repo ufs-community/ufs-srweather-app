@@ -27,9 +27,6 @@
 #  workflow:
 #    RUN_ENVIR
 #
-#  task_run_post:
-#    SUB_HOURLY_POST
-#
 #-----------------------------------------------------------------------
 #
 
@@ -41,7 +38,13 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow task_run_post ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 . $USHdir/job_preamble.sh
@@ -111,12 +114,7 @@ if [ "${RUN_ENVIR}" = "community" ]; then
 fi
 mkdir -p "${COMOUT}"
 
-# subhourly post
-if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
-  export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
-else
-  export DATA_FHR="${DATA:-$COMOUT}/$fhr"
-fi
+export DATA_FHR="${DATA:-$COMOUT}/$fhr"
 check_for_preexist_dir_file "${DATA_FHR}" "delete"
 mkdir -p "${DATA_FHR}"
 

@@ -34,9 +34,6 @@
 #    PLOT_FCST_INC
 #    PLOT_FCST_START
 #
-#  task_run_fcst:
-#    FCST_LEN_HRS
-#
 #-----------------------------------------------------------------------
 #
 
@@ -48,9 +45,16 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow task_plot_allvars task_run_fcst ; do
+sections=(
+  user
+  nco
+  workflow
+  task_plot_allvars.envvars
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
+#
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -115,10 +119,11 @@ if [ -n "${SRW_GRAPHICS_ENV:-}" ] ; then
   set -u
 fi
 # plot all variables
+set -x
 $SCRIPTSdir/exregional_plot_allvars.py \
            --cycle ${CDATE} \
            --start ${PLOT_FCST_START} \
-           --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           --end ${PLOT_FCST_END} \
            --inc ${PLOT_FCST_INC:-1} \
            --comout ${COMOUT} \
            --cartopy-dir ${FIXshp} \
@@ -132,7 +137,7 @@ if [ ! -z $COMOUT_REF ]; then
   $SCRIPTSdir/exregional_plot_allvars_diff.py \
            --cycle ${CDATE} \
            --start ${PLOT_FCST_START} \
-           --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           --end ${PLOT_FCST_END} \
            --inc ${PLOT_FCST_INC:-1} \
            --comout-1 ${COMOUT} \
            --comout-2 ${COMOUT_REF} \

@@ -27,8 +27,8 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
 rocoto:
   tasks:
-    task_get_extrn_ics:
-    task_get_extrn_lbcs:
-    metatask_run_ensemble:
-    metatask_run_ens_post:
-    metatask_integration_test:
+    task_get_extrn_ics: !remove
+    task_get_extrn_lbcs: !remove
+    metatask_run_ensemble: !remove
+    metatask_run_ens_post: !remove
+    metatask_integration_test: !remove

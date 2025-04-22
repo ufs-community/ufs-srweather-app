@@ -13,12 +13,12 @@ platform:
   QUEUE_DEFAULT: main
   QUEUE_FCST: main 
   QUEUE_HPSS: main
-  RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} 
-  RUN_CMD_POST: mpiexec -n $nprocs 
-  RUN_CMD_PRDGEN: mpiexec -n $nprocs 
+  RUN_CMD_FCST: mpiexec -n ${nprocs}
+  RUN_CMD_POST: mpiexec -n ${nprocs}
+  RUN_CMD_PRDGEN: mpiexec -n ${nprocs}
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: mpiexec -n $nprocs 
-  RUN_CMD_NEXUS: /opt/cray/pe/pals/1.2.11/bin/mpiexec -n $nprocs 
+  RUN_CMD_UTILS: mpiexec -n $nprocs
+  RUN_CMD_NEXUS: /opt/cray/pe/pals/1.2.11/bin/mpiexec -n $nprocs
   RUN_CMD_AQMLBC: /opt/cray/pe/pals/1.2.11/bin/mpiexec -n ${numts}
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data

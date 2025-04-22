@@ -25,16 +25,11 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Clone the SRW App from GitHub:
 
-      .. code-block:: console
-
-         git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
+      .. include:: ../../doc-snippets/clone.rst
 
    #. Check out the external repositories:
 
-      .. code-block:: console
-
-         cd ufs-srweather-app
-         ./manage_externals/checkout_externals
+      .. include:: ../../doc-snippets/externals.rst
 
    #. Set up the build environment and build the executables:
 

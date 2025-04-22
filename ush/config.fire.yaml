@@ -3,7 +3,7 @@ metadata:
     Sample fire config
 user:
   RUN_ENVIR: community
-  MACHINE: derecho
+  MACHINE: DERECHO
   ACCOUNT: ACCOUNT_NUMBER
 workflow:
   USE_CRON_TO_RELAUNCH: true
@@ -17,26 +17,34 @@ workflow:
   VERBOSE: true
   COMPILER: intel
 task_get_extrn_ics:
-  USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
-  EXTRN_MDL_NAME_ICS: HRRR
-  FV3GFS_FILE_FMT_ICS: grib2
-  EXTRN_MDL_FILES_ICS:
-    - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
+  envvars:
+    USE_USER_STAGED_EXTRN_FILES: true
+    EXTRN_MDL_SOURCE_BASEDIR_ICS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
+    EXTRN_MDL_NAME_ICS: HRRR
+    FV3GFS_FILE_FMT_ICS: grib2
+    EXTRN_MDL_FILES_ICS:
+      - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
 task_get_extrn_lbcs:
-  USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
-  EXTRN_MDL_FILES_LBCS:
-    - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
-  EXTRN_MDL_NAME_LBCS: HRRR
-  EXTRN_MDL_LBCS_OFFSET_HRS: 0
-  LBC_SPEC_INTVL_HRS: 3
-  FV3GFS_FILE_FMT_LBCS: grib2
+  envvars:
+    USE_USER_STAGED_EXTRN_FILES: true
+    EXTRN_MDL_SOURCE_BASEDIR_LBCS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
+    EXTRN_MDL_FILES_LBCS:
+      - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
+    EXTRN_MDL_NAME_LBCS: HRRR
+    EXTRN_MDL_LBCS_OFFSET_HRS: 0
+    LBC_SPEC_INTVL_HRS: 3
+    FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:00:00
+  envvars:
+    PRINT_ESMF: True
   QUILTING: true
-  PRINT_ESMF: True
 task_plot_allvars:
-  COMOUT_REF: ""
+  envvars:
+    COMOUT_REF: ""
 fire:
   UFS_FIRE: True
   FIRE_NUM_TASKS: 1
@@ -59,9 +67,3 @@ fire:
   FIRE_UPWINDING: 9
   FIRE_LSM_ZCOUPLING: False
   FIRE_LSM_ZCOUPLING_REF: 60.0
-rocoto:
-  tasks:
-    metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
-        walltime: 01:00:00
-

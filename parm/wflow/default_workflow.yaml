@@ -29,7 +29,7 @@ rocoto:
     RUN: '{{ nco.RUN_default }}'
     SCRIPTSdir: '{{ user.SCRIPTSdir }}'
     SENDCOM: '{{ nco.SENDCOM_default }}'
-    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+    SLASH_ENSMEM_SUBDIR: '{{ "/mem#mem#" if global.DO_ENSEMBLE else "/" }}'
     USHdir: '{{ user.USHdir }}'
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
@@ -39,27 +39,21 @@ rocoto:
     COMROOT: '{{ nco.PTMP }}/&envir;/com'
     DATAROOT: '{{ nco.PTMP }}/&envir;/tmp'
     DCOMROOT: '{{ nco.PTMP }}/&envir;/dcom'
-    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
-    FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
-    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/output/logs/@Y@m@d{% else %}{{ workflow.EXPTDIR }}/log{% endif %}'
+    COMIN_DIR: '{{ "&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR + "/@Y@m@d@H" }}'
+    FCST_DIR: '{{ "&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR + "/@Y@m@d@H" }}'
+    LOGDIR: '{{ "&COMROOT;/output/logs/@Y@m@d" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR + "/log" }}'
   attrs:
-    cyclethrottle: "200"
-    realtime: "F"
+    cyclethrottle: 200
+    realtime: false
     scheduler: '{{ platform.SCHED }}'
-    taskthrottle: "1000"
-  cycledefs:
-    at_start:
-      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_FIRST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
-    forecast:
-      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
-    cycled_from_second:
-      - !startstopfreq ['{%- if workflow.DATE_FIRST_CYCL != workflow.DATE_LAST_CYCL %}
-                           {{- workflow.DATE_SECOND_CYCL }}
-                         {%- else %}
-                           {{- workflow.DATE_FIRST_CYCL }}
-                         {%- endif %}',
-                        '{{ workflow.DATE_LAST_CYCL }}',
-                        '{{ workflow.INCR_CYCL_FREQ }}']
-  log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.WORKFLOW_ID + "." }}{% endif %}log'
-  tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'
+    taskthrottle: 1000
+  cycledef:
+    - attrs:
+        group: at_start
+      spec: '{{ workflow.DATE_FIRST_CYCL }}00 {{ workflow.DATE_FIRST_CYCL }}00 {{ workflow.INCR_CYCL_FREQ }}:00:00'
+    - attrs:
+        group: forecast
+      spec: '{{ workflow.DATE_FIRST_CYCL }}00 {{ workflow.DATE_LAST_CYCL }}00 {{ workflow.INCR_CYCL_FREQ }}:00:00'
+  log:
+    cyclestr:
+      value: '&LOGDIR;/FV3LAM_wflow.{{ workflow.WORKFLOW_ID + "." if user.RUN_ENVIR == "nco" }}log'

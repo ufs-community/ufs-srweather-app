@@ -7,20 +7,27 @@ default_task_post: &default_task
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
-    PDY: !cycstr '@Y@m@d'
-    cyc: !cycstr '@H'
+    PDY:
+      cyclestr:
+        value: "@Y@m@d"
+    cyc:
+      cyclestr:
+        value: "@H"
+    subcyc:
+      cyclestr:
+        value: "@M"
     fhr: '#fhr#'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: '#mem#'
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nprocs: '{{ task_run_post.upp.execution.batchargs.nodes * task_run_post.upp.execution.batchargs.tasks_per_node }}'
+  join:
+    cyclestr:
+      value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  nnodes: 2
-  ppn: 24
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  nodes: "{{ task_run_post.upp.execution.batchargs.nodes }}:ppn={{ task_run_post.upp.execution.batchargs.tasks_per_node }}"
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: 00:15:00
+  walltime: '{{ task_run_post.upp.execution.batchargs.walltime }}'
 
 metatask_run_ens_post:
   var:
@@ -38,20 +45,24 @@ metatask_run_ens_post:
               task: run_fcst_mem#mem#
           and:
             datadep_dyn:
-              text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#.nc'
               attrs:
                 age: '05:00'
+              value:
+                cyclestr:
+                  value: '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#.nc'
             datadep_phy:
-              text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#.nc'
               attrs:
                 age: '05:00'
+              value:
+                cyclestr:
+                  value: '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#.nc'
 
   metatask_run_sub_hourly_post:
     var:
       fhr: '{% for h in range(workflow.FCST_LEN_HRS) %}{{ " %03d" % h }}{% endfor %}'
     metatask_sub_hourly_post:
       var:
-        fmn: '{% for min in range(0, 60, task_run_post.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
+        fmn: '{% for min in range(0, 60, task_run_post.envvars.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
       task_run_post_mem#mem#_f#fhr##fmn#: &subhourly_run_post_task
         <<: *default_task
         envars:
@@ -64,13 +75,18 @@ metatask_run_ens_post:
                 task: run_fcst_mem#mem#
             and:
               datadep_dyn:
-                text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#:#fmn#:00.nc'
                 attrs:
                   age: '05:00'
+                value:
+                  cyclestr:
+                    value: '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#:#fmn#:00.nc'
+
               datadep_phy:
-                text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#:#fmn#:00.nc'
                 attrs:
                   age: '05:00'
+                value:
+                  cyclestr:
+                    value: '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#:#fmn#:00.nc'
 
   metatask_sub_hourly_last_hour_post:
     var:

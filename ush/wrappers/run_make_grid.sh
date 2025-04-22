@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.yaml"
 . $USHdir/source_util_funcs.sh
-for sect in workflow ; do
+
+echo $GLOBAL_VAR_DEFNS_FP
+
+sections=(
+  workflow
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 set -xa

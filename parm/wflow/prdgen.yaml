@@ -14,20 +14,24 @@ metatask_run_prdgen:
       envars:
         GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
         USHdir: '&USHdir;'
-        PDY: !cycstr '@Y@m@d'
-        cyc: !cycstr '@H'
+        PDY:
+          cyclestr:
+            value:  '@Y@m@d'
+        cyc:
+          cyclestr:
+            value:  '@H'
         fhr: '#fhr#'
         SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
         ENSMEM_INDX: '#mem#'
-        nprocs: '{{ parent.nnodes * parent.ppn }}'
-      join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+        nprocs: '{{ task_run_prdgen.execution.batchargs.nodes * task_run_prdgen.execution.batchargs.tasks_per_node }}'
+      join:
+        cyclestr:
+          value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
-      nodes: '{{ nnodes }}:ppn={{ ppn }}'
-      nnodes: 1
-      partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-      ppn: 22
+      nodes: '{{ task_run_prdgen.execution.batchargs.nodes }}:ppn={{ task_run_prodgen.execution.batchargs.tasks_per_node }}'
+      partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
       queue: '&QUEUE_DEFAULT;'
-      walltime: 00:30:00
+      walltime: '{{ task_run_prdgen.execution.batchargs.walltime }}'
       dependency:
         taskdep:
           attrs:

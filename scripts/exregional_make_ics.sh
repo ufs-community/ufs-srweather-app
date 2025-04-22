@@ -86,8 +86,19 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow global cpl_aqm_parm smoke_dust_parm \
-  constants task_get_extrn_ics task_make_ics ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  cpl_aqm_parm
+  smoke_dust_parm
+  constants
+  task_get_extrn_ics.envvars
+  task_make_ics.envvars
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -184,8 +195,6 @@ varmap_file=""
 
 case "${CCPP_PHYS_SUITE}" in
 #
-  "FV3_GFS_2017_gfdlmp" | \
-  "FV3_GFS_2017_gfdlmp_regional" | \
   "FV3_GFS_v16" | \
   "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"

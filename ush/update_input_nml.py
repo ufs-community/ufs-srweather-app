@@ -9,13 +9,13 @@ import os
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import get_nml_config, realize
-
 from python_utils import (
     print_input_args,
     print_info_msg,
     cfg_to_yaml_str,
 )
+
+from uwtools.api.config import get_nml_config, realize
 
 VERBOSE = os.environ.get("VERBOSE", "true")
 

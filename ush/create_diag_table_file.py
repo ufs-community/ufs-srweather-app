@@ -7,16 +7,17 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     import_vars,
-    load_yaml_config,
     print_info_msg,
     print_input_args,
 )
+
+from uwtools.api.config import get_yaml_config
+from uwtools.api.template import render
 
 
 def create_diag_table_file(run_dir):
@@ -124,7 +125,7 @@ def _parse_args(argv):
 
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
-    cfg = load_yaml_config(args.path_to_defns)
+    cfg = get_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_diag_table_file(args.run_dir)

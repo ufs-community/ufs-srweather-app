@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.yaml"
 . $USHdir/source_util_funcs.sh
-for sect in workflow task_get_extrn_lbcs ; do
+
+sections=(
+  workflow
+  task_get_extrn_lbcs.envvars
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 set -xa

@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
-import os
+"""
+Handle the existence of a directory.
+"""
+
+import shutil
 from datetime import datetime
+from pathlib import Path
 from textwrap import dedent
 from .check_var_valid_value import check_var_valid_value
-from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy, rsync_vrfy
 from .print_msg import log_info
 
 
@@ -32,14 +36,14 @@ def check_for_preexist_dir_file(path, method):
             """
         )
         raise ValueError(errmsg) from None
-
-    if os.path.exists(path):
+    path = Path(path)
+    if path.exists():
         if method == "delete":
-            rm_vrfy(" -rf ", path)
-        elif method == "rename" or method == "reuse":
+            shutil.rmtree(path)
+        elif method in ("rename", "reuse"):
             now = datetime.now()
-            d = now.strftime("_old_%Y%m%d_%H%M%S")
-            new_path = path + d
+            suffix = now.strftime("_old_%Y%m%d_%H%M%S")
+            new_path = path.parent / (path.name + suffix)
             log_info(
                 f"""
                 Specified directory or file already exists:
@@ -48,9 +52,9 @@ def check_for_preexist_dir_file(path, method):
                     {new_path}"""
             )
             if method == "rename":
-                mv_vrfy(path, new_path)
+                path.rename(new_path)
             else:
-                rsync_vrfy(path, new_path)
+                shutil.copytree(path, new_path, symlinks=True)
         else:
             raise FileExistsError(
                 dedent(
