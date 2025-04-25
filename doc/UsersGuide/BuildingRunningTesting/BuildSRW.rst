@@ -367,6 +367,7 @@ For convenience, a suggested procedure is included below for users who do not ha
 #. Create the ``conda_loc`` file which is the location of the conda directory and is used as part of the ``wflow_<platform>`` modulefile. If the user used the build location ``$PWD/conda`` from step 3, then they can run the following ``realpath ../conda`` to get the conda directory path. After obtaining the conda directory path, users can create the ``conda_loc by`` doing the following:
 
    .. code-block:: console
+      
       # cd back ufs-srweather-app
       cd ../../
       vi conda_loc
