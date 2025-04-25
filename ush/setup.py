@@ -140,7 +140,9 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
 
     # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
     expt_basedir = default_config["workflow"]["EXPT_BASEDIR"]
-    if (not expt_basedir) or (expt_basedir[0] != "/"):
+    if not expt_basedir:
+        expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
+    elif expt_basedir[0] != "/":
         expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
     default_config["workflow"]["EXPT_BASEDIR"] = str(Path(expt_basedir).resolve())
 
