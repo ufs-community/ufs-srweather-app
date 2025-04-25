@@ -17,6 +17,9 @@ from pathlib import Path
 from textwrap import dedent
 
 
+from uwtools.api.config import get_ini_config, get_yaml_config, validate
+from uwtools.api.template import render
+
 from link_fix import link_fix
 from python_utils import (
     dict_find,
@@ -34,9 +37,6 @@ from set_cycle_and_obs_timeinfo import (
 )
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
-
-from uwtools.api.config import get_ini_config, get_yaml_config, validate
-from uwtools.api.template import render
 
 
 def load_config_for_setup(ushdir, default_config_path, user_config_path):
@@ -1405,10 +1405,10 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             for key, value in spp_valid_dict.items():
                 if key in global_sect["SPP_VAR_LIST"]:
                     if all(not has_tag_with_value(ccpp_suite_xml, "scheme", x) for x in value):
-                        logger.warning(f"Selected CCPP suite ({ccpp_physics_suite})")
-                        logger.warning(f"Does not have required scheme(s) {value}")
-                        logger.warning(f"for {key} in SPP_VAR_LIST; removing {key}")
-                        logger.warning("And associated scaling factors")
+                        logger.warning(f"Selected CCPP suite ({ccpp_physics_suite})"\
+                                       f"Does not have required scheme(s) {value}"\
+                                       f"for {key} in SPP_VAR_LIST; removing {key}"\
+                                         "And associated scaling factors")
                         index = global_sect["SPP_VAR_LIST"].index(key)
                         global_sect["SPP_VAR_LIST"].pop(index)
                         logging.debug("New scaling factor arrays:")
@@ -1424,9 +1424,9 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         if global_sect.get("DO_LSM_SPP"):
             lsm_spp_valid = ["lsm_ruc", "lsm_noah"]
             if all(not has_tag_with_value(ccpp_suite_xml, "scheme", x) for x in lsm_spp_valid):
-                msg = f"Selected CCPP suite ({workflow_config['CCPP_PHYS_SUITE']})\n"
-                msg += "Does not have a supported surface scheme\n"
-                msg += f"Valid surface schemes are: {lsm_spp_valid}"
+                msg = ( f"Selected CCPP suite ({workflow_config['CCPP_PHYS_SUITE']})\n"
+                         "Does not have a supported surface scheme\n"
+                         "Valid surface schemes are: {lsm_spp_valid}" )
                 raise ValueError(msg)
 
         # If running with Noah or RUC-LSM SPP, set LNDP_TYPE to 2, otherwise set it to zero.
