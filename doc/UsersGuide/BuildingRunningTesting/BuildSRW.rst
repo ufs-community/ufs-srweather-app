@@ -326,6 +326,8 @@ The build will take a few minutes to complete. When it starts, a random number i
 
    If you see the ``build.out`` file, but there is no ``ufs-srweather-app/exec`` directory, wait a few more minutes for the build to complete.
 
+There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec directory``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
+
 .. _install-uw:
 
 Install ``uwtools``
@@ -361,6 +363,15 @@ For convenience, a suggested procedure is included below for users who do not ha
    
    where ``<X.Y.Z>`` is the desired version number. (It may be necessary to create the ``conda/envs`` directory within the ``ufs-srweather-app`` using the ``mkdir`` command if it does not already exist.)
    Hit ``y`` to continue installation. 
+
+#. Create the ``conda_loc`` file which is the location of the conda directory and is used as part of the ``wflow_<platform>`` modulefile. If the user used the build location ``$PWD/conda`` from step 3, then they can run the following ``realpath ../conda`` to get the conda directory path. After obtaining the conda directory path, users can create the ``conda_loc by`` doing the following:
+
+   .. code-block:: console
+      # cd back ufs-srweather-app
+      cd ../../
+      vi conda_loc
+      # paste the conda directory path
+      # save the file
 
 Run an Experiment
 =====================
