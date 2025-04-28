@@ -1075,6 +1075,9 @@ These parameters set values in the Weather Model's ``model_configure`` file.
    Variable denoting the number of write tasks in the ``i`` direction in the current group. Used for inline post 2D decomposition. Setting this variable to a value greater than 1 will enable 2D decomposition.
    Note that 2D decomposition does not yet work with GNU compilers, so this value will be reset to 1 automatically when using GNU compilers (i.e., when ``COMPILER: gnu``).
 
+``HISTORY_NATIVE_GRID``: (Default: ``false``)
+If ``true``, write history files on the native FV3 cubed sphere grid. Note, this will override the output grid to ``cubed_sphere_grid`` when ``true`` which may break post-processing tasks.
+
 .. _CompParams:
 
 Computational Parameters
@@ -1173,7 +1176,7 @@ Write-Component (Quilting) Parameters
    Grid cell size (in meters) along the x-axis of the Lambert conformal projection.
 
 ``WRTCMP_dy``: (Default: "")
-   Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
+   Grid cell size (in meters) along the y-axis of the Lambert conformal projection.
 
 Aerosol Climatology Parameter
 ---------------------------------

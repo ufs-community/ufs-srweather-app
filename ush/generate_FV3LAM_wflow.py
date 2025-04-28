@@ -708,6 +708,7 @@ def setup_fv3_namelist(expt_config,debug):
         gfs_physics_nml_dict.update(
             {
                 "ebb_dcycle": expt_config["smoke_dust_parm"]["EBB_DCYCLE"],
+                "dust_opt": expt_config["smoke_dust_parm"]["DUST_OPTION"],
                 "rrfs_sd": True,
             }
         )

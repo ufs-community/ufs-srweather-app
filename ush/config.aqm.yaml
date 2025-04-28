@@ -25,6 +25,8 @@ workflow:
   WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
 #  WARMSTART_CYCLE_DIR: '/work/noaa/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for orion/hercules
 #  WARMSTART_CYCLE_DIR: '/glade/work/chanhooj/SRW-AQM_DATA/aqm_data/restart/2023111000' # for derecho
+
+  # Note: comment the post.yaml task if HISTORY_NATIVE_GRID: true
   taskgroups:
     - parm/wflow/prep.yaml
     - parm/wflow/aqm_prep.yaml
@@ -59,6 +61,9 @@ task_run_fcst:
     PRINT_ESMF: false
     RESTART_INTERVAL: 12 24
     DO_FCST_RESTART: false
+    # Uncomment to write history files on native FV3 cubed sphere grid. Note that the taskgroup
+    # post.yaml does not work with the native FV3 grid.
+#    HISTORY_NATIVE_GRID: true
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16

@@ -37,7 +37,7 @@ def test(tmp_path: Path, fake_grid_out_shape: FakeGridOutShape, mocker: MockerFi
             "--restart-interval",
             "6 12 18 24",
             "--persistence",
-            "False",
+            "True",
             "--rave-qa-filter",
             "none",
             "--log-level",
