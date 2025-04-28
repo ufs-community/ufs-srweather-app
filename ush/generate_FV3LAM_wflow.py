@@ -302,7 +302,8 @@ def generate_FV3LAM_wflow(
         #
         # -----------------------------------------------------------------------
         #
-        if dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst"):
+        if ( dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") or
+           dict_find(expt_config["rocoto"]["tasks"], "task_make_grid") ):
             setup_fv3_namelist(expt_config,debug)
 
         #

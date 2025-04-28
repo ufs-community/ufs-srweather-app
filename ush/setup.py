@@ -1370,7 +1370,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    if run_run_fcst: # pylint: disable=too-many-nested-blocks
+    if run_run_fcst or run_make_grid: # pylint: disable=too-many-nested-blocks
         ccpp_suite_xml = load_xml_file(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"])
 
         # For SPP stochastic physics, perturbations can only be applied with certain CCPP schemes:
