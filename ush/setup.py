@@ -1407,10 +1407,10 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             for key, value in spp_valid_dict.items():
                 if key in global_sect["SPP_VAR_LIST"]:
                     if all(not has_tag_with_value(ccpp_suite_xml, "scheme", x) for x in value):
-                        logger.warning(f"Selected CCPP suite ({ccpp_physics_suite})"\
-                                       f"Does not have required scheme(s) {value}"\
+                        logger.warning(f"Selected CCPP suite ({ccpp_physics_suite})\n"\
+                                       f"Does not have required scheme(s) {value}\n"\
                                        f"for {key} in SPP_VAR_LIST; removing {key}"\
-                                         "And associated scaling factors")
+                                         "and associated scaling factors")
                         index = global_sect["SPP_VAR_LIST"].index(key)
                         global_sect["SPP_VAR_LIST"].pop(index)
                         logging.debug("New scaling factor arrays:")
