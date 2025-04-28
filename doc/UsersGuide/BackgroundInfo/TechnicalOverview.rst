@@ -20,7 +20,7 @@ The instructions in this documentation assume that users have certain background
 * Command line basics
 * System configuration knowledge (e.g., compilers, environment variables, paths, etc.)
 * Numerical Weather Prediction (e.g., concepts of parameterizations: physical, microphysical, convective)
-* Meteorology (in particular, meteorology at the scales being predicted: 25km, 13km, and 3km resolutions)
+* Meteorology (in particular, meteorology at the scales being predicted: 25-km, 13-km, and 3-km resolutions)
 
 Additional background knowledge in the following areas could be helpful:
 
@@ -34,19 +34,19 @@ Additional background knowledge in the following areas could be helpful:
 
 Software/Operating System Requirements
 -----------------------------------------
-The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. SRW App :srw-wiki:`Level 1 & 2 systems <Supported-Platforms-and-Compilers>` already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system: 
+The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. SRW App :srw-wiki:`Level 1 systems <Supported-Platforms-and-Compilers>` already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system:
 
 **Minimum Platform Requirements:**
 
 * POSIX-compliant UNIX-style operating system
 
-* >97 GB disk space
+* >90 GB disk space
 
-   * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * ~23 GB for full :term:`spack-stack` installation
-   * 3 GB for ``ufs-srweather-app`` installation
-   * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
+   * 56 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25-km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * ~19 GB for full :term:`spack-stack` installation
+   * 8 GB for ``ufs-srweather-app`` installation
+   * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25-km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 6 GB for a 12-hour test forecast on the CONUS 25-km domain, with model output saved hourly.
 
 * Fortran compiler released since 2018
 
@@ -54,11 +54,9 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * C and C++ compilers compatible with the Fortran compiler
 
-   * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang, LLVM clang, GNU) have been tested
+   * gcc v9+ and ifort v18+ have been tested.
 
-* Python v3.7+ (preferably 3.9+), including prerequisite packages ``jinja2``, ``pyyaml``, and ``f90nml``
-   
-   * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` are required for users who would like to use the provided graphics scripts.
+* Python v3.7+ (preferably 3.9+)
 
 * Perl 5
 
@@ -80,10 +78,8 @@ The following software is also required to run the SRW Application, but the :ter
 
 Optional but recommended prerequisites for all systems:
 
-* Conda for installing/managing Python packages
 * Bash v4+
 * Rocoto Workflow Management System (1.3.1)
-* Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
 
 
 .. _SRWStructure:
@@ -109,7 +105,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
      - https://github.com/ufs-community/ufs-srweather-app
    * - Repository for the UFS Weather Model
      - https://github.com/ufs-community/ufs-weather-model
-   * - Repository for UFS Utilities, including pre-processing, chgres_cube, and more
+   * - Repository for UFS Utilities, including chgres_cube and other pre-processing utilities
      - https://github.com/ufs-community/UFS_UTILS
    * - Repository for the Unified Post Processor (UPP)
      - https://github.com/NOAA-EMC/UPP
@@ -117,10 +113,8 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
      - https://github.com/NOAA-EMC/AQM-utils
    * - Repository for the NOAA Emission and eXchange Unified System (NEXUS)
      - https://github.com/noaa-oar-arl/NEXUS
-   * - Repository for the Unified Workflow (UW) Toolkit
-     - https://github.com/ufs-community/uwtools
 
-The UFS Weather Model contains a number of sub-repositories, which are documented :doc:`here <ufs-wm:CodeOverview>`.
+The UFS Weather Model (WM) contains a number of sub-repositories, which are documented in the :doc:`UFS WM User's Guide <ufs-wm:CodeOverview>`.
 
 .. note::
    The prerequisite libraries (including NCEP Libraries and external libraries) are **not** included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on :srw-wiki:`preconfigured (Level 1) platforms <Supported-Platforms-and-Compilers>`. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack.
@@ -129,42 +123,57 @@ The UFS Weather Model contains a number of sub-repositories, which are documente
 
 Repository Structure
 ----------------------
-The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant repository. Its structure follows the standards laid out in :term:`NCEP` Central Operations (NCO) WCOSS :nco:`Implementation Standards <ImplementationStandards.v11.0.0.pdf>`. This structure is implemented using the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
+The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant repository. Its structure follows the standards laid out in the :term:`NCEP` Central Operations (NCO) WCOSS :nco:`Implementation Standards <ImplementationStandards.v11.0.0.pdf>`. This structure is implemented using the ``local_path`` settings contained within the ``Externals.cfg`` file. When ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below under ``/sorc``. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some files and directories have been removed for brevity.
 
 .. code-block:: console
 
    ufs-srweather-app
    ├── (build)
-   ├── docs  
-   │     └── UsersGuide
+   ├── (conda)
+   │     └── envs
+   ├── (conda_loc)
+   ├── doc  
+   │     ├── ContribGuide
+   │     ├── UsersGuide
+   │     └── TechDocs
    ├── etc
+   │     └── lmod-setup.sh
    ├── (exec)
+   ├── fix
    ├── (include)
    ├── jobs
    ├── (lib)
    ├── manage_externals
    ├── modulefiles
    │     ├── build_<platform>_<compiler>.lua
+   │     ├── python_srw*.lua
    │     └── wflow_<platform>.lua
    ├── parm
    │     ├── wflow
    │     │     └── default_workflow.yaml
-   │     └── FV3LAM_wflow.xml
-   ├── (share)
+   │     ├── FV3.input.yml
+   │     ├── FV3LAM_wflow.xml
+   │     ├── diag_table.*
+   │     ├── field_table.*
+   │     ├── input.nml.FV3
+   │     ├── model_configure
+   │     └── ufs.configure
    ├── scripts
    ├── sorc
    │     ├── CMakeLists.txt
-   │     ├── (UPP)
+   │     ├── arl_nexus
+   │     ├── AQM-utils
+   │     ├── UPP
    │     │     ├── parm
    │     │     └── sorc
    │     │          └── ncep_post.fd
-   │     ├── (UFS_UTILS)
+   │     ├── UFS_UTILS
    │     │     ├── sorc
    │     │     │    ├── chgres_cube.fd
    │     │     │    ├── sfc_climo_gen.fd
    │     │     │    └── vcoord_gen.fd
    │     │     └── ush
-   │     └── (ufs-weather-model)
+   │     └── ufs-weather-model
    │	         └── FV3
    │                ├── atmos_cubed_sphere
    │                └── ccpp
@@ -174,28 +183,42 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    │     ├── bash_utils
    │     ├── machine
    │     ├── wrappers
+   │     ├── python_utils
    │     ├── config.community.yaml
+   │     ├── config.*.yaml
    │     ├── config_defaults.yaml
-   │     ├── experiment.jsonschema
    │     ├── generate_FV3LAM_wflow.py
    │     ├── launch_FV3LAM_wflow.sh
-   │     └── setup.py
-   └── versions
+   │     ├── setup.py
+   │     └── valid_param_vals.yaml
+   ├── versions
+   ├── CMakeLists.txt
+   ├── Externals.cfg
+   ├── aqm_environment.yml
+   ├── devbuild.sh
+   ├── environment.yml
+   ├── graphics_environment.yml
+   └── sd_environment.yml
 
-SRW App SubDirectories
+
+SRW App Subdirectories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 :numref:`Table %s <Subdirectories>` describes the contents of the most important SRW App subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides a more comprehensive explanation of the ``ufs-srweather-app`` files and subdirectories. Users can reference the :nco:`NCO Implementation Standards <ImplementationStandards.v11.0.0.pdf>` (p. 19) for additional details on repository structure in NCO-compliant repositories. 
 
 .. _Subdirectories:
 
-.. list-table:: *Subdirectories of the ufs-srweather-app repository*
+.. list-table:: Subdirectories of the ``ufs-srweather-app`` repository
    :widths: 20 50
    :header-rows: 1
 
    * - Directory Name
      - Description
-   * - docs
+   * - conda
+     - Installation location for miniconda and SRW App environments
+   * - doc
      - Repository documentation
+   * - exec
+     - Executables built from code in ``/sorc``
    * - jobs
      - :term:`J-job <J-jobs>` scripts launched by Rocoto
    * - modulefiles
@@ -219,18 +242,24 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
 
 .. _ExptDirStructure:
 
-.. list-table:: *Files and subdirectory initially created in the experiment directory*
+.. list-table:: *Files and subdirectories initially created in the experiment directory*
    :widths: 33 67
    :header-rows: 1
 
    * - File Name
      - Description
    * - config.yaml
-     - User-specified configuration file, see :numref:`Section %s <UserSpecificConfig>`
+     - Copy of the user-specified configuration file (see :numref:`Section %s <UserSpecificConfig>`)
    * - data_table
      - :term:`Cycle-independent` input file (empty)
+   * - fd_ufs.yaml
+     - The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields and is automatically generated by the NUOPC Layer. 
    * - field_table
-     - :term:`Tracers <tracer>` in the :ref:`forecast model <ufs-wm:field_tableFile>`
+     - :term:`Tracers <tracer>` in the :ref:`forecast model field_table <ufs-wm:field_tableFile>`
+   * - fix_am 
+     - Directory containing the global fix (time-independent) data files (or symlinks to the fix files) for various fields on global grids (which are usually much coarser than the native FV3-LAM grid).
+   * - fix_lam
+     - Directory (initially empty) that will contain the regional fix (time-independent) data files (or symlinks to the fix files) that describe the regional grid, orography, and various surface climatology fields on the native FV3-LAM grid.
    * - FV3LAM_wflow.xml
      - Rocoto XML file to run the workflow
    * - input.nml
@@ -241,39 +270,22 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
        called, it appends information to a log file named ``log.launch_FV3LAM_wflow``.
    * - log.generate_FV3LAM_wflow
      - Log of the output from the experiment generation script (``generate_FV3LAM_wflow.py``)
-   * - nems.configure
-     - See :ref:`NEMS configuration file <ufs-wm:ufs-conf>`
+   * - rocoto_defns.yaml
+     - YAML file containing the YAML workflow definition from which the Rocoto XML file is created.
    * - suite_{CCPP}.xml
      - :term:`CCPP` suite definition file (:term:`SDF`) used by the forecast model
-   * - var_defns.sh
-     - Shell script defining the experiment parameters. It contains all of the primary 
+   * - var_defns.yaml
+     - YAML file containing the experiment parameters. It contains all of the primary 
        parameters specified in the default and user-specified configuration files plus 
        many secondary parameters that are derived from the primary ones by the 
-       experiment generation script. This file is sourced by various other scripts in 
-       order to make all the experiment variables available to these scripts. 
-   * - YYYYMMDDHH
-     - Cycle directory (empty)
+       experiment generation script based on the machine files and other settings. 
+       This file is the primary source of information on experiment variables used in the scripts at run time.
+   * - task_skip_coldstart_YYYYMMDDHHmm.txt
+     - Flag file for cold start 
 
-In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories (see :numref:`Table %s <FixDirectories>`) in ``$EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks run. 
 
-.. _FixDirectories:
 
-.. list-table:: *Description of the fix directories*
-   :widths: 33 67
-   :header-rows: 1
-
-   * - Directory Name
-     - Description
-   * - fix_am
-     - Directory containing the global fix (time-independent) data files. The 
-       experiment generation script symlinks these files from a machine-dependent 
-       system directory.
-   * - fix_lam
-     - Directory containing the regional fix (time-independent) data files that 
-       describe the regional grid, orography, and various surface climatology fields, 
-       as well as symlinks to pre-generated files.
-
-Once the Rocoto workflow is launched, several files and directories are generated. A log file named ``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``$EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbcs``) are preprocessing tasks, and these tasks also result in the creation of new files and subdirectories, described in :numref:`Table %s <CreatedByWorkflow>`.
+Once the workflow is launched, several files and directories are generated. A log file named ``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``$EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbcs``) are preprocessing tasks, and these tasks also result in the creation of new files and subdirectories, described in :numref:`Table %s <CreatedByWorkflow>`.
 
 .. _CreatedByWorkflow:
 
@@ -291,21 +303,19 @@ Once the Rocoto workflow is launched, several files and directories are generate
        runs. If ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are different in the 
        ``config.yaml`` file, more than one cycle directory will be created under the 
        experiment directory.
-   * - grid
-     - Directory generated by the ``make_grid`` task to store grid files for the experiment
-   * - log
-     - Contains log files generated by the overall workflow and by its various tasks. View the files in this directory to determine why a task may have failed.
-   * - orog
-     - Directory generated by the ``make_orog`` task containing the orography files for the experiment
-   * - sfc_climo
-     - Directory generated by the ``make_sfc_climo`` task containing the surface climatology files for the experiment
    * - FV3LAM_wflow.db
        
        FV3LAM_wflow_lock.db
      - Database files that are generated when Rocoto is called (by the launch script) to launch the workflow
-   * - log.launch_FV3LAM_wflow
-     - The ``launch_FV3LAM_wflow.sh`` script appends its output to this log file each time it is called. View the last several lines of this file to check the status of the workflow.
+   * - grid
+     - Directory generated by the ``make_grid`` task to store grid files for the experiment
+   * - log
+     - Directory containing log files generated by the overall workflow and by its various tasks. View the files in this directory to determine why a task may have failed.
+   * - orog
+     - Directory generated by the ``make_orog`` task containing the orography files for the experiment
+   * - sfc_climo
+     - Directory generated by the ``make_sfc_climo`` task containing the surface climatology files for the experiment
+   
    
 The output files for an experiment are described in :numref:`Section %s <OutputFiles>`.
 The workflow tasks are described in :numref:`Section %s <WorkflowTaskDescription>`.
-
