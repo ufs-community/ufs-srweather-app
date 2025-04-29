@@ -28,7 +28,6 @@ NEEDED_VARS = [
     "DO_ENSEMBLE",
     "EXPTDIR",
     "FIXlam",
-    "FV3_NML_FP",
     "PARMdir",
     "RUN_ENVIR",
     ]
@@ -36,7 +35,7 @@ NEEDED_VARS = [
 
 # pylint: disable=undefined-variable
 
-def set_fv3nml_sfc_climo_filenames(config, debug=False):
+def set_fv3nml_sfc_climo_filenames(config, namelist, debug=False):
     """
     Sets the values of the variables in the forecast model's namelist file that specify the paths 
     to the surface climatology files on the FV3LAM native grid (which are either pregenerated
@@ -48,6 +47,7 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
     Args:
         config  (dict): Section of configuration file specifying surface climatology fields 
                         (as a flattened dictionary)
+        namelist (str): The namelist file to update
         debug   (bool): Enable extra output for debugging
     Returns:
         None
@@ -102,9 +102,9 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
     )
 
     realize(
-        input_config=FV3_NML_FP,
+        input_config=namelist,
         input_format="nml",
-        output_file=FV3_NML_FP,
+        output_file=namelist,
         output_format="nml",
         update_config=get_nml_config(settings),
         )
@@ -119,6 +119,12 @@ def _parse_args(argv):
         dest="path_to_defns",
         required=True,
         help="Path to var_defns file.",
+    )
+    parser.add_argument(
+        "-n",
+        "--namelist",
+        required=True,
+        help="Path to the namelist file to update",
     )
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output')

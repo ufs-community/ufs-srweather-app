@@ -31,7 +31,6 @@ from python_utils import (
 )
 
 from setup import setup
-from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
 
@@ -429,22 +428,6 @@ def generate_FV3LAM_wflow(
                 update_config=get_nml_config(settings),
             )
         # pylint: enable=undefined-variable
-    #
-    # If not running the TN_MAKE_GRID task (which implies the workflow will
-    # use pregenerated grid files), set the namelist variables specifying
-    # the paths to surface climatology files.  These files are located in
-    # (or have symlinks that point to them) in the FIXlam directory.
-    #
-    # Note that if running the TN_MAKE_GRID task, this action usually cannot
-    # be performed here but must be performed in that task because the names
-    # of the surface climatology files depend on the CRES parameter (which is
-    # the C-resolution of the grid), and this parameter is in most workflow
-    # configurations is not known until the grid is created.
-    #
-    if ( not expt_config['rocoto']['tasks'].get('task_make_grid') and
-         dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") ):
-        set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
-
     #
     # -----------------------------------------------------------------------
     #

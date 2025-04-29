@@ -106,6 +106,7 @@ climatology.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 ulimit -s unlimited
 #
 #-----------------------------------------------------------------------
@@ -193,29 +194,7 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-case "$GTYPE" in
 
-#
-# Consider, global, stetched, and nested grids.
-#
-"global" | "stretch" | "nested")
-#
-# Move all files ending with ".nc" to the SFC_CLIMO_DIR directory.
-# In the process, rename them so that the file names start with the C-
-# resolution (followed by an underscore).
-#
-  for fn in *.nc; do
-    if [[ -f $fn ]]; then
-      mv $fn ${SFC_CLIMO_DIR}/${CRES}_${fn}
-    fi
-  done
-  ;;
-
-#
-# Consider regional grids.
-#
-"regional")
-#
 # Move all files ending with ".halo.nc" (which are the files for a grid
 # that includes the specified non-zero-width halo) to the WORKDIR_SFC_-
 # CLIMO directory.  In the process, rename them so that the file names
@@ -241,9 +220,6 @@ case "$GTYPE" in
       mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0}.nc
     fi
   done
-  ;;
-
-esac
 #
 #-----------------------------------------------------------------------
 #

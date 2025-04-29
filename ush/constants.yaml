@@ -34,9 +34,6 @@ constants:
   # Therefore, we will set the constants to a regional, tile 7 with
   # these config options:
   #
-  # GTYPE:
-  # Grid type string, set to regional for SRW
-  #
   # TILE_RGNL: 7
   # Tile number set to 7 for a regional grid in SRW
   #
@@ -55,7 +52,6 @@ constants:
   #
   #-----------------------------------------------------------------------
   #
-  GTYPE: regional
   TILE_RGNL: 7
   NH0: 0
   NH3: 3
