@@ -64,7 +64,7 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
     regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
 
     # Set the suffix of the surface climatology files.
-    suffix = "tileX.nc"
+    suffix = "tile7.nc"
 
     # create yaml-compliant string
     settings = {}
@@ -85,7 +85,7 @@ def set_fv3nml_sfc_climo_filenames(config, debug=False):
 
         namsfc_dict[nml_var_name] = file_path
 
-    settings["namsfc_dict"] = namsfc_dict
+    settings["namsfc"] = namsfc_dict
     settings_str = cfg_to_yaml_str(settings)
 
     print_info_msg(
