@@ -140,7 +140,6 @@ sections=(
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
-set -x
 #
 #-----------------------------------------------------------------------
 #

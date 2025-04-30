@@ -13,27 +13,11 @@ from textwrap import dedent
 from python_utils import (
     cfg_to_yaml_str,
     check_var_valid_value,
-    flatten_dict,
-    import_vars,
     print_info_msg,
 )
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
 
-
-VERBOSE = os.environ.get("VERBOSE", "true")
-
-NEEDED_VARS = [
-    "CRES",
-    "DO_ENSEMBLE",
-    "EXPTDIR",
-    "FIXlam",
-    "PARMdir",
-    "RUN_ENVIR",
-    ]
-
-
-# pylint: disable=undefined-variable
 
 def set_fv3nml_sfc_climo_filenames(config, namelist, debug=False):
     """
@@ -45,17 +29,15 @@ def set_fv3nml_sfc_climo_filenames(config, namelist, debug=False):
     set by this function are relative or full paths to these links.
 
     Args:
-        config  (dict): Section of configuration file specifying surface climatology fields 
-                        (as a flattened dictionary)
+        config  (dict): Full experiment configuration from var_defns.yaml
         namelist (str): The namelist file to update
         debug   (bool): Enable extra output for debugging
     Returns:
         None
     """
 
-    import_vars(dictionary=config, env_vars=NEEDED_VARS)
-
-    fixed_cfg = get_yaml_config(os.path.join(PARMdir, "fixed_files_mapping.yaml"))["fixed_files"]
+    fixed_cfg = get_yaml_config(os.path.join(config['user']['PARMdir'],
+                                             "fixed_files_mapping.yaml"))["fixed_files"]
 
     # The regular expression regex_search set below will be used to extract
     # from the elements of the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING
@@ -69,21 +51,18 @@ def set_fv3nml_sfc_climo_filenames(config, namelist, debug=False):
     # create yaml-compliant string
     settings = {}
 
-    dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
-    if DO_ENSEMBLE == "TRUE":
-        dummy_run_dir += os.sep + "any_ensmem"
-
     namsfc_dict = {}
     for mapping in fixed_cfg["FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]:
         nml_var_name, sfc_climo_field_name = re.search(regex_search, mapping).groups()
 
         check_var_valid_value(sfc_climo_field_name, fixed_cfg["SFC_CLIMO_FIELDS"])
 
-        file_path = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
-        if RUN_ENVIR != "nco":
-            file_path = os.path.relpath(os.path.realpath(file_path), start=dummy_run_dir)
+        filepath = os.path.join(config['workflow']['FIXlam'],
+                                 f"{config['workflow']['CRES']}.{sfc_climo_field_name}.{suffix}")
+        if config['user']['RUN_ENVIR'] != "nco":
+            filepath = os.path.relpath(os.path.realpath(filepath), start=os.path.dirname(namelist))
 
-        namsfc_dict[nml_var_name] = file_path
+        namsfc_dict[nml_var_name] = filepath
 
     settings["namsfc"] = namsfc_dict
     settings_str = cfg_to_yaml_str(settings)
@@ -135,5 +114,4 @@ def _parse_args(argv):
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
     cfg = get_yaml_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
-    set_fv3nml_sfc_climo_filenames(cfg, args.debug)
+    set_fv3nml_sfc_climo_filenames(cfg, args.namelist, args.debug)
