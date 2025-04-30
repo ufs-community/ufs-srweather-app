@@ -9,7 +9,6 @@ import unittest
 
 from python_utils import (
     define_macos_utilities,
-    set_env_var,
     )
 from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 
@@ -17,12 +16,10 @@ class Testing(unittest.TestCase):
     """ Define the tests """
     def test_set_fv3nml_sfc_climo_filenames(self):
         """ Call the function and don't raise an Exception. """
-        set_fv3nml_sfc_climo_filenames(config=self.config)
+        set_fv3nml_sfc_climo_filenames(config=self.config, namelist=self.namelist)
 
     def setUp(self):
         define_macos_utilities()
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
         test_dir = os.path.dirname(os.path.abspath(__file__))
         USHdir = os.path.join(test_dir, "..", "..", "ush")
         PARMdir = os.path.join(USHdir, "..", "parm")
@@ -42,14 +39,16 @@ class Testing(unittest.TestCase):
             os.path.join(EXPTDIR, "input.nml"),
         )
         self.config = {
-            "CRES": "C3357",
-            "DO_ENSEMBLE": False,
-            "EXPTDIR": EXPTDIR,
-            "FIXlam": FIXlam,
-            "FV3_NML_FP": os.path.join(EXPTDIR, "input.nml"),
-            "PARMdir": PARMdir,
-            "RUN_ENVIR": "nco",
+            "workflow": {
+              "CRES": "C3357",
+              "FIXlam": FIXlam
+              },
+            "user": {
+              "PARMdir": PARMdir,
+              "RUN_ENVIR": "nco"
+              }
         }
+        self.namelist=os.path.join(EXPTDIR, "input.nml")
 
     def tearDown(self):
         self.tmp_dir.cleanup()
