@@ -7,12 +7,13 @@ import argparse
 import logging
 from pathlib import Path
 import datetime as dt
+import gzip
 from textwrap import dedent
 from pprint import pprint
 from math import ceil, floor
 import subprocess
 import retrieve_data
-from mrms_pull_topofhour import mrms_pull_topofhour
+from select_validtime_obs import select_validtime_obs
 
 from uwtools.api.config import get_yaml_config
 
@@ -386,28 +387,6 @@ def get_obs(config, obtype, yyyymmdd_task):
         accum_obs_formatted = f'{obs_avail_intvl_hrs:02d}'
     elif obtype == 'NOHRSC':
         accum_obs_formatted = f'{obs_avail_intvl_hrs:d}'
-
-    # For MRMS obs, set field-dependent parameters needed in forming grib2
-    # file names.
-    mrms_fields_in_obs_filenames = []
-    mrms_levels_in_obs_filenames = []
-    if obtype == 'MRMS':
-        for fg in field_groups_in_obs:
-            if fg == 'REFC':
-                mrms_fields_in_obs_filenames.append('MergedReflectivityQCComposite')
-                mrms_levels_in_obs_filenames.append('00.50')
-            elif fg == 'RETOP':
-                mrms_fields_in_obs_filenames.append('EchoTop')
-                mrms_levels_in_obs_filenames.append('18_00.50')
-            else:
-                msg = dedent(f"""
-                    Field and level names have not been specified for this {obtype} field
-                    group:
-                        {obtype = }
-                        {fg = }
-                    """)
-                logging.error(msg)
-                raise ValueError(msg)
 
     # CCPA files for 1-hour accumulation have incorrect metadata in the files
     # under the "00" directory from 20180718 to 20210504.  Set these starting
@@ -832,21 +811,35 @@ def get_obs(config, obtype, yyyymmdd_task):
                         # those that are nearest in time to the current hour.  Unzip these in a
                         # temporary subdirectory under the raw base directory.
                         #
-                        # Note that the function we call to do this (mrms_pull_topofhour) assumes
+                        # Note that the function we call to do this (select_validtime_obs) assumes
                         # a certain file naming convention.  That convention must match the names
                         # of the files that the retrieve_data.py script called above ends up
                         # retrieving.  The list of possible templates for these names is given
                         # in parm/data_locations.yml, but which of those is actually used is not
                         # known until retrieve_data.py completes.  Thus, that information needs
-                        # to be passed back by retrieve_data.py and then passed to mrms_pull_topofhour.
+                        # to be passed back by retrieve_data.py and then passed to select_validtime_obs.
                         # For now, we hard-code the file name here.
-                        if obtype == 'MRMS':
+                        if obtype in ['MRMS', 'GOESAOD', 'GOESADP']:
+                            # For MRMS obs, set field-dependent parameters needed in forming grib2
+                            # file names.
                             yyyymmddhh_str = dt.datetime.strftime(yyyymmddhh, '%Y%m%d%H')
-                            mrms_pull_topofhour(valid_time=yyyymmddhh_str,
+                            if fg == 'REFC':
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
                                                 source=basedir_raw,
                                                 outdir=os.path.join(basedir_raw, 'topofhour'),
-                                                product=mrms_fields_in_obs_filenames[i],
-                                                add_vdate_subdir=False)
+                                                product='MergedReflectivityQCComposite',
+                                                level='_00.50_')
+                            elif fg == 'RETOP':
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=basedir_raw,
+                                                outdir=os.path.join(basedir_raw, 'topofhour'),
+                                                product='EchoTop',
+                                                level='_18_00.50_')
+                            else:
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=basedir_raw,
+                                                outdir=os.path.join(basedir_raw, 'topofhour'),
+                                                product='OR_ABI-L2-AODF-M6_G16')
 
                         # The raw file name needs to be the same as what the retrieve_data.py
                         # script called above ends up retrieving.  The list of possible templates
@@ -861,8 +854,12 @@ def get_obs(config, obtype, yyyymmdd_task):
                         elif obtype == 'NOHRSC':
                             fn_raw = 'sfav2_CONUS_' + accum_obs_formatted + 'h_' + yyyymmddhh_str + '_grid184.grb2'
                         elif obtype == 'MRMS':
-                            fn_raw = f'{mrms_fields_in_obs_filenames[i]}_{mrms_levels_in_obs_filenames[i]}' \
-                                   + f'_{yyyymmdd_task_str}-{hr:02d}0000.grib2'
+                            #MRMS files are retrieved from HPSS archives as gzip files; need to unzip them
+                            with gzip.open(valid_file_name, 'rb') as f_in:
+                                with open(fn_raw:=valid_file_name.replace(".gz",""), 'wb') as f_out:
+                                    shutil.copyfileobj(f_in, f_out)
+#                            fn_raw = f'{mrms_fields_in_obs_filenames[i]}_{mrms_levels_in_obs_filenames[i]}' \
+#                                   + f'_{yyyymmdd_task_str}-{hr:02d}0000.grib2'
                             fn_raw = os.path.join('topofhour', fn_raw)
                         elif obtype == 'NDAS':
                             time_ago = yyyymmddhh_arcv - yyyymmddhh

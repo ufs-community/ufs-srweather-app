@@ -1,36 +1,23 @@
-import sys, os, shutil, subprocess
+import os, shutil
 import datetime
 import glob
 import argparse
 import bisect
-import shutil
-import gzip
 
-def mrms_pull_topofhour(valid_time, outdir, source, product, level=None, add_vdate_subdir=True, debug=False):
-    """Identifies the MRMS file closest to the valid time of the forecast. 
-    METplus is configured to look for a MRMS composite reflectivity file 
-    for the valid time of the forecast being verified; since MRMS composite 
-    reflectivity files do not always exactly match the valid time, this 
-    script is used to identify and rename the MRMS composite reflectivity 
-    file to match the valid time of the forecast. 
+def select_validtime_obs(valid_time, outdir, source, product, window=900, level='', debug=False):
+    """Identifies the observation file closest to the valid time of the forecast.
+    For observation types with irregular observation times (MRMS, GOES), obs
+    files do not always exactly match the valid time. This script is used to identify and rename
+    these files to match the valid time of the forecast.
 
     Returns:
-        None
+        string: The staged filename
         
     Raises: 
-        FileNotFoundError: If no valid file was found within 15 minutes of the valid 
+        FileNotFoundError: If no valid file was found within "window" seconds of the valid 
                            time of the forecast
 
     """
-
-    # Level is determined by MRMS product; set if not provided
-    if level is None:
-        if product == "MergedReflectivityQCComposite":
-            level = "_00.50_"
-        elif product == "EchoTop":
-            level = "_18_00.50_"
-        else:
-            raise Exception("This should never have happened")
 
     # Copy and unzip MRMS files that are closest to top of hour
     # Done every hour on a 20-minute lag
@@ -47,18 +34,13 @@ def mrms_pull_topofhour(valid_time, outdir, source, product, level=None, add_vda
 
     # Set up working directory
 
-    valid_str_or_empty = ''
-    if add_vdate_subdir:
-        valid_str_or_empty = valid_str
-
-    dest_dir = os.path.join(outdir, valid_str_or_empty)
-    if not os.path.exists(dest_dir):
-        os.makedirs(dest_dir)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
     # Sort list of files for each MRMS product
     if debug:
         print(f"Valid date: {valid_str}")
-    search_path = os.path.join(source, valid_str_or_empty, product + "*.gz")
+    search_path = os.path.join(source, product + "*.gz")
     file_list = [f for f in glob.glob(search_path)]
     if debug:
         print(f"Files found: \n{file_list}")
@@ -77,25 +59,23 @@ def mrms_pull_topofhour(valid_time, outdir, source, product, level=None, add_vda
         datetime_list[max(0, i - 1) : i + 2], key=lambda date: abs(valid - date)
     )
 
-    # Check to make sure closest file is within +/- 15 mins of top of the hour
+    # Check to make sure closest file is within +/- window seconds of top of the hour
     difference = abs(closest_timestamp - valid)
-    if difference.total_seconds() <= 900:
+    if difference.total_seconds() <= window:
         filename1 = f"{product}{level}{closest_timestamp.strftime('%Y%m%d-%H%M%S')}.grib2.gz"
-        filename2 = f"{product}{level}{valid.strftime('%Y%m%d-%H')}0000.grib2"
-        origfile = os.path.join(source, valid_str_or_empty, filename1)
-        target = os.path.join(dest_dir, filename2)
+        filename2 = f"{product}{level}{valid.strftime('%Y%m%d-%H')}0000.grib2.gz"
+        origfile = os.path.join(source, filename1)
+        target = os.path.join(outdir, filename2)
 
         if debug:
-            print(f"Unzipping file {origfile} to {target}")
-
+            print(f"Moving file {origfile} to {target}")
+        shutil.move(origfile,target)
         
-        # Unzip file to target location
-        with gzip.open(origfile, 'rb') as f_in:
-            with open(target, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
     else:
-        raise FileNotFoundError(f"Did not find a valid file within 15 minutes of {valid}")
- 
+        raise FileNotFoundError(f"Did not find a valid file within {window} seconds of {valid}")
+
+    return target
+
 if __name__ == "__main__":
     #Parse input arguments
     parser = argparse.ArgumentParser()
@@ -107,13 +87,13 @@ if __name__ == "__main__":
                         help='Source directory where zipped MRMS data is found')
     parser.add_argument('-p', '--product', type=str, required=True, choices=['MergedReflectivityQCComposite', 'EchoTop'],
                         help='Name of MRMS product')
-    parser.add_argument('-l', '--level', type=str, help='MRMS product level',
-                        choices=['_00.50_','_18_00.50_'])
-    parser.add_argument('--add_vdate_subdir', default=True, required=False, action=argparse.BooleanOptionalAction,
-                        help='Flag to add valid-date subdirectory to source and destination directories')
+    parser.add_argument('-w', '--window', type=int, help='Time in seconds to check for obs file +/- the valid time',
+                        default=900)
+    parser.add_argument('-l', '--level', type=str, help='MRMS product level')
     parser.add_argument('-d', '--debug', action='store_true', help='Add additional debug output')
     args = parser.parse_args()
 
     #Consistency checks
 
-    mrms_pull_topofhour(**vars(args))
+    staged_file = mrms_pull_topofhour(**vars(args))
+    print (f'Staged file: {staged_file}')
