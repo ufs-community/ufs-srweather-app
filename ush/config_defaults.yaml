@@ -1974,6 +1974,8 @@ task_integration_test:
       walltime: 00:05:00
       nodes: 1
       tasks_per_node: 1
+  envvars:
+    TEST_UFS_FIRE: false
 
 #-----------------------------
 # RUN PRDGEN config parameters

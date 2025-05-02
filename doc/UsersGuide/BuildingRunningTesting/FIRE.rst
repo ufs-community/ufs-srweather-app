@@ -245,11 +245,11 @@ Run the WE2E tests:
 .. code-block:: console
 
    $ cd /path/to/ufs-srweather-app/tests/WE2E
-   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q -t fire
+   $ ./run_we2e_tests.py -t my_tests.txt -m <MACHINE> -a <account> -q -t fire
 
 You can also run each test individually if needed:
 
 .. code-block:: console
 
-   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q -t UFS_FIRE_one-way-coupled
-   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q -t UFS_FIRE_multifire_two-way-coupled
+   $ ./run_we2e_tests.py -t my_tests.txt -m <MACHINE> -a <account> -q -t UFS_FIRE_one-way-coupled
+   $ ./run_we2e_tests.py -t my_tests.txt -m <MACHINE> -a <account> -q -t UFS_FIRE_multifire_two-way-coupled
