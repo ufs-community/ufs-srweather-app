@@ -1075,6 +1075,9 @@ These parameters set values in the Weather Model's ``model_configure`` file.
    Variable denoting the number of write tasks in the ``i`` direction in the current group. Used for inline post 2D decomposition. Setting this variable to a value greater than 1 will enable 2D decomposition.
    Note that 2D decomposition does not yet work with GNU compilers, so this value will be reset to 1 automatically when using GNU compilers (i.e., when ``COMPILER: gnu``).
 
+``HISTORY_NATIVE_GRID``: (Default: ``false``)
+If ``true``, write history files on the native FV3 cubed sphere grid. Note, this will override the output grid to ``cubed_sphere_grid`` when ``true`` which may break post-processing tasks.
+
 .. _CompParams:
 
 Computational Parameters
@@ -1173,7 +1176,7 @@ Write-Component (Quilting) Parameters
    Grid cell size (in meters) along the x-axis of the Lambert conformal projection.
 
 ``WRTCMP_dy``: (Default: "")
-   Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
+   Grid cell size (in meters) along the y-axis of the Lambert conformal projection.
 
 Aerosol Climatology Parameter
 ---------------------------------
@@ -1501,13 +1504,13 @@ Parameters for Stochastically Perturbed Parameterizations (SPP)
 SPP perturbs specific tuning parameters within a physics :term:`parameterization <parameterizations>` (unlike :ref:`SPPT <SPPT>`, which multiplies overall physics tendencies by a random perturbation field *after* the call to the physics suite). Patterns evolve and are applied at each time step. Each SPP option is an array, applicable (in order) to the :term:`RAP`/:term:`HRRR`-based parameterization listed in ``SPP_VAR_LIST``. Enter each value of the array in ``config.yaml`` as shown below without commas or single quotes (e.g., ``SPP_VAR_LIST: [ "pbl" "sfc" "mp" "rad" "gwd" ]`` ). Both commas and single quotes will be added by Jinja when creating the namelist.
 
 .. note::
-   SPP is currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which :term:`SDF` is chosen when turning this option on. Of the five supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` option for ``CCPP_PHYS_SUITE``.
+   SPP is currently only available for specific physics schemes: MYNN-EDMF (pbl), MYNN SFC (sfc), Thompson Microphysics (mp), RRTMG (rad), GFS gravity wave drag (gwd) and Grell-Freidas cumulus parameterization (cu_deep). Users need to be aware of which physics suite definition file (:term:`SDF`) is chosen when turning this option on. If SPP perturbations for a given parameterization are not possible with the selected suite, that SPP option will be deactivated. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR``, ``FV3_HRRR_gf``, ``FV3_RAP``, and ``RRFS_sas`` options for ``CCPP_PHYS_SUITE``.
 
 ``DO_SPP``: (Default: false)
    Flag to turn SPP on or off. SPP perturbs parameters or variables with unknown or uncertain magnitudes within the physics code based on ranges provided by physics experts. Valid values: ``True`` | ``False``
 
 ``SPP_VAR_LIST``: (Default: [ "pbl", "sfc", "mp", "rad", "gwd" ] )
-   The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: ``"pbl"`` | ``"sfc"`` | ``"rad"`` | ``"gwd"`` | ``"mp"``
+   The list of parameterizations to perturb: planetary boundary layer (PBL), surface physics (SFC), microphysics (MP), radiation (RAD), gravity wave drag (GWD). Valid values: ``"pbl"`` | ``"sfc"`` | ``"rad"`` | ``"gwd"`` | ``"mp"`` | ``"cu_deep"``
 
 ``SPP_MAG_LIST``: (Default: [ 0.2, 0.2, 0.75, 0.2, 0.2 ] ) 
    SPP perturbation magnitudes used in each parameterization. Corresponds to the variable ``spp_prt_list`` in ``input.nml``

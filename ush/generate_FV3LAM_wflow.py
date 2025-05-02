@@ -302,7 +302,9 @@ def generate_FV3LAM_wflow(
         #
         # -----------------------------------------------------------------------
         #
-        setup_fv3_namelist(expt_config,debug)
+        if ( dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") or
+           dict_find(expt_config["rocoto"]["tasks"], "task_make_grid") ):
+            setup_fv3_namelist(expt_config,debug)
 
         #
         # -----------------------------------------------------------------------
@@ -319,15 +321,15 @@ def generate_FV3LAM_wflow(
         import_vars(dictionary=expt_config["global"])
         # pylint: disable=undefined-variable
         settings = {}
+        n_var_lndp = len(LSM_SPP_VAR_LIST) if DO_LSM_SPP else 0
         settings["gfs_physics_nml"] = {
             "do_shum": DO_SHUM,
             "do_sppt": DO_SPPT,
             "do_skeb": DO_SKEB,
             "do_spp": DO_SPP,
             "n_var_spp": N_VAR_SPP,
-            "n_var_lndp": N_VAR_LNDP,
+            "n_var_lndp": n_var_lndp,
             "lndp_type": LNDP_TYPE,
-            "fhcyc": FHCYC_LSM_SPP_OR_NOT,
         }
         nam_stochy_dict = {}
         if DO_SPPT:
@@ -706,6 +708,7 @@ def setup_fv3_namelist(expt_config,debug):
         gfs_physics_nml_dict.update(
             {
                 "ebb_dcycle": expt_config["smoke_dust_parm"]["EBB_DCYCLE"],
+                "dust_opt": expt_config["smoke_dust_parm"]["DUST_OPTION"],
                 "rrfs_sd": True,
             }
         )

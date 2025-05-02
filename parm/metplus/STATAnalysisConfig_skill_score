@@ -9,7 +9,7 @@
 //
 // Filtering input STAT lines by the contents of each column
 //
-model = ["FV3_WoFS_v0_SUBCONUS_3km_test_mem000", "FV3_GFS_v16_SUBCONUS_3km"];
+model = ["FV3_WoFS_v0_SUBCONUS_3km_test_mem000", "FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000"];
 
 fcst_lead = [ "6", "12",
               "6", "12",
