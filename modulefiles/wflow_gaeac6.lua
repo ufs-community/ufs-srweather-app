@@ -6,7 +6,7 @@ the NOAA RDHPC machine Gaea C6
 whatis([===[Loads libraries needed for running the UFS SRW App on gaea c6 ]===])
 
 unload("python")
-prepend_path("MODULEPATH","/ncrc/proj/epic/rocoto/modulefiles/")
+prepend_path("MODULEPATH","/ncrc/proj/epic/c6/modulefiles/")
 load("rocoto")
 load("conda")
 
