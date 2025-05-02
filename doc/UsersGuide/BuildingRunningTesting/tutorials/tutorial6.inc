@@ -571,7 +571,7 @@ By f024, or 6pm CT on January 21, most people had enjoyed a snow day --- possibl
 
           *Mardi Gras snowman (by @davidnola on Instagram)*
 
-The SRW App plots show that by f024f (6 PM local time), temperatures were predicted to warm slightly over the course of the day before taking a plunge overnight. Winds were predicted to move eastward and calm somewhat. Composite reflectivity plots show that the snow was anticipated to move eastward and calm over the New Orleans area with fewer high-energy orangey-red areas. At this point, SRW App forecast shows less than two inches of accumulated precipitation --- a lot for New Orleans area but still significantly less than the observed precipitation. 
+The SRW App plots show that by f024f (6 PM local time), temperatures were predicted to warm slightly over the course of the day before taking a plunge overnight. Winds were predicted to move eastward and calm somewhat. Composite reflectivity plots show that the snow was anticipated to move eastward and calm over the New Orleans area with fewer high-energy orangey-red areas. At this point, the SRW App forecast shows less than two inches of accumulated precipitation, but note that this is the liquid water equivalent. Depending on the type of snow, the snow liquid ratio (SLR) can be as low as 5:1 in warmer temperatures with very wet snow to 20:1 for dry, powdery snow in colder temperatures. More information would be needed to assess quantitatively how accurate the forecast is, but an SLR of 10:1 can be used as a general rule of thumb (https://www.weather.gov/arx/why_snowratios).  
 
 .. list-table:: Conditions at f024 (2025-01-22 0z)
    :widths: 25 25 25 25
@@ -637,7 +637,7 @@ Like the NWS, the SRW App predicted a drop in temperatures overnight. Plots show
      - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_gradient.png
           :align: center
 
-While this generally corresponds with how the storm unfolded, this forecast significantly underpredicted snow accumulation. 
+This generally corresponds with how the storm unfolded, and the accumulated precipitation falls within a reasonable range --- presuming an average SLR of 10:1, the 0.5-1 in of accumulated precipitation in most of the area aligns with the 8 in. of snow seen in New Orleans.  
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/gcb_total_snow.png
    :align: center
