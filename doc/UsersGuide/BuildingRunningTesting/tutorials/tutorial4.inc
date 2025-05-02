@@ -478,7 +478,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
          
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
-For additional configuration guidance, refer to the |latestr| release documentation on :ref:`configuring the SRW App <srw_v2.2.0:UserSpecificConfig>`.
+For additional configuration guidance, refer to the |latestr| release documentation on :ref:`configuring the SRW App <srw_v3.0.0:UserSpecificConfig>`.
 
 Generate the Experiment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
