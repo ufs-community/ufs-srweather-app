@@ -328,7 +328,7 @@ intersphinx_mapping = {
    'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/latest/', None),
    'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
    'stochphys': ('https://stochastic-physics.readthedocs.io/en/latest/', None),
-   'srw_v2.2.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.2.0/', None),
+   'srw_v3.0.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v3.0.0/', None),
 }
 
 # -- Options for extlinks extension ---------------------------------------
