@@ -40,7 +40,7 @@ fire:
     FIRE_INPUT_DIR: '{{ platform.WE2E_TEST_DATA }}/UFS_FIRE/{{ workflow.DATE_FIRST_CYCL }}'
   FIRE_NUM_TASKS: 1
   DT_FIRE: 0.5
-  OUTPUT_DT_FIRE: 300
+  OUTPUT_DT_FIRE: 600
   FIRE_NUM_IGNITIONS: 2
   FIRE_IGNITION_ROS:
     - 0.05
@@ -78,3 +78,6 @@ task_run_fcst:
     execution:
       batchargs:
         walltime: 01:00:00
+task_integration_test:
+  envvars:
+    TEST_UFS_FIRE: true

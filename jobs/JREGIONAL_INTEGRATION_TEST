@@ -38,6 +38,7 @@ sections=(
   user
   nco
   workflow
+  task_integration_test.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
@@ -77,7 +78,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the plotting task
+This is the J-job script for the regional integration test task
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -98,9 +99,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+if [ "${TEST_UFS_FIRE}" = "True" ]; then
+  TEST_UFS_FIRE_FLAG="--test_ufs_fire"
+else
+  TEST_UFS_FIRE_FLAG=""
+fi
 $SCRIPTSdir/exregional_integration_test.py \
            --fcst_dir=$fcst_dir \
-           --fcst_len=${FCST_LEN_HRS} || \
+           --fcst_len=${FCST_LEN_HRS} \
+           "${TEST_UFS_FIRE_FLAG}" || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

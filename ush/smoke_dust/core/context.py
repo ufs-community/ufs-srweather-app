@@ -191,6 +191,12 @@ class SmokeDustContext(BaseModel):
     def _finalize_model_(self) -> "SmokeDustContext":
         self._logger = self._init_logging_()
 
+        if self.ebb_dcycle == EbbDCycle.TWO:
+            if not self.persistence:
+                raise ValueError(f"{self.ebb_dcycle=} does not support {self.persistence=}")
+            msg = f"{self.ebb_dcycle=} is considered experimental in the SRW"
+            self.log(msg, level=logging.WARN)
+
         with open_nc(self.grid_out, parallel=False) as nc_ds:
             # pylint: disable=unsubscriptable-object
             self.grid_out_shape = (

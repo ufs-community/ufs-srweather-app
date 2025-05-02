@@ -5,19 +5,20 @@ Read in the configuration YAMLs and prepare a self-consistent
 experiment configuration file.
 """
 
-# pylint: disable=too-many-lines
-
+# pylint: disable=too-many-lines, too-many-branches, logging-fstring-interpolation
 
 import datetime
 import logging
 import os
 import re
 import sys
-from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from textwrap import dedent
 
+
+from uwtools.api.config import get_ini_config, get_yaml_config, validate
+from uwtools.api.template import render
 
 from link_fix import link_fix
 from python_utils import (
@@ -36,9 +37,6 @@ from set_cycle_and_obs_timeinfo import (
 )
 from set_predef_grid_params import set_predef_grid_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
-
-from uwtools.api.config import get_ini_config, get_yaml_config, validate
-from uwtools.api.template import render
 
 
 def load_config_for_setup(ushdir, default_config_path, user_config_path):
@@ -128,12 +126,6 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     homedir = Path(__file__).parent.parent.resolve()
     default_config["user"]["HOMEdir"] = str(homedir)
 
-    # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
-    expt_basedir = default_config["workflow"]["EXPT_BASEDIR"]
-    if (not expt_basedir) or (expt_basedir[0] != "/"):
-        expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
-    default_config["workflow"]["EXPT_BASEDIR"] = str(Path(expt_basedir).resolve())
-
     # Expand out the workflow tasks now that all settings have been applied
     taskgroups = default_config["workflow"]["taskgroups"]
     default_config["rocoto"]["tasks"] = {}
@@ -145,6 +137,14 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     # Update one more time in case there are user or machine settings to override the tasks
     for cfg in (machine_config, user_config):
         default_config.update_from(cfg)
+
+    # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
+    expt_basedir = default_config["workflow"]["EXPT_BASEDIR"]
+    if not expt_basedir:
+        expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
+    elif expt_basedir[0] != "/":
+        expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
+    default_config["workflow"]["EXPT_BASEDIR"] = str(Path(expt_basedir).resolve())
 
     # Dereference all Jinja expressions
     default_config.dereference(
@@ -228,7 +228,7 @@ def set_srw_paths(expt_config):
 
 
 def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
-    # pylint: disable=too-many-branches, too-many-statements
+    # pylint: disable=too-many-statements
     """Validates user-provided configuration settings and derives
     a secondary set of parameters needed to configure a Rocoto-based SRW App
     workflow. The secondary parameters are derived from a set of required
@@ -491,7 +491,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         rocoto_config["cycledef"].append({
             "attrs": {"group": "cycled_from_second"},
-            "spec": f"{date_second_cycle.strftime('%Y%m%d%H%S')} {date_last_cycl}00 {incr_cycl_freq}",
+            "spec": f"{date_second_cycle.strftime('%Y%m%d%H%S')} {date_last_cycl}00 {incr_cycl_freq}", # pylint: disable=line-too-long
             })
     #
     # -----------------------------------------------------------------------
@@ -568,19 +568,19 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
             obs_days_all_cycles["inst"]
         )
         for spec in cycledefs_obs_days_inst:
-             rocoto_config["cycledef"].append({
-                 "attrs": {"group": "cycledefs_obs_days_inst"},
-                 "spec": spec,
-                 })
+            rocoto_config["cycledef"].append({
+                "attrs": {"group": "cycledefs_obs_days_inst"},
+                "spec": spec,
+                })
 
         cycledefs_obs_days_cumul = set_rocoto_cycledefs_for_obs_days(
             obs_days_all_cycles["cumul"]
         )
         for spec in cycledefs_obs_days_cumul:
-             rocoto_config["cycledef"].append({
-                 "attrs": {"group": "cycledefs_obs_days_cumul"},
-                 "spec": spec,
-                 })
+            rocoto_config["cycledef"].append({
+                "attrs": {"group": "cycledefs_obs_days_cumul"},
+                "spec": spec,
+                })
         #
         # -----------------------------------------------------------------------
         #
@@ -1026,119 +1026,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         if not isinstance(fcst_config["envvars"]["DT_ATMOS"], int):
             raise ValueError(msg.format(val="envvars.DT_ATMOS"))
 
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
-        # being used. This is required at the moment, since "do_shum/sppt/skeb"
-        # does not override the use of the scheme unless the magnitude is also
-        # specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
-        # "false," then none will run, regardless of the magnitude values.
-        #
-        # -----------------------------------------------------------------------
-        #
-        if not global_sect.get("DO_SHUM"):
-            global_sect["SHUM_MAG"] = -999.0
-        if not global_sect.get("DO_SKEB"):
-            global_sect["SKEB_MAG"] = -999.0
-        if not global_sect.get("DO_SPPT"):
-            global_sect["SPPT_MAG"] = -999.0
-        #
-        # -----------------------------------------------------------------------
-        #
-        # If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or
-        # RRTMG, count the number of entries in SPP_VAR_LIST to correctly set
-        # N_VAR_SPP, otherwise set it to zero.
-        #
-        # -----------------------------------------------------------------------
-        #
-        if global_sect["DO_SPP"]:
-            global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
-        else:
-            global_sect["N_VAR_SPP"] = 0
-        #
-        # -----------------------------------------------------------------------
-        #
-        # If running with SPP, confirm that each SPP-related namelist value
-        # contains the same number of entries as N_VAR_SPP (set above to be equal
-        # to the number of entries in SPP_VAR_LIST).
-        #
-        # -----------------------------------------------------------------------
-        #
-        spp_vars = [
-            "SPP_MAG_LIST",
-            "SPP_LSCALE",
-            "SPP_TSCALE",
-            "SPP_SIGTOP1",
-            "SPP_SIGTOP2",
-            "SPP_STDDEV_CUTOFF",
-            "ISEED_SPP",
-        ]
-
-        if global_sect["DO_SPP"]:
-            for spp_var in spp_vars:
-                if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
-                    raise ValueError(
-                        f"""
-                        All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                        variables must be of equal length to SPP_VAR_LIST:
-                          SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
-                          {spp_var} (length {len(global_sect[spp_var])})
-                        """
-                    )
-        #
-        # -----------------------------------------------------------------------
-        #
-        # If running with Noah or RUC-LSM SPP, count the number of entries in
-        # LSM_SPP_VAR_LIST to correctly set N_VAR_LNDP, otherwise set it to zero.
-        # Also set LNDP_TYPE to 2 for LSM SPP, otherwise set it to zero.  Finally,
-        # initialize an "FHCYC_LSM_SPP" variable to 0 and set it to 999 if LSM SPP
-        # is turned on.  This requirement is necessary since LSM SPP cannot run with
-        # FHCYC=0 at the moment, but FHCYC cannot be set to anything less than the
-        # length of the forecast either.  A bug fix will be submitted to
-        # ufs-weather-model soon, at which point, this requirement can be removed
-        # from regional_workflow.
-        #
-        # -----------------------------------------------------------------------
-        #
-        if global_sect["DO_LSM_SPP"]:
-            global_sect["N_VAR_LNDP"] = len(global_sect["LSM_SPP_VAR_LIST"])
-            global_sect["LNDP_TYPE"] = 2
-            global_sect["LNDP_MODEL_TYPE"] = 2
-            global_sect["FHCYC_LSM_SPP_OR_NOT"] = 999
-        else:
-            global_sect["N_VAR_LNDP"] = 0
-            global_sect["LNDP_TYPE"] = 0
-            global_sect["LNDP_MODEL_TYPE"] = 0
-            global_sect["FHCYC_LSM_SPP_OR_NOT"] = 0
-        #
-        # -----------------------------------------------------------------------
-        #
-        # If running with LSM SPP, confirm that each LSM SPP-related namelist
-        # value contains the same number of entries as N_VAR_LNDP (set above to
-        # be equal to the number of entries in LSM_SPP_VAR_LIST).
-        #
-        # -----------------------------------------------------------------------
-        #
-        lsm_spp_vars = [
-            "LSM_SPP_MAG_LIST",
-            "LSM_SPP_LSCALE",
-            "LSM_SPP_TSCALE",
-        ]
-        if global_sect["DO_LSM_SPP"]:
-            for lsm_spp_var in lsm_spp_vars:
-                if len(global_sect[lsm_spp_var]) != global_sect["N_VAR_LNDP"]:
-                    raise ValueError(
-                        f"""
-                        All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                        variables must be of equal length to SPP_VAR_LIST:
-                        All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
-                        must be equal of equal length to LSM_SPP_VAR_LIST:
-                          LSM_SPP_VAR_LIST (length {global_sect['N_VAR_LNDP']})
-                          {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
-                          """
-                    )
-
         # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
         # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
         # array of forecast hours at which the boundary values will be updated.
@@ -1237,7 +1124,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
     if not post_output_domain_name:
         if not predef_grid_name and run_run_post:
-            raise Exception(
+            raise ValueError(
                 f"""
                 The domain name used in naming the run_post output files
                 (POST_OUTPUT_DOMAIN_NAME) has not been set:
@@ -1483,128 +1370,273 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    ccpp_suite_xml = load_xml_file(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"])
+    if run_run_fcst or run_make_grid: # pylint: disable=too-many-nested-blocks
+        ccpp_suite_xml = load_xml_file(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"])
 
-    # Need to track if we are using RUC LSM for the make_ics step
-    workflow_config["SDF_USES_RUC_LSM"] = has_tag_with_value(
-        ccpp_suite_xml, "scheme", "lsm_ruc"
-    )
+        # For SPP stochastic physics, perturbations can only be applied with certain CCPP schemes:
+        # MYNN PBL (pbl), MYNN SFC (sfc), Thompson MP (mp), RRTMG (rad), GSL GWD (gwd), and
+        # GF (cu_deep).
+        # Here we ensure that the specified schemes are available, and warn/fail if not as needed.
+        # This loop also serves to check for invalid values in SPP_VAR_LIST
 
-    # Thompson microphysics needs additional input files and namelist settings
-    workflow_config["SDF_USES_THOMPSON_MP"] = has_tag_with_value(
-        ccpp_suite_xml, "scheme", "mp_thompson"
-    )
+        spp_arrays = [
+            "SPP_MAG_LIST",
+            "SPP_LSCALE",
+            "SPP_TSCALE",
+            "SPP_SIGTOP1",
+            "SPP_SIGTOP2",
+            "SPP_STDDEV_CUTOFF",
+            "ISEED_SPP",
+        ]
 
-    if workflow_config["SDF_USES_THOMPSON_MP"]:
+        if global_sect.get("DO_SPP"):
+            spp_valid_dict = {
+                             'pbl': ['mynnedmf_wrapper'],
+                             'sfc': ['mynnsfc_wrapper'],
+                             'mp':  ['mp_thompson'],
+                             'rad': ['rrtmg_sw', 'rrtmg_lw'],
+                             'gwd': ['drag_suite'],
+                             'cu_deep': ['cu_gf_driver'],
+                             }
+            for spp_var in global_sect["SPP_VAR_LIST"]:
+                if spp_var not in spp_valid_dict:
+                    msg = "Invalid SPP variable specified: {spp_var}\n"
+                    msg += "Valid variables are: {spp_valid_dict.keys()}"
+                    raise ValueError(msg)
 
-        logger.debug(f"Selected CCPP suite ({ccpp_physics_suite}) uses Thompson MP")
-        logger.debug("Setting up links for additional fix files")
+            for key, value in spp_valid_dict.items():
+                if key in global_sect["SPP_VAR_LIST"]:
+                    if all(not has_tag_with_value(ccpp_suite_xml, "scheme", x) for x in value):
+                        logger.warning(f"Selected CCPP suite ({ccpp_physics_suite})\n"\
+                                       f"Does not have required scheme(s) {value}\n"\
+                                       f"for {key} in SPP_VAR_LIST; removing {key}"\
+                                         "and associated scaling factors")
+                        index = global_sect["SPP_VAR_LIST"].index(key)
+                        global_sect["SPP_VAR_LIST"].pop(index)
+                        logging.debug("New scaling factor arrays:")
+                        for array in spp_arrays:
+                            global_sect[array].pop(index)
+                            logging.debug(f"{array}={global_sect[array]}")
 
-        # If the model ICs or BCs are not from RAP or HRRR, they will not contain aerosol
-        # climatology data needed by the Thompson scheme, so we need to provide a separate file
-        if get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in [
-            "HRRR",
-            "RRFS",
-            "RAP",
-        ] or get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RRFS", "RAP"]:
-            fixed_files["THOMPSON_FIX_FILES"].append(
-                workflow_config["THOMPSON_MP_CLIMO_FN"]
-            )
+            if len(global_sect["SPP_VAR_LIST"]) == 0:
+                msg = "SPP_VAR_LIST is empty and DO_SPP = True\n"
+                msg += "Check your settings of CCPP_PHYS_SUITE and SPP_VAR_LIST"
+                raise ValueError(msg)
 
-        # Add thompson-specific fix files to CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING and
-        # FIXgsm_FILES_TO_COPY_TO_FIXam; see
-        # parm/fixed_files_mapping.yaml for more info on these variables
+        if global_sect.get("DO_LSM_SPP"):
+            lsm_spp_valid = ["lsm_ruc", "lsm_noah"]
+            if all(not has_tag_with_value(ccpp_suite_xml, "scheme", x) for x in lsm_spp_valid):
+                msg = ( f"Selected CCPP suite ({workflow_config['CCPP_PHYS_SUITE']})\n"
+                         "Does not have a supported surface scheme\n"
+                         "Valid surface schemes are: {lsm_spp_valid}" )
+                raise ValueError(msg)
 
-        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(
-            fixed_files["THOMPSON_FIX_FILES"]
+        # If running with Noah or RUC-LSM SPP, set LNDP_TYPE to 2, otherwise set it to zero.
+        if global_sect["DO_LSM_SPP"]:
+            global_sect["LNDP_TYPE"] = 2
+            global_sect["LNDP_MODEL_TYPE"] = 2
+        else:
+            global_sect["LNDP_TYPE"] = 0
+            global_sect["LNDP_MODEL_TYPE"] = 0
+
+        #
+        # -----------------------------------------------------------------------
+        #
+        # If running with LSM SPP, confirm that each LSM SPP-related namelist
+        # value contains the same number of entries as LSM_SPP_VAR_LIST
+        #
+        # -----------------------------------------------------------------------
+        #
+        lsm_spp_arrays = [
+            "LSM_SPP_MAG_LIST",
+            "LSM_SPP_LSCALE",
+            "LSM_SPP_TSCALE",
+        ]
+        if global_sect["DO_LSM_SPP"]:
+            if len(global_sect["LSM_SPP_VAR_LIST"]) > 5:
+                raise ValueError(f"Too many LSM_SPP variables selected:\n"\
+                                 f"({global_sect['LSM_SPP_VAR_LIST']=}),\n"\
+                                  "Choose a subset of 5 or fewer valid variables.")
+
+            for lsm_spp_var in lsm_spp_arrays:
+                if len(global_sect[lsm_spp_var]) != len(global_sect["LSM_SPP_VAR_LIST"]):
+                    raise ValueError(
+                        f"""
+                        All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
+                        must be of equal length to LSM_SPP_VAR_LIST; found mismatch:
+                          LSM_SPP_VAR_LIST = {global_sect["LSM_SPP_VAR_LIST"]}
+                          {lsm_spp_var} = {global_sect[lsm_spp_var]}
+                          """
+                    )
+
+
+
+
+
+
+
+
+        #
+        # -----------------------------------------------------------------------
+        #
+        # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
+        # being used. This is required at the moment, since "do_shum/sppt/skeb"
+        # does not override the use of the scheme unless the magnitude is also
+        # specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
+        # "false," then none will run, regardless of the magnitude values.
+        #
+        # -----------------------------------------------------------------------
+        #
+        if not global_sect.get("DO_SHUM"):
+            global_sect["SHUM_MAG"] = -999.0
+        if not global_sect.get("DO_SKEB"):
+            global_sect["SKEB_MAG"] = -999.0
+        if not global_sect.get("DO_SPPT"):
+            global_sect["SPPT_MAG"] = -999.0
+        #
+        # -----------------------------------------------------------------------
+        #
+        # If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or
+        # RRTMG, count the number of entries in SPP_VAR_LIST to correctly set
+        # N_VAR_SPP, otherwise set it to zero.
+        #
+        # -----------------------------------------------------------------------
+        #
+        if global_sect["DO_SPP"]:
+            global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
+        else:
+            global_sect["N_VAR_SPP"] = 0
+
+        # Confirm that each SPP-related namelist value contains the same number of entries as
+        # N_VAR_SPP (set above to be equal to the number of entries in SPP_VAR_LIST).
+
+        if global_sect["DO_SPP"]:
+            for spp_var in spp_arrays:
+                if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
+                    raise ValueError(
+                        f"""
+                        All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                        variables must be of equal length to SPP_VAR_LIST:
+                          SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
+                          {spp_var} (length {len(global_sect[spp_var])})
+                        """
+                    )
+
+        # Need to track if we are using RUC LSM for the make_ics step
+        workflow_config["SDF_USES_RUC_LSM"] = has_tag_with_value(
+            ccpp_suite_xml, "scheme", "lsm_ruc"
         )
 
-        for fix_file in fixed_files["THOMPSON_FIX_FILES"]:
-            fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(
-                f"{fix_file} | {fix_file}"
-            )
-
-        logger.debug(
-            f'New fix file list:\n{fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"]=}'
-        )
-        logger.debug(
-            f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}'
+        # Thompson microphysics needs additional input files and namelist settings
+        workflow_config["SDF_USES_THOMPSON_MP"] = has_tag_with_value(
+            ccpp_suite_xml, "scheme", "mp_thompson"
         )
 
-    # -----------------------------------------------------------------------
-    #
-    # Check that UFS FIRE settings are correct and consistent
-    #
-    # -----------------------------------------------------------------------
-    fire_conf = expt_config["fire"]
-    fire_conf_vars = fire_conf["envvars"]
-    if fire_conf_vars["UFS_FIRE"]:
-        if build_config["Application"] != "ATMF":
-            raise ValueError(
-                ("UFS_FIRE == True but UFS SRW has not been built for fire coupling;",
-                "see users guide for details")
-            )
-        fire_input_file = Path(fire_conf_vars["FIRE_INPUT_DIR"], "geo_em.d01.nc")
-        if not Path(fire_input_file).is_file():
-            raise FileNotFoundError(
-                dedent(
-                    f"""
-                The fire input file (geo_em.d01.nc) does not exist in the specified directory:
-                {fire_conf["FIRE_INPUT_DIR"]}
-                Check that the specified path is correct, and that the file exists and is readable
-                """
+        if workflow_config["SDF_USES_THOMPSON_MP"]:
+
+            logger.debug(f"Selected CCPP suite ({ccpp_physics_suite}) uses Thompson MP")
+            logger.debug("Setting up links for additional fix files")
+
+            # If the model ICs or BCs are not from RAP or HRRR, they will not contain aerosol
+            # climatology data needed by the Thompson scheme, so we need to provide a separate file
+            if get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in [
+                "HRRR",
+                "RRFS",
+                "RAP",
+            ] or get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RRFS", "RAP"]:
+                fixed_files["THOMPSON_FIX_FILES"].append(
+                    workflow_config["THOMPSON_MP_CLIMO_FN"]
                 )
+
+            # Add thompson-specific fix files to CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING and
+            # FIXgsm_FILES_TO_COPY_TO_FIXam; see
+            # parm/fixed_files_mapping.yaml for more info on these variables
+
+            fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(
+                fixed_files["THOMPSON_FIX_FILES"]
             )
-        # CCPP suite must have these schemes to work correctly with fire capability
-        if not ( has_tag_with_value(ccpp_suite_xml, "scheme", "rrfs_smoke_wrapper") and
-                 has_tag_with_value(ccpp_suite_xml, "scheme", "GFS_surface_composites_post") ):
-            raise ValueError(dedent(
-                  """
-                  UFS_FIRE can only work with smoke-enabled CCPP suites, including
-                  FV3_HRRR, FV3_HRRR_gf, and RRFS_sas""" ))
-        if fire_conf["FIRE_NUM_TASKS"] < 1:
-            raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
-        if fire_conf["FIRE_NUM_TASKS"] > 1:
-            raise ValueError("FIRE_NUM_TASKS > 1 not yet supported")
 
-        if fire_conf["FIRE_NUM_IGNITIONS"] > 5:
-            raise ValueError("Only 5 or fewer fire ignitions supported")
+            for fix_file in fixed_files["THOMPSON_FIX_FILES"]:
+                fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(
+                    f"{fix_file} | {fix_file}"
+                )
 
-        if fire_conf["FIRE_NUM_IGNITIONS"] > 1:
-            # These settings all need to be lists for multiple fire ignitions
-            each_fire = [
-                "FIRE_IGNITION_ROS",
-                "FIRE_IGNITION_START_LAT",
-                "FIRE_IGNITION_START_LON",
-                "FIRE_IGNITION_END_LAT",
-                "FIRE_IGNITION_END_LON",
-                "FIRE_IGNITION_RADIUS",
-                "FIRE_IGNITION_START_TIME",
-                "FIRE_IGNITION_END_TIME",
-            ]
-            for setting in each_fire:
-                if not isinstance(fire_conf[setting], list):
-                    logger.critical(f"{fire_conf['FIRE_NUM_IGNITIONS']=}")
-                    logger.critical(f"{fire_conf[setting]=}")
-                    raise ValueError(
-                        f"For FIRE_NUM_IGNITIONS > 1, {setting} must be a list of the same length"
+            logger.debug(
+                f'New fix file list:\n{fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"]=}'
+            )
+            logger.debug(
+                f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}'
+            )
+
+        # -----------------------------------------------------------------------
+        #
+        # Check that UFS FIRE settings are correct and consistent
+        #
+        # -----------------------------------------------------------------------
+        fire_conf = expt_config["fire"]
+        fire_conf_vars = fire_conf["envvars"]
+        if fire_conf_vars["UFS_FIRE"]:
+            if build_config["Application"] != "ATMF":
+                raise ValueError(
+                    ("UFS_FIRE == True but UFS SRW has not been built for fire coupling;",
+                    "see users guide for details")
+                )
+            fire_input_file = Path(fire_conf_vars["FIRE_INPUT_DIR"], "geo_em.d01.nc")
+            if not Path(fire_input_file).is_file():
+                raise FileNotFoundError(
+                    dedent(
+                        f"""
+                    The fire input file (geo_em.d01.nc) does not exist in the specified directory:
+                    {fire_conf["FIRE_INPUT_DIR"]}
+                    Check that the specified path is correct, and the file exists and is readable
+                    """
                     )
-                if len(fire_conf[setting]) != fire_conf["FIRE_NUM_IGNITIONS"]:
-                    logger.critical(f"{fire_conf['FIRE_NUM_IGNITIONS']=}")
-                    logger.critical(f"{fire_conf[setting]=}")
-                    raise ValueError(
-                        f"For FIRE_NUM_IGNITIONS > 1, {setting} must be a list of the same length"
-                    )
+                )
+            # CCPP suite must have these schemes to work correctly with fire capability
+            if not ( has_tag_with_value(ccpp_suite_xml, "scheme", "rrfs_smoke_wrapper") and
+                     has_tag_with_value(ccpp_suite_xml, "scheme", "GFS_surface_composites_post") ):
+                raise ValueError(dedent(
+                      """
+                      UFS_FIRE can only work with smoke-enabled CCPP suites, including
+                      FV3_HRRR, FV3_HRRR_gf, and RRFS_sas""" ))
+            if fire_conf["FIRE_NUM_TASKS"] < 1:
+                raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
+            if fire_conf["FIRE_NUM_TASKS"] > 1:
+                raise ValueError("FIRE_NUM_TASKS > 1 not yet supported")
 
-        if fire_conf["FIRE_ATM_FEEDBACK"] < 0.0:
-            raise ValueError("FIRE_ATM_FEEDBACK must be 0 or greater")
+            if fire_conf["FIRE_NUM_IGNITIONS"] > 5:
+                raise ValueError("Only 5 or fewer fire ignitions supported")
 
-        if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
-            raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
-    else:
-        if fire_conf["FIRE_NUM_TASKS"] > 0:
-            logger.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
-            fire_conf["FIRE_NUM_TASKS"] = 0
+            if fire_conf["FIRE_NUM_IGNITIONS"] > 1:
+                # These settings all need to be lists for multiple fire ignitions
+                each_fire = [
+                    "FIRE_IGNITION_ROS",
+                    "FIRE_IGNITION_START_LAT",
+                    "FIRE_IGNITION_START_LON",
+                    "FIRE_IGNITION_END_LAT",
+                    "FIRE_IGNITION_END_LON",
+                    "FIRE_IGNITION_RADIUS",
+                    "FIRE_IGNITION_START_TIME",
+                    "FIRE_IGNITION_END_TIME",
+                ]
+                for setting in each_fire:
+                    if (not isinstance(fire_conf[setting], list) or
+                       len(fire_conf[setting]) != fire_conf["FIRE_NUM_IGNITIONS"]):
+                        logger.critical(f"{fire_conf['FIRE_NUM_IGNITIONS']=}")
+                        logger.critical(f"{fire_conf[setting]=}")
+                        raise ValueError(
+                            f"For FIRE_NUM_IGNITIONS > 1, {setting} must be a list of same length"
+                        )
+
+            if fire_conf["FIRE_ATM_FEEDBACK"] < 0.0:
+                raise ValueError("FIRE_ATM_FEEDBACK must be 0 or greater")
+
+            if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
+                raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
+        else:
+            if fire_conf["FIRE_NUM_TASKS"] > 0:
+                logger.warning("UFS_FIRE is not enabled; setting FIRE_NUM_TASKS = 0")
+                fire_conf["FIRE_NUM_TASKS"] = 0
     #
     # -----------------------------------------------------------------------
     #
@@ -1659,8 +1691,8 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # Regex to match '{{' or '{%' but not '{{ jobname }}', as the rocoto
         # tool adds jobname for each task. Also matches UW-supported tags.
         pattern = r"({{(?! jobname )|{%.*?%})|!bool|!float|!int"
-        line_not_ok = lambda l: any(m for m in re.finditer(pattern, l))
-        unrendered_lines = "\n".join([l.strip() for l in xml_config_str.split("\n") if line_not_ok(l)])
+        line_not_ok = lambda l: any(m for m in re.finditer(pattern, l)) # pylint: disable=unnecessary-lambda-assignment
+        unrendered_lines = "\n".join([l.strip() for l in xml_config_str.split("\n") if line_not_ok(l)]) # pylint: disable=line-too-long
         msg = f"""
         Jinja expressions remain in the XML configuration file.
 
@@ -1676,7 +1708,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     if expt_config["workflow"].get("COLDSTART"):
         coldstart_date = var_defns_cfg["workflow"]["DATE_FIRST_CYCL"]
         fn_pass=f"task_skip_coldstart_{coldstart_date}.txt"
-        open(os.path.join(exptdir,fn_pass), 'a').close()
+        Path(exptdir,fn_pass).touch()
 
     #
     # -----------------------------------------------------------------------
@@ -1708,8 +1740,8 @@ def clean_rocoto_dict(rocotodict):
     """
 
 
-    # Loop 1: search for tasks with no command key, iterating over metatasks, and popping metatasks with
-    # var keys having empty values
+    # Loop 1: search for tasks with no command key, iterating over metatasks, and popping metatasks
+    # with var keys having empty values
     for key in list(rocotodict.keys()):
         if key.split("_", maxsplit=1)[0] == "metatask":
             clean_rocoto_dict(rocotodict[key])
@@ -1718,7 +1750,8 @@ def clean_rocoto_dict(rocotodict):
                 for varkey in list(rocotodict[key]['var'].keys()):
                     if not rocotodict[key]['var'][varkey]:
                         popped = rocotodict.pop(key)
-                        logging.warning(f"Invalid metatask {key} removed due to empty/unset var: {varkey}")
+                        logging.warning(f"Invalid metatask {key} removed due to empty/unset var:")
+                        logging.warning(f"{varkey}")
                         logging.debug(f"Removed entry:\n{popped}")
                         break
 

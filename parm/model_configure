@@ -22,6 +22,7 @@ ichunk3d:                -1
 jchunk3d:                -1
 kchunk3d:                -1
 itasks:                  {{ itasks }}
+history_file_on_native_grid: {{ history_native_grid }}
 quilting:                {{ quilting }}
 {% if quilting  %}
 #

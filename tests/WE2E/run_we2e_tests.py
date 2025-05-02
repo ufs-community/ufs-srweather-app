@@ -192,7 +192,6 @@ def run_we2e_tests(homedir, args) -> None:
             },
             "workflow": {
                 "COMPILER": args.compiler,
-                "CRON_RELAUNCH_INTVL_MNTS": args.cron_relaunch_intvl_mnts,
                 "EXPT_SUBDIR": test_name,
                 "USE_CRON_TO_RELAUNCH": args.launch == "cron",
                 },
@@ -440,7 +439,8 @@ def check_task_get_extrn_bcs(
 
     # Make our lives easier by shortening some dictionary calls
     cfg_bcs = cfg[f"task_get_extrn_{ics_or_lbcs}"]
-    cfg_bcs_vars = cfg_bcs["envvars"]
+    if (cfg_bcs_vars := cfg_bcs.get("envvars")) is None:
+        raise KeyError(f"Required 'envvars' section not found in task_get_extrn_{ics_or_lbcs}")
 
     # If the task is turned off explicitly, do nothing and return
     # To turn off that task, taskgroups is included without the
