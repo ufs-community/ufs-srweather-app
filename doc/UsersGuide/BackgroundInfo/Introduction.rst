@@ -142,9 +142,9 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - spack-stack Documentation
      - https://spack-stack.readthedocs.io/en/latest/
    * - UFS_UTILS Technical Documentation
-     - https://noaa-emcufs-utils.readthedocs.io/en/latest
+     - https://ufs-utils-epic.readthedocs.io/en/release-srw-v3.0.0/
    * - UFS_UTILS Scientific Documentation
-     - https://ufs-community.github.io/UFS_UTILS/index.html
+     - https://noaa-epic.github.io/UFS_UTILS/ver-srw-3.0.0/index.html
    * - UFS Weather Model User's Guide
      - https://ufs-weather-model.readthedocs.io/en/latest
    * - FV3 Technical Documentation
@@ -154,7 +154,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - CCPP Technical Documentation
      - https://ccpp-techdoc.readthedocs.io/en/latest/
    * - CCPP Scientific Documentation
-     - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html
+     - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v3.0.0/sci_doc/index.html
    * - Stochastic Physics Documentation
      - https://stochastic-physics.readthedocs.io/en/latest/
    * - ESMF manual
@@ -164,7 +164,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
-     - https://uwtools.readthedocs.io/en/main/
+     - https://uwtools.readthedocs.io/en/stable/
    * - MET User's Guide
      - https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/
    * - METplus User's Guide
