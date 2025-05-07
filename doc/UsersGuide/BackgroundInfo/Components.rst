@@ -25,7 +25,7 @@ The SRW Application includes a number of pre-processing utilities (UFS_UTILS) th
 The SRW Application can be initialized from a range of operational initial condition files. It is possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), High-Resolution Rapid Refresh (:term:`HRRR`), and Rapid Refresh Forecast System (:term:`RRFS`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
 
 .. WARNING::
-   For GFS data, dates prior to 1 January 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`__ (NOMADS). Raw external model data may be pre-staged on disk by the user.
+   For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
 
 Forecast Model
 ==============
