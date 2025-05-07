@@ -25,7 +25,7 @@ The SRW Application includes a number of pre-processing utilities (UFS_UTILS) th
 The SRW Application can be initialized from a range of operational initial condition files. It is possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), High-Resolution Rapid Refresh (:term:`HRRR`), and Rapid Refresh Forecast System (:term:`RRFS`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
 
 .. WARNING::
-   For GFS data, dates prior to 1 January 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`__ (NOMADS). Raw external model data may be pre-staged on disk by the user.
+   For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
 
 Forecast Model
 ==============
@@ -47,7 +47,7 @@ The Common Community Physics Package (CCPP), described `here <https://dtcenter.o
 +                         'cu_deep': ['cu_gf_driver'],
 
 .. note::
-   :ref:`Stochastically Perturbed Parameterizations (SPP) <SPP>` are currently only available for specific physics schemes used in the RAP/HRRR physics suite. Users need to be aware of which physics suite definition file (:term:`SDF`) is chosen when turning this option on. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR`` and ``FV3_HRRR_gf`` options for ``CCPP_PHYS_SUITE``.
+   :ref:`Stochastically Perturbed Parameterizations (SPP) <SPP>` are currently only available for specific physics schemes: MYNN-EDMF (pbl), MYNN SFC (sfc), Thompson Microphysics (mp), RRTMG (rad), GFS gravity wave drag (gwd) and Grell-Freidas cumulus parameterization (cu_deep). Users need to be aware of which physics suite definition file (:term:`SDF`) is chosen when turning this option on. If SPP perturbations for a given parameterization are not possible with the selected suite, that SPP option will be deactivated. Among the supported physics suites, the full set of parameterizations can only be used with the ``FV3_HRRR``, ``FV3_HRRR_gf``, ``FV3_RAP``, and ``RRFS_sas`` options for ``CCPP_PHYS_SUITE``.
 
 
 Additionally, a CCPP single-column model (`CCPP-SCM <https://github.com/NCAR/ccpp-scm>`_) option has been developed as a CCPP child repository. Users can refer to the `CCPP Single Column Model User and Technical Guide <https://ccpp-scm.readthedocs.io/en/latest/>`_ for more details. This CCPP-SCM user guide contains a Quick Start Guide with instructions for obtaining the code, compiling it, and running test cases, which include five standard test cases and two additional FV3 replay cases (refer to :ccpp-scm:`section 5.2 <chap_quick.html#run-the-scm-with-a-supplied-case>` in the CCPP-SCM user guide for more details). Moreover, the CCPP-SCM supports a precompiled version in a docker container, allowing it to be easily executed on NOAA's cloud computing platforms without any issues (see :ccpp-scm:`section 5.3 <chap_quick.html#creating-and-using-a-docker-container-with-scm-and-ccpp>` in the CCPP-SCM user guide for more details).
