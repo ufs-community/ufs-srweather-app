@@ -7,8 +7,6 @@ The UFS includes multiple applications (see a complete list at https://ufs.epic.
 The UFS SRW App User's Guide associated with the development branch is at: https://ufs-srweather-app.readthedocs.io/en/develop/, while the guide specific to the SRW App v3.0.0 release can be found at: https://ufs-srweather-app.readthedocs.io/en/release-public-v3.0.0/. The repository is at: https://github.com/ufs-community/ufs-srweather-app.
 
 For instructions on how to clone the repository, build the code, and run the workflow, see:
-
-For instructions on how to clone the repository, build the code, and run the workflow, see:
 - https://ufs-srweather-app.readthedocs.io/en/develop/UsersGuide/BuildingRunningTesting/Quickstart.html
 
 For a debugging guide for users and developers in the field of Earth System Modeling, please see:
