@@ -397,7 +397,6 @@ settings="\
   'metplus_log_fn': '${metplus_log_fn:-}'
   'input_dir': '${FCST_INPUT_DIR:-${OBS_INPUT_DIR}}'
   'input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-${OBS_INPUT_FN_TEMPLATE}}'
-  'output_base': '${OUTPUT_BASE}'
   'output_dir': '${OUTPUT_DIR}'
   'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
   'staging_dir': '${STAGING_DIR}'

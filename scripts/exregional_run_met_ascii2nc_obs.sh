@@ -104,9 +104,8 @@ vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 
 OBS_INPUT_DIR="${OBS_DIR}"
 
-OUTPUT_BASE="${vx_output_basedir}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
+OUTPUT_DIR="${vx_output_basedir}/metprd/${MetplusToolName}_obs"
+STAGING_DIR="${vx_output_basedir}/stage/${MetplusToolName}_obs"
 if [ "${OBTYPE}" = "AERONET" ]; then
   OBS_INPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATES[1]}
   OUTPUT_FN_TEMPLATE=${OBS_AERONET_FN_TEMPLATE_ASCII2NC_OUTPUT}
@@ -285,7 +284,6 @@ settings="\
   'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
   'fcst_input_dir': '${FCST_INPUT_DIR:-}'
   'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
-  'output_base': '${OUTPUT_BASE}'
   'output_dir': '${OUTPUT_DIR}'
   'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
   'staging_dir': '${STAGING_DIR}'

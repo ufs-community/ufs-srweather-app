@@ -336,7 +336,6 @@ settings="\
 'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
 'fcst_input_dir': '${FCST_INPUT_DIR:-}'
 'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
-'output_base': '${OUTPUT_BASE}'
 'output_dir': '${OUTPUT_DIR}'
 'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
 'staging_dir': '${STAGING_DIR}'
