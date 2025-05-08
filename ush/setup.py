@@ -470,6 +470,10 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
         post_meta.pop("metatask_run_sub_hourly_post", None)
         post_meta.pop("metatask_sub_hourly_last_hour_post", None)
+    # When running subhourly post, remove hourly post tasks, if they exist
+    if expt_config["task_run_post"]["envvars"]["SUB_HOURLY_POST"]:
+        post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
+        post_meta.pop("metatask_run_post_mem#mem#_all_fhrs", None)
 
     date_first_cycl = workflow_config["DATE_FIRST_CYCL"]
     date_last_cycl = workflow_config["DATE_LAST_CYCL"]

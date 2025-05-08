@@ -65,6 +65,9 @@ metatask_run_ens_post:
         fmn: '{% for min in range(0, 60, task_run_post.envvars.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
       task_run_post_mem#mem#_f#fhr##fmn#: &subhourly_run_post_task
         <<: *default_task
+        attrs:
+          cycledefs: forecast
+          maxtries: '2'
         envars:
           <<: *default_vars
           fmn: '#fmn#'

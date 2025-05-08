@@ -37,10 +37,8 @@ output_file:             'netcdf' 'netcdf'
 # Write-component output frequency parameter definitions:
 #
 # output_fh: Output frequency in hours.
-# nsout: Output frequency in time steps (positive values override "output_fh").
 #
 output_fh:  {{ output_fh }}  -1
-nsout:      {{ nsout }}
 #
 # Coordinate system used by the output grid.
 #

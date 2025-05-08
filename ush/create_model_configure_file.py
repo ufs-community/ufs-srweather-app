@@ -188,21 +188,12 @@ def create_model_configure_file(
     # If sub_hourly_post is set to "TRUE", then the forecast model must be
     # directed to generate output files on a sub-hourly interval. Do this
     # by specifying the output interval in the model configuration file
-    # (MODEL_CONFIG_FN) in units of number of forecat model time steps (nsout).
-    # nsout is calculated using the user-specified output time interval
-    # dt_subhourly_post_mnts (in units of minutes) and the forecast model's
-    # main time step dt_atmos (in units of seconds). Note that nsout is
-    # guaranteed to be an integer because the experiment generation scripts
-    # require that dt_subhourly_post_mnts (after conversion to seconds) be
-    # evenly divisible by dt_atmos. Also, in this case, the variable output_fh
-    # [which specifies the output interval in hours;
-    # see the jinja model_config template file] is set to 0, although this
-    # doesn't matter because any positive value of nsout will override output_fh.
+    # (MODEL_CONFIG_FN) in units of time step interval (in hours).
     #
     # If sub_hourly_post is set to "FALSE", then the workflow is hard-coded
     # (in the jinja model_config template file) to direct the forecast model
-    # to output files every hour. This is done by setting (1) output_fh to 1
-    # here, and (2) nsout to -1 here which turns off output by time step interval.
+    # to output files every hour. This is done by setting output_fh to 1
+    # here.
     #
     # Note that the approach used here of separating how hourly and subhourly
     # output is handled should be changed/generalized/simplified such that
@@ -214,13 +205,11 @@ def create_model_configure_file(
     # to, or smaller than one hour.
     #
     if sub_hourly_post:
-        nsout = (dt_subhourly_post_mnts * 60) // dt_atmos
-        output_fh = 0
+        output_fh = dt_subhourly_post_mnts / 60
     else:
         output_fh = 1
-        nsout = -1
 
-    settings.update({"output_fh": output_fh, "nsout": nsout})
+    settings.update({"output_fh": output_fh})
 
     settings_str = cfg_to_yaml_str(settings)
 
