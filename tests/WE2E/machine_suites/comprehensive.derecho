@@ -55,3 +55,4 @@ MET_verification_only_vx
 pregen_grid_orog_sfc_climo
 specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS
 specify_template_filenames
+smoke_dust_grid_RRFS_CONUS_25km_suite_RRFS_sas

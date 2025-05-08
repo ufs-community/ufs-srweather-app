@@ -144,15 +144,15 @@ def check_temporal_consistency_cumul_fields(
     # dictionary.
     fcst_obs_matched_times_all_cycles_cumul = dict()
 
-    for obtype, fg in obtype_to_fg_dict_cumul.items():
+    for obtype, field_group in obtype_to_fg_dict_cumul.items():
 
         # If the current cumulative field is not in the list of fields to be
         # verified, just skip to the next field.
-        if fg not in vx_config["VX_FIELD_GROUPS"]:
+        if field_group not in vx_config["VX_FIELD_GROUPS"]:
             continue
 
         # Initialize a sub-dictionary in one of the dictionaries to be returned.
-        fcst_obs_matched_times_all_cycles_cumul.update({fg: {}})
+        fcst_obs_matched_times_all_cycles_cumul.update({field_group: {}})
 
         #
         # Get the availability interval of the current observation type from the
@@ -187,7 +187,7 @@ def check_temporal_consistency_cumul_fields(
         # is not satisfied, remove that accumulation from the list of accumulations
         # for the current field.
         #
-        accum_intvls_array_name = "".join(["VX_", fg, "_ACCUMS_HRS"])
+        accum_intvls_array_name = "".join(["VX_", field_group, "_ACCUMS_HRS"])
         accum_intvls_hrs = vx_config[accum_intvls_array_name]
         #
         # Loop through the accumulation intervals and check the temporal constraints
@@ -197,7 +197,7 @@ def check_temporal_consistency_cumul_fields(
 
             accum_hh = f"{accum_hrs:02d}"
             # Initialize a sub-sub-dictionary in one of the dictionaries to be returned.
-            fcst_obs_matched_times_all_cycles_cumul[fg][accum_hh] = []
+            fcst_obs_matched_times_all_cycles_cumul[field_group][accum_hh] = []
             #
             # Make sure that the accumulation interval is less than or equal to the
             # forecast length.
@@ -205,9 +205,9 @@ def check_temporal_consistency_cumul_fields(
             if accum_hrs > fcst_len_hrs:
                 msg = dedent(f"""
                     The accumulation interval (accum_hrs) for the current cumulative field
-                    group (fg) and corresponding observation type (obtype) is greater than
+                    group (field_group) and corresponding observation type (obtype) is greater than
                     the forecast length (fcst_len_hrs):
-                        {fg = }
+                        {field_group = }
                         {obtype = }
                         {accum_hrs = }
                         {fcst_len_hrs = }
@@ -226,9 +226,9 @@ def check_temporal_consistency_cumul_fields(
                 if rem_obs != 0:
                     msg = dedent(f"""
                         The accumulation interval (accum_hrs) for the current cumulative field
-                        group (fg) and corresponding observation type (obtype) is not evenly
+                        group (field_group) and corresponding observation type (obtype) is not evenly
                         divisible by the observation type's availability interval (obs_avail_intvl_hrs):
-                            {fg = }
+                            {field_group = }
                             {obtype = }
                             {accum_hrs = }
                             {obs_avail_intvl_hrs = }
@@ -248,9 +248,9 @@ def check_temporal_consistency_cumul_fields(
                 if rem_fcst != 0:
                     msg = dedent(f"""
                         The accumulation interval (accum_hrs) for the current cumulative field
-                        group (fg) and corresponding observation type (obtype) is not evenly
+                        group (field_group) and corresponding observation type (obtype) is not evenly
                         divisible by the forecast output interval (fcst_output_intvl):
-                            {fg = }
+                            {field_group = }
                             {obtype = }
                             {accum_hrs = }
                             {fcst_output_intvl_hrs = }
@@ -299,10 +299,10 @@ def check_temporal_consistency_cumul_fields(
                 if not set(fcst_output_hrs_of_day_str) <= set(obs_avail_hrs_of_day_str):
                     msg = dedent(f"""
                         The accumulation interval (accum_hrs) for the current cumulative field
-                        group (fg) is such that the forecast will output the field(s) in the 
+                        group (field_group) is such that the forecast will output the field(s) in the 
                         field group at at least one hour-of-day at which the corresponding
                         observation type is not available:
-                            {fg = }
+                            {field_group = }
                             {obtype = }
                             {accum_hrs = }
                         The forecast output hours-of-day for this field group/accumulation interval
@@ -317,7 +317,7 @@ def check_temporal_consistency_cumul_fields(
                     logging.info(msg)
                     accum_intvls_hrs.remove(accum_hrs)
                 else:
-                    fcst_obs_matched_times_all_cycles_cumul[fg][accum_hh] = fcst_output_times_all_cycles_str
+                    fcst_obs_matched_times_all_cycles_cumul[field_group][accum_hh] = fcst_output_times_all_cycles_str
         #
         # Update the value in the experiment configuration dictionary of the list
         # of accumulation intervals to verify for this cumulative field (since
@@ -330,11 +330,11 @@ def check_temporal_consistency_cumul_fields(
         # verification configuration dictionary.
         #
         if not accum_intvls_hrs:
-            vx_config["VX_FIELD_GROUPS"].remove(fg)
+            vx_config["VX_FIELD_GROUPS"].remove(field_group)
             msg = dedent(f"""
                 The list of accumulation intervals (accum_intvls_hrs) for the current
-                cumulative field group to verify (fg) is empty:
-                    {fg = }
+                cumulative field group to verify (field_group) is empty:
+                    {field_group = }
                     {accum_intvls_hrs = }
                 Removing this field from the list of fields to verify.  The updated list
                 is:
@@ -508,14 +508,14 @@ def set_rocoto_cycledefs_for_obs_days(obs_days_all_cycles):
         cycledefs_all_obs_days (list):
             A list of strings, with each string being a ROCOTO-style cycledef of the
             form
-            
+
                 '{yyyymmdd_start}0000 {yyyymmdd_end}0000 24:00:00'
-            
+
             where {yyyymmdd_start} is the starting day of the first cycle in the
             cycledef and {yyyymmdd_end} is the starting day of the last cycle (note
             that the minutes and hours in these cycledef stirngs are always set to
             '00').  For example, an element of the output list may be:
-            
+
                 '202404290000 202405010000 24:00:00'
     """
 
@@ -766,11 +766,11 @@ def get_obs_retrieve_times_by_day(
         obs_avail_intvl = timedelta(hours=obs_avail_intvl_hrs)
 
         # Consider all field groups to be verified for the current obs type.
-        for fg in field_groups:
+        for field_group in field_groups:
 
             # Get the list of accumulation intervals for the current cumulative obs
             # type and field group combination.
-            accum_intvls_array_name = "".join(["VX_", fg, "_ACCUMS_HRS"])
+            accum_intvls_array_name = "".join(["VX_", field_group, "_ACCUMS_HRS"])
             accum_intvls_hrs = vx_config[accum_intvls_array_name]
 
             for cycle_start_time in cycle_start_times:

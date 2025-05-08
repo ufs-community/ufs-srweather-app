@@ -15,15 +15,6 @@ from .environment import (
     import_vars,
     export_vars,
 )
-from .filesys_cmds_vrfy import (
-    cmd_vrfy,
-    cp_vrfy,
-    mv_vrfy,
-    rm_vrfy,
-    ln_vrfy,
-    mkdir_vrfy,
-    cd_vrfy,
-)
 from .print_input_args import print_input_args
 from .print_msg import print_info_msg, print_err_msg_exit, log_info
 from .run_command import run_command

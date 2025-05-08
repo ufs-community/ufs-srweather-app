@@ -185,10 +185,10 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    │     ├── wrappers
    │     ├── config.community.yaml
    │     ├── config_defaults.yaml
+   │     ├── experiment.jsonschema
    │     ├── generate_FV3LAM_wflow.py
    │     ├── launch_FV3LAM_wflow.sh
-   │     ├── setup.py
-   │     └── valid_param_vals.yaml
+   │     └── setup.py
    └── versions
 
 SRW App SubDirectories

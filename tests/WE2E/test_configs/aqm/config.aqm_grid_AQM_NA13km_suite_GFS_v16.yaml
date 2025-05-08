@@ -13,39 +13,48 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
+  taskgroups:
+    - parm/wflow/prep.yaml
+    - parm/wflow/aqm_prep.yaml
+    - parm/wflow/coldstart.yaml
+    - parm/wflow/post.yaml
+    - parm/wflow/test.yaml
 nco:
   NET_default: aqm
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'
-    task_aqm_ics_ext:
-    metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
-        walltime: 01:20:00
+    task_aqm_ics_ext: !remove
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: FV3GFS
-  FV3GFS_FILE_FMT_ICS: netcdf
-  EXTRN_MDL_ICS_OFFSET_HRS: 0
-  USE_USER_STAGED_EXTRN_FILES: true
+  envvars:
+    EXTRN_MDL_NAME_ICS: FV3GFS
+    FV3GFS_FILE_FMT_ICS: netcdf
+    EXTRN_MDL_ICS_OFFSET_HRS: 0
+    USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: FV3GFS
-  LBC_SPEC_INTVL_HRS: 6
-  FV3GFS_FILE_FMT_LBCS: netcdf
-  EXTRN_MDL_LBCS_OFFSET_HRS: 0
-  USE_USER_STAGED_EXTRN_FILES: true    
+  envvars:
+    EXTRN_MDL_NAME_LBCS: FV3GFS
+    LBC_SPEC_INTVL_HRS: 6
+    FV3GFS_FILE_FMT_LBCS: netcdf
+    EXTRN_MDL_LBCS_OFFSET_HRS: 0
+    USE_USER_STAGED_EXTRN_FILES: true    
 task_run_fcst:
-  OMP_NUM_THREADS_RUN_FCST: 1
-  DT_ATMOS: 180
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:20:00
+      threads: 1
+  envvars:
+    DT_ATMOS: 180
+    RESTART_INTERVAL: 12 24
+    PRINT_ESMF: false
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  RESTART_INTERVAL: 12 24
   QUILTING: true
-  PRINT_ESMF: false
-  DO_FCST_RESTART: false
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: 793
-  USE_CUSTOM_POST_CONFIG_FILE: false
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: 793
+    USE_CUSTOM_POST_CONFIG_FILE: false
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2

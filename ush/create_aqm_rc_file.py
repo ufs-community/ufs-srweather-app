@@ -7,17 +7,18 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
     import_vars,
-    load_yaml_config,
     print_info_msg,
     print_input_args,
     str_to_type,
 )
+
+from uwtools.api.config import get_yaml_config
+from uwtools.api.template import render
 
 
 def create_aqm_rc_file(cdate, run_dir, init_concentrations):
@@ -80,11 +81,11 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     )
 
     # Canopy config
+    aqm_canopy_file_fn = AQM_CANOPY_FILE_PREFIX + "." + mm + AQM_CANOPY_FILE_SUFFIX
     aqm_rc_canopy_file_fp = os.path.join(
-        FIXaqm,
-        "canopy",
+        FIXaqmcanopy,
         PREDEF_GRID_NAME,
-        f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}",
+        aqm_canopy_file_fn,
     )
     #
     # -----------------------------------------------------------------------
@@ -173,7 +174,7 @@ def _parse_args(argv):
 
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
-    cfg = load_yaml_config(args.path_to_defns)
+    cfg = get_yaml_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_aqm_rc_file(

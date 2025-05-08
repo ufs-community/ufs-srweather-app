@@ -18,7 +18,7 @@ sections=(
   cpl_aqm_parm
   constants
   fixed_files
-  task_run_post
+  task_run_post.envvars
 )
 for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

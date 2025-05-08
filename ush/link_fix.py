@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import argparse
-import re
 import glob
+import os
+import re
+import sys
+from pathlib import Path
 
 from python_utils import (
     import_vars,
@@ -15,11 +16,10 @@ from python_utils import (
     define_macos_utilities,
     check_var_valid_value,
     flatten_dict,
-    cd_vrfy,
-    mkdir_vrfy,
     find_pattern_in_str,
-    load_yaml_config,
 )
+
+from uwtools.api.config import get_yaml_config
 
 
 def link_fix(
@@ -297,8 +297,7 @@ def link_fix(
     #
     # -----------------------------------------------------------------------
     #
-    save_dir = os.getcwd()
-    cd_vrfy(target_dir)
+    target_dir = Path(target_dir)
     #
     # -----------------------------------------------------------------------
     #
@@ -318,8 +317,8 @@ def link_fix(
         relative_link_flag = True
 
     for fp in fps:
-        fn = os.path.basename(fp)
-        create_symlink_to_file(fp, fn, relative_link_flag)
+        fp = Path(fp)
+        create_symlink_to_file(fp, target_dir / fp.name, relative_link_flag)
     #
     # -----------------------------------------------------------------------
     #
@@ -342,7 +341,7 @@ def link_fix(
     if file_group == "grid":
         target = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.halo{nh4}.nc"
         symlink = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.nc"
-        create_symlink_to_file(target, symlink, True)
+        create_symlink_to_file(target_dir / target, target_dir / symlink, True)
     #
     # -----------------------------------------------------------------------
     #
@@ -362,15 +361,12 @@ def link_fix(
             # Create links without "halo" in the name
             halo = f"{cres}.{field}.tile{tile_rgnl}.halo{nh4}.nc"
             no_halo = re.sub(f".halo{nh4}", "", halo)
-            create_symlink_to_file(halo, no_halo, True)
+            create_symlink_to_file(target_dir / halo, target_dir / no_halo, True)
 
             # Create links without halo and tile7, and with "tile1"
             halo_tile = f"{cres}.{field}.tile{tile_rgnl}.halo{nh0}.nc"
             no_halo_tile = re.sub(f"tile{tile_rgnl}.halo{nh0}", "tile1", halo_tile)
-            create_symlink_to_file(halo_tile, no_halo_tile, True)
-
-    # Change directory back to original one.
-    cd_vrfy(save_dir)
+            create_symlink_to_file(target_dir / halo_tile, target_dir / no_halo_tile, True)
 
     return res
 
@@ -402,11 +398,11 @@ def _parse_args(argv):
 
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
-    cfg = load_yaml_config(args.path_to_defns)
+    cfg = get_yaml_config(args.path_to_defns)
     link_fix(
         verbose=cfg["workflow"]["VERBOSE"],
         file_group=args.file_group,
-        source_dir=cfg[f"task_make_{args.file_group.lower()}"][
+        source_dir=cfg[f"task_make_{args.file_group.lower()}"]["envvars"][
             f"{args.file_group.upper()}_DIR"
         ],
         target_dir=cfg["workflow"]["FIXlam"],

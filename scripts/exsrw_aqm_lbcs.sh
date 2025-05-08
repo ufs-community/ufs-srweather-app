@@ -8,9 +8,22 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files grid_params \
-  task_get_extrn_lbcs task_make_lbcs task_make_orog ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+  constants
+  fixed_files
+  grid_params
+  task_get_extrn_lbcs.envvars
+  task_make_lbcs.envvars
+  task_make_orog.envvars
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #

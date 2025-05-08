@@ -13,12 +13,13 @@ workflow:
   DATE_LAST_CYCL: '2023021700'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-rocoto:
-  tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/test.yaml"]|include }}'
-    metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
-        walltime: 01:00:00
+  taskgroups:
+    - parm/wflow/prep.yaml
+    - parm/wflow/coldstart.yaml
+    - parm/wflow/post.yaml
+    - parm/wflow/verify_pre.yaml
+    - parm/wflow/verify_det.yaml
+    - parm/wflow/test.yaml
 task_make_grid:
   ESGgrid_LON_CTR: -82.0
   ESGgrid_LAT_CTR: 47.0
@@ -29,35 +30,47 @@ task_make_grid:
   ESGgrid_WIDE_HALO_WIDTH: 6
   ESGgrid_PAZI: 0.0
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: RAP
+  envvars:
+    EXTRN_MDL_NAME_ICS: RAP
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: RAP
-  LBC_SPEC_INTVL_HRS: 3
+  envvars:
+    EXTRN_MDL_NAME_LBCS: RAP
+    LBC_SPEC_INTVL_HRS: 3
 task_run_fcst:
-  DT_ATMOS: 90
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:00:00
+  envvars:
+    DT_ATMOS: 90
   LAYOUT_X: 8
   LAYOUT_Y: 10
   BLOCKSIZE: 32
   QUILTING: true
   WRTCMP_write_groups: 1
-  WRTCMP_write_tasks_per_group: '{{ LAYOUT_Y }}'
+  WRTCMP_write_tasks_per_group: !int '{{ LAYOUT_Y }}'
   WRTCMP_output_grid: lambert_conformal
-  WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
-  WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_cen_lon: !float '{{ task_make_grid.ESGgrid_LON_CTR }}'
+  WRTCMP_cen_lat: !float '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_lon_lwr_left: -96.1
   WRTCMP_lat_lwr_left: 38.6
-  WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_stdlat1: !float '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_stdlat2: !float '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_nx: 299
   WRTCMP_ny: 195
-  WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
-  WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
+  WRTCMP_dx: !float '{{ task_make_grid.ESGgrid_DELX }}'
+  WRTCMP_dy: !float '{{ task_make_grid.ESGgrid_DELY }}'
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Michigan_Ontario
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Michigan_Ontario
 verification:
+  VX_FIELD_GROUPS:
+    - APCP
+    - REFC
+    - RETOP
+    - ASNOW
   CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/CCPA_obs'
   MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/MRMS_obs'
   NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/NDAS_obs'
   NOHRSC_OBS_DIR: '{{ workflow.EXPTDIR }}/NOHRSC_obs'
   VX_FCST_MODEL_NAME: Michigan_Ontario_snow_8km
-  VX_FIELD_GROUPS: [ "APCP", "REFC", "RETOP", "ASNOW" ]

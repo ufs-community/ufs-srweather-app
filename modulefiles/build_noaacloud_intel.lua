@@ -17,3 +17,5 @@ load("srw_common")
 
 load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
+
+setenv("FC", "mpiifort")

@@ -26,16 +26,17 @@ workflow:
   DATE_FIRST_CYCL: '2023021700'
   DATE_LAST_CYCL: '2023021700'
   FCST_LEN_HRS: 36
-
-rocoto:
-  tasks:
-    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+  taskgroups:
+    - parm/wflow/verify_pre.yaml
+    - parm/wflow/verify_det.yaml
 
 task_get_extrn_lbcs:
-  LBC_SPEC_INTVL_HRS: 3
+  envvars:
+    LBC_SPEC_INTVL_HRS: 3
 
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: 'custom_ESGgrid_Michigan_Ontario'
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: 'custom_esggrid_michigan_ontario'
 
 verification:
   # Base directories in which to look for obs.  If these do not exist and/or
@@ -56,4 +57,4 @@ verification:
   #
   VX_FCST_MODEL_NAME: 'Michigan_Ontario_snow_8km'
   VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
-  VX_FCST_INPUT_BASEDIR: '{{- "/".join([platform.TEST_VX_FCST_INPUT_BASEDIR, "..", "custom_ESGgrid_Michigan_Ontario_8km"]) }}'
+  VX_FCST_INPUT_BASEDIR: '{{ platform.TEST_VX_FCST_INPUT_BASEDIR ~ "/../custom_ESGgrid_Michigan_Ontario_8km" }}'
