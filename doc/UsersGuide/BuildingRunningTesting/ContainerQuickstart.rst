@@ -133,7 +133,7 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
 
    .. code-block:: console
 
-      sudo singularity build --sandbox ubuntu20.04-intel-srwapp-release-public-v2.2.0 docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.2.0
+   sudo singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0 docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-release3
 
 For easier reference, users can set an environment variable to point to the container: 
 
@@ -189,8 +189,8 @@ The SRW App requires input files to run. These include static datasets, initial 
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/gst_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/gst_data.tgz
    tar -xzf fix_data.tgz
    tar -xzf gst_data.tgz
 

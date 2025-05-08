@@ -326,8 +326,8 @@ intersphinx_mapping = {
    'metplus': ('https://metplus.readthedocs.io/en/develop/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/develop/', None),
    'upp': ('https://upp.readthedocs.io/en/develop/', None),
-   'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/latest/', None),
-   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
+   'ufs-utils': ('https://ufs-utils-epic.readthedocs.io/en/release-srw-v3.0.0/', None),
+   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/latest/', None),
    'stochphys': ('https://stochastic-physics.readthedocs.io/en/latest/', None),
    'srw_v3.0.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v3.0.0/', None),
 }
