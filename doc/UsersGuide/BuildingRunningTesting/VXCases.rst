@@ -51,15 +51,15 @@ On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file us
 
       .. code-block:: console
 
-         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#experiment-user-cases/release-public-v2.2.0/METplus-vx-sample/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
+         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/METplus-vx-sample/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz 
    
    #. Download from a terminal using ``wget``: 
 
       .. code-block:: console
 
-         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/METplus-vx-sample/Indy-Severe-Weather.tgz
+         wget wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/METplus-vx-sample/Indy-Severe-Weather.tg
 
-This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.2.0/out-of-the-box/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth.tar.gz. See the :numref:`Section %s <PlotOutput>` for more information on plotting. 
+This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth.tar.gz. See the :numref:`Section %s <PlotOutput>` for more information on plotting. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -110,18 +110,9 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
    user:
       MACHINE: <your_machine_name>
       ACCOUNT: <my_account>
-   platform:
-      MODEL: FV3_GFS_v16_SUBCONUS_3km
-      MET_INSTALL_DIR: /path/to/met/x.x.x           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-      METPLUS_PATH: /path/to/METplus/METplus-x.x.x  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
-      # Add MET_BIN_EXEC variable to config.yaml
-      MET_BIN_EXEC: bin
-      CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
-      MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
    workflow:
       EXPT_SUBDIR: <any_name_you_like>
-      CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+      CCPP_PHYS_SUITE: FV3_WoFS_v0
       PREDEF_GRID_NAME: SUBCONUS_Ind_3km
       DATE_FIRST_CYCL: '2019061500'
       DATE_LAST_CYCL: '2019061500'
@@ -140,7 +131,10 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
      PLOT_FCST_INC: 6
      PLOT_DOMAINS: ["regional"]
    verification:
-     VX_FCST_MODEL_NAME: FV3_RRFS_v1beta_SUBCONUS_Ind_3km
+     VX_FCST_MODEL_NAME: FV3_WoFS_v0_SUBCONUS_Ind_3km
+     CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
+     MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
+     NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
    rocoto:
      tasks:
        metatask_run_ensemble:
@@ -236,7 +230,7 @@ METplus verification ``.stat`` files provide users the opportunity to compare th
 
 .. code-block:: console
 
-   point_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_NDAS_ADPSFC_300000L_20190616_060000V.stat
+    point_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_ADPSFC_SFC_300000L_20190616_060000V.stat
 
 The 30th hour of the forecast occurs at 6am (06Z) on June 16, 2019. The lead time is 30 hours (300000L in HHMMSSL format) because this is the 30th hour of the forecast. The valid time is 06Z (060000V in HHMMSSV format).
 
@@ -245,16 +239,16 @@ The following is the list of METplus output files users can reference during the
 .. code-block:: console 
    
    # Point-Stat Files
-   point_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_NDAS_ADPSFC_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   point_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_NDAS_ADPUPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   point_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_ADPSFC_SFC_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   point_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_ADPUPA_UPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
 
    # Grid-Stat Files
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_REFC_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_RETOP_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_01h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_03h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_06h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_24h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_REFC_REFC_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_RETOP_RETOP_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_APCP01h_APCP_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_APCP03h_APCP_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_APCP06h_APCP_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_WoFS_v0_SUBCONUS_Ind_3km_mem000_APCP24h_APCP_HHMMSSL_YYYYMMDD_HHMMSSV.stat
 
 
 Point STAT Files
