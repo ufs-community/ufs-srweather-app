@@ -533,7 +533,7 @@ At forecast hour 12, folks in New Orleans normally would have been preparing for
 
    *The morning commute in New Orleans, LA*
 
-The SRW App plots indicate a drop in temperature during the night and an increase in winds and precipitation. The predicted drop in 2-m temperature over land would increase the temperature differential between the relatively warm air over the waters and the colder temperatures over land. This, in turn, would be likely to cause more severe weather. By f012, the wind was also predicted to pick up, and the patch of red in the southeast corner of the plot shows incoming winds reaching 40 knots (~46 mph) off the coast. The composite reflectivity image shows significant precipitation with a few high-energy spots in red-orange popping up. Precipitation was predicted to start accumulating somewhat. For people who are not used to driving in these conditions, it could be dangerous, but the bigger danger would be how to get home. Conditions were deteriorating, and the worst snowfall was expected in the 11 AM -- 6 PM window. That said, a simple comparison of Mastrangelo's post and the predicted conditions show that the SRW App is likely underpredicting precipitation and wind over land at this point in the storm. 
+The SRW App plots indicate a drop in temperature during the night and an increase in winds and precipitation. The predicted drop in 2-m temperature over land would increase the temperature differential between the relatively warm air over the waters and the colder temperatures over land. This, in turn, would be likely to cause more severe weather. By f012, the wind was also predicted to pick up, and the patch of red in the southeast corner of the plot shows incoming winds reaching 40 knots (~46 mph) off the coast. The composite reflectivity image shows significant precipitation with a few high-energy spots in red-orange popping up. Precipitation was predicted to start accumulating somewhat. For people who are not used to driving in these conditions, it could be dangerous, but the bigger danger would be how to get home. Conditions were deteriorating, and the worst snowfall was expected in the 11 AM -- 6 PM window.
 
 .. list-table:: Conditions at f012 (2025-01-21 12z)
    :widths: 25 25 25 25
@@ -598,7 +598,7 @@ The SRW App plots show that by f024f (6 PM local time), temperatures were predic
      - .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/qpf_gradient.png
           :align: center
 
-However, NWS was predicting a severe drop in temperatures overnight. 
+Regardless, NWS was predicting a severe drop in temperatures overnight.
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst6_plots/gcb_cold.png
    :align: center
@@ -659,7 +659,7 @@ Overall, New Orleans handled the snow reasonably well under the circumstances, b
 How Did We Do?
 ---------------
 
-Overall, this configuration of the SRW App significantly underpredicted snowfall. Plots show a maximum prediction of about ~1.5 inches, but New Orleans received 8 inches of snow. Due to a lack of publicly available verification data, it is difficult to determine whether wind predictions over land were accurate. For example, both NOMADS and Planetary Computer include :term:`MRMS` verification data for the previous 24 hours only, so users would need to plan in advance to download this data before it becomes unavailable for their experiment. Publicly available :term:`CCPA` or :term:`NDAS` data is also limited. Verification data is key to determining precisely how accurate or inaccurate forecasts are, and in what ways they excel or fall short. With concrete skill measurements, scientists can investigate potential improvements to the current forecasting systems and quantify those improvements once implemented. 
+Overall, this configuration of the SRW App produced reasonable snowfall predictions. Plots show a maximum prediction of about ~1.5 inches of accumulated precipitation, with most of the area in a 0.5-1 in. range, and New Orleans received 8 inches of snow. However, due to a lack of publicly available verification data, it is difficult to determine just how accurate snowfall predictions were and whether wind predictions over land were accurate. For example, both NOMADS and Planetary Computer include :term:`MRMS` verification data for the previous 24 hours only, so users would need to plan in advance to download this data before it becomes unavailable for their experiment. Publicly available :term:`CCPA` or :term:`NDAS` data is also limited. Verification data is key to determining precisely how accurate or inaccurate forecasts are, and in what ways they excel or fall short. With concrete skill measurements, scientists can investigate potential improvements to the current forecasting systems and quantify those improvements once implemented. 
 
 Improving the Forecast
 ------------------------
