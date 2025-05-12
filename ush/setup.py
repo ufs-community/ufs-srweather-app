@@ -361,21 +361,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     user_config_fp = os.path.join(ushdir, user_config_fn)
     expt_config = load_config_for_setup(ushdir, default_config_fp, user_config_fp)
 
-    # Load build settings as a dictionary; will be used later to make
-    # sure the build is consistent with the user settings
-    build_config_fp = Path(expt_config["user"]["EXECdir"], "build_settings.yaml")
-    build_config = get_yaml_config(build_config_fp)
-    logger.debug(f"Read build configuration from {build_config_fp}\n{build_config}")
-
-    # Fail if build machine and config machine are inconsistent
-    if build_config["Machine"].upper() != expt_config["user"]["MACHINE"]:
-        logger.critical(
-            "ERROR: Machine in build settings file != machine specified in config file"
-        )
-        logger.critical(f"build machine: {build_config['Machine']}")
-        logger.critical(f"config machine: {expt_config['user']['MACHINE']}")
-        raise ValueError("Check config settings for correct value for 'machine'")
-
     # Set up some paths relative to the SRW clone
     expt_config["user"].update(
         {
@@ -501,6 +486,23 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                              run_make_lbcs or \
                              run_run_fcst
     run_run_post = dict_find(rocoto_tasks, "task_run_post")
+
+    # Load build settings as a dictionary if build was necessary; this will be used to make
+    # sure the build is consistent with the user settings
+    if run_make_grid or run_make_orog or run_make_sfc_climo or run_any_coldstart_task:
+        build_config_fp = Path(expt_config["user"]["EXECdir"], "build_settings.yaml")
+        build_config = get_yaml_config(build_config_fp)
+        logger.debug(f"Read build configuration from {build_config_fp}\n{build_config}")
+
+        # Fail if build machine and config machine are inconsistent
+        if build_config["Machine"].upper() != expt_config["user"]["MACHINE"]:
+            logger.critical(
+                "ERROR: Machine in build settings file != machine specified in config file"
+            )
+            logger.critical(f"build machine: {build_config['Machine']}")
+            logger.critical(f"config machine: {expt_config['user']['MACHINE']}")
+            raise ValueError("Check config settings for correct value for 'machine'")
+
 
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"]["DOMAIN_PREGEN_BASEDIR"]
