@@ -15,4 +15,5 @@ dependencies:
   - uwtools=2.3.*
   - xarray=2022.11.*
   - typer=0.15.*
+  - click=8.1.*
   - sphinx=7.4.*

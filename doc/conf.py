@@ -66,6 +66,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinxcontrib.bibtex',
+    'sphinxcontrib.plantuml',
 ]
 
 bibtex_bibfiles = ['references.bib']
