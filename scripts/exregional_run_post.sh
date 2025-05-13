@@ -229,9 +229,9 @@ hh=${cyc}
 mnts_secs_str=""
 if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
   if [ ${fhr}${fmn} = "00000" ]; then
-    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
+    mnts_secs_str="-"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M-%S" )
   else
-    mnts_secs_str=":${fmn}:00"
+    mnts_secs_str="-${fmn}-00"
   fi
 fi
 #
