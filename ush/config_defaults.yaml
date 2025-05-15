@@ -2039,7 +2039,6 @@ task_plot_allvars:
     batchargs:
       nodes: 1
       tasks_per_node: 1
-      exclusive: True
       walltime: 01:00:00
   #-------------------------------------------------------------------------
   # Path to the reference experiment's COMOUT directory. This is where the GRIB2 files 
