@@ -196,14 +196,10 @@ Once you verify that the task you want to modify is included in your workflow, y
 Since the run_post_mem###_f### task in post.yaml comes under metatask_run_ens_post and metatask_run_post_mem#mem#_all_fhrs, all of these tasks and metatasks must be included under rocoto: tasks: before defining the walltime variable. Therefore, to change the walltime from 15 to 20 minutes, the rocoto: tasks: section should look like this:
 
                  task_run_post:
-
-                      upp:
-
-                       execution:
-
-                          batchargs:
-
-                               walltime: 00:20:00
+                   upp:
+                     execution:
+                        batchargs:
+                           walltime: 00:20:00
 
 
 Notice that this section contains all three of the tasks/metatasks highlighted in yellow above and lists the walltime where the details of the task begin. While users may simply adjust the walltime variable in post.yaml, learning to make these changes in config.yaml allows for greater flexibility in experiment configuration. Users can modify a single file (config.yaml), rather than (potentially) several workflow YAML files, and can account for differences between experiments instead of hard-coding a single value.
