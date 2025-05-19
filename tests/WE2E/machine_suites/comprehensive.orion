@@ -57,5 +57,5 @@ smoke_dust_grid_RRFS_CONUS_3km_suite_HRRR_gf
 smoke_dust_grid_RRFS_CONUS_25km_suite_RRFS_sas
 specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS
 specify_template_filenames
-subhourly_post
 subhourly_post_ensemble_2mems
+subhourly_post
