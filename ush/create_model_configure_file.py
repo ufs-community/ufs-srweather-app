@@ -22,7 +22,7 @@ from uwtools.api.template import render
 
 
 def create_model_configure_file(
-    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos,
+    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, 
     history_native_grid
     ): #pylint: disable=too-many-arguments
     """Creates a model configuration file in the specified run directory
@@ -35,7 +35,6 @@ def create_model_configure_file(
         sub_hourly_post (bool): Sets subhourly post to either ``True`` or ``False``
         dt_subhourly_post_mnts (int): Subhourly forecast model output and post-processing 
                                       frequency in minutes
-        dt_atmos (int): Atmospheric forecast model's main timestep in seconds
         history_native_grid (bool): If ``True``, write history files on the native FV3 cubed sphere
                                     grid.
 
@@ -290,14 +289,6 @@ def _parse_args(argv):
     )
 
     parser.add_argument(
-        "-t",
-        "--dt-atmos",
-        dest="dt_atmos",
-        required=True,
-        help="Forecast model's main time step.",
-    )
-
-    parser.add_argument(
         "-p",
         "--path-to-defns",
         dest="path_to_defns",
@@ -328,6 +319,5 @@ if __name__ == "__main__":
         fhrot=str_to_type(args.fhrot),
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
-        dt_atmos=str_to_type(args.dt_atmos),
         history_native_grid=str_to_type(args.history_native_grid),
     )

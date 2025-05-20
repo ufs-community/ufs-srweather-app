@@ -25,7 +25,6 @@ class Testing(unittest.TestCase):
                 fhrot=0,
                 sub_hourly_post=True,
                 dt_subhourly_post_mnts=4,
-                dt_atmos=1,
                 history_native_grid=True,
             )
         )
