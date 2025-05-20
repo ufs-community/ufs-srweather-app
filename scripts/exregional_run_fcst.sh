@@ -776,7 +776,6 @@ python3 $USHdir/create_model_configure_file.py \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
-  --dt-atmos "${DT_ATMOS}" \
   --history-native-grid "${HISTORY_NATIVE_GRID}"
 export err=$?
 if [ $err -ne 0 ]; then
