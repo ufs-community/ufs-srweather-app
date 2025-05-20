@@ -22,7 +22,7 @@ from uwtools.api.template import render
 
 
 def create_model_configure_file(
-    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, 
+    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts,
     history_native_grid
     ): #pylint: disable=too-many-arguments
     """Creates a model configuration file in the specified run directory
