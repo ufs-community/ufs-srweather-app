@@ -86,7 +86,7 @@ The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using th
 .. code-block:: console
    
    FV3_GFS_v16
-   FV3_RRFS_v1beta
+   RRFS_sas
    FV3_HRRR
    FV3_WoFS_v0
    FV3_RAP
