@@ -5,13 +5,12 @@
 from datetime import datetime
 import os
 import tempfile
+import shutil
 import unittest
 
 from python_utils import (
-  cp_vrfy,
   date_to_str,
   define_macos_utilities,
-  mkdir_vrfy,
   set_env_var,
 )
 
@@ -47,8 +46,8 @@ class Testing(unittest.TestCase):
                     "mem2",
                 )
 
-        mkdir_vrfy("-p", self.mem_dir)
-        cp_vrfy(
+        os.makedirs(self.mem_dir)
+        shutil.copy(
             os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(self.mem_dir, "input.nml"),
         )

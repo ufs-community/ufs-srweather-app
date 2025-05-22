@@ -83,6 +83,15 @@ class SmokeDustRegridProcessor:
     def _dst_gwrap(self) -> GridWrapper:
         if self.__dst_gwrap is None:
             self.log("creating destination grid from RRFS grid file")
+            # The fixed weight files for these grids are generated with swapped x/y indices. The
+            # other grid fixed files use ESMF indexing default of (x,y).
+            if self._context.predef_grid in (
+                PredefinedGrid.RRFS_NA_3KM,
+                PredefinedGrid.RRFS_CONUS_3KM,
+            ):
+                x_index, y_index = (1, 0)
+            else:
+                x_index, y_index = (0, 1)
             dst_nc2grid = NcToGrid(
                 path=self._context.grid_out,
                 spec=GridSpec(
@@ -94,6 +103,8 @@ class SmokeDustRegridProcessor:
                     y_corner="grid_lat",
                     x_corner_dim=("grid_x",),
                     y_corner_dim=("grid_y",),
+                    x_index=x_index,
+                    y_index=y_index,
                 ),
             )
             self.__dst_gwrap = dst_nc2grid.create_grid_wrapper()
@@ -105,12 +116,11 @@ class SmokeDustRegridProcessor:
             # We are translating metadata and some structure for the destination grid.
             dst_output_gwrap = copy(self._dst_gwrap)
             dst_output_gwrap.corner_dims = None
-            dst_output_gwrap.spec = GridSpec(
-                x_center="geolon", y_center="geolat", x_dim=("lon",), y_dim=("lat",)
-            )
+            spec = GridSpec(x_center="geolon", y_center="geolat", x_dim=("lon",), y_dim=("lat",))
+            dst_output_gwrap.spec = spec
             dst_output_gwrap.dims = deepcopy(self._dst_gwrap.dims)
-            dst_output_gwrap.dims.value[0].name = ("lon",)
-            dst_output_gwrap.dims.value[1].name = ("lat",)
+            dst_output_gwrap.dims.value[spec.x_index].name = ("lon",)
+            dst_output_gwrap.dims.value[spec.y_index].name = ("lat",)
             self.__dst_output_gwrap = dst_output_gwrap
         return self.__dst_output_gwrap
 

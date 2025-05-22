@@ -19,20 +19,27 @@ workflow:
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
-  FV3GFS_FILE_FMT_ICS: nemsio
+  execution:
+    batchargs:
+      walltime: 06:00:00
+  envvars:
+    EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
+    FV3GFS_FILE_FMT_ICS: nemsio
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: UFS-CASE-STUDY
-  LBC_SPEC_INTVL_HRS: 3
-  FV3GFS_FILE_FMT_LBCS: nemsio
-rocoto:
-  tasks:
-    task_get_extrn_ics:
+  execution:
+    batchargs:
       walltime: 06:00:00
-    task_get_extrn_lbcs:
-      walltime: 06:00:00
-    metatask_run_ensemble:
-      task_make_lbcs_mem#mem#:
+  envvars:
+    EXTRN_MDL_NAME_LBCS: UFS-CASE-STUDY
+    LBC_SPEC_INTVL_HRS: 3
+    FV3GFS_FILE_FMT_LBCS: nemsio
+task_make_lbcs:
+  chgres_cube:
+    execution:
+      batchargs:
         walltime: 06:00:00
-      task_run_fcst_mem#mem#:
+task_run_fcst:
+  fv3:
+    execution:
+      batchargs:
         walltime: 06:00:00

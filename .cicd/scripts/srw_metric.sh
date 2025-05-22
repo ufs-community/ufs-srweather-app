@@ -91,7 +91,7 @@ srw_project=${SRW_PROJECT}
 if [[ ${RUN_WE2E_OPT} == true ]]; then
     [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
     cd ${workspace}/tests/WE2E
-    ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${srw_project} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
+    ./run_we2e_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${srw_project} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
 fi
 cd ${workspace}
 
@@ -101,13 +101,13 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     rm -rf ${workspace}/Indy-Severe-Weather/
     # Check if metprd data exists locally otherwise get it from S3
     TEST_EXTRN_MDL_SOURCE_BASEDIR=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform}.yaml | awk '{print $NF}')
-    if [[ -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat ]] ; then
-        mkdir -p Indy-Severe-Weather/metprd/point_stat
-        cp -rp $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat Indy-Severe-Weather/metprd
+    if [[ -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/PointStat ]] ; then
+        mkdir -p Indy-Severe-Weather/metprd/PointStat
+        cp -rp $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/PointStat Indy-Severe-Weather/metprd
     elif [[ -f Indy-Severe-Weather.tgz ]]; then
         tar xvfz Indy-Severe-Weather.tgz 
     else
-        wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v2.1.0/METplus-vx-sample/Indy-Severe-Weather.tgz
+        wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/METplus-vx-sample/Indy-Severe-Weather.tgz
         tar xvfz Indy-Severe-Weather.tgz
     fi
     [[ -f ${SRW_PLATFORM,,}-${srw_compiler}-skill-score.txt ]] && rm ${SRW_PLATFORM,,}-${srw_compiler}-skill-score.txt
@@ -115,7 +115,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
     # In this example, skill score index is a weighted average of 4 skill scores of RMSE statistics for wind speed, dew point temperature, 
     # temperature, and pressure at lowest level in the atmosphere over 6 hour lead time.
-    cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/point_stat/
+    cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/PointStat/
     # Remove conda for Orion due to conda env conflicts
     if [[ ${platform} =~ "orion" ]]; then
         sed -i 's|load("conda")|--load("conda")|g' ${workspace}/modulefiles/tasks/${platform,,}/run_vx.local.lua
@@ -128,7 +128,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
        sed -i 's|--load("conda")|load("conda")|g' ${workspace}/modulefiles/tasks/${platform,,}/run_vx.local.lua
     fi
     # Run stat_analysis
-    stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out ${SRW_PLATFORM,,}-${srw_compiler}-skill-score.txt
+    stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/PointStat -v 2 -out ${SRW_PLATFORM,,}-${srw_compiler}-skill-score.txt
 
     # check skill-score.txt
     cat ${SRW_PLATFORM,,}-${srw_compiler}-skill-score.txt

@@ -10,12 +10,9 @@ workflow:
   DATE_LAST_CYCL: '2024011100'
   FCST_LEN_HRS: 18
   PREEXISTING_DIR_METHOD: rename
-rocoto:
-  tasks:
-    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
-    metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
-        walltime: 01:00:00
+  taskgroups:
+    - parm/wflow/verify_pre.yaml
+    - parm/wflow/verify_det.yaml
 verification:
   VX_FCST_MODEL_NAME: RRFS_smoke_test
   VX_FIELD_GROUPS: [ "AOD", "PM25", "PM10" ]

@@ -40,6 +40,7 @@ jobs:
           pylint ush/set_fv3nml*.py
           pylint ush/update_input_nml.py
           pylint ush/smoke_dust
+          pylint ush/setup.py
 
       - name: Checkout externals
         run: |

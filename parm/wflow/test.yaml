@@ -9,20 +9,27 @@ default_task_test: &default_task
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
-    FCST_DIR: !cycstr '&FCST_DIR;'
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    subcyc: !cycstr "@M"
-    LOGDIR: !cycstr "&LOGDIR;"
+    FCST_DIR:
+      cyclestr:
+        value:  '&FCST_DIR;'
+    PDY:
+      cyclestr:
+        value:  "@Y@m@d"
+    cyc:
+      cyclestr:
+        value:  "@H"
+    subcyc:
+      cyclestr:
+        value:  "@M"
+    LOGDIR:
+      cyclestr:
+        value:  "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nnodes: 1
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  ppn: 24
+  partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
-  walltime: 00:05:00
+  walltime: '{{ task_integration_test.execution.batchargs.walltime }}'
 
 metatask_integration_test:
   var:
@@ -30,7 +37,10 @@ metatask_integration_test:
   task_integration_test_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK; "integration_test" "&JOBSdir;/JREGIONAL_INTEGRATION_TEST"'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nodes: '{{ task_integration_test.execution.batchargs.nodes }}:ppn={{ task_integration_test.execution.batchargs.tasks_per_node }}'
+    join:
+      cyclestr:
+        value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     dependency:
       and_run_fcst: 
         taskvalid:

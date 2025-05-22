@@ -8,13 +8,14 @@ import argparse
 import os
 import sys
 from textwrap import dedent
-from uwtools.api.template import render
 
 from python_utils import (
     flatten_dict,
-    load_yaml_config,
     print_info_msg,
 )
+
+from uwtools.api.config import get_yaml_config
+from uwtools.api.template import render
 
 def create_ufs_configure_file(run_dir,cfg):
     """ Creates a UFS configuration file in the specified run directory
@@ -158,6 +159,6 @@ def _parse_args(argv):
 
 if __name__ == "__main__":
     args = _parse_args(sys.argv[1:])
-    conf = load_yaml_config(args.path_to_defns)
+    conf = get_yaml_config(args.path_to_defns)
     confg = flatten_dict(conf)
     create_ufs_configure_file(run_dir=args.run_dir,cfg=confg)

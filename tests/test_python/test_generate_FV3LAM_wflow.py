@@ -3,12 +3,12 @@ ush directory """
 
 #pylint: disable=invalid-name
 import os
+import shutil
 import sys
 import unittest
 from multiprocessing import Process
 
 from python_utils import (
-    cp_vrfy,
     run_command,
     define_macos_utilities,
     set_env_var,
@@ -47,13 +47,13 @@ class Testing(unittest.TestCase):
         if not os.path.exists(build_settings_file):
             os.makedirs(EXECdir, exist_ok=True)
             with open(build_settings_file, 'w', encoding='utf-8') as build_settings:
-                build_settings.write('Machine: linux\n')
+                build_settings.write('Machine: LINUX\n')
                 build_settings.write('Application:\n')
 
         # community test case
-        cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
+        shutil.copy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(
-            f"""{sed} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
+            f"""{sed} -i 's/MACHINE: HERA/MACHINE: LINUX/g' {USHdir}/config.yaml"""
         )
         # If running CI, point config.yaml to correct location for fix files
         if fix_files:=get_env_var("CI_FIX_FILES"):

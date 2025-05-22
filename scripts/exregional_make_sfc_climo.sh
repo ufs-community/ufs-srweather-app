@@ -33,9 +33,6 @@
 #     VERBOSE
 #
 #   task_make_sfc_climo:
-#     KMP_AFFINITY_MAKE_SFC_CLIMO
-#     OMP_NUM_THREADS_MAKE_SFC_CLIMO
-#     OMP_STACKSIZE_MAKE_SFC_CLIMO
 #     SFC_CLIMO_DIR
 #
 #   constants:
@@ -55,7 +52,15 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user nco platform workflow constants task_make_sfc_climo ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  constants
+  task_make_sfc_climo.envvars
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -94,16 +99,6 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that generates surface fields from
 climatology.
 ========================================================================"
-#
-#-----------------------------------------------------------------------
-#
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_MAKE_SFC_CLIMO}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_SFC_CLIMO}
-export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_SFC_CLIMO}
 #
 #-----------------------------------------------------------------------
 #

@@ -8,8 +8,19 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-for sect in user nco platform workflow nco global verification cpl_aqm_parm \
-  constants fixed_files grid_params ; do
+sections=(
+  user
+  nco
+  platform
+  workflow
+  global
+  verification
+  cpl_aqm_parm
+  constants
+  fixed_files
+  grid_params
+)
+for sect in ${sections[*]} ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
@@ -20,7 +31,7 @@ done
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; sex -xue; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #

@@ -127,8 +127,8 @@ The small set of Natural Earth shapefiles required for SRW App plotting tasks is
 
 .. code-block:: console
 
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth/NaturalEarth.tgz
-   tar -xzf NaturalEarth.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/develop-20240618/NaturalEarth.tar.gz
+   tar xvfz NaturalEarth.tgz
 
 The full set of Natural Earth shapefiles can also be downloaded from the `Natural Earth website <https://www.naturalearthdata.com/downloads/>`_. 
 
