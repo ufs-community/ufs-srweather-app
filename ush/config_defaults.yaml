@@ -2352,9 +2352,13 @@ verification_resources:
     tasks_per_node: 1
     deterministic:
       gridstat:
+        tasks_per_node: '{{ verification.VX_TASKS }}'
         walltime: 02:00:00
+        memory: '{{ 2 * verification.VX_TASKS }}G'
       pointstat:
+        tasks_per_node: '{{ verification.VX_TASKS }}'
         walltime: 01:00:00
+        memory: '{{ 2 * verification.VX_TASKS }}G'
     ensemble:
       genensprod:
         default:
@@ -2769,6 +2773,10 @@ verification:
   # guide (https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixB.html#grids)
   # or under ufs-srweather-app/parm/metplus/GRIDNAME.poly
   VX_MASK: []
+
+  # Number of verification tasks to run in parallel; this works for METplus tools that work on
+  # sequential forecast hours, and so can be run simultaneously.
+  VX_TASKS: 1
 
 #----------------------------
 # CPL_AQM config parameters

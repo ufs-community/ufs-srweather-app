@@ -26,3 +26,4 @@ verification:
   NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/ndas/proc'
   AERONET_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/aeronet/proc'
   AIRNOW_OBS_DIR:  /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/WE2E_test_data/airnow
+  VX_TASKS: 12

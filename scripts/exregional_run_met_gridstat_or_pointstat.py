@@ -3,12 +3,11 @@ import ast
 import logging
 import os
 import subprocess
-import shutil
-import tempfile
 import sys
+
 from pathlib import Path
-from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
+from multiprocessing import Pool
 from string import Template
 from textwrap import dedent
 
@@ -85,7 +84,7 @@ def set_vx_params(obtype,field_group,accum_hh):
     return grid_or_point, fieldname_in_obs_in, fieldname_in_fcst_in, fieldname_in_MET_out, fieldname_in_MET_filedir_names
 
 
-def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index,obs_avail_intvl_hrs,fcst_level,fcst_thresh,logdir,nprocs,debug,logger):
+def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index,obs_avail_intvl_hrs,fcst_level,fcst_thresh,logdir,nprocs,debug,lgr):
     """Main program for setting up GridStat task and calling METplus wrapper"""
 
     # Read config settings
@@ -287,32 +286,98 @@ def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index
                'vx_config_dict': vx_config_dict
                }
 
-    # Render Jinja template
+    conf_files = render_metplus_confs(cfg,settings,metplus_config_tmpl_fn,vx_leadhr_list,lgr)
+    print(f"{conf_files=}")
+
+    lgr.info(f"Running {MetplusToolName} with METplus with {vxcfg['VX_TASKS']} tasks")
+    args = []
+    for config_fn in conf_files:
+        args.append( (os.path.join(cfg['user']['METPLUS_CONF'], "common.conf"),config_fn) )
+    # Call run_metplus function for as many processors as specified
+        print(f"{args=}")
+    with Pool(processes=vxcfg['VX_TASKS']) as pool:
+        pool.starmap(run_metplus,args)
+
+    lgr.info(f"{MetplusToolName} completed successfully.")
+
+
+def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,logger):
+    """Renders metplus conf files from the appropriate template and user settings.
+    If VX_TASKS > 1 and vx_leadhr_list > 1, renders a conf file for each parallel task.
+    Returns the filename(s) of metplus conf files that were rendered"""
+
+    tasks = cfg["verification"]["VX_TASKS"]
+    num_fhrs = len(vx_leadhr_list)
+    metplus_config_fn=settings['metplus_config_fn']
+    outconf = f"{settings['output_dir']}/{settings['metplus_config_fn']}"
+    outconfs = []
     print(f"{cfg['user']['METPLUS_CONF']=}")
     env = Environment(loader=FileSystemLoader(cfg['user']['METPLUS_CONF']))
-    print(f"{metplus_config_tmpl_fn=}")
-    template = env.get_template(metplus_config_tmpl_fn)
-    rendered = template.render(settings)
-    with open(f"{output_dir}/{metplus_config_fn}",'w', encoding="utf-8") as f:
-        f.write(rendered)
+    print(f"{template_fn=}")
+    template = env.get_template(template_fn)
 
+    
+    if tasks > 1:
+        # Break down forecast hours according to number of tasks requested
+        if tasks > num_fhrs:
+            logger.warning("Number of tasks is greater than number of forecast hours\n"\
+                           f"Only running {num_fhrs} tasks in parallel")
+            tasks = len(vx_leadhr_list)
+
+
+        for i in range(tasks):
+            print(f"{vx_leadhr_list=}")
+            print(f"{i=}")
+            # We will have i conf files, so append i to the base filename for each
+            thisconf = outconf + f".{i}"
+            print(f"{thisconf=}")
+            hours_per_task,remainder = divmod(num_fhrs,tasks)
+            print(f"{hours_per_task=}")
+            print(f"{remainder=}")
+            # For cases where things don't divide evenly, ensure we get best distribution
+            if remainder==0:
+                remainder=tasks
+            print(f"{remainder=}")
+            if i > remainder:
+                vx_leadhr_list, task_fhrs = vx_leadhr_list[hours_per_task-1:],vx_leadhr_list[:hours_per_task-1]
+            else:
+                vx_leadhr_list, task_fhrs = vx_leadhr_list[hours_per_task:],vx_leadhr_list[:hours_per_task]
+            print(f"{task_fhrs=}")
+            print(f"{vx_leadhr_list=}")
+
+            settings['vx_leadhr_list'] = ', '.join(map(str,task_fhrs))
+            settings['metplus_config_fn'] = f"{settings['metplus_config_fn']}.{i}"
+            rendered = template.render(settings)
+            with open(thisconf,'w', encoding="utf-8") as f:
+                f.write(rendered)
+            outconfs.append(thisconf)
+    else:
+        rendered = template.render(settings)
+        with open(outconf,'w', encoding="utf-8") as f:
+            f.write(rendered)
+        outconfs = [outconf]
+
+    return outconfs
+
+def run_metplus(common_config,config_fn):
+    """Calls the run_metplus script as a subprocess.
+    If VX_TASKS > 1 and vx_leadhr_list > 1, calls in with starmap for the number of tasks specified."""
 
     # Run METplus
-    logger.info(f"Running {MetplusToolName} with METplus")
     metplus_path = os.environ["METPLUS_PATH"]
     subprocess.run([
         f"{metplus_path}/ush/run_metplus.py",
-        "-c", os.path.join(cfg['user']['METPLUS_CONF'], "common.conf"),
-        "-c", f"{output_dir}/{metplus_config_fn}"
+        "-c", common_config,
+        "-c", config_fn
     ], check=True)
 
-    logger.info(f"{MetplusToolName} completed successfully.")
 
 def setup_logging(debug=False):
 
     """Calls initialization functions for logging package, and sets the
     user-defined level for logging in the script."""
 
+    logging.basicConfig()
     logger = logging.getLogger(__name__)
     if debug:
         print("Setting logging to DEBUG")

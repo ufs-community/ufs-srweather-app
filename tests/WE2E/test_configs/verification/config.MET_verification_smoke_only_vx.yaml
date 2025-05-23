@@ -23,4 +23,5 @@ verification:
   AERONET_OBS_DIR: '/mnt/lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/RRFS_retro/obs_data/aeronet'
   AIRNOW_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/airnow'
   GOESAOD_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/goesaod'
+  VX_TASKS: 4
 
