@@ -80,7 +80,7 @@ def create_fake_context(root_dir: Path, overrides: Union[dict, None] = None) -> 
         "predef_grid": "RRFS_CONUS_3km",
         "ebb_dcycle": "2",
         "restart_interval": "6 12 18 24",
-        "persistence": "false",
+        "persistence": "true",
         "rave_qa_filter": "none",
         "exit_on_error": "TRUE",
         "log_level": "debug",

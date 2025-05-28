@@ -62,3 +62,6 @@ fire:
   FIRE_UPWINDING: 9
   FIRE_LSM_ZCOUPLING: False
   FIRE_LSM_ZCOUPLING_REF: 60.0
+task_integration_test:
+  envvars:
+    TEST_UFS_FIRE: true

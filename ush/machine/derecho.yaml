@@ -57,3 +57,6 @@ cpl_aqm_parm:
 smoke_dust_parm:
   COMINsmoke_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
   COMINrave_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire
+fire:
+  envvars:
+    FIRE_INPUT_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/UFS_FIRE/2020081318

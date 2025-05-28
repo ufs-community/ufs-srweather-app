@@ -3,8 +3,8 @@ metadata:
     Sample fire config
 user:
   RUN_ENVIR: community
-  MACHINE: DERECHO
-  ACCOUNT: ACCOUNT_NUMBER
+  MACHINE: [MACHINE]
+  ACCOUNT: [account]
 workflow:
   USE_CRON_TO_RELAUNCH: true
   EXPT_SUBDIR: fire_test_case
@@ -18,16 +18,18 @@ workflow:
   COMPILER: intel
 task_get_extrn_ics:
   envvars:
-    USE_USER_STAGED_EXTRN_FILES: true
-    EXTRN_MDL_SOURCE_BASEDIR_ICS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
+    # Example ICs are staged on Tier 1 platforms. Uncomment to use user-staged data.
+#    USE_USER_STAGED_EXTRN_FILES: true
+#    EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/directory/containing/ics
     EXTRN_MDL_NAME_ICS: HRRR
     FV3GFS_FILE_FMT_ICS: grib2
     EXTRN_MDL_FILES_ICS:
       - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
 task_get_extrn_lbcs:
   envvars:
-    USE_USER_STAGED_EXTRN_FILES: true
-    EXTRN_MDL_SOURCE_BASEDIR_LBCS: '{{ fire.FIRE_INPUT_DIR }}/HRRR'
+    # Example LBCs are staged on Tier 1 platforms. Uncomment to use user-staged data.
+#    USE_USER_STAGED_EXTRN_FILES: true
+#    EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/directory/containing/lbcs
     EXTRN_MDL_FILES_LBCS:
       - '{fyyyymmdd}.hrrr.t{fhh}z.wrfprsf00.grib2'
     EXTRN_MDL_NAME_LBCS: HRRR
@@ -40,15 +42,18 @@ task_run_fcst:
       batchargs:
         walltime: 01:00:00
   envvars:
-    PRINT_ESMF: True
+    PRINT_ESMF: False
   QUILTING: true
 task_plot_allvars:
   envvars:
     COMOUT_REF: ""
 fire:
-  UFS_FIRE: True
+  envvars:
+    UFS_FIRE: True
+  # Uncomment to override the input directory location. An example netCDF for this configuration is
+  # staged on Tier 1 platform and set in the platform-specific YAML files.
+#    FIRE_INPUT_DIR: /path/to/directory/containing/geo_em.d01.nc
   FIRE_NUM_TASKS: 1
-  FIRE_INPUT_DIR: /glade/derecho/scratch/kavulich/FIRE/2024/test_data
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300
   FIRE_NUM_IGNITIONS: 1

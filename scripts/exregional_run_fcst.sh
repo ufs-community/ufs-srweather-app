@@ -776,7 +776,8 @@ python3 $USHdir/create_model_configure_file.py \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
-  --dt-atmos "${DT_ATMOS}"
+  --dt-atmos "${DT_ATMOS}" \
+  --history-native-grid "${HISTORY_NATIVE_GRID}"
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to function to create a model configuration file 
@@ -887,6 +888,20 @@ the current cycle's (cdate) run directory (DATA) failed:
   else
     print_err_msg_exit "${message_txt}"
   fi
+fi
+#
+#-----------------------------------------------------------------------
+# Link the zero-halo grid to support cubed sphere native history file
+# writing
+#-----------------------------------------------------------------------
+#
+if [ -d "${EXPTDIR}/grid" ] && [ $(boolify "${HISTORY_NATIVE_GRID}") = "TRUE" ]; then
+  print_info_msg "Creating link to halo0 file"
+  create_symlink_to_file "$(find "${EXPTDIR}/grid" -type f -name "C*_grid.tile7.halo0.nc")" \
+                         INPUT/grid.tile7.halo0.nc \
+                         || print_info_msg "Link to halo0 grid exists"
+else
+  print_info_msg "History not written to native grid or dynamically-generated grids not used. No hala0 grid link created."
 fi
 #
 #-----------------------------------------------------------------------
