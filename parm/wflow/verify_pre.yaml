@@ -283,6 +283,7 @@ metatask_PcpCombine_APCP_all_accums_all_mems:
         cycledefs: forecast
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      walltime: "{{ verification_resources.execution.pcpcombine.fcst.walltime }}"
       envars:
         <<: *default_vars
         FIELD_GROUP: 'APCP'
@@ -359,4 +360,4 @@ metatask_PcpCombine_fcst_PM_all_mems:
           value:
             cyclestr:
               value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
-      walltime: '{{ verification_resources.execution.pcpcombine.ensemble.walltime }}'
+      walltime: '{{ verification_resources.execution.pcpcombine.fcst.walltime }}'

@@ -2389,7 +2389,7 @@ verification_resources:
     ascii2nc:
       walltime: 00:30:00
     pcpcombine:
-      ensemble:
+      fcst:
         walltime: 00:30:00
       obs:
         walltime: 00:10:00

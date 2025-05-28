@@ -240,8 +240,8 @@ def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index
     # Set the names of the template METplus configuration file, the resulting rendered conf file, and the METplus log file
 
     metplus_config_tmpl_fn="GridStat_or_PointStat.conf"
-    metplus_config_fn=f"{MetplusToolName}_{met_filedir_name}_{field_group}_{ensmem}.conf"
-    metplus_log_fn=f"metplus.log.{metplus_config_fn[:-5]}_{cycle_date}"
+    metplus_config_fn=f"{MetplusToolName}_{met_filedir_name}_{field_group}_{ensmem}.conf.0"
+    metplus_log_fn=f"metplus.log.{metplus_config_fn[:-7]}_{cycle_date}.0"
 
     # Load YAML file containing configuration for deterministic verification
     vx_config_dict = uwconfig.get_yaml_config(config=f"{cfg['user']['METPLUS_CONF']}/{vxcfg['VX_CONFIG_DET_FN']}")
@@ -286,7 +286,7 @@ def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index
                'vx_config_dict': vx_config_dict
                }
 
-    conf_files = render_metplus_confs(cfg,settings,metplus_config_tmpl_fn,vx_leadhr_list,lgr)
+    conf_files = render_metplus_confs(cfg,settings,metplus_config_tmpl_fn,vx_leadhr_list,metplus_config_fn,lgr)
     print(f"{conf_files=}")
 
     lgr.info(f"Running {MetplusToolName} with METplus with {vxcfg['VX_TASKS']} tasks")
@@ -301,22 +301,20 @@ def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index
     lgr.info(f"{MetplusToolName} completed successfully.")
 
 
-def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,logger):
+def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,metplus_config_fn,logger):
     """Renders metplus conf files from the appropriate template and user settings.
     If VX_TASKS > 1 and vx_leadhr_list > 1, renders a conf file for each parallel task.
     Returns the filename(s) of metplus conf files that were rendered"""
 
     tasks = cfg["verification"]["VX_TASKS"]
     num_fhrs = len(vx_leadhr_list)
-    metplus_config_fn=settings['metplus_config_fn']
-    outconf = f"{settings['output_dir']}/{settings['metplus_config_fn']}"
     outconfs = []
     print(f"{cfg['user']['METPLUS_CONF']=}")
+    logger.debug(f"Loading METplus conf template file: {template_fn}")
+    logger.debug(f"from directory {cfg['user']['METPLUS_CONF']}")
     env = Environment(loader=FileSystemLoader(cfg['user']['METPLUS_CONF']))
-    print(f"{template_fn=}")
     template = env.get_template(template_fn)
 
-    
     if tasks > 1:
         # Break down forecast hours according to number of tasks requested
         if tasks > num_fhrs:
@@ -326,32 +324,35 @@ def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,logger):
 
 
         for i in range(tasks):
-            print(f"{vx_leadhr_list=}")
-            print(f"{i=}")
+            logger.debug(f"Rendering conf file for task {i}")
             # We will have i conf files, so append i to the base filename for each
-            thisconf = outconf + f".{i}"
-            print(f"{thisconf=}")
+            settings['metplus_log_fn'] = f"{settings['metplus_log_fn'].rsplit('.',1)[0]}.{i}"
+            settings['metplus_config_fn'] = f"{settings['metplus_config_fn'].rsplit('.',1)[0]}{i}"
+            outconf = f"{settings['output_dir']}/{settings['metplus_config_fn']}"
+            logger.debug(f"metplus log file for task: {settings['metplus_log_fn']}")
+            logger.debug(f"metplus final rendered conf for task: {outconf}")
             hours_per_task,remainder = divmod(num_fhrs,tasks)
-            print(f"{hours_per_task=}")
-            print(f"{remainder=}")
             # For cases where things don't divide evenly, ensure we get best distribution
-            if remainder==0:
-                remainder=tasks
-            print(f"{remainder=}")
-            if i > remainder:
-                vx_leadhr_list, task_fhrs = vx_leadhr_list[hours_per_task-1:],vx_leadhr_list[:hours_per_task-1]
-            else:
+            if i >= remainder:
                 vx_leadhr_list, task_fhrs = vx_leadhr_list[hours_per_task:],vx_leadhr_list[:hours_per_task]
-            print(f"{task_fhrs=}")
-            print(f"{vx_leadhr_list=}")
-
+            else:
+                vx_leadhr_list, task_fhrs = vx_leadhr_list[hours_per_task+1:],vx_leadhr_list[:hours_per_task+1]
             settings['vx_leadhr_list'] = ', '.join(map(str,task_fhrs))
-            settings['metplus_config_fn'] = f"{settings['metplus_config_fn']}.{i}"
+            logger.debug(f"Task {i} will process lead hours: {settings['vx_leadhr_list']}")
             rendered = template.render(settings)
-            with open(thisconf,'w', encoding="utf-8") as f:
+            with open(outconf,'w', encoding="utf-8") as f:
                 f.write(rendered)
-            outconfs.append(thisconf)
+            outconfs.append(outconf)
+
     else:
+        #Remove task-specific suffixes if we're only using one task
+        settings['metplus_log_fn'] = settings['metplus_log_fn'].rsplit('.',1)[0]
+        settings['metplus_config_fn'] = settings['metplus_config_fn'].rsplit('.',1)[0]
+        outconf = f"{settings['output_dir']}/{settings['metplus_config_fn']}"
+        logger.debug("Rendering conf file")
+        logger.debug(f"metplus log file: {settings['metplus_log_fn']}")
+        logger.debug(f"metplus final rendered conf: {settings['metplus_config_fn']}")
+        logger.debug(f"Will process lead hours: {settings['vx_leadhr_list']}")
         rendered = template.render(settings)
         with open(outconf,'w', encoding="utf-8") as f:
             f.write(rendered)
