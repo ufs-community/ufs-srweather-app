@@ -516,9 +516,6 @@ FV3_GFS_v15p2:
     xkzm_h: 1.0
     xkzm_m: 1.0
     xkzminv: 0.3
-  namsfc:
-    landice: True
-    ldebug: False
   surf_map_nml: null
 
 FV3_GFS_v15_thompson_mynn_lam3km:
@@ -640,9 +637,6 @@ FV3_GFS_v16:
   mpp_io_nml:
     deflate_level: 1
     shuffle: 1
-  namsfc:
-    landice: True
-    ldebug: False
   surf_map_nml: null
 
 FV3_GFS_v17_p8:

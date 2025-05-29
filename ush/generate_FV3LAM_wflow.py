@@ -31,7 +31,6 @@ from python_utils import (
 )
 
 from setup import setup
-from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
 
@@ -430,22 +429,6 @@ def generate_FV3LAM_wflow(
             )
         # pylint: enable=undefined-variable
     #
-    # If not running the TN_MAKE_GRID task (which implies the workflow will
-    # use pregenerated grid files), set the namelist variables specifying
-    # the paths to surface climatology files.  These files are located in
-    # (or have symlinks that point to them) in the FIXlam directory.
-    #
-    # Note that if running the TN_MAKE_GRID task, this action usually cannot
-    # be performed here but must be performed in that task because the names
-    # of the surface climatology files depend on the CRES parameter (which is
-    # the C-resolution of the grid), and this parameter is in most workflow
-    # configurations is not known until the grid is created.
-    #
-    if ( not expt_config['rocoto']['tasks'].get('task_make_grid') and
-         dict_find(expt_config["rocoto"]["tasks"], "task_run_fcst") ):
-        set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
-
-    #
     # -----------------------------------------------------------------------
     #
     # Generate UFS_FIRE namelist if needed. Most variables in the &time section
@@ -763,31 +746,6 @@ def setup_fv3_namelist(expt_config,debug):
         dummy_run_dir = dummy_run_dir / "any_ensmem"
 
     regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-    namsfc_dict = {}
-    for mapping in expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]:
-
-        nml_var_name, FIXam_fn = find_pattern_in_str(regex_search, mapping)
-
-        fp = '""'
-        if FIXam_fn:
-            fp = os.path.join(FIXam, FIXam_fn)
-            #
-            # If not in NCO mode, for portability and brevity, change fp so that it
-            # is a relative path (relative to any cycle directory immediately under
-            # the experiment directory).
-            #
-            if expt_config["user"]["RUN_ENVIR"] != "nco":
-                fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
-        #
-        # Add a line to the variable "settings" that specifies (in a yaml-compliant
-        # format) the name of the current namelist variable and the value it should
-        # be set to.
-        #
-        namsfc_dict[nml_var_name] = fp
-    #
-    # Add namsfc_dict to settings
-    #
-    settings["namsfc"] = namsfc_dict
     #
     # Use netCDF4 when running the North American 3-km domain due to file size.
     #
