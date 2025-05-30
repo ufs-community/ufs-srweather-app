@@ -23,7 +23,6 @@ from python_utils import (
     check_for_preexist_dir_file,
     dict_find,
     export_vars,
-    find_pattern_in_str,
     flatten_dict,
     import_vars,
     list_to_str,
@@ -731,21 +730,6 @@ def setup_fv3_namelist(expt_config,debug):
     # Update levp in external_ic_nml
     settings["external_ic_nml"] = {"levp": expt_config["task_make_lbcs"]["LEVP"]}
 
-    #
-    # Add to "settings" the values of those namelist variables that specify
-    # the paths to fixed files in the FIXam directory.  As above, these namelist
-    # variables are physcs-suite-independent.
-    #
-    # Note that the array FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
-    # the mapping between the namelist variables and the names of the files
-    # in the FIXam directory.  Here, we loop through this array and process
-    # each element to construct each line of "settings".
-    #
-    dummy_run_dir = Path(expt_config["workflow"]["EXPTDIR"], "any_cyc")
-    if expt_config["global"]["DO_ENSEMBLE"]:
-        dummy_run_dir = dummy_run_dir / "any_ensmem"
-
-    regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
     #
     # Use netCDF4 when running the North American 3-km domain due to file size.
     #
