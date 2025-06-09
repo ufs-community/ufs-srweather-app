@@ -92,7 +92,6 @@ task_nexus_post_split:
     <<: *default_vars
     nprocs: '{{ task_nexus_post_split.execution.batchargs.nodes * task_nexus_post_split.execution.batchargs.tasks_per_node }}'
   nodes: '{{ task_nexus_post_split.execution.batchargs.nodes }}:ppn={{ task_nexus_post_split.execution.batchargs.tasks_per_node }}'
-  exclusive: "True"
   walltime: '{{ task_nexus_post_split.execution.batchargs.walltime }}'
   dependency:
     metataskdep:

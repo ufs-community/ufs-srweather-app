@@ -2,7 +2,7 @@ metadata:
   description: config for SRW-AQM, AQM_NA_13km, warm-start
 user:
   RUN_ENVIR: community
-  MACHINE: [HERA/ORION/HERCULES/DERECHO]
+  MACHINE: [HERA/ORION/HERCULES/DERECHO/GAEAC6]
   ACCOUNT: [account name]
 workflow:
   USE_CRON_TO_RELAUNCH: true
@@ -22,7 +22,8 @@ workflow:
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
   COLDSTART: false      # set to true for cold start
-  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
+  WARMSTART_CYCLE_DIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/aqm_data/restart/2023111000 # for gaeac6
+#  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
 #  WARMSTART_CYCLE_DIR: '/work/noaa/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for orion/hercules
 #  WARMSTART_CYCLE_DIR: '/glade/work/chanhooj/SRW-AQM_DATA/aqm_data/restart/2023111000' # for derecho
 
@@ -36,9 +37,6 @@ nco:
   envir_default: test_aqm_warmstart
   NET_default: aqm
   RUN_default: aqm
-#rocoto: # uncomment this section in case of COLDSTART: true
-#  tasks:
-#    task_aqm_ics_ext: !remove
 task_get_extrn_ics:
   envvars:
     EXTRN_MDL_NAME_ICS: FV3GFS
@@ -50,6 +48,11 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 6
     FV3GFS_FILE_FMT_LBCS: netcdf
     EXTRN_MDL_LBCS_OFFSET_HRS: 0
+task_nexus_emission:
+  envvars:
+    PPN_NEXUS_EMISSION: 20
+    NNODES_NEXUS_EMISSION: 4
+    OMP_NUM_THREADS_NEXUS_EMISSION: 2
 task_run_fcst:
   fv3:
     execution:
@@ -95,6 +98,6 @@ cpl_aqm_parm:
   AQM_RC_FIRE_FREQUENCY: hourly
   AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
   AQM_GEFS_FILE_PREFIX: geaer
+  AQM_GEFS_FILE_CYC: '00'
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 3
-

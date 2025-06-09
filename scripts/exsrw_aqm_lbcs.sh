@@ -234,7 +234,7 @@ EOF
   export pgm="gefs2lbc_para"
 
   . prep_step
-  eval ${RUN_CMD_AQMLBC} ${EXECdir}/$pgm >>$pgmout 2>errfile
+  eval ${RUN_CMD_AQMLBC} -n ${numts} ${EXECdir}/$pgm >>$pgmout 2>errfile
   export err=$?; err_chk
 
   print_info_msg "

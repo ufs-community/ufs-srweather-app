@@ -104,7 +104,7 @@ else
     else
       message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
-  DCOMINfire = \"${DCOMINfire}\""
+  COMINfire = \"${COMINfire}\""
 
       cp -p ${FIXaqm}/fire/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
       print_info_msg "WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."

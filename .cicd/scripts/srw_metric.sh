@@ -91,7 +91,7 @@ srw_project=${SRW_PROJECT}
 if [[ ${RUN_WE2E_OPT} == true ]]; then
     [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
     cd ${workspace}/tests/WE2E
-    ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${srw_project} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
+    ./run_we2e_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${srw_project} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
 fi
 cd ${workspace}
 
