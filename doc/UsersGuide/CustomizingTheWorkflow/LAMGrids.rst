@@ -25,35 +25,9 @@ These five options are provided for flexibility related to compute resources and
 
 .. _GridPhysicsCombos:
 
-.. table:: *Preferred grid and physics combinations for supported domains & physics suites*
+The GFS_v16 suite has been thoroughly tested at a global 13-km resolution but is not recommended for high-resolution applications (3 km or less). The WoFS suite is specifically designed for the 1-km Warn-on-Forecast System. The HRRR, HRRR_gf, and RAP suites are based on configurations used in the operational HRRR (3 km) and RAP (13 km) models, respectively.
 
-   +-------------------+------------------+
-   | Grid              | Physics Suite(s) |
-   +===================+==================+
-   | RRFS_CONUS_3km    | FV3_RRFS_v1beta  |
-   |                   |                  |
-   |                   | FV3_HRRR         |
-   |                   |                  |
-   |                   | FV3_WoFS         |
-   +-------------------+------------------+
-   | SUBCONUS_Ind_3km  | FV3_RRFS_v1beta  |
-   |                   |                  |
-   |                   | FV3_HRRR         |
-   |                   |                  |
-   |                   | FV3_WoFS         |
-   +-------------------+------------------+
-   | RRFS_CONUS_13km   | FV3_GFS_v16      |
-   |                   |                  |
-   |                   | FV3_RAP          |
-   +-------------------+------------------+
-   | RRFS_NA_13km      | FV3_RAP          |
-   |                   |                  |
-   |                   | FV3_GFS_v16      |
-   +-------------------+------------------+
-   | RRFS_CONUS_25km   | FV3_GFS_v16      |
-   |                   |                  |
-   |                   | FV3_RAP          |
-   +-------------------+------------------+
+The HRRR and WoFS suites do not include convective parameterization and are therefore not recommended for resolutions greater than 3 km.
 
 In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
 

@@ -127,7 +127,6 @@ linkcheck_anchors_ignore = [r"current_srw_release_data/",
                             r"fix.*",
                             r"experiment-user-cases/.*",
                             r"rrfs_a/*",
-                            r"develop-20240618/*",
                             r"develop-20250321/.*",
                             ]
 
