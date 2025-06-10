@@ -130,7 +130,7 @@ In general, there are two options for using more compute power: (1) increase the
 
 Increase Number of PEs
 
-PEs are processing elements, which correspond to the number of MPI processes/tasks. In the SRW App, PE_MEMBER01 is the number of MPI processes required by the forecast. It is calculated by:
+PEs are processing elements, which correspond to the number of :numref:`MPI %s <glossary>`  processes/tasks. In the SRW App, PE_MEMBER01 is the number of MPI processes required by the forecast. It is calculated by:
 
 OMP_NUM_THREADS_RUN_FCST * (LAYOUT_X * LAYOUT_Y + WRTCMP_write_groups * WRTCMP_write_tasks_per_group) + FIRE_NUM_TASKS when QUILTING is true. Since these variables are connected, it is recommended that users consider how many processors they want to use to run the forecast model and work backwards to determine the other values.
 
@@ -140,7 +140,7 @@ The WRTCMP_write_tasks_per_group value will depend on domain (i.e., grid) size. 
 
 The OMP_NUM_THREADS_RUN_FCST is the number of OpenMP threads to use for parallel regions, LAYOUT_X and LAYOUT_Y variables are the number of MPI tasks to use in the horizontal x and y directions of the regional grid when running the forecast model, and FIRE_NUM_TASKS is the number of MPI tasks assigned to the FIRE_BEHAVIOR component. Note that the LAYOUT_X and LAYOUT_Y variables only affect the number of MPI tasks used to compute the forecast, not resolution of the grid. The larger these values are, the more work is involved when generating a forecast. That work can be spread out over more MPI processes to increase the speed, but this requires more computational resources. There is a limit where adding more MPI processes will no longer increase the speed at which the forecast completes, but the UFS scales well into the thousands of MPI processes.
 
-Users can take a look at the SRW App predefined grids to get a better sense of what values to use for different types of grids. The Computational Parameters and Write Component Parameters sections of the SRW App User’s Guide define these variables.
+Users can take a look at the :numref:`Section %s <ConfigTasks>` SRW App predefined grids to get a better sense of what values to use for different types of grids. The Computational Parameters and Write Component Parameters sections of the SRW App User’s Guide define these variables.
 
 Enable More Threads
 
