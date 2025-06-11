@@ -219,7 +219,7 @@ where:
 
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``, ``intel-oneapi-compilers/2022.2.1``, ``intel/2023.2.0``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``, ``intel-oneapi-mpi/2021.7.1``, ``cray-mpich/8.1.28``)
-   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options.
+   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``derecho``, ``noaacloud``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options.
    * ``-i`` indicates the full path to the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu22.04-intel-ue-1.6.0-srw-dev`` or ``ubuntu22.04-intel-ue-1.6.0-srw-dev.img`` by default).
 
 For example, on Hera, the command would be:
