@@ -69,8 +69,6 @@ The cloned repository contains the configuration files and sub-directories shown
 
     # In a bash shell, run:
     export SRW=$HOME/ufs-srweather-app
-    # In a csh shell, run: 
-    setenv SRW $HOME/ufs-srweather-app
 
 .. _FilesAndSubDirs:
 
