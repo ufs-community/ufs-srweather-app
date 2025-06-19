@@ -24,4 +24,3 @@ verification:
   AIRNOW_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/airnow'
   GOESAOD_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/goesaod'
   VX_TASKS: 4
-
