@@ -121,7 +121,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
         logging.debug(f"Finished loop {i}")
         logging.debug(f"Walltime so far is {str(total_walltime)}")
         #Slow things down just a tad between loops so experiments behave better
-        time.sleep(5)
+        time.sleep(10)
 
     logging.info(f'All {len(expts_dict)} experiments finished')
     logging.info('Calculating core-hour usage and printing final summary')

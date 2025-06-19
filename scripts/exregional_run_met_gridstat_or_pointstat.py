@@ -327,7 +327,7 @@ def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,metplus_config_
             logger.debug(f"Rendering conf file for task {i}")
             # We will have i conf files, so append i to the base filename for each
             settings['metplus_log_fn'] = f"{settings['metplus_log_fn'].rsplit('.',1)[0]}.{i}"
-            settings['metplus_config_fn'] = f"{settings['metplus_config_fn'].rsplit('.',1)[0]}{i}"
+            settings['metplus_config_fn'] = f"{settings['metplus_config_fn'].rsplit('.',1)[0]}.{i}"
             outconf = f"{settings['output_dir']}/{settings['metplus_config_fn']}"
             logger.debug(f"metplus log file for task: {settings['metplus_log_fn']}")
             logger.debug(f"metplus final rendered conf for task: {outconf}")

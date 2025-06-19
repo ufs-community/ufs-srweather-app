@@ -256,7 +256,7 @@ RRFS_retro:
     archive_format: tar
     archive_path:
       - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.2/2023/{mm}/{dd}
-      - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.4/2024/{mm}/{dd}
+      - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.5/2024/{mm}/{dd}
       - /NCEPDEV/emc-meso/2year/emc.lam/rrfs_retro/v1.1.3/2024/{mm}/{dd}
     archive_internal_dir:
       - rrfs.{yyyymmdd}/{hh}
