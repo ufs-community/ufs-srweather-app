@@ -39,8 +39,8 @@ platform:
   FIXorg: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/NaturalEarth
-  FIXaqm: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_aqm
-  FIXemis: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_emis
+  FIXaqm: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_aqm
+  FIXemis: /scratch3/NAGAPE/gpu-arl-gpu/Barry.Baker/emissions/nexus
   FIXsmoke: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_smoke
   FIXupp: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_upp
   FIXcrtm: /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/develop/fix/fix_crtm
