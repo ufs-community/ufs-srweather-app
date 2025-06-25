@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import os
 import sys
 import shutil
@@ -878,10 +879,40 @@ def get_obs(config, obtype, yyyymmdd_task):
                         elif obtype == 'AERONET':
                             fn_raw = f'{yyyymmdd_task_str}.lev15'
                             # Special logic for AERONET pulled from http: internet archives result
-                            # in weird filenames, rename them to the standard name before continuing
-                            badfile = os.path.join(arcv_dir_raw, f'print_web_data_v3?year={yyyymmddhh_str[:4]}')
+                            # in weird filenames, rename them to the standard name and remove HTML
+                            # tags before continuing
+                            yr = f'{yyyymmddhh_str[:4]}'
+                            mn = f'{yyyymmddhh_str[4:6]}'
+                            dy = f'{yyyymmddhh_str[6:8]}'
+                            badfile = os.path.join(arcv_dir_raw, f'print_web_data_v3?year={yr}&month={mn}&day={dy}&year2={yr}&month2={mn}&day2={dy}&AOD15=1&AVG=10')
+                            print(f"{badfile=}")
                             if os.path.isfile(badfile):
-                                shutil.move(badfile, os.path.join(arcv_dir_raw, fn_raw))
+                                goodfile=os.path.join(arcv_dir_raw, fn_raw)
+                                logging.info(f"File retrieved from HTML archive {badfile} "\
+                                              "has a bad file name.\nStripping HTML tags and "\
+                                             f"writing final output to {goodfile}")
+                                # Write first lines of header manually to avoid tricky tag logic
+                                header_lines = [
+                                    "AERONET Data Download (Version 3 Direct Sun)\n",
+                                    "AERONET Version 3;\n",
+                                    "Version 3: AOD Level 1.5\n"
+                                ]
+                                # Regex to remove HTML tags
+                                tag_re = re.compile(r'<[^>]+>')
+
+                                # Write HTML-stripped output to final location
+                                with open(badfile, 'r', encoding='utf-8') as fin, \
+                                     open(goodfile, 'w', encoding='utf-8') as fout:
+                                    # Write your custom lines first
+                                    fout.writelines(header_lines)
+
+                                    # Skip the first 4 lines of the original file
+                                    for _ in range(5):
+                                        next(fin, None)
+                                    # Now process the rest line-by-line, stripping tags
+                                    for line in fin:
+                                        text = tag_re.sub('', line)
+                                        fout.write(text)
                         elif obtype == 'AIRNOW':
                             if vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourlyaqobs':
                                 fn_raw = f'HourlyAQObs_{yyyymmddhh_str}.dat'

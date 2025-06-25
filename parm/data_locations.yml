@@ -433,7 +433,7 @@ AERONET:
     url: "https://aeronet.gsfc.nasa.gov/cgi-bin/"
     file_names:
       obs:
-        - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&AOD15=1&AVG=10"
+        - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&year2={yyyy}&month2={mm}&day2={dd}&AOD15=1&AVG=10"
 
 AIRNOW:
   hpss:
