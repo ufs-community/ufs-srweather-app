@@ -36,7 +36,7 @@ platform:
   FIXorg: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/NaturalEarth
-  FIXaqm: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_aqm
+  FIXaqm: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_aqm
   FIXemis: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_emis
   FIXsmoke: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_smoke
   FIXupp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_upp

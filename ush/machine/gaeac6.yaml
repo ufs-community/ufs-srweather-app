@@ -39,10 +39,9 @@ platform:
   FIXorg: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/NaturalEarth
-  FIXaqm: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_aqm
   FIXemis: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_emis
-  # Uncomment these paths (and comment the corresponding above) when working with an AQMv8-enabled UFS-WM
-#  FIXaqm: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/SRW-AQM-v8/fix/fix_aqm
+  FIXaqm: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_aqm
+
   FIXsmoke: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_smoke
   FIXupp: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_upp
   FIXcrtm: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/fix/fix_crtm
@@ -52,8 +51,8 @@ data:
   ics_lbcs:
     FV3GFS:
       nemsio: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
-      grib2: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
-      netcdf: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/netcdf/${yyyymmdd}${hh} 
+      grib2: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+      netcdf: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/netcdf/${yyyymmdd}${hh}
     RAP: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     HRRR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}

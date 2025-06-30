@@ -37,6 +37,9 @@ nco:
   envir_default: test_aqm_warmstart
   NET_default: aqm
   RUN_default: aqm
+#rocoto: # uncomment this section in case of COLDSTART: true
+#  tasks:
+#    task_aqm_ics_ext: !remove
 task_get_extrn_ics:
   envvars:
     EXTRN_MDL_NAME_ICS: FV3GFS
@@ -67,9 +70,6 @@ task_run_fcst:
     # Uncomment to write history files on native FV3 cubed sphere grid. Note that the taskgroup
     # post.yaml does not work with the native FV3 grid.
 #    HISTORY_NATIVE_GRID: true
-  LAYOUT_X: 50
-  LAYOUT_Y: 34
-  BLOCKSIZE: 16
   QUILTING: true
 task_run_post:
   envvars:
@@ -90,7 +90,7 @@ cpl_aqm_parm:
   DO_AQM_SAVE_FIRE: false
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
   AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
-  AQM_DUST_FILE_SUFFIX: .nc  
+  AQM_DUST_FILE_SUFFIX: .nc
   AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
   AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
   AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
