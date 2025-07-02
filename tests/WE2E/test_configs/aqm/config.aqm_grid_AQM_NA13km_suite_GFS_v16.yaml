@@ -36,7 +36,7 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 6
     FV3GFS_FILE_FMT_LBCS: netcdf
     EXTRN_MDL_LBCS_OFFSET_HRS: 0
-    USE_USER_STAGED_EXTRN_FILES: true    
+    USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
   fv3:
     execution:
@@ -80,4 +80,3 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_PREFIX: geaer
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 3
-

@@ -29,7 +29,7 @@ platform:
   FIXorg: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /contrib/EPIC/UFS_SRW_data/develop/NaturalEarth
-  FIXaqm: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_aqm
+  FIXaqm: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_aqm
   FIXemis: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_emis
   FIXsmoke: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_smoke
   FIXupp: /contrib/EPIC/UFS_SRW_data/develop/fix/fix_upp

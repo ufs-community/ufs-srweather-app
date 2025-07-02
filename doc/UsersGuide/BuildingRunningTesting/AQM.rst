@@ -314,4 +314,4 @@ Run the WE2E test:
 
 .. code-block:: console
 
-   $ ./run_wE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
+   $ ./run_we2e_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
