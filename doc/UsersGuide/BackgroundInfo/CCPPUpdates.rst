@@ -41,7 +41,7 @@ NoahMP Land Surface Model
 * Evapotranspiration adjustment: The aquifer hydraulic conductivity has been updated to use the algorithm average rather than the harmonic average. This increases the amount of water uptake by the soil layer, improving evapotranspiration modeling
 * Snow aging at night: Fixed an issue to allow snow aging to occur at night, ensuring more realistic snow dynamics
 * Unit correction for potential evaporation: corrected the unit for potential evaporation from W/m2 to mm/s to ensure proper unit consistency and accuracy in the model
-* Glacier albedo comupation is fixed
+* Glacier albedo computation is fixed
 
 
 RUC Land Surface Model
@@ -56,7 +56,7 @@ RUC Land Surface Model
 * Stochastic physics perturbations (SPP) introduced for emissivity, albedo and vegetation fraction
 * Coefficient in soil resistance formulation (Sakaguchi and Zeng, 2009) raised from 0.7 to 1.0 to increase soil resistance to evaporation
 * Computation of snow cover fraction and snow thermal conductivity updated
-* Cap snow for points at high elevations where all year round skin temperature are close to 0oC. Snow density for these points will be 3000/7.5=400 kg/m3
+* Cap snow for points at high elevations where all year round skin temperatures are close to 0ºC. Snow density for these points will be 3000/7.5=400 kg/m3
 * Update the RUC LSM deep soil temperature from climatology to real forecast
 * The output of surface runoff is changed from instantaneous to accumulated surface runoff
 
@@ -101,12 +101,12 @@ Grell-Freitas Scale and Aerosol Aware Convection Scheme
 * Scale-awareness turned off when explicit microphysics is not active anywhere in the column
 * Convection is completely suppressed at grid points where the MYNN PBL sheme produces shallow convection
 * Radar reflectivity considers mass flux PDF as well as whether scale-awareness is turned on at the gird point in equation
-* Add a new parameter gf_coldstart to control whether GF will be cold started or not.
+* Add a new parameter ``gf_coldstart`` to control whether GF will be cold started or not.
 
 Unified Gravity Wave Physics Scheme
 =====================================
 
-* Replacement of the resolution-dependent effective grid spacing (cdmbgwd) with a constant (=6dx)
+* Replacement of the resolution-dependent effective grid spacing (``cdmbgwd``) with a constant (=6dx)
 * Removal of the planetary boundary layer height in determining the reference level
 * Weakening of the momentum stress over land ice to reduce the negative wind biases
 * Introduction of a launching level to avoid the underestimation of the blocked stress
