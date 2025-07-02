@@ -587,6 +587,8 @@ Predefined Grid Parameters
    **Other valid values include:**
 
    | ``"AQM_NA_13km"``
+   | ``"SUBCONUS_CO_3km"``
+   | ``"SUBCONUS_CO_1km"``
    | ``"GSD_HRRR_25km"``
    | ``"RRFS_AK_13km"``
    | ``"RRFS_AK_3km"`` 
