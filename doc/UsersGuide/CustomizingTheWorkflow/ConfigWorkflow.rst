@@ -521,8 +521,6 @@ CCPP Parameter
    | ``"FV3_HRRR"``
    | ``"FV3_WoFS_v0"``
    | ``"FV3_RAP"``
-     ``"SUBCONUS_CO_3km"``
-     ``"SUBCONUS_CO_1km"``
 
    Other valid parameter values are now defined in the ``ush/experiment.jsonschema`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/develop/ush/experiment.jsonschema>`__ and the ``ush/user.jsonschema`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/develop/ush/user.jsonschema>`__. The ``user.jsonschema`` file validates parameters specific to the machine generating the experiment, while ``experiment.jsonschema`` checks all other experiment parameters. Together, they replace the previous ``ush/valid_param_vals.yaml`` file.
 
