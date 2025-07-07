@@ -516,11 +516,12 @@ CCPP Parameter
    
    **Current supported settings for the CCPP parameter are:** 
 
-   | ``"FV3_GFS_v16"`` 
-   | ``"FV3_RRFS_v1beta"`` 
+   | ``"FV3_GFS_v16"``  
    | ``"FV3_HRRR"``
+   | ``"FV3_HRRR_gf"``
    | ``"FV3_WoFS_v0"``
    | ``"FV3_RAP"``
+   | ``"RRFS_sas"`` 
 
    Other valid parameter values are now defined in the ``ush/experiment.jsonschema`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/develop/ush/experiment.jsonschema>`__ and the ``ush/user.jsonschema`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/develop/ush/user.jsonschema>`__. The ``user.jsonschema`` file validates parameters specific to the machine generating the experiment, while ``experiment.jsonschema`` checks all other experiment parameters. Together, they replace the previous ``ush/valid_param_vals.yaml`` file.
 
