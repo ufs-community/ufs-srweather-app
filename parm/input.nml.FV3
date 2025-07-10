@@ -206,9 +206,6 @@
 &nam_stochy
 /
 
-&namsfc
-/
-
 &surf_map_nml
     cd2 = -1
     cd4 = 0.12
