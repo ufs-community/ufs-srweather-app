@@ -27,8 +27,6 @@ current results are identical to previously established baselines. They also do
 not test the scientific integrity of the results (e.g., they do not check that values 
 of output fields are reasonable). These tests only check that the tasks within each test's workflow complete successfully. Currently, it is up to the external repositories that the App clones (see :numref:`Section %s <SRWStructure>`) to check that changes to those repositories do not change results, or, if they do, to ensure that the new results are acceptable. (At least two of these external repositories---``UFS_UTILS`` and ``ufs-weather-model``---do have such regression tests.) 
 
-.. _we2e-categories:
-
 WE2E Test Categories
 ----------------------
 
@@ -89,7 +87,7 @@ Some tests are duplicated among the above categories via symbolic links, both fo
 WE2E Test Information File
 -----------------------------
 
-If users want to see consolidated test information, they can generate a file that can be imported into a spreadsheet program (Google Sheets, Microsoft Excel, etc.) that summarizes each test. This file, named ``WE2E_test_info.txt`` by default, is delimited by the ``|`` character and can be created either by running the ``./print_test_info.py`` script, or by generating an experiment using ``./run_WE2E_tests.py`` with the ``--print_test_info`` flag.
+If users want to see consolidated test information, they can generate a file that can be imported into a spreadsheet program (Google Sheets, Microsoft Excel, etc.) that summarizes each test. This file, named ``WE2E_test_info.txt`` by default, is delimited by the ``|`` character and can be created either by running the ``./print_test_info.py`` script, or by generating an experiment using ``./run_we2e_tests.py`` with the ``--print_test_info`` flag.
 
 The rows of the file/sheet represent the full set of available tests (not just the ones to be run). The columns contain the following information (column titles are included in the CSV file):
 
@@ -165,10 +163,10 @@ The rows of the file/sheet represent the full set of available tests (not just t
 Running the WE2E Tests
 ================================
 
-About the Test Script (``run_WE2E_tests.py``)
+About the Test Script (``run_we2e_tests.py``)
 -----------------------------------------------
 
-The script to run the WE2E tests is named ``run_WE2E_tests.py`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml`` or any test configuration ``.yaml`` file.) For each test, the ``run_WE2E_tests.py`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls the ``generate_FV3LAM_wflow()`` function, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
+The script to run the WE2E tests is named ``run_we2e_tests.py`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml`` or any test configuration ``.yaml`` file.) For each test, the ``run_we2e_tests.py`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls the ``generate_FV3LAM_wflow()`` function, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
 
 .. note::
 
@@ -194,7 +192,7 @@ The test script has three required arguments: machine, account, and tests.
       #. The name of a subdirectory under ``ufs-srweather-app/tests/WE2E/test_configs/`` 
       #. The name of a text file (full or relative path), such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). 
 
-Users may run ``./run_WE2E_tests.py -h`` for additional (optional) usage instructions. 
+Users may run ``./run_we2e_tests.py -h`` for additional (optional) usage instructions. 
 
 Examples
 ^^^^^^^^^^^
@@ -208,13 +206,13 @@ To run the ``custom_ESGgrid`` and ``pregen_grid_orog_sfc_climo`` tests on Jet, u
 
 .. code-block:: console
 
-   ./run_WE2E_tests.py -t custom_ESGgrid pregen_grid_orog_sfc_climo -m jet -a hfv3gfs
+   ./run_we2e_tests.py -t custom_ESGgrid pregen_grid_orog_sfc_climo -m jet -a hfv3gfs
 
 Alternatively, to run the entire suite of fundamental tests on Hera, users might run: 
 
 .. code-block:: console
 
-   ./run_WE2E_tests.py -t fundamental -m hera -a nems
+   ./run_we2e_tests.py -t fundamental -m hera -a nems
 
 To add ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` to a text file and run the tests in that file on NOAA Cloud, users would enter the following commands:
 
@@ -222,7 +220,7 @@ To add ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3G
 
    echo "custom_ESGgrid" > my_tests.txt
    echo "grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16" > my_tests.txt
-   ./run_WE2E_tests.py -t my_tests.txt -m noaacloud -a none
+   ./run_we2e_tests.py -t my_tests.txt -m noaacloud -a none
 
 By default, the experiment directory for a WE2E test has the same name as the test itself, and it is created in ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ``ufs-srweather-app`` repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the ``custom_ESGgrid`` experiment directory would be located in ``${HOMEdir}/../expt_dirs/custom_ESGgrid``.
 
@@ -230,7 +228,7 @@ By default, the experiment directory for a WE2E test has the same name as the te
 
    .. code-block::
 
-      ./run_WE2E_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q -p 2
+      ./run_we2e_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q -p 2
 
    * ``--expt_basedir``: Useful for grouping sets of tests. If set to a relative path, the provided path will be appended to the default path. In this case, all of the fundamental tests will reside in ``${HOMEdir}/../expt_dirs/test_set_01/``. It can also take a full (absolute) path as an argument, which will place experiments in the given location.
    * ``-q``: Suppresses the output from ``generate_FV3LAM_wflow()`` and prints only important messages (warnings and errors) to the screen. The suppressed output will still be available in the ``log.run_WE2E_tests`` file.
@@ -239,11 +237,11 @@ By default, the experiment directory for a WE2E test has the same name as the te
 Workflow Information
 ^^^^^^^^^^^^^^^^^^^^^^
 
-For each specified test, ``run_WE2E_tests.py`` will generate a new experiment directory and, by default, launch a second function ``monitor_jobs()`` that will continuously monitor active jobs, submit new jobs, and track the success or failure status of the experiment in a ``.yaml`` file. Finally, when all jobs have finished running (successfully or not), the function ``print_WE2E_summary()`` will print a summary of the jobs to screen, including the job's success or failure, timing information, and (if on an appropriately configured platform) the number of core hours used. An example run would look like this: 
+For each specified test, ``run_we2e_tests.py`` will generate a new experiment directory and, by default, launch a second function ``monitor_jobs()`` that will continuously monitor active jobs, submit new jobs, and track the success or failure status of the experiment in a ``.yaml`` file. Finally, when all jobs have finished running (successfully or not), the function ``print_WE2E_summary()`` will print a summary of the jobs to screen, including the job's success or failure, timing information, and (if on an appropriately configured platform) the number of core hours used. An example run would look like this: 
 
 .. code-block:: console
 
-   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
+   $ ./run_we2e_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
    Checking that all tests are valid
    Will run 2 tests:
    /user/home/ufs-srweather-app/tests/WE2E/test_configs/wflow_features/config.custom_ESGgrid.yaml
@@ -365,8 +363,8 @@ One might have noticed the line during the experiment run that reads "Use ctrl-c
 Checking Test Status and Summary
 ----------------------------------
 
-By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to console when jobs are complete (either successfully or with a failure), and printing a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
-However, if the user is using the legacy crontab option (by submitting ``./run_WE2E_tests.py`` with the ``--launch cron`` option), or if the user would like to summarize one or more experiments that either are not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
+By default, ``./run_we2e_tests.py`` will actively monitor jobs, printing to console when jobs are complete (either successfully or with a failure), and printing a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
+However, if the user is using the legacy crontab option (by submitting ``./run_we2e_tests.py`` with the ``--launch cron`` option), or if the user would like to summarize one or more experiments that either are not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
 In this example, an experiment was generated using the crontab option and has not yet finished running.
 We use the ``-e`` option to point to the experiment directory and get the current status of the experiment:
 
