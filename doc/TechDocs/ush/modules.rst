@@ -23,7 +23,6 @@ ush
    run_srw_tests
    set_cycle_and_obs_timeinfo
    set_fv3nml_ens_stoch_seeds
-   set_fv3nml_sfc_climo_filenames
    set_gridparams_ESGgrid
    set_leadhrs
    set_predef_grid_params

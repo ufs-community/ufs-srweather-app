@@ -119,6 +119,7 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
                     r'https://glossary.ametsoc.org/.*',
                     r'https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana',
+                    r'https://repository.library.noaa.gov/view/noaa/30725',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.

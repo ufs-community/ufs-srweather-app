@@ -206,31 +206,6 @@
 &nam_stochy
 /
 
-&namsfc
-    fabsl = 99999
-    faisl = 99999
-    faiss = 99999
-    fnacna = ''
-    fnsnoa = ''
-    fntsfa = ''
-    fnzorc = 'igbp'
-    fsicl = 99999
-    fsics = 99999
-    fslpl = 99999
-    fsmcl(2) = 99999
-    fsmcl(3) = 99999
-    fsmcl(4) = 99999
-    fsnol = 99999
-    fsnos = 99999
-    fsotl = 99999
-    ftsfl = 99999
-    ftsfs = 90
-    fvetl = 99999
-    fvmnl = 99999
-    fvmxl = 99999
-    ldebug = .true.
-/
-
 &surf_map_nml
     cd2 = -1
     cd4 = 0.12
