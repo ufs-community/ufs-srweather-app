@@ -124,6 +124,10 @@ platform:
   # The number of active tasks run simultaneously. For linux/mac setting this
   # to 1 makes sense
   #
+  # CYCLETHROTTLE:
+  # The number of active cycles to run simultaneously. For linux/mac setting this
+  # to 1 makes sense
+  #
   # BUILD_MOD_FN:
   # Name of an alternative build modulefile to use if using an
   # unsupported platform. Is set automatically for supported machines.
@@ -200,6 +204,7 @@ platform:
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
   TASKTHROTTLE: 1000
+  CYCLETHROTTLE: 200
   BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
   WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
   BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
