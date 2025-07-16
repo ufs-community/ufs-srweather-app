@@ -31,14 +31,11 @@
 <!-- Add an X to check off a box. -->
 
 - [ ] derecho.intel
-- [ ] gaea.intel
-- [ ] gaea-c6.intel
+- [ ] gaeac6.intel
 - [ ] hera.gnu
 - [ ] hera.intel
 - [ ] hercules.intel
-- [ ] jet.intel
 - [ ] orion.intel
-- [ ] wcoss2.intel
 - [ ] NOAA Cloud (indicate which platform)
 - [ ] Jenkins
 - [ ] fundamental test suite
