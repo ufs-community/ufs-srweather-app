@@ -38,7 +38,7 @@ Since the last release, developers have added a variety of features:
       * Addition of the supported ``RRFS_sas`` physics suite (:srw-repo:`PR #1201 <pull/1201>`)
       * Model and component hash updates (e.g., PRs :srw-repo:`#1195 <pull/1195>`, :srw-repo:`#1185 <pull/1185>`)
       * Upgrade to spack-stack v1.6.0 (:srw-repo:`PR #1093 <pull/1093>`)
-      * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea C6 (:srw-repo:`PR #1163 <pull/1163>`)
+      * Expansion of :srw-wiki:`Level 1 platforms <Supported-Platforms-and-Compilers>` to include Gaea-C6 (:srw-repo:`PR #1163 <pull/1163>`)
       * Verification updates (PRs :srw-repo:`#1082 <pull/1082>`, :srw-repo:`#1005 <pull/1005>`)
       * Verification bug fixes (PRs :srw-repo:`#1235 <pull/1235>`, :srw-repo:`#1224 <pull/1224>`, :srw-repo:`#1137 <pull/1137>`, :srw-repo:`#973 <pull/973>`)
       * Container updates (:srw-repo:`PR #1170 <pull/1170>`)

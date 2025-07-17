@@ -34,7 +34,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
          ./devbuild.sh --platform=<machine_name>
 
-      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaea-c6`` | ``hera`` | ``hercules`` | ``noaacloud`` | ``orion`` |
+      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaeac6`` | ``hera`` | ``hercules`` | ``noaacloud`` | ``orion`` |
 
       For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach instead. 
 
@@ -64,12 +64,12 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       
       Users will need to open the ``config.yaml`` file and adjust the experiment parameters in it to suit the needs of their experiment (e.g., date, grid, physics suite). At a minimum, users need to modify the ``MACHINE`` parameter. In most cases, users will need to specify the ``ACCOUNT`` parameter and the location of the experiment data (see :numref:`Section %s <Data>` for Level 1 system default locations). 
 
-      For example, a user on Gaea-C6 might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Gaea-C6 using prestaged system data and :term:`cron` to automate the workflow: 
+      For example, a user on Hercules might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Hercules using prestaged system data and :term:`cron` to automate the workflow: 
 
       .. code-block:: console
          
          user:
-           MACHINE: GAEA-C6
+           MACHINE: hercules
            ACCOUNT: hfv3gfs
          workflow:
            EXPT_SUBDIR: run_basic_srw
@@ -77,10 +77,10 @@ For a detailed explanation of how to build and run the SRW App on any supported 
            CRON_RELAUNCH_INTVL_MNTS: 3
          task_get_extrn_ics:
            USE_USER_STAGED_EXTRN_FILES: true
-           EXTRN_MDL_SOURCE_BASEDIR_ICS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+           EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          task_get_extrn_lbcs:
            USE_USER_STAGED_EXTRN_FILES: true
-           EXTRN_MDL_SOURCE_BASEDIR_LBCS: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+           EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
       
       Users on a different system would update the machine, account, and data paths accordingly. Additional changes may be required based on the system and experiment. More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. 
 
