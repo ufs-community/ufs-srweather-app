@@ -70,7 +70,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
          
          user:
            MACHINE: hercules
-           ACCOUNT: hfv3gfs
+           ACCOUNT: epic
          workflow:
            EXPT_SUBDIR: run_basic_srw
            USE_CRON_TO_RELAUNCH: true

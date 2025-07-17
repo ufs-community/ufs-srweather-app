@@ -27,6 +27,8 @@ current results are identical to previously established baselines. They also do
 not test the scientific integrity of the results (e.g., they do not check that values 
 of output fields are reasonable). These tests only check that the tasks within each test's workflow complete successfully. Currently, it is up to the external repositories that the App clones (see :numref:`Section %s <SRWStructure>`) to check that changes to those repositories do not change results, or, if they do, to ensure that the new results are acceptable. (At least two of these external repositories---``UFS_UTILS`` and ``ufs-weather-model``---do have such regression tests.) 
 
+.. _we2e-categories:
+
 WE2E Test Categories
 ----------------------
 
