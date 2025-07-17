@@ -64,7 +64,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       
       Users will need to open the ``config.yaml`` file and adjust the experiment parameters in it to suit the needs of their experiment (e.g., date, grid, physics suite). At a minimum, users need to modify the ``MACHINE`` parameter. In most cases, users will need to specify the ``ACCOUNT`` parameter and the location of the experiment data (see :numref:`Section %s <Data>` for Level 1 system default locations). 
 
-      For example, a user on Hercules might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Hercules using prestaged system data and :term:`cron` to automate the workflow: 
+      For example, a user on Hercules (login node 1) might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Hercules using prestaged system data and :term:`cron` to automate the workflow: 
 
       .. code-block:: console
          
