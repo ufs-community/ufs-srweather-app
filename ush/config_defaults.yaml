@@ -2672,6 +2672,14 @@ verification:
 
   AIRNOW_INPUT_FORMAT: "airnowhourlyaqobs"
 
+  # FCST_SMOKE_TYPE:
+  # Different forecast data have different particulate matter variables that must be verified differently.
+  # Options are:
+  # HRRR: HRRR output contains only PM 2.5 in a variable named MASSDEN.
+  # RRFS: RRFS output contains three MASSDEN variables, one of which is PM 10 and the other two combined
+  #       are summed in PCP Combine task to get total PM 2.5 
+
+  FCST_SMOKE_TYPE: RRFS
   #
   # OBS_DATA_STORE*:
   # Location(s) to retrieve observation data from. Valid values are "aws" and/or "hpss", see
@@ -3223,6 +3231,13 @@ fire:
   FIRE_IGNITION_START_TIME: 6480
   FIRE_IGNITION_END_TIME: 7000
 
-pygraf:
-  caption: "plot"
-  resolution: 150
+task_pygraf:
+  execution:
+    batchargs:
+      memory: 60G
+      nodes: 1
+      tasks_per_node: 24
+      walltime: 00:30:00
+  envvars:
+    caption: "plot"
+    resolution: 150

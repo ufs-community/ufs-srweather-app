@@ -279,13 +279,16 @@ HRRR:
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
+      - ./
       - ./
       - ./
     archive_file_names:
       # HRRR forecasts are binned into 6 hour tar files.
       - gpfs_hps_nco_ops_com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
       - com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
+      - com_hrrr_v4.1_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
     file_names: &hrrr_file_names
       anl:
         - hrrr.t{hh}z.wrfprsf{fcst_hr:02d}.grib2

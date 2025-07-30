@@ -7,26 +7,34 @@ task_run_pygraf:
     maxtries: '1'
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    fhr: '#fhr#'
-    LOGDIR: !cycstr "&LOGDIR;"
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    PDY:
+      cyclestr:
+        value: "@Y@m@d"
+    cyc:
+      cyclestr:
+        value: "@H"
+    LOGDIR:
+      cyclestr:
+        value: "&LOGDIR;"
+    nprocs: '{{ task_pygraf.execution.batchargs.nodes * task_pygraf.execution.batchargs.tasks_per_node }}'
     PYGRAF_DIR: "&PYGRAF_DIR;"
-    OUTDIR: !cycstr "&FCST_DIR;/pygraf"
+    OUTDIR:
+      cyclestr:
+        value: "&FCST_DIR;/pygraf"
     VX_FCST_INPUT_BASEDIR: '{{ verification.VX_FCST_INPUT_BASEDIR }}'
-    CAPTION: '{{ pygraf.caption }}'
-    RESOLUTION: '{{ pygraf.resolution }}'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    CAPTION: '{{ task_pygraf.envvars.caption }}'
+    RESOLUTION: '{{ task_pygraf.envvars.resolution }}'
+  join:
+    cyclestr:
+      value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: '{{ task_pygraf.execution.batchargs.memory }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nnodes: 1
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodes: '{{ task_pygraf.execution.batchargs.nodes }}:ppn={{ task_pygraf.execution.batchargs.tasks_per_node }}'
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  ppn: 24
   queue: '&QUEUE_DEFAULT;'
-  walltime: 01:00:00
+  walltime: '{{ task_pygraf.execution.batchargs.walltime }}'
 
-  command: !cycstr '&LOAD_MODULES_RUN_TASK; "pygraf" "&USHdir;/run_pygraf.sh"'
+  command: '&LOAD_MODULES_RUN_TASK; "pygraf" "&USHdir;/run_pygraf.sh"'
   dependency:
     and:
       metataskdep_check_post_output: &check_post_output

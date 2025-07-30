@@ -213,6 +213,13 @@
     "verification": {
       "additionalProperties": true,
       "properties": {
+        "FCST_SMOKE_TYPE": {
+          "enum": [
+            "HRRR",
+            "RRFS"
+          ],
+          "type": "string"
+        },
         "VX_APCP_ACCUMS_HRS": {
           "prefixItems": [
             {
