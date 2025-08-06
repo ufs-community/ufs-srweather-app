@@ -39,16 +39,11 @@ ctm_stdout: maintask
 #
 # Inline Canopy Effects
 #
-canopy_yn: false
-
+canopy_yn: {{ do_aqm_canopy | lower }}
 canopy_type: canopy
-
 canopy_format: netcdf
-
-canopy_file: gfs.t12z.geo.08.canopy_regrid.nc
-
+canopy_file: {{ aqm_rc_canopy_file_fp }}
 canopy_frequency: static
-
 canopy_species::
     FCH        1.00000   FCH      m
     FRT        1.00000   FRT      1
