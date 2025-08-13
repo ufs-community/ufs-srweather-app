@@ -1,6 +1,7 @@
 import argparse
 import ast
 import logging
+import math
 import os
 import subprocess
 import sys
@@ -84,7 +85,7 @@ def set_vx_params(obtype,field_group,accum_hh):
     return grid_or_point, fieldname_in_obs_in, fieldname_in_fcst_in, fieldname_in_MET_out, fieldname_in_MET_filedir_names
 
 
-def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index,obs_avail_intvl_hrs,fcst_level,fcst_thresh,logdir,nprocs,debug,lgr):
+def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index,obs_avail_intvl_hrs,fcst_level,fcst_thresh,logdir,debug,lgr):
     """Main program for setting up GridStat task and calling METplus wrapper"""
 
     # Read config settings
@@ -286,27 +287,31 @@ def main(config_file,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index
                'vx_config_dict': vx_config_dict
                }
 
-    conf_files = render_metplus_confs(cfg,settings,metplus_config_tmpl_fn,vx_leadhr_list,metplus_config_fn,lgr)
+    if field_group == "UPA":
+        numprocs=math.ceil(vxcfg['VX_TASKS']/2)
+    else:
+        numprocs=vxcfg['VX_TASKS']
+
+    conf_files = render_metplus_confs(cfg,settings,metplus_config_tmpl_fn,vx_leadhr_list,metplus_config_fn,numprocs,lgr)
     print(f"{conf_files=}")
 
-    lgr.info(f"Running {MetplusToolName} with METplus with {vxcfg['VX_TASKS']} tasks")
+    lgr.info(f"Running {MetplusToolName} with METplus with {numprocs} tasks")
     args = []
     for config_fn in conf_files:
         args.append( (os.path.join(cfg['user']['METPLUS_CONF'], "common.conf"),config_fn) )
     # Call run_metplus function for as many processors as specified
         print(f"{args=}")
-    with Pool(processes=vxcfg['VX_TASKS']) as pool:
+    with Pool(processes=numprocs) as pool:
         pool.starmap(run_metplus,args)
 
     lgr.info(f"{MetplusToolName} completed successfully.")
 
 
-def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,metplus_config_fn,logger):
+def render_metplus_confs(cfg,settings,template_fn,vx_leadhr_list,metplus_config_fn,tasks,logger):
     """Renders metplus conf files from the appropriate template and user settings.
     If VX_TASKS > 1 and vx_leadhr_list > 1, renders a conf file for each parallel task.
     Returns the filename(s) of metplus conf files that were rendered"""
 
-    tasks = cfg["verification"]["VX_TASKS"]
     num_fhrs = len(vx_leadhr_list)
     outconfs = []
     print(f"{cfg['user']['METPLUS_CONF']=}")
@@ -428,11 +433,10 @@ if __name__ == "__main__":
     fcst_level = os.environ['FCST_LEVEL']
     fcst_thresh = os.environ['FCST_THRESH']
     logdir = os.environ['LOGDIR']
-    nprocs = os.environ['nprocs']
 
     print(f"{os.environ['METPLUS_ROOT']=}")
 
-    main(config,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index,obs_avail_intvl_hrs,fcst_level,fcst_thresh,logdir,nprocs,pargs.debug,logger)
+    main(config,cycle_date,obs_dir,field_group,obtype,accum_hh,ensmem_index,obs_avail_intvl_hrs,fcst_level,fcst_thresh,logdir,pargs.debug,logger)
 #    main(args.config, args.debug)
 
 
