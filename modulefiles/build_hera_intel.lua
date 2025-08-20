@@ -30,6 +30,8 @@ load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "5.2.4"))
 load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
 
+setenv("LD_PRELOAD", "/contrib/spack-stack/installs/gnu/13.3.0/lib64/libstdc++.so.6")
+
 setenv("FC", "mpiifort")
 
 setenv("CMAKE_C_COMPILER","mpiicx")
