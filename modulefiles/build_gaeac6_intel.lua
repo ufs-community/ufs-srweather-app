@@ -27,6 +27,8 @@ load("zlib/1.2.13")
 load(pathJoin("nco", os.getenv("nco_ver") or "5.2.4"))
 load(pathJoin("prod_util", os.getenv("prod_util_ver") or "2.1.1"))
 
+setenv("LD_PRELOAD", "/usr/lib64/libstdc++.so.6")
+
 unload("darshan-runtime")
 
 setenv("CFLAGS","-diag-disable=10441")
