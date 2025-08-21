@@ -7,7 +7,7 @@ whatis([===[Loads libraries needed for running the UFS SRW App on gaea c6 ]===])
 
 unload("python")
 prepend_path("MODULEPATH","/ncrc/proj/epic/c6/modulefiles/")
-load("rocoto/1.3.7-fix")
+load("rocoto/1.3.7")
 load("conda")
 
 pushenv("MKLROOT", "/opt/intel/oneapi/mkl/2023.2.0/")
