@@ -342,3 +342,37 @@ If you encounter issues while generating ICS and LBCS for a predefined 3-km grid
 Additionally, users can try increasing the number of processors or the wallclock time requested for the jobs. Sometimes jobs may fail without errors because the process is cut short. These settings can be adusted in one of the ``ufs-srweather-app/parm/wflow`` files. For ICs/LBCs tasks, these parameters are set in the ``coldstart.yaml`` file. 
 
 Users can also update the hash of UFS_UTILS in the ``Externals.cfg`` file to the HEAD of that repository. There was a known memory issue with how ``chgres_cube`` was handling regridding of the 3-D wind field for large domains at high resolutions (see `UFS_UTILS PR #766 <https://github.com/ufs-community/UFS_UTILS/pull/766>`__ and the associated issue for more information). If changing the hash in ``Externals.cfg``, users will need to rerun ``manage_externals`` and rebuild the code (see :numref:`Section %s <BuildSRW>`). 
+
+.. _Enable-REFC-plots:
+
+How to enable composite reflectivity plots in SRW App release v3.0.0?
+=======================================================================
+
+In order for model layer reflectivity to be calculated, the ``lradar`` FV3 input variable needs to be set to ``True``.  For the CCPP physics suites, ``FV3_GFS_v15p2`` and ``FV3_GFS_v16``, the ``lradar`` variable is set to ``false`` by default.  In the SRW App, this variable is being set to ``null`` for these two physics suites, which causes the CCPP default to be used.  Thus, model layer reflectivity is not being calculated and the composite reflectivity will not be plotted. Users can override this by setting ``lradar`` to ``true`` in the ``parm/FV3.input.yml`` file in the SRW App which generates radar-style composite reflectivity plots from the maximum reflectivity at each model layer.
+
+Update line 508 of ``ufs-srweather-app/parm/FV3.input.yaml``
+
+.. code-block:: console
+   
+   lradar: True
+
+.. _Custom-Grid:
+
+How to use a custom sub-CONUS grid (for example, a 15km grid in place of the 25km grid) if the run crashes at make_ics and make_lbcs steps in SRW App release v3.0.0?
+======================================================================================================================================================================
+
+Users should try reducing the number of MPI tasks allocated to the ``make_ics`` and ``make_lbcs`` tasks. Add the following section to the model configuration file, ``config.yaml``:
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       metatask_run_ensemble:
+         task_make_ics_mem#mem#:
+           nnodes: 1
+           ppn: 12
+         task_make_lbcs_mem#mem#:
+           nnodes: 1
+           ppn: 12
+
+If the issue persists, try increasing the grid size by a bit and reducing the tasks per node, ``ppn``, further.
