@@ -350,7 +350,7 @@ How to enable composite reflectivity plots in SRW App release v3.0.0?
 
 In order for model layer reflectivity to be calculated, the ``lradar`` FV3 input variable needs to be set to ``True``.  For the CCPP physics suites, ``FV3_GFS_v15p2`` and ``FV3_GFS_v16``, the ``lradar`` variable is set to ``false`` by default.  In the SRW App, this variable is being set to ``null`` for these two physics suites, which causes the CCPP default to be used.  Thus, model layer reflectivity is not being calculated and the composite reflectivity will not be plotted. Users can override this by setting ``lradar`` to ``true`` in the ``parm/FV3.input.yml`` file in the SRW App which generates radar-style composite reflectivity plots from the maximum reflectivity at each model layer.
 
-Update line 508 of ``ufs-srweather-app/parm/FV3.input.yaml``
+Update line 508 of ``ufs-srweather-app/parm/FV3.input.yaml`` to:
 
 .. code-block:: console
    
