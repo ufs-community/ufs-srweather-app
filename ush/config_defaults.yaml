@@ -819,9 +819,9 @@ workflow:
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
   CCPP_PHYS_SUITE_FN: 'suite_{{ workflow.CCPP_PHYS_SUITE }}.xml'
-  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'
+  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ user.UFS_WTHR_MDL_DIR }}/UFSATM/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'
   CCPP_PHYS_SUITE_FP: '{{ workflow.EXPTDIR }}/{{ workflow.CCPP_PHYS_SUITE_FN }}'
-  CCPP_PHYS_DIR: '{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/physics/physics/SFC_Models/Land/Noahmp'
+  CCPP_PHYS_DIR: '{{ user.UFS_WTHR_MDL_DIR }}/UFSATM/ccpp/physics/physics/SFC_Models/Land/Noahmp'
   #
   #-----------------------------------------------------------------------
   #
