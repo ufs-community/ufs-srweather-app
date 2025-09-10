@@ -44,6 +44,8 @@ if [[ "${SRW_WE2E_SINGLE_TEST}" == "coverage" ]]; then
     # Add skill-score WE2E test to coverage suites
     if [[ "${SRW_PLATFORM}" == "hera" ]]; then
         coverage_test_name="hera.${SRW_COMPILER}.*"
+    elif [[ "${SRW_PLATFORM}" == "ursa" ]]; then
+        coverage_test_name="ursa.${SRW_COMPILER}.*"
     else
         coverage_test_name="${platform}"
     fi
