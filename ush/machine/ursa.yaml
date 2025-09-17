@@ -13,7 +13,9 @@ platform:
   DOMAIN_PREGEN_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/FV3LAM_pregen'
   QUEUE_DEFAULT: batch
   QUEUE_FCST: batch
-  PARTITION_HPSS: service
+  PARTITION_DEFAULT: u1-compute
+  PARTITION_FCST: u1-compute
+  PARTITION_HPSS: u1-service
   EXCLUSIVE: exclusive
   QUEUE_HPSS: batch
   RUN_CMD_FCST: srun --export=ALL
