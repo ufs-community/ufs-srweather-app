@@ -1875,6 +1875,7 @@ task_run_post:
         nodes: 1
         tasks_per_node: 24
         walltime: 00:15:00
+        exclusive: True
       threads: !int '{{ task_run_post.envvars.OMP_NUM_THREADS_RUN_POST }}'
   #-----------------------------------------------------------------------
   #-----------------------------------------------------------------------
