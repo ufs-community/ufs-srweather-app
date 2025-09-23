@@ -1681,7 +1681,7 @@ task_run_fcst:
   #
   envvars:
     KMP_AFFINITY_RUN_FCST: "scatter"
-    OMP_NUM_THREADS_RUN_FCST: 1    # ATM_omp_num_threads in ufs.configure
+    OMP_NUM_THREADS_RUN_FCST: 2    # ATM_omp_num_threads in ufs.configure
     OMP_STACKSIZE_RUN_FCST: "1024m"
     FV3_EXEC_FP: '{{ user.EXECdir }}/{{ workflow.FV3_EXEC_FN }}'
     DT_ATMOS: !int ""
