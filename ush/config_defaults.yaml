@@ -2936,6 +2936,7 @@ task_nexus_post_split:
       nodes: 1
       tasks_per_node: 1
       walltime: 00:30:00
+      exclusive: True
 task_fire_emission:
   execution:
     batchargs:
