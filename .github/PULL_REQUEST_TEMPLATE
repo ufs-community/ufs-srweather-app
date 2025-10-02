@@ -36,6 +36,8 @@
 - [ ] hera.intel
 - [ ] hercules.intel
 - [ ] orion.intel
+- [ ] ursa.gnu
+- [ ] ursa.intel
 - [ ] NOAA Cloud (indicate which platform)
 - [ ] Jenkins
 - [ ] fundamental test suite
@@ -77,10 +79,6 @@ A Code Manager needs to add the following labels to this PR:
 - [ ] run_ci
 - [ ] run_we2e_fundamental_tests
 - [ ] run_we2e_comprehensive_tests
-- [ ] Needs Cheyenne test 
-- [ ] Needs Jet test 
-- [ ] Needs Hera test 
-- [ ] Needs Orion test 
 - [ ] help wanted
 
 ## CONTRIBUTORS (optional): 
