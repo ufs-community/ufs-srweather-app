@@ -1875,6 +1875,7 @@ task_run_post:
         nodes: 1
         tasks_per_node: 24
         walltime: 00:15:00
+        exclusive: True
       threads: !int '{{ task_run_post.envvars.OMP_NUM_THREADS_RUN_POST }}'
   #-----------------------------------------------------------------------
   #-----------------------------------------------------------------------
@@ -2039,6 +2040,7 @@ task_plot_allvars:
     batchargs:
       nodes: 1
       tasks_per_node: 1
+      exclusive: True
       walltime: 01:00:00
   #-------------------------------------------------------------------------
   # Path to the reference experiment's COMOUT directory. This is where the GRIB2 files 
@@ -2934,6 +2936,7 @@ task_nexus_post_split:
       nodes: 1
       tasks_per_node: 1
       walltime: 00:30:00
+      exclusive: True
 task_fire_emission:
   execution:
     batchargs:

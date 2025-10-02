@@ -460,6 +460,11 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     if remove_memory:
         _remove_tag(rocoto_tasks, "memory")
 
+    # Remove exclusive node usage if not in "platform".yaml
+    exclusive = expt_config["platform"].get("EXCLUSIVE")
+    if not exclusive:
+        _remove_tag(rocoto_tasks, "exclusive")
+
     for part in ["PARTITION_HPSS", "PARTITION_DEFAULT", "PARTITION_FCST"]:
         partition = expt_config["platform"].get(part)
         if not partition:

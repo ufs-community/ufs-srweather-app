@@ -196,6 +196,7 @@
             "ORION",
             "SINGULARITY",
             "STAMPEDE",
+            "URSA",
             "WCOSS2"
           ],
           "type": "string"

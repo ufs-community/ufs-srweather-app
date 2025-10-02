@@ -2,7 +2,7 @@ metadata:
   description: config for SRW-AQM, AQM_NA_13km, warm-start
 user:
   RUN_ENVIR: community
-  MACHINE: [HERA/ORION/HERCULES/DERECHO/GAEAC6]
+  MACHINE: [HERA/URSA/ORION/HERCULES/DERECHO/GAEAC6]
   ACCOUNT: [account name]
 workflow:
   USE_CRON_TO_RELAUNCH: true
@@ -23,7 +23,8 @@ workflow:
   DO_REAL_TIME: false
   COLDSTART: false      # set to true for cold start
   WARMSTART_CYCLE_DIR: /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/develop/aqm_data/restart/2023111000 # for gaeac6
-#  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
+#  WARMSTART_CYCLE_DIR: '/scratch4/NAGAPE/epic/role-epic/ursa/SRW-AQM_DATA/aqm_data/restart/2023111000' # for ursa
+#  WARMSTART_CYCLE_DIR: '/scratch4/NAGAPE/epic/role-epic/hera/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
 #  WARMSTART_CYCLE_DIR: '/work/noaa/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for orion/hercules
 #  WARMSTART_CYCLE_DIR: '/glade/work/chanhooj/SRW-AQM_DATA/aqm_data/restart/2023111000' # for derecho
 

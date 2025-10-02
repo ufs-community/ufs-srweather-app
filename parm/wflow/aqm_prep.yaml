@@ -91,6 +91,7 @@ task_nexus_post_split:
   envars:
     <<: *default_vars
     nprocs: '{{ task_nexus_post_split.execution.batchargs.nodes * task_nexus_post_split.execution.batchargs.tasks_per_node }}'
+  exclusive: '{{ task_nexus_post_split.execution.batchargs.exclusive }}'
   nodes: '{{ task_nexus_post_split.execution.batchargs.nodes }}:ppn={{ task_nexus_post_split.execution.batchargs.tasks_per_node }}'
   walltime: '{{ task_nexus_post_split.execution.batchargs.walltime }}'
   dependency:

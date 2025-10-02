@@ -18,11 +18,14 @@ fi
 
 cd $workspace
 # Only run this on machines with hpss access
-hpss_machines=( hera )
+hpss_machines=( hera ursa )
 if [[ ${hpss_machines[@]} =~ ${SRW_PLATFORM} ]] ; then
 
-  source ${workspace}/ush/load_modules_wflow.sh ${SRW_PLATFORM}
-  module load hpss
+  # Only on hera you need to load hpss module
+  if [[ ${SRW_PLATFORM} == hera ]] ; then
+    source ${workspace}/ush/load_modules_wflow.sh ${SRW_PLATFORM}
+    module load hpss
+  fi
 
   export PYTHONPATH=${workspace}/ush
 

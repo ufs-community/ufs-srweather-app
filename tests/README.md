@@ -15,9 +15,9 @@ for the current code in the users ufs-srweather-app directory.  It consists of t
 
 Currently, the following configurations are supported:
 
-Machine     | Derecho | Cheyenne    | Hera   | Jet    | Orion  | wcoss2  |
-------------|---------|-------------|--------|--------|--------|---------|
-Compiler(s) | Intel   | Intel, GNU  | Intel  | Intel  | Intel  | Intel   |
+Machine     | Derecho | Gaea C6 | Hera        | Hercules | Orion   | Ursa        |
+------------|---------|---------|-------------|----------|---------|-------------|
+Compiler(s) | Intel   | Intel   | Intel, GNU  | Intel    | Intel   | Intel, GNU  |
 
 The CMake build is done in the ``build_${compiler}`` directory.
 The executables for each build are installed under the ``bin_${compiler}`` directory.

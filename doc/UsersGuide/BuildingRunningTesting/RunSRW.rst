@@ -58,13 +58,15 @@ The SRW App requires input files to run. These include static datasets, initial 
    * - Gaea-C6
      - /gpfs/f6/bil-fire8/world-shared/UFS_SRW_data/|data|/input_model_data/
    * - Hera
-     - /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/|data|/input_model_data/
+     - /scratch3/NCEPDEV/nems/role.epic/hera/UFS_SRW_data/|data|/input_model_data
    * - Hercules
      - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data//
    * - NOAA Cloud
      - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
    * - Orion
      - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Ursa
+     - /scratch3/NCEPDEV/nems/role.epic/ursa/UFS_SRW_data/|data|/input_model_data
 
 For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s: Input Files <Input>` and :numref:`%s: Output Files <OutputFiles>` contain useful background information on the input and output files used in the SRW App.
 
