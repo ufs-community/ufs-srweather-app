@@ -2370,11 +2370,11 @@ verification_resources:
       airnow:
         walltime: 00:45:00
       ccpa:
-        walltime: 00:45:00
+        walltime: 02:00:00
       nohrsc:
         walltime: 00:45:00
       mrms:
-        walltime: 00:45:00
+        walltime: 02:00:00
       ndas:
         walltime: 02:00:00
     pb2nc:
