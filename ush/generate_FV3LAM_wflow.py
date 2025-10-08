@@ -461,7 +461,7 @@ def generate_FV3LAM_wflow(
         ]
 
         # These settings do not get added to namelist, or are handled elsewhere
-        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "OMP_NUM_THREADS_FIRE", "envvars"]
+        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "envvars"]
         pass_settings.extend(each_ignit)
 
         for setting in expt_config["fire"]:
@@ -471,6 +471,8 @@ def generate_FV3LAM_wflow(
                 fire_nml_dict["time"]["dt"] = expt_config["fire"][setting]
             elif setting == "OUTPUT_DT_FIRE":
                 fire_nml_dict["time"]["interval_output"] = expt_config["fire"][setting]
+            elif setting == "OMP_NUM_THREADS_FIRE":
+                fire_nml_dict["time"]["num_tiles"] = expt_config["fire"][setting]
             else:
                 # For all other settings in config.yaml, convert to lowercase
                 # and enter into namelist.fire's &fire section
