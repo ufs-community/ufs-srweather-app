@@ -528,13 +528,13 @@ CCPP Parameter
 ``CCPP_PHYS_SUITE_FN``: (Default: ``'suite_{{ workflow.CCPP_PHYS_SUITE }}.xml'``)
    The name of the suite definition file (SDF) used for the experiment. 
 
-``CCPP_PHYS_SUITE_IN_CCPP_FP``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'``)
+``CCPP_PHYS_SUITE_IN_CCPP_FP``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/UFSATM/ccpp/suites/{{ workflow.CCPP_PHYS_SUITE_FN }}'``)
    The full path to the suite definition file (SDF) in the forecast model's directory structure (e.g., ``/path/to/ufs-srweather-app/sorc/ufs-weather-model/FV3/ccpp/suites/$CCPP_PHYS_SUITE_FN``). 
 
 ``CCPP_PHYS_SUITE_FP``: (Default: ``'{{ workflow.EXPTDIR }}/{{ workflow.CCPP_PHYS_SUITE_FN }}'``)
    The full path to the suite definition file (SDF) in the experiment directory. 
 
-``CCPP_PHYS_DIR``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/FV3/ccpp/physics/physics/SFC_Models/Land/Noahmp'``)
+``CCPP_PHYS_DIR``: (Default: ``'{{ user.UFS_WTHR_MDL_DIR }}/UFSATM/ccpp/physics/physics/SFC_Models/Land/Noahmp'``)
    The directory containing the CCPP physics source code. This is needed to link table(s) contained in that repository. 
 
 Field Dictionary Parameters
