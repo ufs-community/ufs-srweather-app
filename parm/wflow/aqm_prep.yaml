@@ -121,6 +121,7 @@ task_point_source:
   envars:
     <<: *default_vars
     nprocs: '{{ task_point_source.execution.batchargs.nodes * task_point_source.execution.batchargs.tasks_per_node }}'
+  exclusive: '{{ task_point_source.execution.batchargs.exclusive }}'
   nodes: '{{ task_point_source.execution.batchargs.nodes }}:ppn={{ task_point_source.execution.batchargs.tasks_per_node }}'
   walltime: '{{ task_point_source.execution.batchargs.walltime }}'
   dependency:

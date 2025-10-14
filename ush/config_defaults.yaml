@@ -2108,6 +2108,7 @@ task_point_source:
       nodes: 1
       tasks_per_node: 1
       walltime: 00:30:00
+      exclusive: True
   envvars:
     #-------------------------------------------------------------------------------
     # PT_SRC_SUBDIR:
