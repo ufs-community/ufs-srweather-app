@@ -129,6 +129,7 @@ linkcheck_anchors_ignore = [r"current_srw_release_data/",
                             r"experiment-user-cases/.*",
                             r"rrfs_a/*",
                             r"develop-20250321/.*",
+                            r"installation",
                             ]
 
 linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 

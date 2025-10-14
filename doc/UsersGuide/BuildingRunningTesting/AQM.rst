@@ -315,3 +315,176 @@ Run the WE2E test:
 .. code-block:: console
 
    $ ./run_we2e_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
+
+AQM Use Cases
+=============
+
+An AQM "use case" is a scientifically interesting air quality event with preconfigured SRW workflow templates. ICs, LBCs, and fixed files are also staged in the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__, and can be downloaded using the `AQM-Eval Data Sync utility <https://github.com/NOAA-EPIC/AQM-Eval?tab=readme-ov-file#installation>`__. If data is downloaded using this utility, setting ``cpl_aqm_parm.USE_AQM_S3_DATA_STAGE = true`` and  ``AQM_STAGE_DST_DIR = <stage_directory>`` will populate the root paths for data dependencies.
+
+.. list-table:: Supported Use Cases
+   :widths: 20 10 20
+   :header-rows: 1
+
+   * - Name
+     - Key
+     - Configuration Template
+   * - `Atmospheric Emissions and Reactions Observed from Megacities to Marine Areas <https://csl.noaa.gov/projects/aeromma/>`__
+     - AEROMMA
+     - ``./ush/aqm-use-cases/config.aqm.AEROMMA.yaml``
+
+.. _acquire-use-case-data:
+
+Acquiring Use Case Data
+---------------------------
+
+AQM data requirements are relatively large. Using the AEROMMA campaign as an example, expect a minimum of ~28 terabytes of storage for the full use case, with ~3 terabytes allocated to fixed files. Hence, use case configurations assume a user will want to evaluate a 48-hour forecast before extending to the recommended use case forecast window. In this situation, download the time-varying data using the data sync utility's ``--snippet`` flag.
+
+.. code-block:: console
+
+   $ DST_DIR=<path to root directory for sync>
+   $ conda run -n aqm-eval --no-capture-output aqm-data-sync time-varying --dst-dir ${DST_DIR} --use-case AEROMMA --snippet
+
+After testing a 48-hour forecast, remove the ``--snippet`` flag to download the full time-varying dataset, or provide a custom end date via the ``--last-cycle-date`` flag.
+
+If you are not on a Tier 1 platform and have not acquired the SRW fixed file data, also download the SRW fixed data using:
+
+.. code-block:: console
+
+   $ # Use the same destination directory as the time-varying data download.
+   $ DST_DIR=<path to root directory for sync>
+   $ conda run -n aqm-eval --no-capture-output aqm-data-sync srw-fixed --dst-dir ${DST_DIR}
+
+Now, setting ``cpl_aqm_parm.USE_FIX_AQM_S3_DATA_STAGE= true`` will adjust fixed files paths to point to the ``AQM_STAGE_DST_DIR``.
+
+.. tip::
+
+   The sync utility is resumable. Re-use the destination directory if a sync operation is canceled, interrupted, or additional temporal data is needed. Synchronization is a one-way sync from the S3 source.
+
+Running a Use Case
+----------------------
+
+Once data is appropriately staged, the use case workflow configuration file may be used like any other SRW workflow configuration file. The preconfigured template assumes users have downloaded data using the data synchronization utility. If not, the user should move any use case-specific settings to the default AQM configuration file (e.g., cycle dates). Assuming the data stage is done correctly for the use case, users should generally focus on updating these configuration variables:
+
+.. list-table:: Important Use Case Configuration Variables
+   :widths: 20 50
+   :header-rows: 1
+
+   * - Configuration Variable
+     - Description
+   * - ``user.MACHINE``
+     - Platform running the workflow.
+   * - ``user.ACCOUNT``
+     - Account holding the core hours.
+   * - ``cpl_aqm_parm.AQM_STAGE_DST_DIR``
+     - Required path to the destination (root) directory of the data synchronization operation.
+   * - ``workflow.DATE_LAST_CYCL``
+     - Defaults to two 24-hour forecast cycles.
+   * - ``cpl_aqm_parm.USE_FIX_AQM_S3_DATA_STAGE``
+     - Defaults to false. Set to true if fixed data was downloaded to the stage directory.
+
+MM (MM) Evaluation
+================================
+
+SRW-AQM provides an optional task group leveraging `MELODIES MONET <https://melodies-monet.readthedocs.io/en/stable/>`__ for model evaluation.
+
+.. epigraph::
+
+    MELODIES MONET is a joint project between NSF NCAR and NOAA to develop a modular framework that integrates existing and future diverse atmospheric chemistry observational datasets with chemistry model results for the evaluation of air quality and atmospheric composition.
+
+    -- MELODIES MONET Documentation
+
+How to Run the MM Evaluation
+------------------------------
+
+To run the evaluation suite, a user will need to follow these steps. Depending on the MM packages, tasks, and forecast window duration, the jobs can be computationally demanding. Per the usual HPC recommendations, start small and scale as needed.
+
+Install the ``aqm-eval`` Anaconda environment
++++++++++++++++++++++++++++++++++++++++++++++++
+
+#. Clone the ``AQM-Eval`` repository: ``git clone -b main https://github.com/NOAA-EPIC/AQM-Eval.git``.
+#. Activate the ``srw_app`` Anaconda environment.
+#. Create the ``aqm-eval`` environment: ``cd AQM-Eval && conda create -f environment.yml && conda run -n aqm-eval pip install .``
+
+Stage Observational Datasets
+++++++++++++++++++++++++++++++
+
+For SRW-AQM use cases, the `AQM-Eval Data Sync utility <https://github.com/NOAA-EPIC/AQM-Eval?tab=readme-ov-file#installation>`__ utility is recommended to quickly stage all required observations.
+
+.. code-block:: console
+
+    $ conda run -n aqm-eval aqm-data-sync observations --dst-dir <path to download location>
+
+MM also offers utility to download and prepare observational datasets. See `Downloading Observations <https://melodies-monet.readthedocs.io/en/stable/getting_started/downloading_obs.html>`__ for more information.
+
+Check Availability of ICs and LBCs
+++++++++++++++++++++++++++++++++++++
+
+For the evaulation to work properly, at least a 48-hour forecast is required. It may be necessary to download additional IC and LBC datasets. See :ref:`acquire-use-case-data`.
+
+Enable the MM Workflow Task Group
++++++++++++++++++++++++++++++++++++
+
+Under ``workflow.tasksgroups`` in the experiment configuration, add or uncomment ``- parm/wflow/aqm_post_melodies_monet.yaml``.
+
+Configure Paths to Observational Datasets
++++++++++++++++++++++++++++++++++++++++++++
+
+For AirNow, set ``task_mm_prep.MM_OBS_AIRNOW_FN_TEMPLATE`` to the appropriate path. Wildcards may be used it the experiment's forecast window extends beyond a month.
+
+Configure "Scorecard" Base Model (Optional)
++++++++++++++++++++++++++++++++++++++++++++++
+
+MM provides a set of `scorecard evaluations <https://melodies-monet.readthedocs.io/en/stable/users_guide/supported_plots.html#id8>`__ used to compare a base and evaluation model run. Setting ``task_mm_prep.MM_BASE_MODEL_EXPT_DIR`` to a different SRW experiment root directory will enable scorecard plotting.
+
+Transfer MM Output (Optional)
++++++++++++++++++++++++++++++++
+
+Unless overridden by ``task_mm_prep.MM_OUTPUT_DIR``, the MM evaluation output is written to ``${EXPT_DIR}/mm_output``. Users may wish to transfer the PNG and CSV output to their local machine for simplified review.
+
+Select MM Evaluation Packages (Optional)
++++++++++++++++++++++++++++++++++++++++++
+
+*COMING SOON! Currently, only the "chemistry" evaluation package is supported.*
+
+Select MM Evaluation Tasks (Optional)
++++++++++++++++++++++++++++++++++++++++
+
+Default MM evaluation tasks may be overridden using ``task_mm_run.MM_EVAL_TASKS_SINGLE_MODEL`` or ``task_mm_run.MM_EVAL_TASKS_MULTI_MODEL``. The latter is used in the case a base model is provided for intercomparison.
+
+Users are encouraged to consult MM `Supported Plots <https://melodies-monet.readthedocs.io/en/stable/users_guide/supported_plots.html>`__ and `Supported Statistsics <https://melodies-monet.readthedocs.io/en/stable/users_guide/supported_stats.html>`__ documentation for information on the plots and statistics genenerated by the MM tasks.
+
+Overview of the MM Evaluation Task Group
+------------------------------------------
+
+The MM evaluation task group consists of an ``mm_prep`` task followed by a number of MM task-specific jobs (metatasks) ``mm_run_<MM package>_<MM task>``. The ``mm_run_<MM package>_save_paired`` task must run before other metatasks.
+
+As the forecast windows increases in time duration, users are encouraged to tune the ``task_mm_run.execution.walltime`` configuration parameter. Please reach out to SRW support with questions on walltime and node tasking. The default configurations are not expected to handle all use cases and customization may be required.
+
+MM Configuration Variables
+++++++++++++++++++++++++++++
+
+.. list-table:: MM Configuration Variables
+   :widths: 20 20 50
+   :header-rows: 1
+
+   * - Configuration Variable
+     - Default
+     - Description
+   * - ``task_mm_prep.MM_OUTPUT_DIR``
+     - ``null``
+     - Output directory for MM-generated model evaluation plots and statistics. If ``null``, defaults to ``${EXPTDIR}/mm_output``.
+   * - ``task_mm_prep.MM_EVAL_PACKAGES``
+     - ``[chem]``
+     - Evaluation packages to initialize and run.
+   * - ``task_mm_prep.MM_BASE_MODEL_EXPT_DIR``
+     - ``null``
+     - If set to another SRW experiment path, MM will generate "scorecards" for model inter-comparison.
+   * - ``task_mm_prep.MM_OBS_AIRNOW_FN_TEMPLATE``
+     - ``null``
+     - Path, optionally with wildcards, selecting the AirNow observation files used by MM. For example: ``/staged/obs/Observations/AirNow/AirNow_2023*.nc``
+   * - ``task_mm_prep.MM_EVAL_TASKS_SINGLE_MODEL``
+     - ``["timeseries", "taylor", "spatial_bias", "spatial_overlay", "boxplot", "multi_boxplot", "csi", "stats"]``
+     - MM evaluation tasks to run for a single model.
+   * - ``task_mm_prep.MM_EVAL_TASKS_MULTI_MODEL``
+     - ``["timeseries", "taylor", "spatial_bias", "spatial_overlay", "boxplot", "multi_boxplot", "csi", "stats", "scorecard_rmse", "scorecard_ioa", "scorecard_nmb", "scorecard_nme"]``
+     - MM evaluation tasks to run for two models (i.e., model intercomparison).

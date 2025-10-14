@@ -19,6 +19,7 @@ from textwrap import dedent
 
 from uwtools.api.config import get_ini_config, get_yaml_config, validate
 from uwtools.api.template import render
+from uwtools.config.formats.yaml import YAMLConfig
 
 from link_fix import link_fix
 from python_utils import (
@@ -146,6 +147,8 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
         expt_basedir = homedir.parent / "expt_dirs" / expt_basedir
     default_config["workflow"]["EXPT_BASEDIR"] = str(Path(expt_basedir).resolve())
 
+    _update_config_for_coupled_aqm_(default_config, homedir)
+
     # Dereference all Jinja expressions
     default_config.dereference(
         context={
@@ -164,6 +167,87 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
         sys.exit(1)
 
     return default_config
+
+
+def _update_config_for_coupled_aqm_(default_config: YAMLConfig, homedir: Path) -> None:
+    cpl_aqm_parm = default_config["cpl_aqm_parm"]
+    if cpl_aqm_parm["CPL_AQM"] is True:
+        logging.debug("Updating configuration for coupled AQM")
+        if default_config["workflow"]["COLDSTART"] is True:
+            # Disable the external AQM ICs task.
+            aqm_coldstart = get_yaml_config(
+                homedir / "parm" / "wflow" / "aqm_coldstart.yaml"
+            )
+            default_config.update_from(aqm_coldstart)
+        if (
+            default_config["cpl_aqm_parm"]["USE_AQM_S3_DATA_STAGE"] is True
+            or default_config["cpl_aqm_parm"]["USE_FIX_AQM_S3_DATA_STAGE"] is True
+        ):
+            # The AQM S3 data stage uses a set of pre-configured paths. This data is assumed to have
+            # been downloaded using the aqm-data-sync utility from the NOAA-EPIC S3 bucket.
+            aqm_stage_dst_dir = Path(
+                default_config["cpl_aqm_parm"]["AQM_STAGE_DST_DIR"]
+            ).resolve(strict=True)
+            logging.debug(f"{aqm_stage_dst_dir=}")
+            if default_config["cpl_aqm_parm"]["USE_AQM_S3_DATA_STAGE"] is True:
+                logging.debug("Using S3 AQM data stage - updating time-varying paths")
+                task_get_extrn_ics = default_config["task_get_extrn_ics"]["envvars"]
+                task_get_extrn_ics["USE_USER_STAGED_EXTRN_FILES"] = True
+                task_get_extrn_ics["EXTRN_MDL_SOURCE_BASEDIR_ICS"] = str(
+                    aqm_stage_dst_dir
+                )
+                task_get_extrn_ics["EXTRN_MDL_ICS_OFFSET_HRS"] = 0
+                task_get_extrn_ics["EXTRN_MDL_FILES_ICS"] = [
+                    "FV3GFS/gfs.{yyyymmdd}/{hh}/atmos/gfs.t{hh}z.atmf{fcst_hr:03d}.nc",
+                    "GFS_SFC_DATA/gfs.{yyyymmdd}/{hh}/atmos/gfs.t{hh}z.sfcf{fcst_hr:03d}.nc",
+                    "GFS_SFC_DATA/gfs.{yyyymmdd}/{hh}/atmos/gfs.sfcanl.nc",
+                ]
+
+                task_get_extrn_lbcs = default_config["task_get_extrn_lbcs"]["envvars"]
+                task_get_extrn_lbcs["USE_USER_STAGED_EXTRN_FILES"] = True
+                task_get_extrn_lbcs["EXTRN_MDL_SOURCE_BASEDIR_LBCS"] = str(
+                    aqm_stage_dst_dir
+                )
+                task_get_extrn_lbcs["EXTRN_MDL_LBCS_OFFSET_HRS"] = 0
+                task_get_extrn_lbcs["EXTRN_MDL_FILES_LBCS"] = [
+                    "FV3GFS/gfs.{yyyymmdd}/{hh}/atmos/gfs.t{hh}z.atmf{fcst_hr:03d}.nc",
+                    "GFS_SFC_DATA/gfs.{yyyymmdd}/{hh}/atmos/gfs.t{hh}z.sfcf{fcst_hr:03d}.nc",
+                    "GEFS_Aerosol/{yyyymmdd}/00/gfs.t00z.atmf{fcst_hr:03d}.nemsio",
+                ]
+
+                cpl_aqm_parm["COMINfire_default"] = str(aqm_stage_dst_dir / "RAVE_fire")
+                cpl_aqm_parm["COMINgefs_default"] = str(
+                    aqm_stage_dst_dir / "GEFS_Aerosol"
+                )
+                cpl_aqm_parm["NEXUS_GFS_SFC_DIR"] = str(
+                    aqm_stage_dst_dir / "GFS_SFC_DATA"
+                )
+
+                default_config["workflow"]["WARMSTART_CYCLE_DIR"] = str(
+                    aqm_stage_dst_dir
+                    / "RESTART/AQMv8_p1"
+                    / default_config["workflow"]["WARMSTART_CYCLE_DIR"]
+                )
+            if default_config["cpl_aqm_parm"]["USE_FIX_AQM_S3_DATA_STAGE"] is True:
+                logging.debug("Using S3 AQM data stage - updating fixed file paths")
+                fix_mapping = (
+                    ("FIXaer", "fix/fix_aer"),
+                    ("FIXgsi", "fix/fix_gsi"),
+                    ("FIXgsm", "fix/fix_am"),
+                    ("FIXlut", "fix/fix_lut"),
+                    ("FIXorg", "fix/fix_orog"),
+                    ("FIXsfc", "fix/fix_sfc_climo"),
+                    ("FIXshp", "NaturalEarth"),
+                    ("FIXemis", "fix/fix_emis"),
+                    ("FIXaqm", "fix/fix_aqm_v8/fix/fix_aqm"),
+                    ("FIXsmoke", "fix/fix_smoke"),
+                    ("FIXupp", "fix/fix_upp"),
+                    ("FIXcrtm", "fix/fix_crtm"),
+                )
+                for fix_map in fix_mapping:
+                    default_config["platform"][fix_map[0]] = str(
+                        aqm_stage_dst_dir / fix_map[1]
+                    )
 
 
 def set_srw_paths(expt_config):
@@ -739,7 +823,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                     },
                 },
             }
-
 
     #
     # -----------------------------------------------------------------------
@@ -1473,13 +1556,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                           {lsm_spp_var} = {global_sect[lsm_spp_var]}
                           """
                     )
-
-
-
-
-
-
-
 
         #
         # -----------------------------------------------------------------------

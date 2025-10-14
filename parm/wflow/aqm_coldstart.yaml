@@ -1,0 +1,4 @@
+# Used for AQM coldstart to disable the getting external ICs.
+rocoto:
+  tasks:
+    task_aqm_ics_ext: !remove

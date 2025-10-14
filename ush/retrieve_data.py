@@ -825,6 +825,10 @@ def _write_summary_file(cla, data_store, file_templates) -> None:
                 files.extend(
                     [fill_template(t, cla.cycle_date, fcst_hr=fh, mem=mem) for fh in cla.fcst_hrs]
                 )
+
+        # Strip any nested directories from the external model file templates
+        files = [Path(ii).name for ii in files]
+
         output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
         summary_fp = os.path.join(output_path, cla.summary_file)
         logging.info(f"Writing a summary file to {summary_fp}")
