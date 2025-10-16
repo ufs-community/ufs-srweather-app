@@ -580,7 +580,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
         rocoto_config["cycledef"].append({
             "attrs": {"group": "cycled_from_second"},
-            "spec": f"{date_second_cycle.strftime('%Y%m%d%H%S')} {date_last_cycl}00 {incr_cycl_freq}", # pylint: disable=line-too-long
+            "spec": f"{date_second_cycle.strftime('%Y%m%d%H%S')} {date_last_cycl}00 {incr_cycl_freq}:00:00", # pylint: disable=line-too-long
             })
     #
     # -----------------------------------------------------------------------
