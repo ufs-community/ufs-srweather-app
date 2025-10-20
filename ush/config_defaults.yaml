@@ -99,8 +99,6 @@ user:
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ user.SORCdir }}/arl_nexus'
 
-  pygraf_dir: /scratch2/BMC/fv3lam/kavulich/smoke_verif/production/pygraf
-
 #----------------------------
 # PLATFORM config parameters
 #-----------------------------
@@ -3231,13 +3229,3 @@ fire:
   FIRE_IGNITION_START_TIME: 6480
   FIRE_IGNITION_END_TIME: 7000
 
-task_pygraf:
-  execution:
-    batchargs:
-      memory: 60G
-      nodes: 1
-      tasks_per_node: 24
-      walltime: 00:30:00
-  envvars:
-    caption: "plot"
-    resolution: 150
