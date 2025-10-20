@@ -55,11 +55,11 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
 
     if procs > 1:
         print(f'Starting experiments in parallel with {procs} processes')
-        expts_dict = update_expt_status_parallel(expts_dict, procs, True, debug)
+        expts_dict = update_expt_status_parallel(expts_dict, procs, True, delay, debug)
     else:
         for expt in expts_dict:
             logging.info(f"Starting experiment {expt} running")
-            expts_dict[expt] = update_expt_status(expts_dict[expt], expt, True, debug)
+            expts_dict[expt] = update_expt_status(expts_dict[expt], expt, True, delay, debug)
 
     write_monitor_file(monitor_file,expts_dict)
 
@@ -79,10 +79,10 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
     while running_expts:
         i += 1
         if procs > 1:
-            expts_dict = update_expt_status_parallel(expts_dict, procs)
+            expts_dict = update_expt_status_parallel(expts_dict, procs, False, delay)
         else:
             for expt in running_expts.copy():
-                expts_dict[expt] = update_expt_status(expts_dict[expt], expt)
+                expts_dict[expt] = update_expt_status(expts_dict[expt], expt, False, delay)
 
         for expt in running_expts.copy():
             running_expts[expt] = expts_dict[expt]
@@ -121,8 +121,6 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
 
         logging.debug(f"Finished loop {i}")
         logging.debug(f"Walltime so far is {str(total_walltime)}")
-        #Slow things down just a tad between loops so experiments behave better
-        time.sleep(delay)
 
     logging.info(f'All {len(expts_dict)} experiments finished')
     logging.info('Calculating core-hour usage and printing final summary')
