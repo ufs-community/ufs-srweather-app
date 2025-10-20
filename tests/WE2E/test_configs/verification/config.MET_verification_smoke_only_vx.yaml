@@ -15,12 +15,8 @@ workflow:
     - parm/wflow/verify_det.yaml
 verification:
   VX_FCST_MODEL_NAME: RRFS_smoke_test
-  VX_FIELD_GROUPS: [ "SFC", "AOD", "PM25", "PM10", "GOESAOD", "GOESADP"]
-  VX_FCST_INPUT_BASEDIR: /lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/RRFS_retro/staged_data
+  VX_FIELD_GROUPS: [ "AOD", "PM25", "PM10" ]
+  VX_FCST_INPUT_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/input_model_data/RRFS'
   FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H}'
-  FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.grib2'
-  NDAS_OBS_DIR: '/mnt/lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/RRFS_retro/obs_data/ndas'
-  AERONET_OBS_DIR: '/mnt/lfs6/BMC/gsd-fv3-dev/Michael.Kavulich/smoke_vx/RRFS_retro/obs_data/aeronet'
-  AIRNOW_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/airnow'
-  GOESAOD_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/goesaod'
+  FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
   VX_TASKS: 4

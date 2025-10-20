@@ -81,7 +81,6 @@ field (or group of fields).
 #
 #-----------------------------------------------------------------------
 #
-#$SCRIPTSdir/exregional_run_met_gridstat_or_pointstat_vx.sh || \
 python $SCRIPTSdir/exregional_run_met_gridstat_or_pointstat.py --debug || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."

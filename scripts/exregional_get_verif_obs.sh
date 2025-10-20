@@ -57,13 +57,18 @@ done
 #
 #-----------------------------------------------------------------------
 #
-set -x
+LOGLEVEL="INFO"
+echo "DEBUG=$DEBUG"
+if [ "${DEBUG}" = "True" ]; then
+  LOGLEVEL="DEBUG"
+fi
+echo "LOGLEVEL=$LOGLEVEL"
 
 cmd="\
 python3 -u ${USHdir}/get_obs.py \
 --var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
 --obtype ${OBTYPE} \
---log_level DEBUG \
+--log_level ${LOGLEVEL} \
 --obs_day ${PDY}"
 print_info_msg "
 CALLING: ${cmd}"
