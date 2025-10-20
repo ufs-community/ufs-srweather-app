@@ -253,11 +253,6 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, delay: int 
         expt: The updated experiment dictionary
     """
 
-    # Derecho requires long delay between calls to rocotorun due to system-level cacheing of
-    # job statuses
-    if expt["user"]["MACHINE"]=="DERECHO":
-        if delay < 60:
-            delay=60
     #If we are no longer tracking this experiment, return unchanged
     if (expt["status"] in ['DEAD','ERROR','COMPLETE']) and not refresh:
         return expt

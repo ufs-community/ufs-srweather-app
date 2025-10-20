@@ -48,6 +48,12 @@ def run_we2e_tests(homedir, args) -> None:
     run_envir = args.run_envir
     machine = args.machine.lower()
 
+    # Derecho requires long delay between calls to rocotorun due to system-level cacheing of
+    # job statuses
+    if machine=="DERECHO":
+        if args.delay < 60:
+            args.delay=60
+
     # Check for invalid input
     if run_envir:
         if run_envir not in ["nco", "community"]:
@@ -309,12 +315,19 @@ def run_we2e_tests(homedir, args) -> None:
                     monitor_file=monitor_file,
                     procs=args.procs,
                     debug=args.debug,
+                    delay=args.delay,
                 )
             except KeyboardInterrupt:
                 logging.info(
                     "\n\nUser interrupted monitor script; to resume monitoring jobs run:\n"
                 )
-                logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
+                rerun_string=f"./monitor_jobs.py -y={monitor_file}"
+                if args.procs>1:
+                    rerun_string+=f" -p={args.procs}"
+                if args.delay!=5:
+                    rerun_string+=f" -d={args.delay}"
+
+                logging.info(f"{rerun_string}\n")
         else:
             logging.info("To automatically run and monitor experiments, use:\n")
             logging.info(f"./monitor_jobs.py -y={monitor_file}\n")
@@ -693,6 +706,9 @@ if __name__ == "__main__":
         action="store_true",
         help="Explicitly set VERBOSE=TRUE for all experiments",
     )
+    optional.add_argument(
+        '--delay', type=int, default=10,
+        help='Pause this number of seconds between calls to rocotorun')
 
     user_args = ap.parse_args()
 
