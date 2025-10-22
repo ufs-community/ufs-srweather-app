@@ -40,7 +40,7 @@ def run_we2e_tests(homedir, args) -> None:
 
     # Set up logging to write to screen and logfile
     setup_logging(debug=args.debug)
-
+    logging.debug(f"Arguments to run_we2e_tests():\n{args}")
     # Set some important directories
     ushdir = Path(homedir, "ush")
 
@@ -52,6 +52,7 @@ def run_we2e_tests(homedir, args) -> None:
     # job statuses
     if machine=="DERECHO":
         if args.delay < 60:
+            logging.info("Derecho requires 60 second delay between calls to rocotorun")
             args.delay=60
 
     # Check for invalid input
@@ -325,7 +326,7 @@ def run_we2e_tests(homedir, args) -> None:
                 if args.procs>1:
                     rerun_string+=f" -p={args.procs}"
                 if args.delay!=5:
-                    rerun_string+=f" -d={args.delay}"
+                    rerun_string+=f" --delay={args.delay}"
 
                 logging.info(f"{rerun_string}\n")
         else:
@@ -707,7 +708,7 @@ if __name__ == "__main__":
         help="Explicitly set VERBOSE=TRUE for all experiments",
     )
     optional.add_argument(
-        '--delay', type=int, default=10,
+        '--delay', type=int, default=5,
         help='Pause this number of seconds between calls to rocotorun')
 
     user_args = ap.parse_args()
