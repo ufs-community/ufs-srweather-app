@@ -71,8 +71,6 @@ if __name__ == "__main__":
 
     parser.add_argument('-i', '--input_file', default='latlon.txt',
                         help='Name of METplus polyfile')
-#    parser.add_argument('-o', '--output_file', default='map.png',
-#                        help='Name of output file')
     parser.add_argument('-t', '--threshold', default=80, help='Threshold +/- latitude; if there are plot points closer to the pole than this latitude, a polar projection will be used')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output')
