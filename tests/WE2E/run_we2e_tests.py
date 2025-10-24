@@ -50,7 +50,7 @@ def run_we2e_tests(homedir, args) -> None:
 
     # Derecho requires long delay between calls to rocotorun due to system-level cacheing of
     # job statuses
-    if machine=="DERECHO":
+    if machine=="derecho":
         if args.delay < 60:
             logging.info("Derecho requires 60 second delay between calls to rocotorun")
             args.delay=60

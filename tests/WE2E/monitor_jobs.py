@@ -17,7 +17,7 @@ from utils import calculate_core_hours, write_monitor_file, update_expt_status,\
                   update_expt_status_parallel, print_WE2E_summary
 
 def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
-                 mode: str = 'continuous', delay: int = 10, debug: bool = False) -> str:
+                 mode: str = 'continuous', delay: int = 5, debug: bool = False) -> str:
     """Monitors and runs jobs for the specified experiment using Rocoto
 
     Args:
@@ -180,7 +180,7 @@ if __name__ == "__main__":
                         help='YAML-format file specifying the information of jobs to be run; '\
                              'for an example file, see monitor_jobs.yaml', required=True)
     parser.add_argument('--delay', type=int,
-                        help='Pause this number of seconds between calls to rocotorun', default=10)
+                        help='Pause this number of seconds between calls to rocotorun', default=5)
     parser.add_argument('-p', '--procs', type=int,
                         help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
                              'with provided number of parallel tasks', default=1)
