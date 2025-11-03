@@ -113,7 +113,7 @@ def create_expts_dict(expt_dir: str, delay: int):
 
     Args:
         expt_dir (str): Experiment directory name
-        delay        (int): [optional] Delay in seconds between calls to rocotorun.
+        delay    (int): [optional] Delay in seconds between calls to rocotorun.
     Returns:
         (summary_file, expts_dict): A tuple including the name of the summary file (``WE2E_tests_YYYYMMDDHHmmSS.yaml``) and the experiment dictionary
     """
@@ -245,7 +245,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, delay: int 
         expt    (dict): A dictionary containing the information for an individual experiment, as described in the main ``monitor_jobs()`` function.
         name     (str): Name of the experiment; used for logging only
         refresh (bool): If True, this flag will check an experiment status even if it is listed as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments that may have been restarted.
-        delay        (int): [optional] Delay in seconds between calls to rocotorun.
+        delay    (int): [optional] Delay in seconds between calls to rocotorun.
         debug   (bool): Will capture all output from ``rocotorun``. This will allow information such as job cards and job submit messages to appear in the log files, but turning on this option can drastically slow down the testing process.
         submit  (bool): In addition to reading the Rocoto database (``.db``) file, the script will advance the workflow by calling ``rocotorun``. If simply generating a report, set this to False.
 
@@ -385,7 +385,7 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
         expts_dict (dict): A dictionary containing information for all experiments
         procs       (int): The number of parallel processes
         refresh    (bool): "Refresh" flag to pass to ``update_expt_status()``. If True, this flag will check an experiment status even if it is listed as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments that may have been restarted.
-        delay        (int): [optional] Delay in seconds between calls to rocotorun.
+        delay       (int): [optional] Delay in seconds between calls to rocotorun.
         debug      (bool): Will capture all output from ``rocotorun``. This will allow information such as job cards and job submit messages to appear in the log files, but can drastically slow down the testing process.
 
     Returns:
