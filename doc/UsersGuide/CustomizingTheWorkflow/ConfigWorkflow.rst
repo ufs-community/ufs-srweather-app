@@ -1666,13 +1666,15 @@ VX Parameters for Observations
       * NDAS (NAM Data Assimilation System)
       * AERONET (Aerosol Robotic Network)
       * AIRNOW (AirNow air quality reports)
+      * GOESAOD (GOES satellite Aerosol Optical Depth)
+      * GOESADP (GOES satellite Aerosol Detection Product)
 
    The script ``ush/get_obs.py`` contains further details on the files and
    directory structure of each obs type.
 
-``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]_OBS_AVAIL_INTVL_HRS``: (Defaults: [1|6|1|1|24|1])
+``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]_OBS_AVAIL_INTVL_HRS``: (Defaults: [1|6|1|1|24|1|1|1])
   Time interval (in hours) at which the various types of obs are available
-  on NOAA's HPSS. 
+  in the default location (see ``OBS_DATA_STORE_`` variables)
 
   Note that MRMS and GOES files are in fact available every few minutes, but here
   we set the obs availability interval to 1 hour because currently that
@@ -1885,7 +1887,7 @@ VX Parameters for Observations
    with AIRNOW observations.  Valid options are ``RRFS`` and ``HRRR``.
 
 ``OBS_DATA_STORE_[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]``: (Defaults: ``[hpss|hpss|hpss|hpss|hpss|hpss|aws|aws]``)
-   Location to retrieve observation data from. Valid values are "aws" and/or "hpss", see
+   Data repository to retrieve observation data from. Valid values are "aws" and/or "hpss", see
    ``parm/data_locations.yaml`` for info on these data stores.
 
 ``OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'{{ verification.OBS_NDAS_FN_TEMPLATES[1] }}.nc'``)
