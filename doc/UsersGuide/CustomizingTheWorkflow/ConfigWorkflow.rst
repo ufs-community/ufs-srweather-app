@@ -1976,7 +1976,9 @@ VX Parameters for Forecasts
 ``VX_MASK``: (Default: [])
    Name(s) of the sub-grid(s) of the forecast domain to verify on. Valid grids are found in the
    `MET Users Guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixB.html#grids>`__
-   or under ``ufs-srweather-app/parm/metplus/GRIDNAME.poly``
+   or under ``ufs-srweather-app/parm/metplus/GRIDNAME.poly``. Users can also include custom verification domains
+   by adding their own ``GRIDNAME.poly`` files in that location. A script for visualizing these custom domains,
+   ``ufs-srweather-app/parm/metplus/plot_met_poly_points.py``, is also included.
 
 ``VX_TASKS``: (Default: 1)
    Number of verification tasks to run in parallel; this works for METplus tools that work on
