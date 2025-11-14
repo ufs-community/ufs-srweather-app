@@ -82,6 +82,7 @@ module load wflow_${platform,,}
 [[ "${platform}" == "noaacloud" ]] && conda deactivate
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but would not necessarily block workflow tests
+conda deactivate
 conda activate srw_app
 set -e -u
 

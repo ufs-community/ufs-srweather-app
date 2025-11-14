@@ -62,6 +62,7 @@ task failed:
 $has_mu && set +u
 
 if [ ! -z $(command -v conda) ]; then
+  conda deactivate
   conda activate srw_app
 fi
 
