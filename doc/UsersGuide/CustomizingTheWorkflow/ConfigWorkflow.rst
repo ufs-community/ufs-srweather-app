@@ -95,7 +95,10 @@ If non-default parameters are selected for the variables in this section, they s
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
 
 ``TASKTHROTTLE``: (Default: 1000)
-  The number of active tasks that can be run simultaneously. For Linux/MacOS systems, it makes sense to set this to 1 because these systems often have a small number of available cores/CPUs and therefore less capacity to run multiple tasks simultaneously. 
+  The number of active tasks that can be run simultaneously via Rocoto. For Linux/MacOS systems, it makes sense to set this to 1 because these systems often have a small number of available cores/CPUs and therefore less capacity to run multiple tasks simultaneously. 
+
+``CYCLETHROTTLE``: (Default: 200)
+  The number of active forecast cycles that can be run simultaneously via Rocoto.
 
 ``BUILD_MOD_FN``: (Default: ``'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'``)
    Name of an alternative build modulefile to use if running on an unsupported platform. It is set automatically for supported machines.
@@ -1663,21 +1666,23 @@ VX Parameters for Observations
       * NDAS (NAM Data Assimilation System)
       * AERONET (Aerosol Robotic Network)
       * AIRNOW (AirNow air quality reports)
+      * GOESAOD (GOES satellite Aerosol Optical Depth)
+      * GOESADP (GOES satellite Aerosol Detection Product)
 
    The script ``ush/get_obs.py`` contains further details on the files and
    directory structure of each obs type.
 
-``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW]_OBS_AVAIL_INTVL_HRS``: (Defaults: [1|6|1|1|24|1])
+``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]_OBS_AVAIL_INTVL_HRS``: (Defaults: [1|6|1|1|24|1|1|1])
   Time interval (in hours) at which the various types of obs are available
-  on NOAA's HPSS. 
+  in the default location (see ``OBS_DATA_STORE_`` variables)
 
-  Note that MRMS files are in fact available every few minutes, but here
+  Note that MRMS and GOES files are in fact available every few minutes, but here
   we set the obs availability interval to 1 hour because currently that
   is the shortest output interval for forecasts, i.e. the forecasts cannot
   (yet) support sub-hourly output.
 
-``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW]_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/[ccpa|nohrsc|mrms|ndas|aeronet|airnow]"``)
-   Base directory in which CCPA, NOHRSC, MRMS, NDAS, AERONET, or AIRNOW obs files needed by
+``[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/[ccpa|nohrsc|mrms|ndas|aeronet|airnow|goesaod|goesadp]"``)
+   Base directory in which CCPA, NOHRSC, MRMS, NDAS, AERONET, AIRNOW, or GOES obs files needed by
    the verification tasks are located.  If the files do not exist, they
    will be retrieved and placed under this directory.  Note that:
 
@@ -1690,7 +1695,7 @@ VX Parameters for Observations
      that need to be corrected during obs retrieval.  This is described
      in more detail in the script ``ush/get_obs.py``.
 
-``OBS_[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW]_FN_TEMPLATES``:
+``OBS_[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]_FN_TEMPLATES``:
      **Defaults:**
 
      ``OBS_CCPA_FN_TEMPLATES``:
@@ -1725,6 +1730,16 @@ VX Parameters for Observations
         .. code-block:: console
 
            [ 'PM', '{valid?fmt=%Y%m%d}/HourlyData_{valid?fmt=%Y%m%d%H}.dat' ]
+
+     ``OBS_GOESAOD_FN_TEMPLATES``:
+        .. code-block:: console
+
+           [ 'GOESAOD', '{valid?fmt=%Y%m%d}/OR_ABI-L2-AODF_G16_{valid?fmt=%Y%m%d%H}.nc' ]
+
+     ``OBS_GOESADP_FN_TEMPLATES``:
+        .. code-block:: console
+
+           [ 'GOESADP', '{valid?fmt=%Y%m%d}/OR_ABI-L2-ADPF_G16_{valid?fmt=%Y%m%d%H}.nc' ]
 
    File name templates for various obs types.  These are meant to be used
    in METplus configuration files and thus contain METplus time formatting
@@ -1867,12 +1882,15 @@ VX Parameters for Observations
    For more information see the
    `METplus users guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/reformat_point.html#ascii2nc-tool>`_
 
+``FCST_SMOKE_TYPE``: (Default: ``RRFS``)
+   Different forecast model data have different particulate matter variables that must be verified differently
+   with AIRNOW observations.  Valid options are ``RRFS`` and ``HRRR``.
 
-``OBS_DATA_STORE_AIRNOW``: (Default: ``hpss``)
-   Location to retrieve observation data from. Valid values are "aws" and/or "hpss", see
+``OBS_DATA_STORE_[CCPA|NOHRSC|MRMS|NDAS|AERONET|AIRNOW|GOESAOD|GOESADP]``: (Defaults: ``[hpss|hpss|hpss|hpss|hpss|hpss|aws|aws]``)
+   Data repository to retrieve observation data from. Valid values are "aws" and/or "hpss", see
    ``parm/data_locations.yaml`` for info on these data stores.
 
-``OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'${OBS_NDAS_FN_TEMPLATES[1]}.nc'``)
+``OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'{{ verification.OBS_NDAS_FN_TEMPLATES[1] }}.nc'``)
    METplus template for the names of the NetCDF files generated by the
    workflow verification tasks that call METplus's Pb2nc tool on the 
    prepbufr files in NDAS observations.  These files will contain the
@@ -1912,7 +1930,7 @@ VX Parameters for Forecasts
 
    .. code-block:: console
  
-      {% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{{ "/${ensmem_name}" if global.DO_ENSEMBLE }}/postprd{% endif %}
+      {% if user.RUN_ENVIR == "nco" %}{{ nco.NET_default }}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{{ "/${ensmem_name}" if global.DO_ENSEMBLE }}/postprd{% endif %}
 
    METplus template for the name of the subdirectory containing forecast
    files to use as inputs to the verification tasks.
@@ -1922,7 +1940,7 @@ VX Parameters for Forecasts
 
    .. code-block:: console
  
-      ${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.grib2
+      {{ nco.NET_default }}.t{init?fmt=%H?shift=-${time_lag}}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.grib2
 
    METplus template for the names of the forecast files to use as inputs
    to the verification tasks.
@@ -1932,7 +1950,7 @@ VX Parameters for Forecasts
 
    .. code-block:: console
  
-      ${NET_default}.t{init?fmt=%H}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc
+      {{ nco.NET_default }}.t{init?fmt=%H}z{{ ".${ensmem_name}" if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE }}.prslev.{{ task_run_post.envvars.POST_OUTPUT_DOMAIN_NAME }}.${FIELD_GROUP}${ACCUM_HH}h.{valid?fmt=%Y%m%d%H?shift=-${ACCUM_HH}H}_to_{valid?fmt=%Y%m%d%H}.nc
 
    METplus template for the names of the NetCDF files generated by the
    workflow verification tasks that call METplus's PcpCombine tool on
@@ -1955,6 +1973,16 @@ VX Parameters for Forecasts
    If more than this number are missing, the verification task will exit
    with an error.
 
+``VX_MASK``: (Default: [])
+   Name(s) of the sub-grid(s) of the forecast domain to verify on. Valid grids are found in the
+   `MET Users Guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/appendixB.html#grids>`__
+   or under ``ufs-srweather-app/parm/metplus/GRIDNAME.poly``. Users can also include custom verification domains
+   by adding their own ``GRIDNAME.poly`` files in that location. A script for visualizing these custom domains,
+   ``ufs-srweather-app/parm/metplus/plot_met_poly_points.py``, is also included.
+
+``VX_TASKS``: (Default: 1)
+   Number of verification tasks to run in parallel; this works for METplus tools that work on
+   sequential forecast hours, and so can be run simultaneously.
 
 Coupled AQM Configuration Parameters
 =====================================

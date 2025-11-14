@@ -41,4 +41,5 @@ global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 2
 verification:
+  VX_MASK: ["AZCA"]
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km

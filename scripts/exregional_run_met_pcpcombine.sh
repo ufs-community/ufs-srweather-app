@@ -205,11 +205,20 @@ if [ "${FCST_OR_OBS}" = "FCST" ]; then
     PCP_COMBINE_METHOD="USER_DEFINED"
 
     if [ "${FIELD_GROUP}" = "PM25" ]; then
-    # Need to combine two fields (different PM types) and convert units from forecast files to create PM25 equivalent to obs
-      PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62010; convert(x)=x*1e9;' {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=0; convert(x)=x*1e9;'"
+      if [ "${FCST_SMOKE_TYPE}" = "HRRR" ]; then
+        # for HRRR, all PM 2.5 is a single variable, so just pass through with corrected units
+        PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} -field 'name=\"MASSDEN\"; level=\"Z8\"; convert(x)=x*1e9;'"
+      elif [ "${FCST_SMOKE_TYPE}" = "RRFS" ]; then
+        # Need to combine two fields (different PM types) and convert units from forecast files to create PM25 equivalent to obs
+        PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62010; convert(x)=x*1e9;' {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=0; convert(x)=x*1e9;'"
+      fi
     elif [ "${FIELD_GROUP}" = "PM10" ]; then
-    # for PM10, command is just a passthrough
-      PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} -field 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=2; convert(x)=x*1e9;'"
+      if [ "${FCST_SMOKE_TYPE}" = "RRFS" ]; then
+        # for PM10, need to combine original field with PM2.5 described above
+        PCP_COMBINE_COMMAND="-add {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62010; convert(x)=x*1e9;' {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=0; convert(x)=x*1e9;' {FCST_PCP_COMBINE_INPUT_DIR}/{FCST_PCP_COMBINE_INPUT_TEMPLATE} 'name=\"MASSDEN\"; level=\"Z8\"; GRIB2_aerosol_type=62001; GRIB2_aerosol_interval_type=2; convert(x)=x*1e9;'"
+      else
+        print_err_msg_exit "PM10 only available for RRFS output, not available for ${FCST_SMOKE_TYPE}"
+      fi
     fi
   fi
 elif [ "${FCST_OR_OBS}" = "OBS" ]; then
@@ -397,7 +406,6 @@ settings="\
   'metplus_log_fn': '${metplus_log_fn:-}'
   'input_dir': '${FCST_INPUT_DIR:-${OBS_INPUT_DIR}}'
   'input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-${OBS_INPUT_FN_TEMPLATE}}'
-  'output_base': '${OUTPUT_BASE}'
   'output_dir': '${OUTPUT_DIR}'
   'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
   'staging_dir': '${STAGING_DIR}'

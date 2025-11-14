@@ -106,14 +106,14 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         for line in expt_details:
             f.write(f"{line}\n")
 
-def create_expts_dict(expt_dir: str):
+def create_expts_dict(expt_dir: str, delay: int):
     """
     Takes in a directory, searches that directory for subdirectories containing
     experiments, and creates a skeleton dictionary that can be filled out by ``update_expt_status()``
 
     Args:
         expt_dir (str): Experiment directory name
-
+        delay    (int): [optional] Delay in seconds between calls to rocotorun.
     Returns:
         (summary_file, expts_dict): A tuple including the name of the summary file (``WE2E_tests_YYYYMMDDHHmmSS.yaml``) and the experiment dictionary
     """
@@ -141,7 +141,7 @@ def create_expts_dict(expt_dir: str):
             continue
         #Update the experiment dictionary
         logging.debug(f"Reading status of experiment {item}")
-        update_expt_status(expts_dict[item],item,True,False,False)
+        update_expt_status(expts_dict[item],item,True,delay,False,False)
     summary_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
 
     return summary_file, expts_dict
@@ -222,8 +222,8 @@ def write_monitor_file(monitor_file: str, expts_dict: dict):
         raise
 
 
-def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool = False,
-                       submit: bool = True) -> dict:
+def update_expt_status(expt: dict, name: str, refresh: bool = False, delay: int = 5,
+                       debug: bool = False, submit: bool = True) -> dict:
     """
     This function reads the dictionary for a given experiment, runs the ``rocotorun`` command to update the experiment (by running new jobs and updating the status of previously submitted ones), and reads the Rocoto database (``.db``) file to update the status of each job in the experiment dictionary. The function then uses a simple set of rules to combine the statuses of every task into a useful summary status for the whole experiment and returns the updated experiment dictionary.
 
@@ -245,6 +245,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         expt    (dict): A dictionary containing the information for an individual experiment, as described in the main ``monitor_jobs()`` function.
         name     (str): Name of the experiment; used for logging only
         refresh (bool): If True, this flag will check an experiment status even if it is listed as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments that may have been restarted.
+        delay    (int): [optional] Delay in seconds between calls to rocotorun.
         debug   (bool): Will capture all output from ``rocotorun``. This will allow information such as job cards and job submit messages to appear in the log files, but turning on this option can drastically slow down the testing process.
         submit  (bool): In addition to reading the Rocoto database (``.db``) file, the script will advance the workflow by calling ``rocotorun``. If simply generating a report, set this to False.
 
@@ -267,16 +268,20 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
                                stderr=subprocess.STDOUT, text=True)
             logging.debug(p.stdout)
 
-            #Run rocotorun again to get around rocotobqserver proliferation issue
-            time.sleep(60)
+            # Run rocotorun again to get around rocotobqserver proliferation issue
+            # Delay prevents problems with frequent calls to rocotorun, seen with very large
+            # experiments and on some systems such as Derecho
+            time.sleep(delay)
             p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, text=True)
             logging.debug(p.stdout)
         else:
             rocotorun_cmd = ["rocotorun", f"-w {rocoto_xml}", f"-d {rocoto_db}"]
             subprocess.run(rocotorun_cmd)
-            #Run rocotorun again to get around rocotobqserver proliferation issue
-            time.sleep(60)
+            # Run rocotorun again to get around rocotobqserver proliferation issue
+            # Delay prevents problems with frequent calls to rocotorun, seen with very large
+            # experiments and on some systems such as Derecho
+            time.sleep(delay)
             subprocess.run(rocotorun_cmd)
 
     logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
@@ -369,7 +374,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     return expt
 
 def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = False,
-                                debug: bool = False) -> dict:
+                                delay: int = 5, debug: bool = False) -> dict:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
     the testing if given enough parallel processes. Given a dictionary of experiments, it will
@@ -380,6 +385,7 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
         expts_dict (dict): A dictionary containing information for all experiments
         procs       (int): The number of parallel processes
         refresh    (bool): "Refresh" flag to pass to ``update_expt_status()``. If True, this flag will check an experiment status even if it is listed as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments that may have been restarted.
+        delay       (int): [optional] Delay in seconds between calls to rocotorun.
         debug      (bool): Will capture all output from ``rocotorun``. This will allow information such as job cards and job submit messages to appear in the log files, but can drastically slow down the testing process.
 
     Returns:
@@ -389,7 +395,7 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
     args = []
     # Define a tuple of arguments to pass to starmap
     for expt in expts_dict:
-        args.append( (expts_dict[expt],expt,refresh,debug) )
+        args.append( (expts_dict[expt],expt,refresh,delay,debug) )
 
     # call update_expt_status() in parallel
     with Pool(processes=procs) as pool:

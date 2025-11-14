@@ -43,4 +43,6 @@ verification:
   VX_FIELD_GROUPS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
   OBS_NOHRSC_FN_TEMPLATES: [ 'ASNOW',
                              '{valid?fmt=%Y%m%d}/sfav2_CONUS_{{ "%02d" % verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}h_{valid?fmt=%Y%m%d%H}_grid184.grb2' ]
+  VX_TASKS: 4
+  VX_MASK: ["CONUS"]
 

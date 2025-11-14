@@ -10,6 +10,7 @@ rocoto:
     COLDSTART: '{{ workflow.COLDSTART }}'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
+    GOESAOD_OBS_DIR: '{{ verification.GOESAOD_OBS_DIR }}'
     HOMEdir: '{{ user.HOMEdir }}'
     JOBSdir: '{{ user.JOBSdir }}'
     KEEPDATA: '{{ nco.KEEPDATA_default }}'
@@ -43,10 +44,10 @@ rocoto:
     FCST_DIR: '{{ "&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR + "/@Y@m@d@H" }}'
     LOGDIR: '{{ "&COMROOT;/output/logs/@Y@m@d" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR + "/log" }}'
   attrs:
-    cyclethrottle: 200
+    cyclethrottle: !int '{{ platform.CYCLETHROTTLE }}'
     realtime: false
     scheduler: '{{ platform.SCHED }}'
-    taskthrottle: 1000
+    taskthrottle: !int '{{ platform.TASKTHROTTLE }}'
   cycledef:
     - attrs:
         group: at_start

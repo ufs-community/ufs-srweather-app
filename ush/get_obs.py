@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import os
 import sys
 import shutil
@@ -7,12 +8,13 @@ import argparse
 import logging
 from pathlib import Path
 import datetime as dt
+import gzip
 from textwrap import dedent
 from pprint import pprint
 from math import ceil, floor
 import subprocess
 import retrieve_data
-from mrms_pull_topofhour import mrms_pull_topofhour
+from select_validtime_obs import select_validtime_obs
 
 from uwtools.api.config import get_yaml_config
 
@@ -52,18 +54,6 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
             the obs file for the given hour of day.
     """
 
-    valid_obtypes = ['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW']
-
-    if obtype not in valid_obtypes:
-        msg = dedent(f"""
-            The specified observation type is not supported:
-                {obtype = }
-            Valid observation types are:
-                {valid_obtypes}
-        """)
-        logging.error(msg)
-        raise ValueError(msg)
-
     # Ensure that the archive interval divides evenly into 24 hours.
     remainder = 24 % arcv_intvl_hrs
     if remainder != 0:
@@ -100,7 +90,7 @@ def get_obs_arcv_hr(obtype, arcv_intvl_hrs, hod):
             arcv_hr = 24
         else:
             arcv_hr = floor(hod/arcv_intvl_hrs)*arcv_intvl_hrs
-    elif obtype in ['MRMS']:
+    elif obtype in ['MRMS', 'GOESAOD', 'GOESADP']:
         arcv_hr = (floor(hod/arcv_intvl_hrs))*arcv_intvl_hrs
     elif obtype in ['NDAS']:
         arcv_hr = (floor(hod/arcv_intvl_hrs) + 1)*arcv_intvl_hrs
@@ -399,28 +389,6 @@ def get_obs(config, obtype, yyyymmdd_task):
     elif obtype == 'NOHRSC':
         accum_obs_formatted = f'{obs_avail_intvl_hrs:d}'
 
-    # For MRMS obs, set field-dependent parameters needed in forming grib2
-    # file names.
-    mrms_fields_in_obs_filenames = []
-    mrms_levels_in_obs_filenames = []
-    if obtype == 'MRMS':
-        for fg in field_groups_in_obs:
-            if fg == 'REFC':
-                mrms_fields_in_obs_filenames.append('MergedReflectivityQCComposite')
-                mrms_levels_in_obs_filenames.append('00.50')
-            elif fg == 'RETOP':
-                mrms_fields_in_obs_filenames.append('EchoTop')
-                mrms_levels_in_obs_filenames.append('18_00.50')
-            else:
-                msg = dedent(f"""
-                    Field and level names have not been specified for this {obtype} field
-                    group:
-                        {obtype = }
-                        {fg = }
-                    """)
-                logging.error(msg)
-                raise ValueError(msg)
-
     # CCPA files for 1-hour accumulation have incorrect metadata in the files
     # under the "00" directory from 20180718 to 20210504.  Set these starting
     # and ending dates as datetime objects for later use.
@@ -469,6 +437,8 @@ def get_obs(config, obtype, yyyymmdd_task):
             arcv_intvl_hrs = 24
         else:
             arcv_intvl_hrs = 1
+    elif obtype in ['GOESAOD', 'GOESADP']:
+        arcv_intvl_hrs = 1
 
     arcv_intvl = dt.timedelta(hours=arcv_intvl_hrs)
 
@@ -662,7 +632,7 @@ def get_obs(config, obtype, yyyymmdd_task):
         # Same as for MRMS
         #
 
-        if obtype in ['CCPA', 'NDAS']:
+        if obtype in ['CCPA', 'NDAS', 'GOESAOD', 'GOESADP']:
             arcv_subdir_raw = yyyymmddhh_arcv_str
         elif obtype == 'NOHRSC':
             arcv_subdir_raw = yyyymmdd_arcv_str
@@ -680,16 +650,10 @@ def get_obs(config, obtype, yyyymmdd_task):
         if obtype == 'CCPA':
             arcv_contents_start = yyyymmddhh_arcv - (num_obs_times_per_arcv - 1)*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv
-        elif obtype == 'NOHRSC':
-            arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
-        elif obtype == 'MRMS':
-            arcv_contents_start = yyyymmddhh_arcv
-            arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
         elif obtype == 'NDAS':
             arcv_contents_start = yyyymmddhh_arcv - num_obs_times_per_arcv*obs_avail_intvl
             arcv_contents_end = yyyymmddhh_arcv - obs_avail_intvl
-        elif obtype in ['AERONET', 'AIRNOW']:
+        elif obtype in ['AERONET', 'AIRNOW', 'GOESAOD', 'GOESADP', 'MRMS', 'NOHRSC']:
             arcv_contents_start = yyyymmddhh_arcv
             arcv_contents_end = yyyymmddhh_arcv + (num_obs_times_per_arcv - 1)*obs_avail_intvl
 
@@ -746,7 +710,7 @@ def get_obs(config, obtype, yyyymmdd_task):
                     '--config', os.path.join(parmdir, 'data_locations.yml'), \
                     '--cycle_date', yyyymmddhh_arcv_str, \
                     '--data_stores', vx_config[f'OBS_DATA_STORE_{obtype}'], \
-                    '--data_type', obtype + '_obs', \
+                    '--data_type', obtype, \
                     '--output_path', arcv_dir_raw, \
                     '--summary_file', 'retrieve_data.log']
             retrieve_data.main(args)
@@ -755,13 +719,9 @@ def get_obs(config, obtype, yyyymmdd_task):
             # archive.  This is a list of datetime objects.
             if obtype == 'CCPA':
                 obs_times_in_arcv = [yyyymmddhh_arcv - i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
-            elif obtype == 'NOHRSC':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
-            elif obtype == 'MRMS':
-                obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             elif obtype == 'NDAS':
                 obs_times_in_arcv = [yyyymmddhh_arcv - (i+1)*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
-            elif obtype in ['AERONET', 'AIRNOW']:
+            elif obtype in ['AERONET', 'AIRNOW', 'GOESAOD', 'GOESADP', 'MRMS', 'NOHRSC']:
                 obs_times_in_arcv = [yyyymmddhh_arcv + i*obs_avail_intvl for i in range(0,num_obs_times_per_arcv)]
             obs_times_in_arcv.sort()
 
@@ -852,21 +812,46 @@ def get_obs(config, obtype, yyyymmdd_task):
                         # those that are nearest in time to the current hour.  Unzip these in a
                         # temporary subdirectory under the raw base directory.
                         #
-                        # Note that the function we call to do this (mrms_pull_topofhour) assumes
+                        # Note that the function we call to do this (select_validtime_obs) assumes
                         # a certain file naming convention.  That convention must match the names
                         # of the files that the retrieve_data.py script called above ends up
                         # retrieving.  The list of possible templates for these names is given
                         # in parm/data_locations.yml, but which of those is actually used is not
                         # known until retrieve_data.py completes.  Thus, that information needs
-                        # to be passed back by retrieve_data.py and then passed to mrms_pull_topofhour.
+                        # to be passed back by retrieve_data.py and then passed to select_validtime_obs.
                         # For now, we hard-code the file name here.
-                        if obtype == 'MRMS':
+                        if obtype in ['MRMS', 'GOESAOD', 'GOESADP']:
+                            # For MRMS obs, set field-dependent parameters needed in forming grib2
+                            # file names.
                             yyyymmddhh_str = dt.datetime.strftime(yyyymmddhh, '%Y%m%d%H')
-                            mrms_pull_topofhour(valid_time=yyyymmddhh_str,
-                                                source=basedir_raw,
+                            if fg == 'REFC':
+                                file_template='MergedReflectivityQCComposite_00.50_[%Y%m%d-%H%M%S].grib2.gz'
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=arcv_dir_raw,
                                                 outdir=os.path.join(basedir_raw, 'topofhour'),
-                                                product=mrms_fields_in_obs_filenames[i],
-                                                add_vdate_subdir=False)
+                                                in_template=file_template,
+                                                out_template=file_template)
+                            elif fg == 'RETOP':
+                                file_template='EchoTop_18_00.50_[%Y%m%d-%H%M%S].grib2.gz'
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=arcv_dir_raw,
+                                                outdir=os.path.join(basedir_raw, 'topofhour'),
+                                                in_template=file_template,
+                                                out_template=file_template)
+                            elif fg == 'GOESAOD':
+                                file_template='OR_ABI-L2-AODF-M*_G16_s[%Y%j%H%M%S]*.nc'
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=arcv_dir_raw,
+                                                outdir=os.path.join(basedir_raw, 'topofhour'),
+                                                in_template=file_template,
+                                                out_template='OR_ABI-L2-AODF_%Y%m%d-%H%M%S.nc')
+                            elif fg == 'GOESADP':
+                                file_template='OR_ABI-L2-ADPF-M*_G16_s[%Y%j%H%M%S]*.nc'
+                                valid_file_name = select_validtime_obs(valid_time=yyyymmddhh_str,
+                                                source=arcv_dir_raw,
+                                                outdir=os.path.join(basedir_raw, 'topofhour'),
+                                                in_template=file_template,
+                                                out_template='OR_ABI-L2-ADPF_%Y%m%d-%H%M%S.nc')
 
                         # The raw file name needs to be the same as what the retrieve_data.py
                         # script called above ends up retrieving.  The list of possible templates
@@ -881,8 +866,10 @@ def get_obs(config, obtype, yyyymmdd_task):
                         elif obtype == 'NOHRSC':
                             fn_raw = 'sfav2_CONUS_' + accum_obs_formatted + 'h_' + yyyymmddhh_str + '_grid184.grb2'
                         elif obtype == 'MRMS':
-                            fn_raw = f'{mrms_fields_in_obs_filenames[i]}_{mrms_levels_in_obs_filenames[i]}' \
-                                   + f'_{yyyymmdd_task_str}-{hr:02d}0000.grib2'
+                            #MRMS files are retrieved from HPSS archives as gzip files; need to unzip them
+                            with gzip.open(valid_file_name, 'rb') as f_in:
+                                with open(fn_raw:=valid_file_name.replace(".gz",""), 'wb') as f_out:
+                                    shutil.copyfileobj(f_in, f_out)
                             fn_raw = os.path.join('topofhour', fn_raw)
                         elif obtype == 'NDAS':
                             time_ago = yyyymmddhh_arcv - yyyymmddhh
@@ -892,15 +879,48 @@ def get_obs(config, obtype, yyyymmdd_task):
                         elif obtype == 'AERONET':
                             fn_raw = f'{yyyymmdd_task_str}.lev15'
                             # Special logic for AERONET pulled from http: internet archives result
-                            # in weird filenames, rename them to the standard name before continuing
-                            badfile = os.path.join(arcv_dir_raw, f'print_web_data_v3?year={yyyymmddhh_str[:4]}')
+                            # in weird filenames, rename them to the standard name and remove HTML
+                            # tags before continuing
+                            yr = f'{yyyymmddhh_str[:4]}'
+                            mn = f'{yyyymmddhh_str[4:6]}'
+                            dy = f'{yyyymmddhh_str[6:8]}'
+                            badfile = os.path.join(arcv_dir_raw, f'print_web_data_v3?year={yr}&month={mn}&day={dy}&year2={yr}&month2={mn}&day2={dy}&AOD15=1&AVG=10')
+                            print(f"{badfile=}")
                             if os.path.isfile(badfile):
-                                shutil.move(badfile, os.path.join(arcv_dir_raw, fn_raw))
+                                goodfile=os.path.join(arcv_dir_raw, fn_raw)
+                                logging.info(f"File retrieved from HTML archive {badfile} "\
+                                              "has a bad file name.\nStripping HTML tags and "\
+                                             f"writing final output to {goodfile}")
+                                # Write first lines of header manually to avoid tricky tag logic
+                                header_lines = [
+                                    "AERONET Data Download (Version 3 Direct Sun)\n",
+                                    "AERONET Version 3;\n",
+                                    "Version 3: AOD Level 1.5\n"
+                                ]
+                                # Regex to remove HTML tags
+                                tag_re = re.compile(r'<[^>]+>')
+
+                                # Write HTML-stripped output to final location
+                                with open(badfile, 'r', encoding='utf-8') as fin, \
+                                     open(goodfile, 'w', encoding='utf-8') as fout:
+                                    # Write your custom lines first
+                                    fout.writelines(header_lines)
+
+                                    # Skip the first 4 lines of the original file
+                                    for _ in range(5):
+                                        next(fin, None)
+                                    # Now process the rest line-by-line, stripping tags
+                                    for line in fin:
+                                        text = tag_re.sub('', line)
+                                        fout.write(text)
                         elif obtype == 'AIRNOW':
                             if vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourlyaqobs':
                                 fn_raw = f'HourlyAQObs_{yyyymmddhh_str}.dat'
                             elif vx_config['AIRNOW_INPUT_FORMAT'] == 'airnowhourly':
                                 fn_raw = f'HourlyData_{yyyymmddhh_str}.dat'
+                        elif obtype in ['GOESAOD', 'GOESADP']:
+                            fn_raw = os.path.join('topofhour',valid_file_name)
+
                         fp_raw = os.path.join(arcv_dir_raw, fn_raw)
 
                         # Make sure the directory in which the processed file will be created exists.
@@ -965,8 +985,8 @@ def parse_args(argv):
         "--obtype",
         type=str,
         required=True,
-        choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW'],
-        help="Cumulative observation type.",
+        choices=['CCPA', 'NOHRSC', 'MRMS', 'NDAS', 'AERONET', 'AIRNOW', 'GOESAOD', 'GOESADP'],
+        help="Observation type.",
     )
 
     parser.add_argument(

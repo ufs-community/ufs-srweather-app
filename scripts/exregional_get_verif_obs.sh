@@ -57,20 +57,18 @@ done
 #
 #-----------------------------------------------------------------------
 #
-valid_obtypes=("CCPA" "MRMS" "NDAS" "NOHRSC" "AERONET" "AIRNOW")
-if [[ ! ${valid_obtypes[@]} =~ ${OBTYPE} ]]; then
-  print_err_msg_exit "\
-Invalid observation type (OBTYPE) specified for script:
-  OBTYPE = \"${OBTYPE}\"
-Valid observation types are:
-  $(printf "\"%s\" " ${valid_obtypes[@]})
-"
+LOGLEVEL="INFO"
+echo "DEBUG=$DEBUG"
+if [ "${DEBUG}" = "True" ]; then
+  LOGLEVEL="DEBUG"
 fi
+echo "LOGLEVEL=$LOGLEVEL"
 
 cmd="\
 python3 -u ${USHdir}/get_obs.py \
 --var_defns_path "${GLOBAL_VAR_DEFNS_FP}" \
 --obtype ${OBTYPE} \
+--log_level ${LOGLEVEL} \
 --obs_day ${PDY}"
 print_info_msg "
 CALLING: ${cmd}"

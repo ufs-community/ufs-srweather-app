@@ -128,6 +128,54 @@ def check_file(url):
     status_code = urllib.request.urlopen(url).getcode()
     return status_code == 200
 
+def awscli_get_file(bucket,fname):
+
+    """
+    Download a file from an AWS S3 bucket, and place it in a target location on disk.
+
+    Args:
+      bucket: The bucket and directory where the file(s) are located
+      fname: The name of the file(s) to be retrieved. Can include glob wildcards
+
+    Returns:
+      Boolean value reflecting whether the copy was successful (True) or unsuccessful (False)
+    """
+
+    # aws flags:
+    # --recursive --exclude "*" --include "{filename}"
+    #   This combination allows for the globbing of files with wildcard characters
+    # --no-sign-request
+    #   This skips the authentication check; not needed since we only download from public buckets
+    cmd = f'aws s3 cp {bucket} . --recursive --exclude "*" --include "{fname}" --no-sign-request'
+    logging.debug(f"Running command: \n {cmd}")
+
+    try:
+        result = subprocess.run(
+            cmd,
+            check=True,
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+    except subprocess.CalledProcessError as err:
+        logging.error(err)
+        if err.returncode == 127:
+            logging.error("AWS CLI is not is available in your environment!")
+        return False
+    except:
+        logging.error("Command failed!")
+        raise
+
+    # Check printed output; return false if no new files were retrieved
+    if result.stdout.strip():
+        for line in result.stdout.splitlines():
+            if "download:" in line: logging.debug(line)
+    else:
+        logging.info("aws s3 cp command returned no files")
+        return False
+
+    return True
+
 
 def wget_file(url):
 
@@ -145,7 +193,7 @@ def wget_file(url):
     # -c continue previous attempt
     # -T timeout seconds
     # -t number of tries
-    cmd = f"wget -q -c -T 15 -t 2 {url}"
+    cmd = f"wget -c -T 15 -t 2 '{url}'"
     logging.debug(f"Running command: \n {cmd}")
     try:
         subprocess.run(
@@ -395,7 +443,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
       file_templates (list): A list of file templates
       input_locs     (str) : A string containing a single data location, either a URL, a disk
                              path, an AWS bucket/directory, or a list these paths/URLs.
-      method         (str) : Choice of ``"disk"`` or ``"wget"`` to indicate protocol
+      method         (str) : Choice of ``"disk"``, ``"wget"``, or ``"awscli"`` to indicate protocol
                              for retrieval
 
     Keyword Args:
@@ -446,13 +494,19 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                 for tmpl_num, template in enumerate(templates):
                     if isinstance(loc, list) and len(loc) == len(templates):
                         template_loc = loc[tmpl_num]
-                    input_loc = os.path.join(template_loc, template)
-                    input_loc = fill_template(
-                        input_loc,
+                    template_loc = fill_template(
+                        template_loc,
                         cla.cycle_date,
                         fcst_hr=fcst_hr,
                         mem=mem,
                     )
+                    template = fill_template(
+                        template,
+                        cla.cycle_date,
+                        fcst_hr=fcst_hr,
+                        mem=mem,
+                    )
+                    input_loc = os.path.join(template_loc, template)
                     logging.info(f"Getting file: {input_loc}")
                     logging.debug(f"Target path: {target_path}")
                     if method == "disk":
@@ -471,7 +525,12 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                         # Wait a bit before trying the next download.
                         # Seems to reduce the occurrence of timeouts
                         # when downloading from AWS
-                        time.sleep(5)
+                        time.sleep(2)
+                    elif method == "awscli":
+                        # AWS CLI requires that we pass in the "template_loc" (bucket + directory
+                        # potentially containing templates) and "template" (filename potentially
+                        # containing templates)
+                        retrieved = awscli_get_file(template_loc,template)
 
                     logging.debug(f"Retrieved status: {retrieved}")
                     if not retrieved:
@@ -972,6 +1031,16 @@ def main(argv):
                     method=store_specs.get("protocol"),
                     members=cla.members,
                 )
+            if store_specs.get("protocol") == "awscli":
+                unavailable = get_requested_files(
+                    cla,
+                    check_all=known_data_info.get("check_all", False),
+                    file_templates=file_templates,
+                    input_locs=store_specs["bucket"],
+                    method=store_specs.get("protocol"),
+                    members=cla.members,
+
+                )
 
             if store_specs.get("protocol") == "htar":
                 ens_groups = get_ens_groups(cla.members)
@@ -1167,9 +1236,17 @@ def parse_args(argv):
          only",
     )
 
-    # Make modifications/checks for given values
-
+    # Print executed command if debug=True
     args = parser.parse_args(argv)
+
+    message='CALLING ./retrieve_data.py'
+
+    for key, value in vars(args).items():
+        message+=f' --{key}={value}'
+
+    print(message)
+
+    # Make modifications/checks for given values
 
     # convert range arguments if necessary 
     args.fcst_hrs = arg_list_to_range(args.fcst_hrs)

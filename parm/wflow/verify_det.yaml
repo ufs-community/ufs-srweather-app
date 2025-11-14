@@ -52,6 +52,8 @@ metatask_GridStat_APCP_all_accums_all_mems:
         OBS_AVAIL_INTVL_HRS: '{{ verification.CCPA_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
+      memory: '{{  verification_resources.execution.deterministic.gridstat.memory if user.MACHINE not in ["NOAACLOUD"] }}'
+      nodes: '{{ verification_resources.execution.nodes }}:ppn={{ verification_resources.execution.deterministic.gridstat.tasks_per_node }}'
       walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
       dependency:
         and:
@@ -85,6 +87,8 @@ metatask_GridStat_ASNOW_all_accums_all_mems:
         OBS_AVAIL_INTVL_HRS: '{{ verification.NOHRSC_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'A#ACCUM_HH#'
         FCST_THRESH: 'all'
+      memory: '{{  verification_resources.execution.deterministic.gridstat.memory if user.MACHINE not in ["NOAACLOUD"] }}'
+      nodes: '{{ verification_resources.execution.nodes }}:ppn={{ verification_resources.execution.deterministic.gridstat.tasks_per_node }}'
       walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
       dependency:
         and:
@@ -114,6 +118,8 @@ metatask_GridStat_REFC_RETOP_all_mems:
         OBS_AVAIL_INTVL_HRS: '{{ verification.MRMS_OBS_AVAIL_INTVL_HRS }}'
         FCST_LEVEL: 'L0'
         FCST_THRESH: 'all'
+      memory: '{{  verification_resources.execution.deterministic.gridstat.memory if user.MACHINE not in ["NOAACLOUD"] }}'
+      nodes: '{{ verification_resources.execution.nodes }}:ppn={{ verification_resources.execution.deterministic.gridstat.tasks_per_node }}'
       walltime: "{{ verification_resources.execution.deterministic.gridstat.walltime }}"
       dependency:
         and:
@@ -155,6 +161,8 @@ metatask_PointStat:
         OBS_AVAIL_INTVL_HRS: '#METAOB_AVAIL_HRS#'
         FCST_LEVEL: 'all'
         FCST_THRESH: 'all'
+      memory: '{{  verification_resources.execution.deterministic.gridstat.memory if user.MACHINE not in ["NOAACLOUD"] }}'
+      nodes: '{{ verification_resources.execution.nodes }}:ppn={{ verification_resources.execution.deterministic.pointstat.tasks_per_node }}'
       walltime: "{{ verification_resources.execution.deterministic.pointstat.walltime }}"
       dependency:
         and:

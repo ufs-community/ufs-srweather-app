@@ -28,12 +28,35 @@ default_task_verify_pre: &default_task_verify_pre
   partition: '{{ "&PARTITION_DEFAULT;" if platform.get("PARTITION_DEFAULT") }}'
   queue: '&QUEUE_DEFAULT;'
 
+task_get_obs_goes_aod:
+  <<: *default_task_verify_pre
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  envars:
+    <<: *default_vars
+    OBTYPE: 'GOESAOD'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 02:00:00
+
+task_get_obs_goes_adp:
+  <<: *default_task_verify_pre
+  command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
+  envars:
+    <<: *default_vars
+    OBTYPE: 'GOESADP'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 02:00:00
+
 task_get_obs_aeronet:
   <<: *default_task_verify_pre
   command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
-    OBS_DIR: '&AERONET_OBS_DIR;'
     OBTYPE: 'AERONET'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD }}'
@@ -46,7 +69,6 @@ task_get_obs_airnow:
   command: '&LOAD_MODULES_RUN_TASK; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
-    OBS_DIR: '&AIRNOW_OBS_DIR;'
     OBTYPE: 'AIRNOW'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   native: '{{ platform.SCHED_NATIVE_CMD_HPSS if platform.get("SCHED_NATIVE_CMD_HPSS") else platform.SCHED_NATIVE_CMD }}'
@@ -261,6 +283,7 @@ metatask_PcpCombine_APCP_all_accums_all_mems:
         cycledefs: forecast
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      walltime: "{{ verification_resources.execution.pcpcombine.fcst.walltime }}"
       envars:
         <<: *default_vars
         FIELD_GROUP: 'APCP'
@@ -277,7 +300,6 @@ metatask_PcpCombine_APCP_all_accums_all_mems:
           value:
             cyclestr:
               value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
-      walltime: 00:30:00
 
 metatask_PcpCombine_ASNOW_all_accums_all_mems:
   var:
@@ -291,6 +313,7 @@ metatask_PcpCombine_ASNOW_all_accums_all_mems:
         cycledefs: forecast
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      walltime: "{{ verification_resources.execution.pcpcombine.fcst.walltime }}"
       envars:
         <<: *default_vars
         FIELD_GROUP: 'ASNOW'
@@ -307,7 +330,6 @@ metatask_PcpCombine_ASNOW_all_accums_all_mems:
           value:
             cyclestr:
               value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
-      walltime: '{{ verification_resources.execution.pcpcombine.obs.walltime }}'
 
 metatask_PcpCombine_fcst_PM_all_mems:
   var:
@@ -321,6 +343,7 @@ metatask_PcpCombine_fcst_PM_all_mems:
         cycledefs: forecast
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      walltime: "{{ verification_resources.execution.pcpcombine.fcst.walltime }}"
       envars:
         <<: *default_vars
         FIELD_GROUP: '#PM#'
@@ -337,4 +360,3 @@ metatask_PcpCombine_fcst_PM_all_mems:
           value:
             cyclestr:
               value: '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
-      walltime: '{{ verification_resources.execution.pcpcombine.ensemble.walltime }}'

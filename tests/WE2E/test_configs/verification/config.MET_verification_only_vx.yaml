@@ -22,5 +22,6 @@ workflow:
     - parm/wflow/verify_det.yaml
 
 verification:
+  VX_MASK: ["CONUS","EAST","EAST_OF_ROCKIES"]
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.TEST_VX_FCST_INPUT_BASEDIR }}'

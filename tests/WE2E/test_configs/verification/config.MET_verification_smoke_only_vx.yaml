@@ -19,4 +19,4 @@ verification:
   VX_FCST_INPUT_BASEDIR: '{{ platform.WE2E_TEST_DATA }}/input_model_data/RRFS'
   FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H}'
   FCST_FN_TEMPLATE: 'rrfs.t00z.prslev.f{lead?fmt=%HHH}.conus.grib2'
-
+  VX_TASKS: 4

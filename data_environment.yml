@@ -1,0 +1,9 @@
+name: get_data
+channels:
+  - conda-forge
+  - ufs-community
+dependencies:
+  - pylint=2.17*
+  - pytest=7.2*
+  - uwtools=2.3*
+  - awscli=2.24*

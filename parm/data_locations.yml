@@ -257,13 +257,16 @@ HRRR:
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
+      - ./
       - ./
       - ./
     archive_file_names:
       # HRRR forecasts are binned into 6 hour tar files.
       - gpfs_hps_nco_ops_com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
       - com_hrrr_prod_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
+      - com_hrrr_v4.1_hrrr.{yyyymmdd}_conus{bin6}.wrf.tar
     file_names: &hrrr_file_names
       anl:
         - hrrr.t{hh}z.wrfprsf{fcst_hr:02d}.grib2
@@ -309,7 +312,7 @@ UFS-CASE-STUDY:
 ##########################
 ##########################
 
-CCPA_obs:
+CCPA:
   hpss:
     protocol: htar
     archive_format: tar
@@ -329,7 +332,7 @@ CCPA_obs:
       obs:
         - "ccpa.t*z.01h.hrap.conus.gb2"
 
-MRMS_obs:
+MRMS:
   hpss:
     protocol: htar
     archive_format: tar
@@ -353,7 +356,7 @@ MRMS_obs:
         - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"
         - "EchoTop_18_00.50_{yyyymmdd}-*.grib2.gz"
 
-NDAS_obs:
+NDAS:
   hpss:
     protocol: htar
     archive_format: tar
@@ -375,7 +378,7 @@ NDAS_obs:
       obs:
         - "./nam.t{hh}z.prepbufr.tm*.nr"
 
-NOHRSC_obs:
+NOHRSC:
   hpss:
     protocol: htar
     archive_format: tar
@@ -391,7 +394,7 @@ NOHRSC_obs:
     archive_internal_dir:
       - ./wgrbbul/nohrsc_snowfall/
 
-AERONET_obs:
+AERONET:
   hpss:
     protocol: htar
     archive_format: tar
@@ -411,9 +414,9 @@ AERONET_obs:
     url: "https://aeronet.gsfc.nasa.gov/cgi-bin/"
     file_names:
       obs:
-        - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&AOD15=1&AVG=10"
+        - "print_web_data_v3?year={yyyy}&month={mm}&day={dd}&year2={yyyy}&month2={mm}&day2={dd}&AOD15=1&AVG=10"
 
-AIRNOW_obs:
+AIRNOW:
   hpss:
     protocol: htar
     archive_format: tar
@@ -436,4 +439,32 @@ AIRNOW_obs:
       obs:
         - "HourlyData_{fyyyymmdd}{fhh}.dat"
         - "Monitoring_Site_Locations_V2.dat"
+
+GOESAOD:
+  aws:
+    protocol: awscli
+    # Data description including repositories/buckets can be found in
+    # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01511
+    #
+    # Product descriptions can be found in https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf
+    # File names specifically in Appendix A
+    bucket:
+      - "s3://noaa-goes16/ABI-L2-AODF/{fyyyy}/{fjjj}/{fhh}" # AOD obs
+    file_names:
+      obs:
+        - "OR_ABI-L2-AODF-M[3-6]_G16_s{fyyyy}{fjjj}{fhh}*.nc"
+
+GOESADP:
+  aws:
+    protocol: awscli
+    # Data description including repositories/buckets can be found in
+    # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01511
+    #
+    # Product descriptions can be found in https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf
+    # File names specifically in Appendix A
+    bucket:
+      - "s3://noaa-goes16/ABI-L2-ADPF/{fyyyy}/{fjjj}/{fhh}" # Aerosol detection product
+    file_names:
+      obs:
+        - "OR_ABI-L2-ADPF-M[3-6]_G16_s{fyyyy}{fjjj}{fhh}*.nc"
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-from datetime import datetime, timedelta, date
-from pprint import pprint
+from datetime import datetime, timedelta
 from textwrap import dedent
-from python_utils import print_input_args, print_err_msg_exit
+from python_utils import print_input_args
 import logging
 
 
@@ -630,28 +629,23 @@ def get_obs_retrieve_times_by_day(
     # nature of that obs type (i.e. whether the obs type contains cumulative
     # or instantaneous fields), and a list of the field groups that the obs
     # type may be used to verify.
-    all_obs_info \
+    obs_info \
     = [{'obtype': 'CCPA',   'time_type': 'cumul', 'field_groups': ['APCP']},
        {'obtype': 'NOHRSC', 'time_type': 'cumul', 'field_groups': ['ASNOW']},
        {'obtype': 'MRMS',   'time_type': 'inst',  'field_groups': ['REFC', 'RETOP']},
        {'obtype': 'NDAS',   'time_type': 'inst',  'field_groups': ['SFC', 'UPA']},
-       {'obtype': 'AERONET',   'time_type': 'inst',  'field_groups': ['AOD']},
-       {'obtype': 'AIRNOW',   'time_type': 'inst',  'field_groups': ['PM25', 'PM10']}
+       {'obtype': 'AERONET',   'time_type': 'inst',   'field_groups': ['AOD']},
+       {'obtype': 'AIRNOW',   'time_type': 'inst',  'field_groups': ['PM25', 'PM10']},
+       {'obtype': 'GOESAOD',   'time_type': 'inst',  'field_groups': ['GOESAOD']},
+       {'obtype': 'GOESADP',   'time_type': 'inst',  'field_groups': ['GOESADP']},
       ]
 
-    # Create new list that has the same form as the list of dictionaries
-    # defined above but contains only those obs types that have at least one
-    # field group that appears in the list of field groups to verify.  Note
-    # that for those obs types that are retained in the list, the field groups
-    # that will not be verified are discarded.
-    obs_info = []
-    for obs_dict in all_obs_info.copy():
-        obtype = obs_dict['obtype']
-        field_groups = obs_dict['field_groups']
-        field_groups = [field for field in field_groups if field in vx_field_groups]
-        obs_dict = obs_dict.copy()
-        obs_dict['field_groups'] = field_groups
-        if field_groups: obs_info.append(obs_dict)
+    # Remove obs_info entries that don't have field groups to verify based on user settings
+    for obs_dict in obs_info:
+        obs_dict['field_groups'] = [fg for fg in obs_dict['field_groups'] if fg in vx_field_groups]
+
+    # Remove any obs_dict with empty field_groups
+    obs_info = [obs_dict for obs_dict in obs_info if obs_dict['field_groups']]
 
     # For convenience, define timedelta object representing a single day.
     one_day = timedelta(days=1)

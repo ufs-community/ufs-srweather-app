@@ -307,6 +307,24 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Populate VX_MASK_FILE_LIST based on user selections
+#
+#-----------------------------------------------------------------------
+#
+# This weird logic is needed because in older versions of bash empty arrays are treated as unset
+if [ ${VX_MASK[@]} ]; then
+  VX_MASK_FILE_LIST=""
+  for i in "${VX_MASK[@]}"; do
+    if [ -f "${METPLUS_CONF}/${i}.poly" ]; then
+      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, ${METPLUS_CONF}/${i}.poly"
+    else
+      VX_MASK_FILE_LIST="${VX_MASK_FILE_LIST}, {MET_INSTALL_DIR}/share/met/poly/${i}.poly"
+    fi
+  done
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the names of the template METplus configuration file, the METplus
 # configuration file generated from this template, and the METplus log
 # file.
@@ -375,7 +393,6 @@ settings="\
 'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
 'fcst_input_dir': '${FCST_INPUT_DIR:-}'
 'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
-'output_base': '${OUTPUT_BASE}'
 'output_dir': '${OUTPUT_DIR}'
 'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
 'staging_dir': '${STAGING_DIR}'
@@ -400,6 +417,11 @@ settings="\
 'input_field_group': '${FIELD_GROUP:-}'
 'input_level_fcst': '${FCST_LEVEL:-}'
 'input_thresh_fcst': '${FCST_THRESH:-}'
+#
+# Verification mask settings
+#
+'vx_mask': '${VX_MASK_FILE_LIST:-}'
+#
 #
 # Verification configuration dictionary.
 #

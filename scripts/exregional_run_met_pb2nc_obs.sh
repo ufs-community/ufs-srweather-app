@@ -148,10 +148,9 @@ vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_FN_TEMPLATES[1]} )
 
-OUTPUT_BASE="${vx_output_basedir}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
+OUTPUT_DIR="${vx_output_basedir}/metprd/${MetplusToolName}_obs"
 OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCandUPA_FN_TEMPLATE_PB2NC_OUTPUT} )
-STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
+STAGING_DIR="${vx_output_basedir}/stage/${MetplusToolName}_obs"
 #
 #-----------------------------------------------------------------------
 #
@@ -323,7 +322,7 @@ settings="\
 # Date and lead hour information.
 #
   'cdate': '$CDATE'
-  'leadhr_list': '${LEADHR_LIST}'
+  'vx_leadhr_list': '${LEADHR_LIST}'
 #
 # Input and output directory/file information.
 #
@@ -333,7 +332,6 @@ settings="\
   'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
   'fcst_input_dir': '${FCST_INPUT_DIR:-}'
   'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
-  'output_base': '${OUTPUT_BASE}'
   'output_dir': '${OUTPUT_DIR}'
   'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
   'staging_dir': '${STAGING_DIR}'

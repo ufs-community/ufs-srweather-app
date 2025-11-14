@@ -75,6 +75,9 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     )
     logging.debug(user_config)
 
+    machine = user_config["user"]["MACHINE"].upper()
+    user_config["user"]["MACHINE"] = machine
+
     # Check user config against experiment schema
     schema = ushdir / "user.jsonschema"
     valid = validate(schema_file=schema, config_data=user_config)
@@ -84,8 +87,6 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
         sys.exit(1)
 
     # Load the machine config file
-    machine = user_config["user"]["MACHINE"].upper()
-    user_config["user"]["MACHINE"] = machine
 
     machine_file = ushdir / "machine" / f"{machine.lower()}.yaml"
 
@@ -361,21 +362,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
     user_config_fp = os.path.join(ushdir, user_config_fn)
     expt_config = load_config_for_setup(ushdir, default_config_fp, user_config_fp)
 
-    # Load build settings as a dictionary; will be used later to make
-    # sure the build is consistent with the user settings
-    build_config_fp = Path(expt_config["user"]["EXECdir"], "build_settings.yaml")
-    build_config = get_yaml_config(build_config_fp)
-    logger.debug(f"Read build configuration from {build_config_fp}\n{build_config}")
-
-    # Fail if build machine and config machine are inconsistent
-    if build_config["Machine"].upper() != expt_config["user"]["MACHINE"]:
-        logger.critical(
-            "ERROR: Machine in build settings file != machine specified in config file"
-        )
-        logger.critical(f"build machine: {build_config['Machine']}")
-        logger.critical(f"config machine: {expt_config['user']['MACHINE']}")
-        raise ValueError("Check config settings for correct value for 'machine'")
-
     # Set up some paths relative to the SRW clone
     expt_config["user"].update(
         {
@@ -501,6 +487,23 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                              run_make_lbcs or \
                              run_run_fcst
     run_run_post = dict_find(rocoto_tasks, "task_run_post")
+
+    # Load build settings as a dictionary if build was necessary; this will be used to make
+    # sure the build is consistent with the user settings
+    if run_make_grid or run_make_orog or run_make_sfc_climo or run_any_coldstart_task:
+        build_config_fp = Path(expt_config["user"]["EXECdir"], "build_settings.yaml")
+        build_config = get_yaml_config(build_config_fp)
+        logger.debug(f"Read build configuration from {build_config_fp}\n{build_config}")
+
+        # Fail if build machine and config machine are inconsistent
+        if build_config["Machine"].upper() != expt_config["user"]["MACHINE"]:
+            logger.critical(
+                "ERROR: Machine in build settings file != machine specified in config file"
+            )
+            logger.critical(f"build machine: {build_config['Machine']}")
+            logger.critical(f"config machine: {expt_config['user']['MACHINE']}")
+            raise ValueError("Check config settings for correct value for 'machine'")
+
 
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"]["DOMAIN_PREGEN_BASEDIR"]
@@ -748,6 +751,14 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         vx_metatasks_all_by_obtype["AIRNOW"] \
         = ["task_get_obs_airnow"]
 
+        vx_field_groups_all_by_obtype["GOESAOD"] = ["GOESAOD"]
+        vx_metatasks_all_by_obtype["GOESAOD"] \
+        = ["task_get_obs_goes_aod"]
+
+        vx_field_groups_all_by_obtype["GOESADP"] = ["GOESADP"]
+        vx_metatasks_all_by_obtype["GOESADP"] \
+        = ["task_get_obs_goes_adp"]
+
         # If there are no field groups specified for verification, remove those
         # tasks that are common to all observation types.
         vx_field_groups = vx_config["VX_FIELD_GROUPS"]
@@ -782,7 +793,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
         # -----------------------------------------------------------------------
         #
         if vx_field_groups:
-            obtypes_all = ["CCPA", "NOHRSC", "MRMS", "NDAS"]
+            obtypes_all = ["CCPA", "NOHRSC", "MRMS", "NDAS", "AERONET", "AIRNOW", "GOESAOD"]
             obs_basedir_var_names = [f"{obtype}_OBS_DIR" for obtype in obtypes_all]
             obs_basedirs_dict = {key: vx_config[key] for key in obs_basedir_var_names}
             obs_basedirs_orig = list(obs_basedirs_dict.values())
