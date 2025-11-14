@@ -19,7 +19,7 @@ sys.path.insert(1, os.environ['USHdir'])
 from set_leadhrs import set_leadhrs
 
 def set_vx_params(obtype,field_group,accum_hh):
-    """Function for reterning various verification parameters based on input args
+    """Function for returning various verification parameters based on input args
 
     obtype      (str): Observation type to set up
     field_group (str): Field group to set up
