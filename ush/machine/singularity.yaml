@@ -32,3 +32,18 @@ platform:
 smoke_dust_parm:
   COMINsmoke_default: /contrib/global/glopara/data_smoke_dust/RAVE_smoke_dust
   COMINrave_default: /contrib/global/glopara/data_smoke_dust/RAVE_fire
+task_run_fcst:
+  envvars:
+    OMP_NUM_THREADS_RUN_FCST: 1
+
+data:
+  ics_lbcs:
+    FV3GFS:
+      nemsio: /contrib/global/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /contrib/global/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        native: '--cpus-per-task {{ task_run_fcst.fv3.execution.threads // 1 }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'

@@ -39,9 +39,10 @@ elif [ "$L_MACHINE" = linux ]; then
    module purge
 
 elif [ "$L_MACHINE" = singularity ]; then
-   export BASH_ENV="/usr/share/lmod/lmod/init/bash"
-   source $BASH_ENV
-
+   if [ -f "/usr/share/lmod/lmod/init/bash" ]; then 
+      export BASH_ENV="/usr/share/lmod/lmod/init/bash"
+      source $BASH_ENV
+   fi
    module purge
 
 elif [ "$L_MACHINE" = gaeac5 ]; then
