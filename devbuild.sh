@@ -101,7 +101,7 @@ env_vars () {
   local vars_file="$1"
 
 cat >"${vars_file}" <<EOF_ENV
-PATH=${PATH}
+PATH=${SRW_DIR}/${BIN_DIR}:${PATH}
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
 CPATH=${CPATH}
 EOF_ENV
@@ -119,7 +119,7 @@ set -x
 export SINGULARITYENV_FI_PROVIDER=tcp
 export SINGULARITY_SHELL=/bin/bash
 
-img="/full/path/to/container/image.sif"
+img=/full/path/to/container/image.sif
 cmd=\$(basename "\$0")
 arg="\$@"
 
