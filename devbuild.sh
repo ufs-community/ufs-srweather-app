@@ -112,6 +112,7 @@ srw_binary_wrapper() {
   local wrapper="$1"
   local bind_dir=${BIND_DIR:-/home}
   local srw_env=${SRW_ENV:-}
+  local img_sif=${IMG:-/full/path/to/container/image.sif}
 cat >"${wrapper}" <<EOF_WRAP
 #!/bin/bash
 set -x
@@ -119,7 +120,7 @@ set -x
 export SINGULARITYENV_FI_PROVIDER=tcp
 export SINGULARITY_SHELL=/bin/bash
 
-img=/full/path/to/container/image.sif
+img=${img_sif}
 cmd=\$(basename "\$0")
 arg="\$@"
 
@@ -131,6 +132,7 @@ if ip link show eth0 &>/dev/null; then
 fi
 
 export SINGULARITYENV_OMPI_MCA_pml=ob1
+export SINGULARITYENV_OMPI_MCA_btl_vader_single_copy_mechanism=none
 export SINGULARITYENV_OMPI_MCA_mca_base_component_show_load_errors=0
 
 SINGULARITY=\$(which singularity)

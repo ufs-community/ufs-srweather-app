@@ -43,7 +43,7 @@ elif [ "$L_MACHINE" = singularity ]; then
       export BASH_ENV="/usr/share/lmod/lmod/init/bash"
       source $BASH_ENV
    fi
-   module purge
+   module reset
 
 elif [ "$L_MACHINE" = gaeac5 ]; then
    module reset 
