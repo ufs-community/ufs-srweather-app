@@ -111,6 +111,9 @@ EOF_ENV
 srw_binary_wrapper() {
   local wrapper="$1"
   local bind_dir=${BIND_DIR:-/home}
+  if [[ -n "${BIND_ADD:-}" ]]; then
+     local bind_add="-B ${BIND_ADD}"
+  fi
   local srw_env=${SRW_ENV:-}
   local img_sif=${IMG:-/full/path/to/container/image.sif}
 cat >"${wrapper}" <<EOF_WRAP
@@ -137,8 +140,8 @@ export SINGULARITYENV_OMPI_MCA_mca_base_component_show_load_errors=0
 
 SINGULARITY=\$(which singularity)
 
-"\${SINGULARITY}" exec --env-file "${srw_env}" \
-    -B "${bind_dir}" "\${img}" \$cmd \$arg
+"\${SINGULARITY}" exec --env-file ${srw_env} \
+-B ${bind_dir} ${bind_add:-} \${img} \$cmd \$arg
 EOF_WRAP
 
     chmod +x "${wrapper}"
