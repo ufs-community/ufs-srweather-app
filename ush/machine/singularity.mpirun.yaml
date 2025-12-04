@@ -7,12 +7,11 @@ platform:
   QUEUE_DEFAULT: batch
   QUEUE_FCST: batch
   QUEUE_HPSS: batch
-  RUN_CMD_FCST: srun --mpi=pmi2 --export=ALL -n $nprocs
-  RUN_CMD_POST: srun --mpi=pmi2 --export=ALL -n $nprocs
-  RUN_CMD_PRDGEN: srun --mpi=pmi2 --export=ALL -n $nprocs
+  RUN_CMD_FCST: mpirun -n $nprocs
+  RUN_CMD_POST: mpirun -n $nprocs
+  RUN_CMD_PRDGEN: mpirun -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: srun --mpi=pmi2 --export=ALL -n $nprocs
-  SCHED_NATIVE_CMD: --exclusive --export=NONE
+  RUN_CMD_UTILS: mpirun  -n $nprocs
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   FIXaer: /contrib/global/glopara/fix/fix_aer
   FIXgsm: /contrib/global/glopara/fix/fix_am
