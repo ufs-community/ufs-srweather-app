@@ -1842,7 +1842,7 @@ task_run_fcst:
   #
   QUILTING: true
 
-  PE_MEMBER01: !int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + fire.FIRE_NUM_TASKS }}'
+  PE_MEMBER01: !int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + (fire.FIRE_NUM_TASKS * fire.OMP_NUM_THREADS_FIRE) if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + (fire.FIRE_NUM_TASKS * fire.OMP_NUM_THREADS_FIRE) }}'
 
   WRTCMP_write_groups: ""
   WRTCMP_write_tasks_per_group: ""
