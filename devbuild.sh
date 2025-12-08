@@ -245,11 +245,6 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   if ! conda env list | grep -q "^srw_sd\s" ; then
     mamba env create -n srw_sd --file sd_environment.yml
   fi
-  if [ "${APPLICATION}" = "ATMAQ" ]; then
-    if ! conda env list | grep -q "^srw_aqm\s" ; then
-      mamba env create -n srw_aqm --file aqm_environment.yml
-    fi
-  fi
 
 else
   if [ -d "${CONDA_BUILD_DIR}" ] ; then
