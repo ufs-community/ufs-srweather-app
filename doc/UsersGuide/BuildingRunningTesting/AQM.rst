@@ -21,7 +21,7 @@ Quick Start Guide (SRW-AQM)
 
 .. attention::
 
-   These instructions should work smoothly on Hera, Hercules, Derecho, Orion, and Gaea-C6 but users on other systems may need to make additional adjustments.
+   These instructions should work smoothly on Ursa, Hercules, Orion, Derecho, and Gaea-C6 but users on other systems may need to make additional adjustments.
 
 Download the Code
 -------------------
@@ -40,13 +40,13 @@ Users must run the ``checkout_externals`` script to collect (or "check out") the
 Build the SRW App with AQM
 -----------------------------
 
-On Hera and WCOSS2, users can build the SRW App AQM binaries with the following command:
+Users can build the SRW App AQM binaries with the following command:
 
 .. code-block:: console
 
    ./devbuild.sh -p=<machine> -a=ATMAQ
 
-where ``<machine>`` is ``hera``, ``hercules``, ``orion``, ``derecho``, and ``gaeac6``. The ``-a`` argument indicates the configuration/version of the application to build.
+where ``<machine>`` is  ``ursa``, ``hercules``, ``orion``, ``derecho``, and ``gaeac6``. The ``-a`` argument indicates the configuration/version of the application to build.
 
 Building the SRW App with AQM on other machines, including other :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platforms, is not currently guaranteed to work, and users may have to make adjustments to the modulefiles for their system. 
 
@@ -78,7 +78,11 @@ Load the python environment for the workflow:
    module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<machine>
 
-where ``<machine>`` is ``hera``, ``hercules``, ``orion``, ``derecho``, or ``gaeac6``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms.
+where ``<machine>`` is ``ursa``, ``hercules``, ``orion``, ``derecho``, or ``gaeac6``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms.
+
+.. note::
+
+   A limited number of diagnostic fields are output on ``derecho`` due to runtime CMAQ issues.
 
 If the console outputs a message, the user should run the commands specified in the message. For example, if the output says: 
 
@@ -298,7 +302,7 @@ Build the app for AQM:
 
 .. code-block:: console
 
-  ./devbuild.sh -p=hera -a=ATMAQ
+  ./devbuild.sh -p=ursa -a=ATMAQ
 
 
 Add the WE2E test for AQM to the list file:
@@ -314,7 +318,7 @@ Run the WE2E test:
 
 .. code-block:: console
 
-   $ ./run_we2e_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
+   $ ./run_we2e_tests.py -t my_tests.txt -m ursa -a gsd-fv3 -q
 
 AQM Use Cases
 =============
