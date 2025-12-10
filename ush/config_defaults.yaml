@@ -2121,7 +2121,7 @@ task_point_source:
     # Sub-directory structure of point source data under FIXemis.
     # Full path: FIXemis/PT_SRC_SUBDIR
     #-------------------------------------------------------------------------------
-    PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"
+    PT_SRC_SUBDIR: "NEMO/NEI2019/v2023-03/PT"
 
 #----------------------------
 # BIAS_CORRECTION_O3 config parameters

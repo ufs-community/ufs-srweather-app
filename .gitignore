@@ -29,3 +29,4 @@ conda_loc
 __pycache__
 .idea
 ush/test_data/model_configure
+/ush/test_data/diag_table
