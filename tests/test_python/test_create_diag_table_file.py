@@ -31,3 +31,4 @@ class Testing(unittest.TestCase):
         set_env_var("CDATE", "2021010106")
         set_env_var("UFS_FIRE", False)
         set_env_var("DO_SMOKE_DUST", False)
+        set_env_var("MACHINE", "DERECHO")

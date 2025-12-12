@@ -1,8 +1,14 @@
 load("darshan-runtime/3.4.4")
 unload("python")
+unload("esmf/8.8.0")
+unload("python/3.11.7")
+unload("python-venv/1.0")
+unload("py-mpi4py/4.0.1")
+unload("py-numpy/1.26.4")
+unload("py-pip/23.1.2")
+unload("py-pyyaml/6.0.2")
 load("conda")
 
 setenv("SRW_ENV", "srw_sd")
 setenv("LD_PRELOAD", "/usr/lib64/libstdc++.so.6")
 setenv("FI_VERBS_PREFER_XRC", "0")
-
