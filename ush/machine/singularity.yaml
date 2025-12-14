@@ -3,16 +3,18 @@ platform:
   NCORES_PER_NODE: 40
   SCHED: slurm
   DOMAIN_PREGEN_BASEDIR: /needs/to/be/specified
+  REMOVE_MEMORY: True
   PARTITION_DEFAULT: null
   QUEUE_DEFAULT: batch
+  PARTITION_FCST: null
   QUEUE_FCST: batch
+  PARTITION_HPSS: service
   QUEUE_HPSS: batch
-  RUN_CMD_FCST: srun --mpi=pmi2 --export=ALL -n $nprocs
-  RUN_CMD_POST: srun --mpi=pmi2 --export=ALL -n $nprocs
-  RUN_CMD_PRDGEN: srun --mpi=pmi2 --export=ALL -n $nprocs
+  RUN_CMD_FCST: mpirun -n $nprocs
+  RUN_CMD_POST: mpirun -n $nprocs
+  RUN_CMD_PRDGEN: mpirun -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: srun --mpi=pmi2 --export=ALL -n $nprocs
-  SCHED_NATIVE_CMD: --exclusive --export=NONE
+  RUN_CMD_UTILS: mpirun -n $nprocs
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   FIXaer: /contrib/global/glopara/fix/fix_aer
   FIXgsm: /contrib/global/glopara/fix/fix_am
@@ -27,9 +29,6 @@ platform:
   FIXcrtm: /contrib/global/glopara/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws nomads
 
-smoke_dust_parm:
-  COMINsmoke_default: /contrib/global/glopara/data_smoke_dust/RAVE_smoke_dust
-  COMINrave_default: /contrib/global/glopara/data_smoke_dust/RAVE_fire
 task_run_fcst:
   envvars:
     OMP_NUM_THREADS_RUN_FCST: 1

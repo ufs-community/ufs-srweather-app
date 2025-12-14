@@ -18,8 +18,8 @@ Two container options are provided:
 * **GNU-based container:** uses fully open-source GNU compilers and OpenMPI.
 
 Additional differences between the containers are that the Intel-based image includes pre-built SRW App binaries. 
-When using GNU-based container, users download UFS SRW App (develop branch) from GitHub and build it interatively by 
-shelling into the cotainer.
+When using the GNU-based container, users download UFS SRW App (develop branch) from GitHub and build it interatively by 
+shelling into the container.
 
 This guide demonstrates how to:
 
@@ -108,7 +108,7 @@ These include:
 * configuration files
 
 On **Level 1 Systems** (see :srw-wiki:`Supported Platforms and Compilers <Supported-Platforms-and-Compilers>`), these datasets are pre-staged. They become available
-inside the container as long as the top-level directory containing the data is bound via ``-B`` option and argument with the singularity .
+inside the container as long as the top-level directory containing the data is bound via ``-B`` option.
 
 On **Level 2–4 Systems**, users must download and unpack the data manually:
 
@@ -425,6 +425,8 @@ Build a Singularity/Apptainer container image from the DockerHub image:
    singularity build rocky9-ss192-gcc13.sif \
         docker://noaaepic/rocky9-gcc13.3.1-wm:v1.9.2-srw
 
+The file *rocky9-ss192-gcc13.sif* built is in Singularity Image Format (*.sif*).
+
 Set the environment variable for convenience and later use:
 
 .. code-block:: console
@@ -437,8 +439,8 @@ Clone the UFS SRW App develop branch from the GitHub repository as is done when 
 
 .. code-block:: console
 
-   git clone -b feature/gnu-container \
-       https://github.com/natalie-perlin/ufs-srweather-app.git ufs-srweather-app
+   git clone -b develop \
+       https://github.com/ufs-srweather-app.git/ufs-srweather-app.git ufs-srweather-app
    cd ufs-srweather-app
    ./manage_externals/checkout_externals
 
@@ -453,11 +455,13 @@ Enter the GNU Container with Platform-Specific Bindings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Shell into the existing Singularity container image in order to build the SRW App interactively. 
-Python/conda environment and UFS SRW App binaries will be built inside the container. Some platforms
+Python/conda environment and UFS SRW App binaries will then be built while running inside the container. 
+Some platforms
 may require additional user host system directories to be specified with ``-B`` option (bind) 
 to make them available inside the container. This could be required, for example, 
 for **conda**-related configurations to be stored in a user home directory that resides on a different 
-file system from the current directory. Below are given examples to shell int the container on some Level 1 Platforms/
+file system from the current directory. Below are given examples on how to shell into the 
+container on some Level 1 Platforms.
 NOAA RDHPCs:
 
 * NOAA AWS/Azure:
@@ -505,8 +509,8 @@ Optional platform-specific paths that require to be accessible by the container 
    export BIND_ADD=/var     # Gaea-c6
 
 Build executables using devbuild.sh script, in a similar way as described in  :ref:`Building Executables <BuildExecutables>`, 
-except placing binaries into the ``./bin`` directory. 
-This is the essential difference, as the default ./exec/ directory where the SRW App expects to find binaries 
+except placing binaries into the ``bin`` directory. 
+This is the essential difference, as the default ``exec`` directory where the SRW App expects to find binaries 
 will be set up to contain wrappers for the actual binaries.
 
 .. code-block:: console
@@ -537,7 +541,7 @@ Verify the following configuration in the ``srw.sh``:
 
 Link Executables to Wrapper Scripts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The following code below is run interactively to create links to executables in ./exec directory to a wrapper script. 
+The following code below is run interactively to create links to executables in ``exec`` directory to a wrapper script. 
 Make sure the $SRW variable is properly set, as done after downloading the UFS SRW App repository and dependencies. 
 
 .. code-block:: console
@@ -558,53 +562,14 @@ Make sure the $SRW variable is properly set, as done after downloading the UFS S
    done
 
 
-Prepare configuration files 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Add Loading Host Modules to the Workflow Modulefile 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A machine file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machines`` directory 
-for running the UFS SRW App test case. Two available templates provided, 
-``singularity_gnu.srun.yaml`` and ``singularity_gnu.mpirun.yaml``. The first template is for launching
-the binaries on a host system with the ``srun`` command when Slurm job scheduler is available with PMI2 plugin, 
-the latter case is for launching the binarieson the host system using ``mpirun`` (some HPC systems may prohibit 
-use of mpirun). Use the template that fits your system, e.g.:
-
-.. code-block:: console
-
-   cp -v singularity_gnu.srun.yaml singularity.yaml
-
-
-Further edit the ``singularity.yaml`` to configure for your system:
-
-* ``WORKFLOW_MANAGER`` - workflow manager; rocoto (default)
-* ``NCORES_PER_NODE``
-* ``SCHED`` - job scheduler; slurm (default)
-* paths to staged datasets, in particular, in ``data:`` section
-* ``RUN_CMD_*`` variables, including MPI launch commands
-* scheduler settings
-
-
-Another configuration file for the community test case, ``config.yaml`` is expected to be located in 
-``./ush`` directory. Use a singularity GNU template for the community test case:
-
-.. code-block:: console
-
-   cp ${SRW}/ush/config.singularity.yaml ${SRW}/ush/config.yaml
-
-Edit the ``config.yaml`` to configure following:
-
-* ``ACCOUNT`` - account for running jobs on your compute platform (if required)
-* ``EXPT_SUBDIR`` - experiment directory; a default is ``test_community``
-* ``USE_CRON_TO_RELAUNCH`` - set to **false** (default); may set to **true** if system allow use of cron/crontab
-
-
-Load Host Modules and Generate Workflow
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To generate and run the workflow, host-system GNU module and corresponding MPI module need to be used and 
-loaded to interact with GNU-built libraries and SRW App binaries. Users would neeed to determine 
-their availability on a host system, and add these modules to ``./modulefiles/wflow_singularity.yaml``
+Host-system GNU module and corresponding MPI module need to be used and 
+loaded to interact with GNU-built libraries and SRW App binaries. Users neeed to determine 
+their availability on a host system, and add these modules to ``modulefiles/wflow_singularity.yaml``
 modulefile. If Singularity/Apptainer software requires a module to be loaded, it needs to be added as well.
-Loading the rocoto module could be added, if crontab option to relaunch job tasks is enabled.
+Loading the rocoto module could be added, if crontab option to launch job tasks is enabled.
 The examples below show added modules for running the test on selected Tier 1 platforms.
 
 For Orion and Hercules the loaded modules is as follows:
@@ -642,19 +607,82 @@ For Gaea:
    prepend_path("MODULEPATH","/ncrc/proj/epic/rocoto/modulefiles")
    load("rocoto")
 
+Prepare Configuration Files 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After the modulefile is prepared, load it and generate the workflow:
+1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machines`` directory. 
+It contains variables to set the system job sheduler, node count information, queue and patition names for use
+with batch job scheduler, locations of fix climatology files and model data input files, as well
+as workflow manager configuration.
+
+Depending on host system job scheduler and GNU and MPI modules that added to ``wflow_singularity.yaml``
+in the previous step, MPI job on user system are expected to be lauched with either **mpirun** or **srun**.
+Edit the following variables to specify the MPI jobs launch command that fits your system: 
+``RUN_CMD_FCST``, ``RUN_CMD_POST``, ``RUN_CMD_UTILS``, ``RUN_CMD_PRDGEN``.
+The default launch command is set to **mpirun**; set it to **srun --mpi=pmi2** when using Slurm to 
+interact with container-installed MPI plugins for Slurm (PMI or PMI2). 
+For example, if the default variable is set:
+
+.. code-block:: console
+
+ RUN_CMD_FCST: mpirun -n ${nprocs}
+
+change it to the following to use Slurm-based MPI job lauch:
+
+.. code-block:: console
+
+ RUN_CMD_FCST: srun --mpi=pmi2 -n ${nprocs}
+
+.. note::
+   
+   The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-c6**, 
+   **Hercules**, **Orion**. The Tier 1 systems **Ursa**, **NOAA-AWS** and **NOAA-Azure** allow the 
+   MPI job launch both ways including  ``mpurun``.
+
+Additional edits the ``singularity.yaml`` to configure for your system include:
+
+* ``WORKFLOW_MANAGER`` - workflow manager; rocoto (default), ``rocoto:`` section for job tasks
+* ``NCORES_PER_NODE`` - 
+* ``SCHED`` - job scheduler; slurm (default)
+* ``FIX*`` - paths to staged fix climatogy datasets
+* ``data:`` section: staged external model input files
+* ``RUN_CMD_*`` variables, including MPI launch commands
+
+
+2. Configuration file for the community test case, ``config.yaml`` is expected to be located in 
+``ush`` directory. Use a singularity GNU template for the community test case:
+
+.. code-block:: console
+
+   cp ${SRW}/ush/config.singularity.yaml ${SRW}/ush/config.yaml
+
+Edit the ``config.yaml`` to configure following:
+
+* ``ACCOUNT`` - account for running jobs on your compute platform (if required)
+* ``EXPT_SUBDIR`` - experiment directory; a default is ``test_community``
+* ``USE_CRON_TO_RELAUNCH`` - set to **false** (default); may set to **true** if system allow use of cron/crontab to launch job tasks
+
+ 
+Generate Workflow
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Load the modulefile **wflow_singularity** containing host system compiler and MPI modules, which starts
+the conda environment (srw_app) for running the workflow:
 
 .. code-block:: console
 
    module use $SRW/modulefiles
    module load wflow_singularity
 
+Ggenerate the workflow:
+
+.. code-block:: console
+
    cd $SRW/ush
    ./generate_FV3LAM_wflow.py
 
 When generated successully, the ``EXPTDIR`` path for the experiment will be displayed. 
-Record it into the correspongin environmental variable, e.g.:
+Record it into the corresponding environmental variable, e.g.:
 
 .. code-block:: console
    
@@ -687,7 +715,6 @@ When all tasks show STATUS as ``SUCCEEDED``, the experiment has completed succes
    required to run the ``rocotorun ...`` command before issuing the ``rocotostat ...``.
 
 For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for guidance on how to run the workflow without Rocoto. 
-rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
 ----------------------------------------
 Troubleshooting
