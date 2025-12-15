@@ -627,7 +627,7 @@ For example, if the default variable is set:
 
  RUN_CMD_FCST: mpirun -n ${nprocs}
 
-change it to the following to use Slurm-based MPI job lauch:
+change it to the following to use Slurm-based MPI job launch:
 
 .. code-block:: console
 
