@@ -637,7 +637,7 @@ change it to the following to use Slurm-based MPI job lauch:
    
    The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-c6**, 
    **Hercules**, **Orion**. The Tier 1 systems **Ursa**, **NOAA-AWS** and **NOAA-Azure** allow the 
-   MPI job launch both ways including  ``mpurun``.
+   MPI job launch using both ``srun`` and  ``mpirun``.
 
 Additional edits the ``singularity.yaml`` to configure for your system include:
 
