@@ -610,7 +610,7 @@ For Gaea:
 Prepare Configuration Files 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machines`` directory. 
+1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machine`` directory. 
 It contains variables to set the system job sheduler, node count information, queue and patition names for use
 with batch job scheduler, locations of fix climatology files and model data input files, as well
 as workflow manager configuration.
