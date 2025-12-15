@@ -635,7 +635,7 @@ change it to the following to use Slurm-based MPI job lauch:
 
 .. note::
    
-   The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-c6**, 
+   The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-C6**, 
    **Hercules**, **Orion**. The Tier 1 systems **Ursa**, **NOAA-AWS** and **NOAA-Azure** allow the 
    MPI job launch using both ``srun`` and  ``mpirun``.
 
