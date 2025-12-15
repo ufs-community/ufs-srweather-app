@@ -711,7 +711,7 @@ When all tasks show STATUS as ``SUCCEEDED``, the experiment has completed succes
 .. note::
 
    Rocoto workflow manager interacts with a job scheduler, e.g., Slurm, and relies on the recent information 
-   about the job provided by the job scheduler. To get the updated information of the job status it is always 
+   about the job provided by the job scheduler. To get the updated information of the job status, it is always 
    required to run the ``rocotorun ...`` command before issuing the ``rocotostat ...``.
 
 For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for guidance on how to run the workflow without Rocoto. 
