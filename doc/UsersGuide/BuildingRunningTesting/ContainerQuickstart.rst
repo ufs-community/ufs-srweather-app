@@ -674,7 +674,7 @@ the conda environment (srw_app) for running the workflow:
    module use $SRW/modulefiles
    module load wflow_singularity
 
-Ggenerate the workflow:
+Generate the workflow:
 
 .. code-block:: console
 
