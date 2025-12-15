@@ -642,7 +642,7 @@ change it to the following to use Slurm-based MPI job lauch:
 Additional edits the ``singularity.yaml`` to configure for your system include:
 
 * ``WORKFLOW_MANAGER`` - workflow manager; rocoto (default), ``rocoto:`` section for job tasks
-* ``NCORES_PER_NODE`` - 
+* ``NCORES_PER_NODE`` - number of cores available per node on the platform
 * ``SCHED`` - job scheduler; slurm (default)
 * ``FIX*`` - paths to staged fix climatogy datasets
 * ``data:`` section: staged external model input files
