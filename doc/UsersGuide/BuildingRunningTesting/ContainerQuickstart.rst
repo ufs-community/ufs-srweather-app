@@ -506,7 +506,7 @@ Optional platform-specific paths that require to be accessible by the container 
 .. code-block:: console
 
    export BIND_ADD=/local   # Orion/Hercules, needed during run-time for interaction with Slurm job scheduler
-   export BIND_ADD=/var     # Gaea-c6
+   export BIND_ADD=/var     # Gaea-C6
 
 Build executables using devbuild.sh script, in a similar way as described in  :ref:`Building Executables <BuildExecutables>`, 
 except placing binaries into the ``bin`` directory. 
