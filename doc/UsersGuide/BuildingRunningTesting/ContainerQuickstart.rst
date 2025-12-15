@@ -615,7 +615,7 @@ It contains variables to set the system job sheduler, node count information, qu
 with batch job scheduler, locations of fix climatology files and model data input files, as well
 as workflow manager configuration.
 
-Depending on host system job scheduler and GNU and MPI modules that added to ``wflow_singularity.yaml``
+Depending on host system job scheduler and GNU and MPI modules that were added to ``wflow_singularity.yaml``
 in the previous step, MPI jobs on user system are expected to be launched with either **mpirun** or **srun**.
 Edit the following variables to specify the MPI jobs launch command that fits your system: 
 ``RUN_CMD_FCST``, ``RUN_CMD_POST``, ``RUN_CMD_UTILS``, ``RUN_CMD_PRDGEN``.
