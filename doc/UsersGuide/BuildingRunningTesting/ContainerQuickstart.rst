@@ -506,7 +506,7 @@ Optional platform-specific paths that require to be accessible by the container 
 .. code-block:: console
 
    export BIND_ADD=/local   # Orion/Hercules, needed during run-time for interaction with Slurm job scheduler
-   export BIND_ADD=/var     # Gaea-c6
+   export BIND_ADD=/var     # Gaea-C6
 
 Build executables using devbuild.sh script, in a similar way as described in  :ref:`Building Executables <BuildExecutables>`, 
 except placing binaries into the ``bin`` directory. 
@@ -610,13 +610,13 @@ For Gaea:
 Prepare Configuration Files 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machines`` directory. 
+1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machine`` directory. 
 It contains variables to set the system job sheduler, node count information, queue and patition names for use
 with batch job scheduler, locations of fix climatology files and model data input files, as well
 as workflow manager configuration.
 
-Depending on host system job scheduler and GNU and MPI modules that added to ``wflow_singularity.yaml``
-in the previous step, MPI job on user system are expected to be lauched with either **mpirun** or **srun**.
+Depending on host system job scheduler and GNU and MPI modules that were added to ``wflow_singularity.yaml``
+in the previous step, MPI jobs on user system are expected to be launched with either **mpirun** or **srun**.
 Edit the following variables to specify the MPI jobs launch command that fits your system: 
 ``RUN_CMD_FCST``, ``RUN_CMD_POST``, ``RUN_CMD_UTILS``, ``RUN_CMD_PRDGEN``.
 The default launch command is set to **mpirun**; set it to **srun --mpi=pmi2** when using Slurm to 
@@ -627,7 +627,7 @@ For example, if the default variable is set:
 
  RUN_CMD_FCST: mpirun -n ${nprocs}
 
-change it to the following to use Slurm-based MPI job lauch:
+change it to the following to use Slurm-based MPI job launch:
 
 .. code-block:: console
 
@@ -635,14 +635,14 @@ change it to the following to use Slurm-based MPI job lauch:
 
 .. note::
    
-   The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-c6**, 
+   The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-C6**, 
    **Hercules**, **Orion**. The Tier 1 systems **Ursa**, **NOAA-AWS** and **NOAA-Azure** allow the 
-   MPI job launch both ways including  ``mpurun``.
+   MPI job launch using both ``srun`` and  ``mpirun``.
 
 Additional edits the ``singularity.yaml`` to configure for your system include:
 
 * ``WORKFLOW_MANAGER`` - workflow manager; rocoto (default), ``rocoto:`` section for job tasks
-* ``NCORES_PER_NODE`` - 
+* ``NCORES_PER_NODE`` - number of cores available per node on the platform
 * ``SCHED`` - job scheduler; slurm (default)
 * ``FIX*`` - paths to staged fix climatogy datasets
 * ``data:`` section: staged external model input files
@@ -674,7 +674,7 @@ the conda environment (srw_app) for running the workflow:
    module use $SRW/modulefiles
    module load wflow_singularity
 
-Ggenerate the workflow:
+Generate the workflow:
 
 .. code-block:: console
 
@@ -711,7 +711,7 @@ When all tasks show STATUS as ``SUCCEEDED``, the experiment has completed succes
 .. note::
 
    Rocoto workflow manager interacts with a job scheduler, e.g., Slurm, and relies on the recent information 
-   about the job provided by the job scheduler. To get the updated information of the job status it is always 
+   about the job provided by the job scheduler. To get the updated information of the job status, it is always 
    required to run the ``rocotorun ...`` command before issuing the ``rocotostat ...``.
 
 For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for guidance on how to run the workflow without Rocoto. 
