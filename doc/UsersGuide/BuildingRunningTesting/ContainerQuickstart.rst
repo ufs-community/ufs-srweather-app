@@ -18,7 +18,7 @@ Two container options are provided:
 * **GNU-based container:** uses fully open-source GNU compilers and OpenMPI.
 
 Additional differences between the containers are that the Intel-based image includes pre-built SRW App binaries. 
-When using the GNU-based container, users download UFS SRW App (develop branch) from GitHub and build it interatively by 
+When using the GNU-based container, users download UFS SRW App (develop branch) from GitHub and build it interactively by 
 shelling into the container.
 
 This guide demonstrates how to:
@@ -168,7 +168,7 @@ It is practical to set an environment variable to point to the container:
 
    export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev.img
 
-Convert the read-only image in a shared location to a writable sandbox in a user's space:
+Users may convert the read-only image in a shared location to a writable sandbox in user's space:
 
 .. code-block:: console
 
