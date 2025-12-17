@@ -423,7 +423,7 @@ Build a Singularity/Apptainer container image from the DockerHub image:
 .. code-block:: console
 
    singularity build rocky9-ss192-gcc13.sif \
-        docker://noaaepic/rocky9-gcc13.3.1-wm:v1.9.2-srw
+        docker://noaaepic/rocky9-gcc13.3.1-spack-stack:v1.9.2-ufs-wm-srw
 
 The file *rocky9-ss192-gcc13.sif* built is in Singularity Image Format (*.sif*).
 
