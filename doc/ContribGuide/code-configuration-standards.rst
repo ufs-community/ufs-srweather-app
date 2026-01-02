@@ -49,7 +49,7 @@ Workflow Coding Standards
 
 **Python Coding Standards:** 
 
- * All new Python workflow contributions should come with an appropriate environment YAML file (similar to ``environment.yaml``, ``graphics_environment.yaml``, and ``aqm_environment.yaml``). 
+ * All new Python workflow contributions should come with an appropriate environment YAML file (similar to ``environment.yaml``, ``graphics_environment.yaml``).
  * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently, these include ``f90nml``, ``pyyaml``, and ``Jinja2``. 
 
 **Workflow Design:** Follow the :nco:`NCO Guidelines <>` for what is incorporated in each layer of the workflow. This is particularly important in the ``scripts`` directory. 

@@ -35,7 +35,7 @@ platform:
   FIXsfc: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/NaturalEarth
   FIXaqm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_aqm
-  FIXemis: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_emis
+  FIXemis: /glade/derecho/scratch/epicufsrt/fix_emis
   FIXsmoke: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_smoke
   FIXupp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_upp
   FIXcrtm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_crtm
