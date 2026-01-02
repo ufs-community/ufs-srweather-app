@@ -25,7 +25,7 @@ The SRW Application includes a number of pre-processing utilities (UFS_UTILS) th
 The SRW Application can be initialized from a range of operational initial condition files. It is possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), High-Resolution Rapid Refresh (:term:`HRRR`), and Rapid Refresh Forecast System (:term:`RRFS`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
 
 .. WARNING::
-   For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
+   For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through :term:`NOMADS`. Raw external model data may be pre-staged on disk by the user.
 
 Forecast Model
 ==============
@@ -79,7 +79,16 @@ METplus is being actively developed by :term:`NCAR`/Research Applications Labora
 Air Quality Modeling (AQM) Utilities
 =======================================
 
-AQM Utilities (AQM-utils) include the utility executables and python scripts to run SRW-AQM (Online-:term:`CMAQ`).
+AQM Utilities (AQM-utils) include the utility executables and python scripts to run SRW-AQM (Online-:term:`CMAQ`). The SRW App integrates air quality modeling capabilities that dynamically couple atmospheric chemistry with the weather forecast model, enabling prediction of pollutant concentrations including ozone (O3) and particulate matter (PM2.5). For detailed information on configuring and running air quality simulations, see :numref:`Chapter %s <AQM>`.
+
+Recent enhancements to the AQM capabilities include:
+
+* **MELODIES MONET Integration**: The :term:`MELODIES MONET` framework has been integrated for comprehensive model evaluation and analysis of atmospheric composition predictions, particularly for AQM applications.
+* **AEROMMA Use Case**: Support for the :term:`AEROMMA` field campaign use case, providing specialized configurations for aerosol and cloud interaction studies.
+* **Bias Correction**: Automated bias correction capabilities for O3 and PM2.5 forecasts to improve operational air quality predictions.
+
+Configuration templates for AQM applications are available in ``config.aqm.yaml``, and users can leverage the integrated verification capabilities to evaluate air quality forecast performance.
+
 For more information on AQM-utils, visit the GitHub repository at https://github.com/NOAA-EMC/AQM-utils. 
 
 .. _nexus:
@@ -89,7 +98,22 @@ NOAA Emission and eXchange Unified System (NEXUS)
 
 The NOAA Emission and eXchange Unified System (NEXUS) is an emissions processing system developed at the NOAA Air Resources Laboratory (ARL) for use with regional and global UFS atmospheric composition models. NEXUS provides a streamlined process to include new emissions inventories quickly and can flexibly blend different emissions datasets. NEXUS incorporates the :term:`ESMF`-compliant Harmonized Emissions Component (`HEMCO <https://github.com/geoschem/HEMCO/tree/main>`__), which "comput[es] emissions from a user-selected ensemble of emission inventories and algorithms" and "allows users to re-grid, combine, overwrite, subset, and scale emissions from different inventories through a configuration file and with no change to the model source code" (:cite:t:`LinEtAl2021`). 
 
-For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS. 
+For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS.
+
+SRW Smoke & Dust (SRW-SD) Features
+====================================
+
+The SRW Smoke & Dust (SRW-SD) features enable the SRW App to simulate the transport and dispersion of smoke and dust aerosols from wildfire emissions. SRW-SD processes fire emission data from satellite observations, including :term:`Fire Radiative Power (FRP) <FRP>` data from :term:`RAVE` sources, to initialize smoke tracer fields in the atmospheric model. For detailed information on configuring and running smoke and dust simulations, see :numref:`Chapter %s <SmokeAndDust>`.
+
+SRW-SD supports multiple emission modeling approaches:
+
+* **Current-day emissions**: Using emissions estimated from satellite observations on the same day as the simulation.
+* **Traditional persistence**: Using biomass burning emissions estimated from satellite observations of the previous day.
+* **Modulated persistence**: Emissions are forecasted based on a fire weather index that dictates the diurnal cycle of fire activity (considered experimental).
+
+SRW-SD includes regridding and interpolation utilities to transform emission data from observational grids to the model's native grid. Integration with the :term:`FV3` atmospheric model allows smoke and dust tracers to be advected and dispersed by the simulated winds, providing forecasts of smoke plume transport and air quality impacts.
+
+Configuration templates for smoke and dust applications are available in ``config.smoke_dust.yaml``, and specialized workflow configurations enable users to run smoke and dust simulations alongside standard meteorological forecasts.
 
 .. _uwtools:
 
