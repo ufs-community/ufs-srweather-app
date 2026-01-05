@@ -862,7 +862,7 @@ File and Directory Parameters
 --------------------------------
 
 ``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: '')
-   A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Jet, or WCOSS. External model files for generating :term:`ICs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined above in :numref:`Section %s <basic-get-extrn-ics>` ``EXTRN_MDL_NAME_ICS``).
+   A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Ursa, or WCOSS. External model files for generating :term:`ICs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined above in :numref:`Section %s <basic-get-extrn-ics>` ``EXTRN_MDL_NAME_ICS``).
 
    .. note::
       This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.

@@ -204,11 +204,11 @@ Examples
    * Users will need to adjust the machine name and account in these examples to run tests successfully. 
    * These commands assume that the user is working from the ``WE2E`` directory (``ufs-srweather-app/tests/WE2E/``). 
 
-To run the ``custom_ESGgrid`` and ``pregen_grid_orog_sfc_climo`` tests on Jet, users could run: 
+To run the ``custom_ESGgrid`` and ``pregen_grid_orog_sfc_climo`` tests on Ursa, users could run: 
 
 .. code-block:: console
 
-   ./run_we2e_tests.py -t custom_ESGgrid pregen_grid_orog_sfc_climo -m jet -a hfv3gfs
+   ./run_we2e_tests.py -t custom_ESGgrid pregen_grid_orog_sfc_climo -m ursa -a epic
 
 Alternatively, to run the entire suite of fundamental tests on Hera, users might run: 
 

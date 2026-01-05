@@ -38,7 +38,7 @@ Users on any sufficiently up-to-date machine with a UNIX-based operating system 
 Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`Spack-stack` is a :term:`repository` that provides a Spack-based system to build the software stack required for `UFS <https://ufs.epic.noaa.gov/>`_ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems.
 
 .. hint::
-   Skip the spack-stack installation if working on a :srw-wiki:`Level 1 system <Supported-Platforms-and-Compilers>` (e.g., Hera, Jet, Derecho, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
+   Skip the spack-stack installation if working on a :srw-wiki:`Level 1 system <Supported-Platforms-and-Compilers>` (e.g., Hera, Hercules, Orion, Ursa, Derecho, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
 
 Background
 ----------------
@@ -84,7 +84,7 @@ The cloned repository contains the configuration files and sub-directories shown
      - SRW App build script
    * - devclean.sh
      - Convenience script that can be used to clean up code if something goes wrong when checking out externals or building the application.
-   * - docs
+   * - doc
      - Contains release notes, documentation, and User's Guide
    * - environment.yml
      - Contains information on the package versions required for the regional workflow environment.
@@ -225,7 +225,7 @@ If the ``devbuild.sh`` build method did *not* work, or if users are not on a sup
    | global_cycle           | Updates the GFS surface conditions using external snow and sea ice analyses     |
    +------------------------+---------------------------------------------------------------------------------+
    | global_equiv_resol     | Calculates a global, uniform, cubed-sphere equivalent resolution for the        |
-   |                        | regional Extended Schmidt Gnomonic (ESG) grid                                   |
+   |                        | regional Extended Schmidt Gnomonic (:term:`ESG`) grid                           |
    +------------------------+---------------------------------------------------------------------------------+
    | inland                 | Creates an inland land mask by determining inland (i.e., non-coastal) points    |
    |                        | and assigning a value of 1. Default value is 0.                                 |
@@ -243,12 +243,12 @@ If the ``devbuild.sh`` build method did *not* work, or if users are not on a sup
    | orog_gsl               | Creates orographic statistics fields required for the orographic drag suite     |
    |                        | developed by NOAA's Global Systems Laboratory (GSL)                             |
    +------------------------+---------------------------------------------------------------------------------+
-   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |
+   | regional_esg_grid      | Generates an :term:`ESG` regional grid based on a user-defined namelist         |
    +------------------------+---------------------------------------------------------------------------------+
    | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
    +------------------------+---------------------------------------------------------------------------------+
    | shave                  | Shaves the excess halo rows down to what is required for the lateral boundary   |
-   |                        | conditions (LBCs) in the orography and grid files                               |
+   |                        | conditions (:term:`LBCs`) in the orography and grid files                       |
    +------------------------+---------------------------------------------------------------------------------+
    | ufs_model              | UFS Weather Model executable                                                    |
    +------------------------+---------------------------------------------------------------------------------+
@@ -362,7 +362,7 @@ For convenience, a suggested procedure is included below for users who do not ha
    where ``<X.Y.Z>`` is the desired version number. (It may be necessary to create the ``conda/envs`` directory within the ``ufs-srweather-app`` using the ``mkdir`` command if it does not already exist.)
    Hit ``y`` to continue installation. 
 
-#. Create the ``conda_loc`` file which is the location of the conda directory and is used as part of the ``wflow_<platform>`` modulefile. If the user used the build location ``$PWD/conda`` from step 3, then they can run the following ``realpath ../conda`` to get the conda directory path. After obtaining the conda directory path, users can create the ``conda_loc by`` doing the following:
+#. Create the ``conda_loc`` file which is the location of the conda directory and is used as part of the ``wflow_<platform>`` modulefile. If the user used the build location ``$PWD/conda`` from step 3, then they can run the following ``realpath ../conda`` to get the conda directory path. After obtaining the conda directory path, users can create the ``conda_loc`` file by doing the following:
 
    .. code-block:: console
       

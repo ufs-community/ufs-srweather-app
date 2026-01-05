@@ -185,7 +185,7 @@ The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweathe
 
 When posting a question, it is recommended that users provide the following information: 
 
-* The platform or system being used (e.g., Hera, Orion, Derecho)
+* The platform or system being used (e.g., Hera, Orion, Ursa, Derecho)
 * The version of the SRW Application being used (e.g., ``develop``, ``release/public-v3.0.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
 * Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
 * Configuration file contents (e.g., ``config.yaml`` contents)
