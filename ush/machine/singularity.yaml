@@ -3,18 +3,18 @@ platform:
   NCORES_PER_NODE: 40
   SCHED: slurm
   DOMAIN_PREGEN_BASEDIR: /needs/to/be/specified
+  REMOVE_MEMORY: True
   PARTITION_DEFAULT: null
   QUEUE_DEFAULT: batch
   PARTITION_FCST: null
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
-  RUN_CMD_FCST: mpirun -n ${PE_MEMBER01} --oversubscribe
-  RUN_CMD_POST: mpirun -np $nprocs --oversubscribe
-  RUN_CMD_PRDGEN: mpirun -np $nprocs --oversubscribe
+  RUN_CMD_FCST: mpirun -n $nprocs
+  RUN_CMD_POST: mpirun -n $nprocs
+  RUN_CMD_PRDGEN: mpirun -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: mpirun -np $nprocs --oversubscribe
-  SCHED_NATIVE_CMD: --export=NONE
+  RUN_CMD_UTILS: mpirun -n $nprocs
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   FIXaer: /contrib/global/glopara/fix/fix_aer
   FIXgsm: /contrib/global/glopara/fix/fix_am
@@ -29,6 +29,18 @@ platform:
   FIXcrtm: /contrib/global/glopara/fix/fix_crtm
   EXTRN_MDL_DATA_STORES: aws nomads
 
-smoke_dust_parm:
-  COMINsmoke_default: /contrib/global/glopara/data_smoke_dust/RAVE_smoke_dust
-  COMINrave_default: /contrib/global/glopara/data_smoke_dust/RAVE_fire
+task_run_fcst:
+  envvars:
+    OMP_NUM_THREADS_RUN_FCST: 1
+
+data:
+  ics_lbcs:
+    FV3GFS:
+      nemsio: /contrib/global/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /contrib/global/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        native: '--cpus-per-task {{ task_run_fcst.fv3.execution.threads // 1 }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'

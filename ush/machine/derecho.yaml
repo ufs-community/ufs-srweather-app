@@ -35,7 +35,7 @@ platform:
   FIXsfc: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/NaturalEarth
   FIXaqm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_aqm
-  FIXemis: /glade/derecho/scratch/epicufsrt/fix_emis
+  FIXemis: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_aqm_v8/fix/fix_emis
   FIXsmoke: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_smoke
   FIXupp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_upp
   FIXcrtm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_crtm
@@ -51,9 +51,9 @@ data:
     RAP: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     GSMGFS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
 cpl_aqm_parm:
-  COMINfire_default: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/RAVE_fire
-  COMINgefs_default: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/GEFS_DATA
-  NEXUS_GFS_SFC_DIR: /glade/work/chanhooj/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
+  COMINfire_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/aqm_data/RAVE_fire
+  COMINgefs_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/aqm_data/GEFS_DATA
+  NEXUS_GFS_SFC_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/aqm_data/GFS_SFC_DATA
 smoke_dust_parm:
   COMINsmoke_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/data_smoke_dust/RAVE_smoke_dust
   COMINrave_default: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/data_smoke_dust/RAVE_fire

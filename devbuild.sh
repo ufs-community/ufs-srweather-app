@@ -96,6 +96,57 @@ Settings:
 EOF_SETTINGS
 }
 
+# env. variables saved into singularity container environment file ufs-srw.env
+env_vars () {
+  local vars_file="$1"
+
+cat >"${vars_file}" <<EOF_ENV
+PATH=${SRW_DIR}/${BIN_DIR}:${PATH}
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
+CPATH=${CPATH}
+EOF_ENV
+}
+
+# Singularity gnu containers: make a wrapper script template for the UFS SRW binaries 
+srw_binary_wrapper() {
+  local wrapper="$1"
+  local bind_dir=${BIND_DIR:-/home}
+  if [[ -n "${BIND_ADD:-}" ]]; then
+     local bind_add="-B ${BIND_ADD}"
+  fi
+  local srw_env=${SRW_ENV:-}
+  local img_sif=${IMG:-/full/path/to/container/image.sif}
+cat >"${wrapper}" <<EOF_WRAP
+#!/bin/bash
+set -x
+
+export SINGULARITYENV_FI_PROVIDER=tcp
+export SINGULARITY_SHELL=/bin/bash
+
+img=${img_sif}
+cmd=\$(basename "\$0")
+arg="\$@"
+
+export SINGULARITYENV_PMIX_MCA_gds=hash
+export SINGULARITYENV_OMPI_MCA_btl="^openib"
+
+if ip link show eth0 &>/dev/null; then
+    export SINGULARITYENV_OMPI_MCA_btl_tcp_if_include=eth0
+fi
+
+export SINGULARITYENV_OMPI_MCA_pml=ob1
+export SINGULARITYENV_OMPI_MCA_btl_vader_single_copy_mechanism=none
+export SINGULARITYENV_OMPI_MCA_mca_base_component_show_load_errors=0
+
+SINGULARITY=\$(which singularity)
+
+"\${SINGULARITY}" exec --env-file ${srw_env} \
+-B ${bind_dir} ${bind_add:-} \${img} \$cmd \$arg
+EOF_WRAP
+
+    chmod +x "${wrapper}"
+}
+
 # print usage error and exit
 usage_error () {
   printf "ERROR: $1\n" >&2
@@ -235,6 +286,11 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
     time mamba env create -n srw_app --file environment.yml
+    if [ "${PLATFORM}" = "singularity"  ] ; then
+       conda activate srw_app
+       conda install -y -c conda-forge netcdf4
+       conda deactivate
+    fi
   fi
   if ! conda env list | grep -q "^get_data\s" ; then
     time mamba env create -n get_data --file data_environment.yml
@@ -472,6 +528,13 @@ else
     module load ${MODULE_FILE}
     if [[ "${PLATFORM}" == "macos" ]]; then
         export LDFLAGS+=" -L$MPI_ROOT/lib "
+    fi
+    if [[ "${PLATFORM}" == "singularity" && "${COMPILER}" == "gnu" ]]; then
+      export SRW_ENV="${SRW_DIR}/ufs-srw.env"
+      export SRW_WRAP="${SRW_DIR}/srw.sh"
+      export BIND_DIR="$(echo "$SRW_DIR" | cut -d'/' -f1-2)"
+      env_vars ${SRW_ENV}
+      srw_binary_wrapper ${SRW_WRAP}
     fi
 fi
 module list
