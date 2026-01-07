@@ -35,7 +35,7 @@ Install the Prerequisite Software Stack
 
 Users on any sufficiently up-to-date machine with a UNIX-based operating system should be able to install the prerequisite software stack and run the SRW Application. However, a list of prerequisites is available in :numref:`Section %s <software-prereqs>` for reference. Users should install or update their system as required before attempting to install the software stack. 
 
-Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`Spack-stack` is a :term:`repository` that provides a Spack-based system to build the software stack required for `UFS <https://ufs.epic.noaa.gov/>`_ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems.
+Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`spack-stack` is a :term:`repository` that provides a spack-based system to build the software stack required for `UFS <https://ufs.epic.noaa.gov/>`_ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems.
 
 .. hint::
    Skip the spack-stack installation if working on a :srw-wiki:`Level 1 system <Supported-Platforms-and-Compilers>` (e.g., Hera, Hercules, Orion, Ursa, Derecho, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
@@ -167,7 +167,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
 .. include:: ../../doc-snippets/devbuild.rst
 
-Directly following the release of SRW v2.2.0, the App will install miniconda and SRW environments as part
+Starting with SRW v2.2.0, the App installs miniconda and SRW environments as part
 of the build process. The location defaults to inside the SRW clone in ``ufs-srweather-app/conda``,
 however users can set any path on their system using the ``--conda-dir`` flag. If conda is already
 installed in that location, conda installation will be skipped. The following example uses a
@@ -276,7 +276,7 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
 
 .. code-block:: console
 
-   source /path/to/ufs-srweather-app/etc/lmod-setup.sh gaea
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh gaeac6
 
 .. note::
 
@@ -324,7 +324,7 @@ The build will take a few minutes to complete. When it starts, a random number i
 
    If you see the ``build.out`` file, but there is no ``ufs-srweather-app/exec`` directory, wait a few more minutes for the build to complete.
 
-There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec directory``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
+There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
 
 .. _install-uw:
 
@@ -359,18 +359,17 @@ For convenience, a suggested procedure is included below for users who do not ha
       cd ufs-srweather-app/conda/envs
       conda create -n srw_app -c ufs-community -c conda-forge --override-channels uwtools=<X.Y.Z>
    
-   where ``<X.Y.Z>`` is the desired version number. (It may be necessary to create the ``conda/envs`` directory within the ``ufs-srweather-app`` using the ``mkdir`` command if it does not already exist.)
+   where ``<X.Y.Z>`` is the desired version number. If the ``conda/envs`` directory does not already exist within ``ufs-srweather-app``, create it using the ``mkdir`` command.
    Hit ``y`` to continue installation. 
 
-#. Create the ``conda_loc`` file which is the location of the conda directory and is used as part of the ``wflow_<platform>`` modulefile. If the user used the build location ``$PWD/conda`` from step 3, then they can run the following ``realpath ../conda`` to get the conda directory path. After obtaining the conda directory path, users can create the ``conda_loc`` file by doing the following:
+#. Create the ``conda_loc`` file which stores the conda directory location and is used by the ``wflow_<platform>`` modulefile. If you installed conda to ``$PWD/conda`` in step 3, you can create the file as follows:
 
    .. code-block:: console
-      
-      # cd back ufs-srweather-app
+
+      # Navigate back to ufs-srweather-app directory
       cd ../../
-      vi conda_loc
-      # paste the conda directory path
-      # save the file
+      # Create conda_loc file with absolute path to conda directory
+      realpath conda > conda_loc
 
 Run an Experiment
 =====================

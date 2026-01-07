@@ -103,7 +103,7 @@ For more information on NEXUS, visit the GitHub repository at https://github.com
 SRW Smoke & Dust (SRW-SD) Features
 ====================================
 
-The SRW Smoke & Dust (SRW-SD) features enable the SRW App to simulate the transport and dispersion of smoke and dust aerosols from wildfire emissions. SRW-SD processes fire emission data from satellite observations, including :term:`Fire Radiative Power (FRP) <FRP>` data from :term:`RAVE` sources, to initialize smoke tracer fields in the atmospheric model. For detailed information on configuring and running smoke and dust simulations, see :numref:`Chapter %s <SmokeAndDust>`.
+The SRW Smoke & Dust (SRW-SD) features enable the SRW App to simulate the transport and dispersion of smoke and dust aerosols from wildfire emissions. SRW-SD processes fire emission data from satellite observations, including :term:`FRP` data from :term:`RAVE` sources, to initialize smoke tracer fields in the atmospheric model. For detailed information on configuring and running smoke and dust simulations, see :numref:`Chapter %s <srw-sd>`.
 
 SRW-SD supports multiple emission modeling approaches:
 
