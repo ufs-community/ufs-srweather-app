@@ -331,45 +331,7 @@ There are a few additional steps needed to successfully run the SRW App that is 
 Install ``uwtools``
 ^^^^^^^^^^^^^^^^^^^^
 
-The :uw:`UW Tools documentation <sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. See :numref:`Section %s <uwtools>` for more information on ``uwtools`` in the SRW App.
-
-For convenience, a suggested procedure is included below for users who do not have ``uwtools`` or ``conda`` installed. However, in the event of problems, refer to the UW Tools documentation and forums. 
-
-#. Run ``uname -om`` to determine the system's operating system and architecture.
-#. Go to the `Miniforge releases page <https://github.com/conda-forge/miniforge/releases>`_ and download the desired version of Miniforge. For example:
-
-   .. code-block:: console
-      
-      wget https://github.com/conda-forge/miniforge/releases/download/24.11.2-1/Miniforge3-24.11.2-1-Linux-x86_64.sh
-
-#. Run the shell script to install ``conda``. For example:
-
-   .. code-block:: console
-
-      bash Miniforge3-24.11.2-1-Linux-x86_64.sh -bfp $PWD/conda 
-   
-   Users should replace ``Miniforge3-24.11.2-1-Linux-x86_64.sh`` with the name of the file they downloaded. 
-#. Remove the installation script, e.g., by running: ``rm Miniforge3-24.11.2-1-Linux-x86_64.sh``.
-#. Run: 
-
-   .. code-block:: console
-      
-      source conda/etc/profile.d/conda.sh
-      conda activate
-      cd ufs-srweather-app/conda/envs
-      conda create -n srw_app -c ufs-community -c conda-forge --override-channels uwtools=<X.Y.Z>
-   
-   where ``<X.Y.Z>`` is the desired version number. If the ``conda/envs`` directory does not already exist within ``ufs-srweather-app``, create it using the ``mkdir`` command.
-   Hit ``y`` to continue installation. 
-
-#. Create the ``conda_loc`` file which stores the conda directory location and is used by the ``wflow_<platform>`` modulefile. If you installed conda to ``$PWD/conda`` in step 3, you can create the file as follows:
-
-   .. code-block:: console
-
-      # Navigate back to ufs-srweather-app directory
-      cd ../../
-      # Create conda_loc file with absolute path to conda directory
-      realpath conda > conda_loc
+For detailed installation instructions, refer to the :uw:`UW Tools installation guide <sections/user_guide/installation.html>`. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. See :numref:`Section %s <uwtools>` for more information on ``uwtools`` in the SRW App.
 
 Run an Experiment
 =====================
