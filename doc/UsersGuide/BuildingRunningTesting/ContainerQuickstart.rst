@@ -24,7 +24,7 @@ shelling into the container.
 This guide demonstrates how to:
 
 * Build a Singularity/Apptainer image containing a software stack
-* Use the resulting container image to to build the UFS SRW Application (for GNU-based container) or stage the containerized pre-built UFS SRW App on a host system (Intel-based container) 
+* Use the resulting container image to build the UFS SRW Application (for GNU-based container) or stage the containerized pre-built UFS SRW App on a host system (Intel-based container) 
 * Use the container to run the provided “out-of-the-box” community test case.
 
 Both workflows rely on `Singularity/Apptainer <https://apptainer.org/docs/user/1.2/introduction.html>`__ 
@@ -64,7 +64,7 @@ Users must have **Singularity** or **Apptainer** installed on their compute plat
 Apptainer is fully compatible with Singularity, and commands shown here using ``singularity`` may be 
 replaced with ``apptainer`` as appropriate.
 
-On many HPC systems, Singularity/Apptainer could be available as a loadable module:
+On many HPC systems, Singularity/Apptainer may be available as a loadable module:
 
 .. code-block:: console
 
@@ -91,7 +91,7 @@ MPI availability.
 .. note::
 
    Building a singularity container image/sandbox relies on user's temporary space (TMP); these requirements are much higher for 
-   Intel-based container. The example is given in :ref:`Appendix` on seting up TMP spaces for singularity to avoid exceeding default TMP space quotas.
+   Intel-based container. The example is given in :ref:`Appendix` on setting up TMP spaces for singularity to avoid exceeding default TMP space quotas.
 
 ----------------------------------------
 Download and Stage Input Data
@@ -115,7 +115,7 @@ On **Level 2–4 Systems**, users must download and unpack the data manually:
 .. code-block:: console
 
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/fix_data.tgz
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-if-the-box/gst_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/experiment-user-cases/release-public-v3.0.0/out-of-the-box/gst_data.tgz
 
    tar -xzf fix_data.tgz
    tar -xzf gst_data.tgz
@@ -277,7 +277,8 @@ This produces:
 
 Configure the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Configuring the workflow for the container is similar to configuring the workflow without a container. The only exception is that there is no need to activate the ``srw_app`` conda environment. That is because there is a conflict between the container's conda and the host’s conda. To get around this, the container’s conda environment bin directory is appended to the system’s ``PATH`` variable in the ``python_srw.lua`` and ``build_<platform>_intel.lua`` modulefiles with the ``stage-srw.sh`` script. Activate the workflow by running the following commands: 
+Configuring the workflow for the container is similar to configuring the workflow without a container. The only exception is that there is no need to activate the ``srw_app`` conda environment because there is a conflict between the container's conda and the host’s conda. To work around this conflict, the container’s conda environment bin directory is appended to the system’s ``PATH`` variable in the ``python_srw.lua`` and ``build_<platform>_intel.lua`` modulefiles. 
+
 Load workflow modules:
 
 .. code-block:: console
@@ -310,10 +311,6 @@ Follow the steps below to configure the out-of-the-box SRW App case with an auto
 
    #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in the ``user:`` section of ``config.yaml``. See :numref:`Section %s <user>` for details on valid values. 
 
-      .. note::
-
-         On ``JET``, users must also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file. 
-   
    #. To automate the workflow, add these two lines to the ``workflow:`` section of ``config.yaml``: 
 
       .. code-block:: console
@@ -437,14 +434,15 @@ Download the UFS SRW App and Submodules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Clone the UFS SRW App develop branch from the GitHub repository as is done when  :ref:`Building the SRW App <BuildSRW>`.
 
+.. include:: ../../doc-snippets/clone.rst
+
 .. code-block:: console
 
-   git clone -b develop \
-       https://github.com/ufs-srweather-app.git/ufs-srweather-app.git ufs-srweather-app
    cd ufs-srweather-app
-   ./manage_externals/checkout_externals
 
-Save the environoment variable SRW for later use:
+.. include:: ../../doc-snippets/externals.rst
+
+Save the environment variable SRW for later use:
 
 .. code-block:: console
 
@@ -565,14 +563,14 @@ Make sure the $SRW variable is properly set, as done after downloading the UFS S
 Add Loading Host Modules to the Workflow Modulefile 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Host-system GNU module and corresponding MPI module need to be used and 
-loaded to interact with GNU-built libraries and SRW App binaries. Users neeed to determine 
-their availability on a host system, and add these modules to ``modulefiles/wflow_singularity.yaml``
+Host-system GNU module and corresponding MPI module need to be used and
+loaded to interact with GNU-built libraries and SRW App binaries. Users need to determine
+their availability on a host system, and add these modules to ``modulefiles/wflow_singularity.lua``
 modulefile. If Singularity/Apptainer software requires a module to be loaded, it needs to be added as well.
-Loading the rocoto module could be added, if crontab option to launch job tasks is enabled.
+The rocoto module can be added, if crontab option to launch job tasks is enabled.
 The examples below show added modules for running the test on selected Tier 1 platforms.
 
-For Orion and Hercules the loaded modules is as follows:
+For Orion and Hercules the loaded modules are as follows:
 
 .. code-block:: console
 
@@ -611,11 +609,11 @@ Prepare Configuration Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machine`` directory. 
-It contains variables to set the system job sheduler, node count information, queue and patition names for use
+It contains variables to set the system job scheduler, node count information, queue and partition names for use
 with batch job scheduler, locations of fix climatology files and model data input files, as well
 as workflow manager configuration.
 
-Depending on host system job scheduler and GNU and MPI modules that were added to ``wflow_singularity.yaml``
+Depending on host system job scheduler and GNU and MPI modules that were added to ``wflow_singularity.lua``
 in the previous step, MPI jobs on user system are expected to be launched with either **mpirun** or **srun**.
 Edit the following variables to specify the MPI jobs launch command that fits your system: 
 ``RUN_CMD_FCST``, ``RUN_CMD_POST``, ``RUN_CMD_UTILS``, ``RUN_CMD_PRDGEN``.
@@ -635,16 +633,16 @@ change it to the following to use Slurm-based MPI job launch:
 
 .. note::
    
-   The Tier 1 Platform that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-C6**, 
+   The Tier 1 Platforms that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-C6**, 
    **Hercules**, **Orion**. The Tier 1 systems **Ursa**, **NOAA-AWS** and **NOAA-Azure** allow the 
    MPI job launch using both ``srun`` and  ``mpirun``.
 
-Additional edits the ``singularity.yaml`` to configure for your system include:
+Additional edits to the ``singularity.yaml`` to configure for your system include:
 
 * ``WORKFLOW_MANAGER`` - workflow manager; rocoto (default), ``rocoto:`` section for job tasks
 * ``NCORES_PER_NODE`` - number of cores available per node on the platform
 * ``SCHED`` - job scheduler; slurm (default)
-* ``FIX*`` - paths to staged fix climatogy datasets
+* ``FIX*`` - paths to staged fix climatology datasets
 * ``data:`` section: staged external model input files
 * ``RUN_CMD_*`` variables, including MPI launch commands
 
@@ -681,7 +679,7 @@ Generate the workflow:
    cd $SRW/ush
    ./generate_FV3LAM_wflow.py
 
-When generated successully, the ``EXPTDIR`` path for the experiment will be displayed. 
+When generated successfully, the ``EXPTDIR`` path for the experiment will be displayed. 
 Record it into the corresponding environmental variable, e.g.:
 
 .. code-block:: console
@@ -754,7 +752,7 @@ Building a singularity container image/sandbox relies on user's temporary space 
 these requirements are much higher for 
 Intel-based container. Users working on systems with limited disk space in their ``/home`` directory may set 
 the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TMPDIR`` environment variables to point to a location with adequate disk space. 
-If the cache and tmp directories do not exist already, they must be created with a ``mkdir`` command preceeding the export of the variables.
+If the cache and tmp directories do not exist already, they must be created with a ``mkdir`` command preceding the export of the variables.
 
 .. code-block:: console
 
@@ -762,7 +760,7 @@ If the cache and tmp directories do not exist already, they must be created with
    mkdir /absolute/path/to/writable/directory/tmp
 
 where /absolute/path/to/writable/directory/ refers to the absolute path to a writable directory with sufficient disk space.
-Proceed with exportig the variables:
+Proceed with exporting the variables:
 
 .. code-block:: console
 
