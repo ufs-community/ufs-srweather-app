@@ -12,6 +12,7 @@ workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2023060112'
   DATE_LAST_CYCL:  '2023060212'
+  DATE_LAST_CYCL_MM:  '2023060212'  # Only used when MM evaluation is active
 #  DATE_LAST_CYCL:  '2023083112'  # Last cycle date for AEROMMA with all data staged
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
@@ -59,17 +60,13 @@ global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
   HALO_BLEND: 0
-task_mm_prep:
-  MM_OUTPUT_DIR: null
-  MM_EVAL_PACKAGES: [chem]
-#  MM_OBS_AIRNOW_FN_TEMPLATE: <path/to>/Observations/AirNow/AirNow_20230601_20230701.nc
-  MM_BASE_MODEL_EXPT_DIR: null
+
 cpl_aqm_parm:
   CPL_AQM: true
 
-  USE_AQM_S3_DATA_STAGE: false
+  USE_AQM_S3_DATA_STAGE: false  # Set to true to stage AQM data from S3
   USE_FIX_AQM_S3_DATA_STAGE: false
-#  AQM_STAGE_DST_DIR: "<path to data stage directory>"
+  AQM_STAGE_DST_DIR: "<path to AQM data>"
 
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: true
@@ -91,3 +88,29 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_CYC: '00'
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 3
+
+## Optional MELODIES MONET evaluation configuration ================================================
+
+melodies_monet_parm:
+  aqm:
+    active: false  # Set to true to enable MELODIES MONET evaluation
+    no_forecast: false  # The forecast cycle will run
+    models:
+      eval:
+        title: "Evaluation Target"
+        plot_kwargs:
+          color: g
+    scorecards: {}
+    packages:
+      aqs_pm:
+        active: true  # Set to false if running on Derecho
+        observation_template: <path to AQM data>/Observations/AQS/pm25_spec_daily/AQS_20230601_20230701.nc
+      aqs_voc:
+        active: true  # Set to false if running on Derecho
+        observation_template: <path to AQM data>/Observations/AQS/vocs/AQS_20230601_20230701.nc
+      chem:
+        active: true
+        observation_template: <path to AQM data>/Observations/AirNow/AirNow_20230601_20230701.nc
+      ish:
+        active: true
+        observation_template: <path to AQM data>/Observations/ISH/ISH-Lite_20230601_20230701.nc

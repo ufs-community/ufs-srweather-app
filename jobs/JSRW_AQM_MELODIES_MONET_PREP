@@ -61,7 +61,7 @@ This is the J-job script for AQM MELODIES MONET PREP
 #
 #-----------------------------------------------------------------------
 #
-aqm-mm-eval srw-init --expt-dir ${COMOUT}
+aqm-mm-eval srw-init --expt-dir ${COMOUT} --package ${MM_EVAL_PACKAGE}
 #
 #-----------------------------------------------------------------------
 #
