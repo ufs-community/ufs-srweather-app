@@ -50,14 +50,7 @@ Instructions
 
 Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system.
 
-For a detailed description of installation options, see :doc:`spack-stack instructions for configuring the stack on a new platform <spack-stack:NewSiteConfigs>`.
-
-After completing installation, continue to the :ref:`next section <DownloadSRWApp>` to download the UFS SRW Application Code. 
-
-.. _DownloadSRWApp:
-
-Download the UFS SRW Application Code
-======================================
+For a detailed description of installation options, see the `New Site Configs Wiki <https://github.com/JCSDA/spack-stack/wiki/New-Site-Configs>`__
 The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the |branch| branch of the repository:
 
 .. include:: ../../doc-snippets/clone.rst
