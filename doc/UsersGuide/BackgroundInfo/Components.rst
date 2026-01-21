@@ -76,6 +76,8 @@ Among other techniques, MET provides the capability to compute standard verifica
 
 METplus is being actively developed by :term:`NCAR`/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (`ESRL <https://www.esrl.noaa.gov/>`__), and NOAA/Environmental Modeling Center (:term:`EMC`), and it is open to community contributions. More details about METplus can be found on the `METplus website <https://dtcenter.org/community-code/metplus>`_.
 
+.. _AQMUtils:
+
 Air Quality Modeling (AQM) Utilities
 =======================================
 
@@ -99,6 +101,8 @@ NOAA Emission and eXchange Unified System (NEXUS)
 The NOAA Emission and eXchange Unified System (NEXUS) is an emissions processing system developed at the NOAA Air Resources Laboratory (ARL) for use with regional and global UFS atmospheric composition models. NEXUS provides a streamlined process to include new emissions inventories quickly and can flexibly blend different emissions datasets. NEXUS incorporates the :term:`ESMF`-compliant Harmonized Emissions Component (`HEMCO <https://github.com/geoschem/HEMCO/tree/main>`__), which "comput[es] emissions from a user-selected ensemble of emission inventories and algorithms" and "allows users to re-grid, combine, overwrite, subset, and scale emissions from different inventories through a configuration file and with no change to the model source code" (:cite:t:`LinEtAl2021`). 
 
 For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS.
+
+.. _srw-sd:
 
 SRW Smoke & Dust (SRW-SD) Features
 ====================================
