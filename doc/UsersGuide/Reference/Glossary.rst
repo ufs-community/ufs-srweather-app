@@ -175,7 +175,7 @@ Glossary
 
    MET
    METplus
-      The `Model Evaluation Tools <https://dtcenter.org/community-code/model-evaluation-tools-met>`__ is a highly configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/community-code/metplus>`_ is a suite of Python wrappers providing low-level automation of the MET tools.
+      The `Model Evaluation Tools <https://dtcenter.org/software-tools/model-evaluation-tools-met>`__ is a highly configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/community-code/metplus>`_ is a suite of Python wrappers providing low-level automation of the MET tools.
 
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC) systems.
