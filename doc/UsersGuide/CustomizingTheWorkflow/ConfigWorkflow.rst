@@ -1591,7 +1591,7 @@ Non-default parameters for verification tasks are set in the ``verification:`` s
   The verification tasks in the SRW App are based on the :ref:`METplus <MetplusComponent>`
   verification software developed at the Developmental Testbed Center (:term:`DTC`).  
   :ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. 
-  Full documentation for METplus is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
+  Full documentation for METplus is available on the `METplus website <https://dtcenter.org/software-tools/metplus>`__.
 
 .. _METParamNote:
 
