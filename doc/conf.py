@@ -328,7 +328,7 @@ napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of mult
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
    'python': ('https://docs.python.org/3', None),
-   'spack-stack': ('https://spack.readthedocs.io/en/latest/', None),
+   'spack-stack': ('https://spack-stack.readthedocs.io/en/1.9.2/', None),
    'met': ('https://met.readthedocs.io/en/develop/', None),
    'metplus': ('https://metplus.readthedocs.io/en/develop/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/develop/', None),
