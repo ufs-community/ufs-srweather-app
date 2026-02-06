@@ -81,13 +81,14 @@ METplus is being actively developed by :term:`NCAR`/Research Applications Labora
 Air Quality Modeling (AQM) Utilities
 =======================================
 
-AQM Utilities (AQM-utils) include the utility executables and python scripts to run SRW-AQM (Online-:term:`CMAQ`). The SRW App integrates air quality modeling capabilities that dynamically couple atmospheric chemistry with the weather forecast model, enabling prediction of pollutant concentrations including ozone (O3) and particulate matter (PM2.5). For detailed information on configuring and running air quality simulations, see :numref:`Chapter %s <AQM>`.
+AQM Utilities (AQM-utils) include the utility executables and python scripts to run UFS-AQM (Online-:term:`CMAQ`). The SRW App integrates air quality modeling capabilities that dynamically couple atmospheric chemistry with the weather forecast model, enabling prediction of pollutant concentrations including ozone (O3) and particulate matter (PM2.5). For detailed information on configuring and running air quality simulations, see :numref:`Chapter %s <AQM>`.
 
 Recent enhancements to the AQM capabilities include:
 
 * **MELODIES MONET Integration**: The :term:`MELODIES MONET` framework has been integrated for comprehensive model evaluation and analysis of atmospheric composition predictions, particularly for AQM applications.
 * **AEROMMA Use Case**: Support for the :term:`AEROMMA` field campaign use case, providing specialized configurations for aerosol and cloud interaction studies.
 * **Bias Correction**: Automated bias correction capabilities for O3 and PM2.5 forecasts to improve operational air quality predictions.
+* **Fall Ozone Use Case**: Evaluation of model performance during all ozone events.
 
 Configuration templates for AQM applications are available in ``config.aqm.yaml``, and users can leverage the integrated verification capabilities to evaluate air quality forecast performance.
 
