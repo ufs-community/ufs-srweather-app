@@ -1,0 +1,89 @@
+metadata:
+  description: config for SRW-AQM, AQM_NA_13km, Fall Ozone
+user:
+  RUN_ENVIR: community
+  MACHINE: HERA
+  ACCOUNT: an_account
+workflow:
+  USE_CRON_TO_RELAUNCH: true
+  CRON_RELAUNCH_INTVL_MNTS: 3
+  EXPT_SUBDIR: aqm_AQMNA13km_FallOzone
+  PREDEF_GRID_NAME: AQM_NA_13km
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  DATE_FIRST_CYCL: '2023090112'
+  DATE_LAST_CYCL:  '2023090212'
+  DATE_LAST_CYCL_MM:  '2023090212'  # Only used when MM evaluation is active
+#  DATE_LAST_CYCL:  '2023113012'  # Last cycle date for Fall Ozone with all data staged
+  INCR_CYCL_FREQ: 24
+  FCST_LEN_HRS: 24
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  DEBUG: false
+  COMPILER: intel
+  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
+  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
+  DO_REAL_TIME: false
+  COLDSTART: false      # set to true for cold start
+  WARMSTART_CYCLE_DIR: "20230831"
+  taskgroups:
+    - parm/wflow/prep.yaml
+    - parm/wflow/aqm_prep.yaml
+    - parm/wflow/coldstart.yaml
+    - parm/wflow/post.yaml
+nco:
+  envir_default: aqm_AQMNA13km_AEROMMA
+  NET_default: aqm
+  RUN_default: aqm
+task_nexus_emission:
+  envvars:
+    PPN_NEXUS_EMISSION: 20
+    NNODES_NEXUS_EMISSION: 4
+    OMP_NUM_THREADS_NEXUS_EMISSION: 2
+task_run_fcst:
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:20:00
+  envvars:
+    DT_ATMOS: 180
+    OMP_NUM_THREADS_RUN_FCST: 1
+    PRINT_ESMF: false
+    RESTART_INTERVAL: 12 24
+    DO_FCST_RESTART: false
+  QUILTING: true
+task_run_post:
+  envvars:
+    POST_OUTPUT_DOMAIN_NAME: 793
+    USE_CUSTOM_POST_CONFIG_FILE: false
+global:
+  DO_ENSEMBLE: false
+  NUM_ENS_MEMBERS: 2
+  HALO_BLEND: 0
+
+cpl_aqm_parm:
+  CPL_AQM: true
+
+  USE_AQM_S3_DATA_STAGE: false  # Set to true to stage AQM data from S3
+  USE_FIX_AQM_S3_DATA_STAGE: false
+  AQM_STAGE_DST_DIR: "<path to AQM data>"
+
+  DO_AQM_CHEM_LBCS: true
+  DO_AQM_GEFS_LBCS: true
+  DO_AQM_DUST: true
+  DO_AQM_CANOPY: false
+  DO_AQM_PRODUCT: true
+  DO_AQM_SAVE_AIRNOW_HIST: false
+  DO_AQM_SAVE_FIRE: false
+  AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
+  AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
+  AQM_DUST_FILE_SUFFIX: .nc  
+  AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
+  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
+  AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
+  AQM_FIRE_FILE_SUFFIX: _h72.nc
+  AQM_RC_FIRE_FREQUENCY: hourly
+  AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
+  AQM_GEFS_FILE_PREFIX: gfs
+  AQM_GEFS_FILE_CYC: '00'
+  NEXUS_GRID_FN: grid_spec_793.nc
+  NUM_SPLIT_NEXUS: 3

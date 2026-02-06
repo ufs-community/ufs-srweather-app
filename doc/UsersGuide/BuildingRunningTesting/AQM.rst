@@ -1,7 +1,7 @@
 .. _AQM:
 
 =====================================
-Air Quality Modeling (SRW-AQM)
+Air Quality Modeling (UFS-AQM)
 =====================================
 
 .. attention::
@@ -16,7 +16,7 @@ The AQM is a UFS Application that dynamically couples the Community Multiscale A
 
    Although this chapter is the primary documentation resource for running the AQM configuration, users may need to refer to :numref:`Chapter %s <BuildSRW>` and :numref:`Chapter %s <RunSRW>` for additional information on building and running the SRW App, respectively. 
 
-Quick Start Guide (SRW-AQM)
+Quick Start Guide (UFS-AQM)
 =====================================
 
 .. attention::
@@ -335,6 +335,9 @@ An AQM "use case" is a scientifically interesting air quality event with preconf
    * - `Atmospheric Emissions and Reactions Observed from Megacities to Marine Areas <https://csl.noaa.gov/projects/aeromma/>`__
      - AEROMMA
      - ``./ush/aqm-use-cases/config.aqm.AEROMMA.yaml``
+   * - `Fall Ozone`
+     - FALL_OZONE
+     - ``./ush/aqm-use-cases/config.aqm.FALL_OZONE.yaml``
 
 .. _acquire-use-case-data:
 
