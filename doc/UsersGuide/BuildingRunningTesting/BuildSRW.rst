@@ -35,10 +35,10 @@ Install the Prerequisite Software Stack
 
 Users on any sufficiently up-to-date machine with a UNIX-based operating system should be able to install the prerequisite software stack and run the SRW Application. However, a list of prerequisites is available in :numref:`Section %s <software-prereqs>` for reference. Users should install or update their system as required before attempting to install the software stack. 
 
-Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`Spack-stack` is a :term:`repository` that provides a Spack-based system to build the software stack required for `UFS <https://ufs.epic.noaa.gov/>`_ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems.
+Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`spack-stack` is a :term:`repository` that provides a spack-based system to build the software stack required for `UFS <https://ufs.epic.noaa.gov/>`_ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems.
 
 .. hint::
-   Skip the spack-stack installation if working on a :srw-wiki:`Level 1 system <Supported-Platforms-and-Compilers>` (e.g., Hera, Jet, Derecho, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
+   Skip the spack-stack installation if working on a :srw-wiki:`Level 1 system <Supported-Platforms-and-Compilers>` (e.g., Hera, Hercules, Orion, Ursa, Derecho, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
 
 Background
 ----------------
@@ -50,14 +50,13 @@ Instructions
 
 Users working on systems that fall under :srw-wiki:`Support Levels 2-4 <Supported-Platforms-and-Compilers>` will need to install spack-stack the first time they try to build applications (such as the SRW App) that depend on it. Users can build the stack on their local system or use the centrally maintained stacks on each HPC platform if they are working on a Level 1 system.
 
-For a detailed description of installation options, see :doc:`spack-stack instructions for configuring the stack on a new platform <spack-stack:NewSiteConfigs>`.
-
-After completing installation, continue to the :ref:`next section <DownloadSRWApp>` to download the UFS SRW Application Code. 
+For a detailed description of installation options, see the `New Site Configs Wiki <https://github.com/JCSDA/spack-stack/wiki/New-Site-Configs>`__
 
 .. _DownloadSRWApp:
 
 Download the UFS SRW Application Code
 ======================================
+
 The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the |branch| branch of the repository:
 
 .. include:: ../../doc-snippets/clone.rst
@@ -84,7 +83,7 @@ The cloned repository contains the configuration files and sub-directories shown
      - SRW App build script
    * - devclean.sh
      - Convenience script that can be used to clean up code if something goes wrong when checking out externals or building the application.
-   * - docs
+   * - doc
      - Contains release notes, documentation, and User's Guide
    * - environment.yml
      - Contains information on the package versions required for the regional workflow environment.
@@ -167,7 +166,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
 .. include:: ../../doc-snippets/devbuild.rst
 
-Directly following the release of SRW v2.2.0, the App will install miniconda and SRW environments as part
+Starting with SRW v2.2.0, the App installs miniconda and SRW environments as part
 of the build process. The location defaults to inside the SRW clone in ``ufs-srweather-app/conda``,
 however users can set any path on their system using the ``--conda-dir`` flag. If conda is already
 installed in that location, conda installation will be skipped. The following example uses a
@@ -225,7 +224,7 @@ If the ``devbuild.sh`` build method did *not* work, or if users are not on a sup
    | global_cycle           | Updates the GFS surface conditions using external snow and sea ice analyses     |
    +------------------------+---------------------------------------------------------------------------------+
    | global_equiv_resol     | Calculates a global, uniform, cubed-sphere equivalent resolution for the        |
-   |                        | regional Extended Schmidt Gnomonic (ESG) grid                                   |
+   |                        | regional Extended Schmidt Gnomonic (:term:`ESG`) grid                           |
    +------------------------+---------------------------------------------------------------------------------+
    | inland                 | Creates an inland land mask by determining inland (i.e., non-coastal) points    |
    |                        | and assigning a value of 1. Default value is 0.                                 |
@@ -243,12 +242,12 @@ If the ``devbuild.sh`` build method did *not* work, or if users are not on a sup
    | orog_gsl               | Creates orographic statistics fields required for the orographic drag suite     |
    |                        | developed by NOAA's Global Systems Laboratory (GSL)                             |
    +------------------------+---------------------------------------------------------------------------------+
-   | regional_esg_grid      | Generates an ESG regional grid based on a user-defined namelist                 |
+   | regional_esg_grid      | Generates an :term:`ESG` regional grid based on a user-defined namelist         |
    +------------------------+---------------------------------------------------------------------------------+
    | sfc_climo_gen          | Creates surface climatology fields from fixed files for use in ``chgres_cube``  |
    +------------------------+---------------------------------------------------------------------------------+
    | shave                  | Shaves the excess halo rows down to what is required for the lateral boundary   |
-   |                        | conditions (LBCs) in the orography and grid files                               |
+   |                        | conditions (:term:`LBCs`) in the orography and grid files                       |
    +------------------------+---------------------------------------------------------------------------------+
    | ufs_model              | UFS Weather Model executable                                                    |
    +------------------------+---------------------------------------------------------------------------------+
@@ -276,7 +275,7 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
 
 .. code-block:: console
 
-   source /path/to/ufs-srweather-app/etc/lmod-setup.sh gaea
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh gaeac6
 
 .. note::
 
@@ -324,53 +323,14 @@ The build will take a few minutes to complete. When it starts, a random number i
 
    If you see the ``build.out`` file, but there is no ``ufs-srweather-app/exec`` directory, wait a few more minutes for the build to complete.
 
-There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec directory``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
+There are a few additional steps needed to successfully run the SRW App that is built with CMake. The ``build_settings.yaml`` will need to be copied or symlinked from ``ufs-srweather-app/build`` to ``ufs-srweather-app/exec``, and the platform name needs to be added to the "Machine" variable in the ``build_settings.yaml`` file.
 
 .. _install-uw:
 
 Install ``uwtools``
 ^^^^^^^^^^^^^^^^^^^^
 
-The :uw:`UW Tools documentation <sections/user_guide/installation.html>` has the most up-to-date installation instructions. Users should refer to that documentation as authoritative. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. See :numref:`Section %s <uwtools>` for more information on ``uwtools`` in the SRW App.
-
-For convenience, a suggested procedure is included below for users who do not have ``uwtools`` or ``conda`` installed. However, in the event of problems, refer to the UW Tools documentation and forums. 
-
-#. Run ``uname -om`` to determine the system's operating system and architecture.
-#. Go to the `Miniforge releases page <https://github.com/conda-forge/miniforge/releases>`_ and download the desired version of Miniforge. For example:
-
-   .. code-block:: console
-      
-      wget https://github.com/conda-forge/miniforge/releases/download/24.11.2-1/Miniforge3-24.11.2-1-Linux-x86_64.sh
-
-#. Run the shell script to install ``conda``. For example:
-
-   .. code-block:: console
-
-      bash Miniforge3-24.11.2-1-Linux-x86_64.sh -bfp $PWD/conda 
-   
-   Users should replace ``Miniforge3-24.11.2-1-Linux-x86_64.sh`` with the name of the file they downloaded. 
-#. Remove the installation script, e.g., by running: ``rm Miniforge3-24.11.2-1-Linux-x86_64.sh``.
-#. Run: 
-
-   .. code-block:: console
-      
-      source conda/etc/profile.d/conda.sh
-      conda activate
-      cd ufs-srweather-app/conda/envs
-      conda create -n srw_app -c ufs-community -c conda-forge --override-channels uwtools=<X.Y.Z>
-   
-   where ``<X.Y.Z>`` is the desired version number. (It may be necessary to create the ``conda/envs`` directory within the ``ufs-srweather-app`` using the ``mkdir`` command if it does not already exist.)
-   Hit ``y`` to continue installation. 
-
-#. Create the ``conda_loc`` file which is the location of the conda directory and is used as part of the ``wflow_<platform>`` modulefile. If the user used the build location ``$PWD/conda`` from step 3, then they can run the following ``realpath ../conda`` to get the conda directory path. After obtaining the conda directory path, users can create the ``conda_loc by`` doing the following:
-
-   .. code-block:: console
-      
-      # cd back ufs-srweather-app
-      cd ../../
-      vi conda_loc
-      # paste the conda directory path
-      # save the file
+For detailed installation instructions, refer to the :uw:`UW Tools installation guide <sections/user_guide/installation.html>`. The UW team welcomes questions in its :uw-repo:`GitHub Discussions <discussions>` forum. See :numref:`Section %s <uwtools>` for more information on ``uwtools`` in the SRW App.
 
 Run an Experiment
 =====================

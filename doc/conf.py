@@ -121,6 +121,8 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://www.axios.com/local/new-orleans/2025/01/21/in-photos-historic-snowstorm-new-orleans-louisiana',
                     r'https://repository.library.noaa.gov/view/noaa/30725',
                     r'https://sourceforge.net/projects/xming',
+                    r'https://doi.org/10.5281/zenodo.14834682',
+                    r'https://www.naturalearthdata.com/downloads/',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
@@ -132,6 +134,8 @@ linkcheck_anchors_ignore = [r"current_srw_release_data/",
                             r"develop-20250321/.*",
                             r"installation",
                             r"grids",
+                            "stage-observational-data",
+                            "observational-datasets"
                             ]
 
 linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 
@@ -324,7 +328,7 @@ napoleon_custom_sections = [('Returns', 'params_style')] # Allows return of mult
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
    'python': ('https://docs.python.org/3', None),
-   'spack-stack': ('https://spack-stack.readthedocs.io/en/develop/', None),
+   'spack-stack': ('https://spack-stack.readthedocs.io/en/1.9.2/', None),
    'met': ('https://met.readthedocs.io/en/develop/', None),
    'metplus': ('https://metplus.readthedocs.io/en/develop/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/develop/', None),

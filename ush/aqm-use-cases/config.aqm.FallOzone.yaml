@@ -1,5 +1,5 @@
 metadata:
-  description: config for SRW-AQM, AQM_NA_13km, AEROMMA field campaign
+  description: config for SRW-AQM, AQM_NA_13km, Fall Ozone
 user:
   RUN_ENVIR: community
   MACHINE: HERA
@@ -7,13 +7,13 @@ user:
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
-  EXPT_SUBDIR: aqm_AQMNA13km_AEROMMA
+  EXPT_SUBDIR: aqm_AQMNA13km_FallOzone
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023060112'
-  DATE_LAST_CYCL:  '2023060212'
-  DATE_LAST_CYCL_MM:  '2023060212'  # Only used when MM evaluation is active
-#  DATE_LAST_CYCL:  '2023083112'  # Last cycle date for AEROMMA with all data staged
+  DATE_FIRST_CYCL: '2023090112'
+  DATE_LAST_CYCL:  '2023090212'
+  DATE_LAST_CYCL_MM:  '2023090212'  # Only used when MM evaluation is active
+#  DATE_LAST_CYCL:  '2023113012'  # Last cycle date for Fall Ozone with all data staged
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
   PREEXISTING_DIR_METHOD: rename
@@ -24,13 +24,12 @@ workflow:
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
   COLDSTART: false      # set to true for cold start
-  WARMSTART_CYCLE_DIR: "20230531"
+  WARMSTART_CYCLE_DIR: "20230831"
   taskgroups:
     - parm/wflow/prep.yaml
     - parm/wflow/aqm_prep.yaml
     - parm/wflow/coldstart.yaml
     - parm/wflow/post.yaml
-#    - parm/wflow/aqm_post_melodies_monet.yaml # Uncomment to enable MELODIES MONET evaluation tasks.
 nco:
   envir_default: aqm_AQMNA13km_AEROMMA
   NET_default: aqm
@@ -88,29 +87,3 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_CYC: '00'
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 3
-
-## Optional MELODIES MONET evaluation configuration ================================================
-
-melodies_monet_parm:
-  aqm:
-    active: false  # Set to true to enable MELODIES MONET evaluation
-    no_forecast: false  # The forecast cycle will run
-    models:
-      eval:
-        title: "Evaluation Target"
-        plot_kwargs:
-          color: g
-    scorecards: {}
-    packages:
-      aqs_pm:
-        active: true  # Set to false if running on Derecho
-        observation_template: <path to AQM data>/Observations/AQS/pm25_spec_daily/AQS_20230601_20230701.nc
-      aqs_voc:
-        active: true  # Set to false if running on Derecho
-        observation_template: <path to AQM data>/Observations/AQS/vocs/AQS_20230601_20230701.nc
-      chem:
-        active: true
-        observation_template: <path to AQM data>/Observations/AirNow/AirNow_20230601_20230701.nc
-      ish:
-        active: true
-        observation_template: <path to AQM data>/Observations/ISH/ISH-Lite_20230601_20230701.nc
