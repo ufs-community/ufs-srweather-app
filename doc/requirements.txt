@@ -42,6 +42,8 @@ pyyaml==6.0.1
     # via pybtex
 requests==2.32.2
     # via sphinx
+setuptools==80.10.2
+    # via -r requirements.in
 six==1.16.0
     # via
     #   latexcodec
