@@ -114,6 +114,9 @@ rst_prolog = """
 # Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
 user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 
+# Retry failed links up to 3 times before reporting them broken (handles transient 500 errors)
+linkcheck_retries = 3
+
 # Ignore working links that cause a linkcheck 403 error.
 linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
                     r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
