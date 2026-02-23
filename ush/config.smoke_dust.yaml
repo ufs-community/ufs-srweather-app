@@ -47,6 +47,10 @@ task_run_fcst:
     DT_ATMOS: 36
   QUILTING: true
 task_run_post:
+  upp:
+    execution:
+      batchargs:
+        walltime: 00:20:00
   envvars:
     POST_OUTPUT_DOMAIN_NAME: conus3km
     USE_CUSTOM_POST_CONFIG_FILE: false
