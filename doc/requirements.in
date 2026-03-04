@@ -1,4 +1,5 @@
 sphinx>=8.0.0
 sphinx_rtd_theme>=3.0.0
 sphinxcontrib-bibtex>=2.6.4
+sphinxcontrib-plantuml
 setuptools<81.0.0
