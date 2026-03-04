@@ -4,7 +4,9 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity/Apptainer <https://apptainer.org/docs/user/1.2/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPIs <MPI>`, and package versions available. Installation via container reduces this variability and allows for a smoother SRW App build experience. 
+This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity/Apptainer <https://apptainer.org/docs/user/1.2/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPIs <MPI>`, and package versions available. Installation via container reduces this variability and allows for a smoother SRW App build experience.
+
+The SRW Release v3 container includes the Intel runtime environment and the pre-built SRW App binaries.
 
 The basic "out-of-the-box" case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
@@ -66,7 +68,7 @@ Build the Container
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
 
-On most Level 1 systems, a container named ``ubuntu22.04-intel-ue-1.6.0-srw-dev.img`` has already been built at the following locations:
+On most Level 1 systems, a container named ``ubuntu22.04-intel-srw-release-public-v3.0.0-rt.img`` has already been built at the following locations:
 
 .. list-table:: Locations of pre-built containers
    :widths: 20 50
@@ -98,20 +100,20 @@ Users can simply set an environment variable to point to the container:
 
 .. code-block:: console
 
-   export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev.img
+   export img=/path/to/ubuntu22.04-intel-srw-release-public-v3.0.0-rt.img
 
 Users may convert the container ``.img`` file to a writable sandbox:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu22.04-intel-ue-1.6.0-srw-dev $img
+   singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0-rt $img
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
 .. code-block:: console
 
    INFO:    Starting build...
-   INFO:    Verifying bootstrap image ubuntu22.04-intel-ue-1.6.0-srw-dev.img
+   INFO:    Verifying bootstrap image ubuntu22.04-intel-srw-release-public-v3.0.0-rt.img
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
@@ -124,22 +126,14 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu22.04-intel-ue-1.6.0-srw-dev docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-dev
-
-Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
-
-.. note::
-   Users can choose to build a release version of the container using a similar command:
-
-.. code-block:: console
-
-   sudo singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0 docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-release3
+   singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0-rt \
+    docker://noaaepic/ubuntu22.04-intel2023.2.1-srw:ue160-fms202401-release3-rt
 
 For easier reference, users can set an environment variable to point to the container: 
 
 .. code-block:: console
 
-   export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev
+   export img=/path/to/ubuntu22.04-intel-srw-release-public-v3.0.0-rt
 
 .. _RunContainer:
 
@@ -224,7 +218,7 @@ where:
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``, ``intel-oneapi-compilers/2022.2.1``, ``intel/2023.2.0``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``, ``intel-oneapi-mpi/2021.7.1``, ``cray-mpich/8.1.28``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options.
-   * ``-i`` indicates the full path to the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu22.04-intel-ue-1.6.0-srw-dev`` or ``ubuntu22.04-intel-ue-1.6.0-srw-dev.img`` by default).
+   * ``-i`` indicates the full path to the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu22.04-intel-srw-release-public-v3.0.0-rt`` or ``ubuntu22.04-intel-srw-release-public-v3.0.0-rt.img`` by default).
 
 For example, on Hera, the command would be:
 
