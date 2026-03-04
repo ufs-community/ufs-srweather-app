@@ -34,7 +34,8 @@ For a detailed explanation of how to build and run the SRW App on any supported 
             
          ./devbuild.sh --platform=<machine_name>
 
-      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaeac6`` | ``hera`` | ``hercules`` | ``noaacloud`` | ``orion`` |
+      where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``derecho`` | ``gaeac6`` | ``hera`` | ``hercules`` | ``noaacloud`` | ``orion`` | ``ursa`` |
+
 
       For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach instead. 
 

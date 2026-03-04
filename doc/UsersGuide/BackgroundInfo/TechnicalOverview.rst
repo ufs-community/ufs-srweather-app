@@ -4,7 +4,7 @@
 Technical Overview
 ====================
 
-This chapter provides information on SRW App prerequistes, component code repositories, and SRW App directory structure.
+This chapter provides information on SRW App prerequisites, component code repositories, and SRW App directory structure.
 
 .. _SRWPrerequisites:
 
@@ -45,8 +45,8 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
    * 56 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25-km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * ~19 GB for full :term:`spack-stack` installation
    * 8 GB for ``ufs-srweather-app`` installation
-   * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25-km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * 6 GB for a 12-hour test forecast on the CONUS 25-km domain, with model output saved hourly.
+   * 1 GB for boundary conditions for a short 12-hour test forecast on the :term:`CONUS` 25-km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 6 GB for a 12-hour test forecast on the :term:`CONUS` 25-km domain, with model output saved hourly.
 
 * Fortran compiler released since 2018
 
@@ -79,7 +79,7 @@ The following software is also required to run the SRW Application, but the :ter
 Optional but recommended prerequisites for all systems:
 
 * Bash v4+
-* Rocoto Workflow Management System (1.3.1)
+* :term:`Rocoto` Workflow Management System (1.3.1)
 
 
 .. _SRWStructure:
@@ -106,7 +106,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    * - Repository for the UFS Weather Model
      - https://github.com/ufs-community/ufs-weather-model
    * - Repository for UFS Utilities, including chgres_cube and other pre-processing utilities
-     - https://github.com/ufs-community/UFS_UTILS
+     - https://github.com/NOAA-EPIC/UFS_UTILS
    * - Repository for the Unified Post Processor (UPP)
      - https://github.com/NOAA-EMC/UPP
    * - Repository for Air Quality Modeling (AQM) Utilities
@@ -177,8 +177,10 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    │	         └── FV3
    │                ├── atmos_cubed_sphere
    │                └── ccpp
-   ├── tests/WE2E
-   │     └── run_WE2E_tests.py 
+   ├── tests
+   │     ├── test_python
+   │     └── WE2E
+   │          └── run_WE2E_tests.py 
    ├── ush
    │     ├── bash_utils
    │     ├── machine
@@ -195,6 +197,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    ├── versions
    ├── CMakeLists.txt
    ├── Externals.cfg
+   ├── data_environment.yml
    ├── devbuild.sh
    ├── environment.yml
    ├── graphics_environment.yml

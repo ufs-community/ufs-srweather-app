@@ -12,6 +12,9 @@ Glossary
    advection
       According to the American Meteorological Society (AMS) definition, `advection <https://glossary.ametsoc.org/wiki/Advection>`_ is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
 
+   AEROMMA
+      The Aerosol and Cloud Experiments in the Eastern North Atlantic (AEROMMA) is a field campaign focused on improving the understanding and prediction of aerosol-cloud-precipitation interactions. The SRW App includes an AEROMMA use case configuration that integrates with :term:`MELODIES MONET` for air quality analysis.
+
    AERONET
       The "`AErosol RObotic NETwork <https://aeronet.gsfc.nasa.gov/>`_": A worldwide ground-based remote sensing aerosol network established by NASA and PHOTONS. The SRW verification tasks can use "Level 1.5" (cloud-screened and quality-controlled) aerosol optical depth observations. 
 
@@ -28,7 +31,7 @@ Glossary
       Climatology-Calibrated Precipitation Analysis (CCPA) data. This data is required for METplus precipitation verification tasks within the SRW App. 
 
    CCPP
-      The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of code containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
+      The `Common Community Physics Package <https://dtcenter.org/software-tools/common-community-physics-package-ccpp>`_ is a forecast-model agnostic, vetted collection of code containing atmospheric physical parameterizations and suites of parameterizations for use in Numerical Weather Prediction (NWP) along with a framework that connects the physics to the host forecast model.
 
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
@@ -62,6 +65,9 @@ Glossary
 
    CONUS
       Continental United States
+
+   cumulus parameterization
+      A physics parameterization scheme that represents the effects of cumulus clouds and convection in atmospheric models. 
 
    CAM
    convection-allowing models
@@ -105,8 +111,11 @@ Glossary
       Scripting layer (contained in ``ufs-srweather-app/scripts/``) that should be called by a :term:`J-job <J-jobs>` for each workflow componentto run a specific task or sub-task in the workflow. The different scripting layers are described in detail in the :nco:`NCO Implementation Standards document <ImplementationStandards.v11.0.0.pdf>`
 
    FV3
-      The Finite-Volume Cubed-Sphere :term:`dynamical core` (dycore). Developed at NOAA's `Geophysical 
+      The Finite-Volume Cubed-Sphere :term:`dynamical core` (dycore). Developed at NOAA's `Geophysical
       Fluid Dynamics Laboratory <https://www.gfdl.noaa.gov/>`_ (GFDL), it is a scalable and flexible dycore capable of both hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the UFS Weather Model.
+
+   FRP
+      Fire Radiative Power (FRP) is a measure of the rate of radiant heat output from a fire, typically derived from satellite observations. FRP observations from :term:`RAVE` data are used in the SRW App's smoke and dust module to estimate fire emissions and initialize smoke tracer fields in the atmospheric model.
 
    FVCOM
       `Finite Volume Community Ocean Model <http://www.fvcom.org/>`_. FVCOM is used in modeling work for the `Great Lakes Coastal Forecasting System (next-gen FVCOM) <https://www.glerl.noaa.gov/res/glcfs/>`_ conducted by the `Great Lakes Environmental Research Laboratory <https://www.glerl.noaa.gov/>`_.
@@ -150,20 +159,23 @@ Glossary
       JEDI is developed and distributed by the `Joint Center for Satellite Data Assimilation <https://www.jcsda.org/>`__, a multi-agency research center hosted by the University Corporation for Atmospheric Research (`UCAR <https://www.ucar.edu/>`__). JCSDA is dedicated to improving and accelerating the quantitative use of research and operational satellite data in weather, ocean, climate, and environmental analysis and prediction systems.
 
    LAM
-      Limited Area Model (grid type), formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the :term:`FV3` :term:`dynamical core`. 
+      Limited Area Model (grid type), formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the :term:`FV3` :term:`dynamical core`.
 
    LBCs
       Lateral boundary conditions
 
    MEGAN
-      The Model of Emissions of Gases and Aerosols from Nature (`MEGAN <https://bai.ess.uci.edu/megan>`__) is a modeling system for estimating the emission of gases and aerosols from terrestrial ecosystems into the atmosphere. It has been integrated into a number of chemistry and transport models, including :ref:`NEXUS <nexus>`. 
+      The Model of Emissions of Gases and Aerosols from Nature (`MEGAN <https://bai.ess.uci.edu/megan>`__) is a modeling system for estimating the emission of gases and aerosols from terrestrial ecosystems into the atmosphere. It has been integrated into a number of chemistry and transport models, including :ref:`NEXUS <nexus>`.
+
+   MELODIES MONET
+      The Model EvaLuation using Observations, DIagnostics and Experiments Software - Model and ObservatioN Evaluation Toolkit (`MELODIES MONET <https://github.com/NCAR/MELODIES-MONET>`__) is a joint project between NCAR and NOAA to develop a modular and extensible software package for the evaluation and analysis of atmospheric composition models. The SRW App integrates MELODIES MONET for air quality model evaluation, particularly for :term:`AQM` applications and the :term:`AEROMMA` use case.
 
    MERRA2
       The `Modern-Era Retrospective analysis for Research and Applications, Version 2 <https://gmao.gsfc.nasa.gov/gmao-products/merra-2>`__ provides satellite observation data back to 1980. According to NASA, "It was introduced to replace the original MERRA dataset because of the advances made in the assimilation system that enable assimilation of modern hyperspectral radiance and microwave observations, along with GPS-Radio Occultation datasets. It also uses NASA's ozone profile observations that began in late 2004. Additional advances in both the GEOS model and the GSI assimilation system are included in MERRA-2. Spatial resolution remains about the same (about 50 km in the latitudinal direction) as in MERRA."
 
    MET
    METplus
-      The `Model Evaluation Tools <https://dtcenter.org/community-code/model-evaluation-tools-met>`__ is a highly configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/community-code/metplus>`_ is a suite of Python wrappers providing low-level automation of the MET tools.
+      The `Model Evaluation Tools <https://dtcenter.org/software-tools/metplus>`__ is a highly configurable, state-of-the-art suite of verification tools developed at the :term:`DTC`. `METplus <https://dtcenter.org/software-tools/metplus>`_ is a suite of Python wrappers providing low-level automation of the MET tools.
 
    MPI
       MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC) systems.
@@ -210,7 +222,10 @@ Glossary
       NetCDF (`Network Common Data Form <https://www.unidata.ucar.edu/software/netcdf/>`__) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data.
 
    NOHRSC
-      The National Operational Hydrologic Remote Sensing Center, which provides the National Snowfall Analysis, an observation-based, gridded estimate of recent snowfall, now an operational product. 
+      The National Operational Hydrologic Remote Sensing Center, which provides the National Snowfall Analysis, an observation-based, gridded estimate of recent snowfall, now an operational product.
+
+   NOMADS
+      The NOAA Operational Model Archive and Distribution System (`NOMADS <https://nomads.ncep.noaa.gov/>`__) is a public archive and distribution system for operational :term:`NCEP` model data. NOMADS provides access to various model outputs including :term:`GFS`, :term:`NAM`, :term:`HRRR`, and :term:`RAP` data that can be used for initial and boundary conditions in the SRW App.
 
    NSSL
       The `National Severe Storms Laboratory <https://www.nssl.noaa.gov/>`__. 
@@ -230,14 +245,26 @@ Glossary
    Parameterizations
       Simplified functions that approximate the effects of small-scale processes (e.g., microphysics, gravity wave drag) that cannot be explicitly resolved by a model grid's representation of the earth.
 
+   PrepBufr
+      Prepared BUFR (Binary Universal Form for the Representation of meteorological data) format. PrepBufr files contain quality-controlled observational data that have been processed and prepared for use in data assimilation and model verification. The :term:`NDAS` data used in SRW App verification tasks is available in PrepBufr format.
+
+   QOS
+      Quality of Service. In the Slurm workload manager, QOS is the term used for job queue or partition priority levels. QOS settings control resource allocation, job priority, and scheduling policies for submitted jobs. Users specify QOS when configuring workflow tasks in the SRW App on HPC systems using Slurm.
+
    RAP
       `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at :term:`NCEP`. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (:term:`HRRR`) model.
+
+   RAVE
+      The `Real-time Air-quality and Visibility Emissions <https://www.ospo.noaa.gov/products/land/rave/>`__ (RAVE) product provides satellite-based fire detection and emission estimates for smoke forecasting. RAVE data includes :term:`Fire Radiative Power (FRP) <FRP>` observations derived from geostationary satellite observations, which are used by the SRW App's :term:`SRW-SD` features to estimate wildfire smoke emissions and initialize smoke tracer fields in atmospheric models.
 
    RDHPCS
       NOAA Research & Development High-Performance Computing Systems.
 
    Repository
-      A central location in which files (e.g., data, code, documentation) are stored and managed. 
+      A central location in which files (e.g., data, code, documentation) are stored and managed.
+
+   Rocoto
+      The `Rocoto Workflow Management System <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__ is a Ruby-based tool that manages workflow task dependencies and job submission on :term:`HPC` systems. Rocoto communicates with batch systems to run tasks in the proper sequence based on dependencies and can automatically resubmit failed tasks. The SRW App uses Rocoto to orchestrate the execution of workflow tasks defined in the ``FV3LAM_wflow.xml`` file. For more information, see :numref:`Section %s <RocotoInfo>`.
 
    RRFS
       The `Rapid Refresh Forecast System <https://gsl.noaa.gov/research/predictions>`_ (RRFS) is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain, see also `NOAA Rapid Refresh Forecast System (RRFS) <https://registry.opendata.aws/noaa-rrfs/>`__. Experimental data is currently available from the `AWS S3 NOAA-RRFS  <https://noaa-rrfs-pds.s3.amazonaws.com/index.html#rrfs_a/>`__ bucket for deterministic forecasts out to 60 hours at 00, 06, 12, and 18 UTC. Additionally, hourly forecasts out to 18 hours may be available for more recent RRFS model runs; the user needs to verify that data exists for needed dates.
@@ -250,6 +277,12 @@ Glossary
 
    spack-stack
       The `spack-stack <https://github.com/JCSDA/spack-stack>`_ is a collaborative effort between the NOAA Environmental Modeling Center (EMC), the UCAR Joint Center for Satellite Data Assimilation (JCSDA), and the Earth Prediction Innovation Center (EPIC). *spack-stack* is a repository that provides a :term:`Spack`-based method for building the software stack required for numerical weather prediction (NWP) tools such as the `Unified Forecast System (UFS) <https://ufs.epic.noaa.gov/>`_ and the `Joint Effort for Data assimilation Integration (JEDI) <https://jointcenterforsatellitedataassimilation-jedi-docs.readthedocs-hosted.com/en/latest/>`_ framework. *spack-stack* uses the Spack package manager along with custom Spack configuration files and Python scripts to simplify installation of the libraries required to run various applications. The *spack-stack* can be installed on a range of platforms and comes pre-configured for many systems. Users can install the necessary packages for a particular application and later add the missing packages for another application without having to rebuild the entire stack. To get started, check out the documentation :doc:`here <spack-stack:index>`.
+
+   SPP
+      Stochastically Perturbed Parameterizations (SPP) is a technique used in ensemble forecasting to represent model uncertainty by adding random perturbations to key parameters in physics schemes.
+
+   SRW-SD
+      SRW Smoke & Dust. The SRW App features that enable simulation of smoke and dust aerosol transport and dispersion from wildfire emissions. For detailed information, see :ref:`srw-sd`.
 
    submodule
       A `submodule <https://git-scm.com/book/en/v2/Git-Tools-Submodules>`_ is a git repository linked to another repository as a subdirectory. Many UFS components are linked in this way; for example, the :term:`UPP` repository is a submodule of the :term:`FV3` repository.
@@ -285,6 +318,12 @@ Glossary
       A prognostic model that can be used for short- and medium-range research and
       operational forecasts. It can be an atmosphere-only model or an atmospheric
       model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the `UFS Weather Model <https://github.com/ufs-community/ufs-weather-model/wiki>`__.
+
+   WCOSS2
+      NOAA Weather and Climate Operational Supercomputing System 2. WCOSS2 is NOAA's operational high-performance computing system used for running operational weather and climate models at :term:`NCEP`. It is a Level 1 platform for the SRW App, particularly for :term:`AQM` applications.
+
+   WoFS
+      The Warn-on-Forecast System (WoFS) is an experimental convection-allowing ensemble analysis and forecast system designed to provide frequently updated probabilistic guidance for severe weather warnings. In the SRW App, ``FV3_WoFS_v0`` is a physics suite specifically designed for 1-km resolution convection-allowing modeling.
 
    Workflow
       The sequence of steps required to run an experiment from start to finish.

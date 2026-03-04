@@ -25,7 +25,7 @@ The SRW Application includes a number of pre-processing utilities (UFS_UTILS) th
 The SRW Application can be initialized from a range of operational initial condition files. It is possible to initialize the model from the Global Forecast System (:term:`GFS`), North American Mesoscale (:term:`NAM`) Forecast System, Rapid Refresh (:term:`RAP`), High-Resolution Rapid Refresh (:term:`HRRR`), and Rapid Refresh Forecast System (:term:`RRFS`) files in Gridded Binary v2 (:term:`GRIB2`) format. GFS files also come in :term:`NEMSIO` format for past dates. 
 
 .. WARNING::
-   For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through the `NOAA Operational Model Archive and Distribution System <https://nomads.ncep.noaa.gov/>`_ (NOMADS). Raw external model data may be pre-staged on disk by the user.
+   For GFS data, dates prior to January 1, 2018 may work but are not guaranteed. Public archives of model data can be accessed through :term:`NOMADS`. Raw external model data may be pre-staged on disk by the user.
 
 Forecast Model
 ==============
@@ -37,7 +37,7 @@ Supported model resolutions in this release include 3-, 13-, and 25-km predefine
 Model Physics
 ---------------
 
-The Common Community Physics Package (CCPP), described `here <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`_, supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The most recent SRW App release (|latestr|) included six supported physics suites: FV3_GFS_v16, FV3_WoFS_v0, FV3_HRRR, FV3_HRRR_gf, RRFS_sas, and FV3_RAP. The FV3_GFS_v16 is an updated version of the physics suite used in the operational Global Forecast System (GFS) v16. A detailed list of CCPP updates made ahead of the SRW App v3.0.0 release is available :ref:`here <CCPPUpdates>`. A full scientific description of CCPP parameterizations and suites can be found in the `CCPP Scientific Documentation <https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v3.0.0/sci_doc/index.html>`_, and CCPP technical aspects are described in the :doc:`CCPP Technical Documentation <ccpp-techdoc:index>`. The model namelist has many settings beyond the physics options that can optimize various aspects of the model for use with each of the supported suites. Additional information on Stochastic Physics options is available :doc:`here <stochphys:index>`. 
+The Common Community Physics Package (CCPP), described `here <https://dtcenter.org/software-tools/common-community-physics-package-ccpp>`_, supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The most recent SRW App release (|latestr|) included six supported physics suites: FV3_GFS_v16, FV3_WoFS_v0, FV3_HRRR, FV3_HRRR_gf, RRFS_sas, and FV3_RAP. The FV3_GFS_v16 is an updated version of the physics suite used in the operational Global Forecast System (GFS) v16. A detailed list of CCPP updates made ahead of the SRW App v3.0.0 release is available :ref:`here <CCPPUpdates>`. A full scientific description of CCPP parameterizations and suites can be found in the `CCPP Scientific Documentation <https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v3.0.0/sci_doc/index.html>`_, and CCPP technical aspects are described in the :doc:`CCPP Technical Documentation <ccpp-techdoc:index>`. The model namelist has many settings beyond the physics options that can optimize various aspects of the model for use with each of the supported suites. Additional information on Stochastic Physics options is available :doc:`here <stochphys:index>`. 
 
 +                         'pbl': ['mynnedmf_wrapper'],
 +                         'sfc': ['mynnsfc_wrapper'],
@@ -64,22 +64,34 @@ The Unified Post Processor (:term:`UPP`) processes raw output from a variety of 
 METplus Verification Suite
 =============================
 
-The Model Evaluation Tools (MET) package is a set of statistical verification tools developed by the `Developmental Testbed Center <https://dtcenter.org/>`_ (DTC) for use by the :term:`NWP` community to help them assess and evaluate the performance of numerical weather predictions. MET is the core component of the enhanced `METplus <https://dtcenter.org/community-code/metplus>`_ verification framework; the suite also includes the associated database and display systems called METviewer and METexpress. 
+The Model Evaluation Tools (MET) package is a set of statistical verification tools developed by the `Developmental Testbed Center <https://dtcenter.org/>`_ (DTC) for use by the :term:`NWP` community to help them assess and evaluate the performance of numerical weather predictions. MET is the core component of the enhanced `METplus <https://dtcenter.org/software-tools/metplus>`_ verification framework; the suite also includes the associated database and display systems called METviewer and METexpress. 
 
 The METplus verification framework has been integrated into the SRW App to facilitate forecast evaluation. METplus is a verification framework that spans a wide range of temporal scales (warn-on-forecast to climate) and spatial scales (storm to global). It is supported by the `Developmental Testbed Center (DTC) <https://dtcenter.org/>`_. 
 
 METplus comes preinstalled with :term:`spack-stack`. Users on systems without a previous installation of METplus can follow the :ref:`MET Installation Guide <met:installation>` and :ref:`METplus Installation Guide <metplus:install>` for individual installation. Currently, METplus *installation* is only supported as part of spack-stack installation; users attempting to install METplus individually will need to direct assistance requests to the METplus team. However, METplus *use* is supported on any system with a functioning METplus installation.
 
-The core components of the METplus framework include the statistical driver (MET), the associated database and display systems known as METviewer and METexpress, and a suite of Python wrappers to provide low-level automation and examples, also called use cases. MET is a set of verification tools developed for use by the :term:`NWP` community. It matches up gridded forecast fields with either gridded analyses or point observations and applies configurable methods to compute statistics and diagnostics. Extensive documentation is available in the :doc:`METplus User's Guide <metplus:index>` and :doc:`MET User's Guide <met:index>`. Documentation for all other components of the framework can be found at the *Documentation* link for each component on the METplus `downloads <https://dtcenter.org/community-code/metplus/download>`_ page.
+The core components of the METplus framework include the statistical driver (MET), the associated database and display systems known as METviewer and METexpress, and a suite of Python wrappers to provide low-level automation and examples, also called use cases. MET is a set of verification tools developed for use by the :term:`NWP` community. It matches up gridded forecast fields with either gridded analyses or point observations and applies configurable methods to compute statistics and diagnostics. Extensive documentation is available in the :doc:`METplus User's Guide <metplus:index>` and :doc:`MET User's Guide <met:index>`. Documentation for all other components of the framework can be found at the *Documentation* link for each component on the METplus `downloads <https://dtcenter.org/software-tools/metplus/download>`_ page.
 
 Among other techniques, MET provides the capability to compute standard verification scores for comparing deterministic gridded model data to point-based and gridded observations. It also provides ensemble and probabilistic verification methods for comparing gridded model data to point-based or gridded observations. Verification tasks to accomplish these comparisons are defined in the SRW App in :numref:`Table %s <VXWorkflowTasksTable>`. Currently, the SRW App supports the use of :term:`NDAS` observation files (which include conventional point-based surface and upper-air data) `in prepBUFR format <https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/>`__ for point-based verification. It also supports gridded Climatology-Calibrated Precipitation Analysis (:term:`CCPA`) data for accumulated precipitation evaluation and Multi-Radar/Multi-Sensor (:term:`MRMS`) gridded analysis data for composite reflectivity and :term:`echo top` verification.
 
-METplus is being actively developed by :term:`NCAR`/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (`ESRL <https://www.esrl.noaa.gov/>`__), and NOAA/Environmental Modeling Center (:term:`EMC`), and it is open to community contributions. More details about METplus can be found on the `METplus website <https://dtcenter.org/community-code/metplus>`_.
+METplus is being actively developed by :term:`NCAR`/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (`ESRL <https://www.esrl.noaa.gov/>`__), and NOAA/Environmental Modeling Center (:term:`EMC`), and it is open to community contributions. More details about METplus can be found on the `METplus website <https://dtcenter.org/software-tools/metplus>`_.
+
+.. _AQMUtils:
 
 Air Quality Modeling (AQM) Utilities
 =======================================
 
-AQM Utilities (AQM-utils) include the utility executables and python scripts to run SRW-AQM (Online-:term:`CMAQ`).
+AQM Utilities (AQM-utils) include the utility executables and python scripts to run UFS-AQM (Online-:term:`CMAQ`). The SRW App integrates air quality modeling capabilities that dynamically couple atmospheric chemistry with the weather forecast model, enabling prediction of pollutant concentrations including ozone (O3) and particulate matter (PM2.5). For detailed information on configuring and running air quality simulations, see :numref:`Chapter %s <AQM>`.
+
+Recent enhancements to the AQM capabilities include:
+
+* **MELODIES MONET Integration**: The :term:`MELODIES MONET` framework has been integrated for comprehensive model evaluation and analysis of atmospheric composition predictions, particularly for AQM applications.
+* **AEROMMA Use Case**: Support for the :term:`AEROMMA` field campaign use case, providing specialized configurations for aerosol and cloud interaction studies.
+* **Bias Correction**: Automated bias correction capabilities for O3 and PM2.5 forecasts to improve operational air quality predictions.
+* **Fall Ozone Use Case**: Evaluation of model performance during all ozone events.
+
+Configuration templates for AQM applications are available in ``config.aqm.yaml``, and users can leverage the integrated verification capabilities to evaluate air quality forecast performance.
+
 For more information on AQM-utils, visit the GitHub repository at https://github.com/NOAA-EMC/AQM-utils. 
 
 .. _nexus:
@@ -89,7 +101,24 @@ NOAA Emission and eXchange Unified System (NEXUS)
 
 The NOAA Emission and eXchange Unified System (NEXUS) is an emissions processing system developed at the NOAA Air Resources Laboratory (ARL) for use with regional and global UFS atmospheric composition models. NEXUS provides a streamlined process to include new emissions inventories quickly and can flexibly blend different emissions datasets. NEXUS incorporates the :term:`ESMF`-compliant Harmonized Emissions Component (`HEMCO <https://github.com/geoschem/HEMCO/tree/main>`__), which "comput[es] emissions from a user-selected ensemble of emission inventories and algorithms" and "allows users to re-grid, combine, overwrite, subset, and scale emissions from different inventories through a configuration file and with no change to the model source code" (:cite:t:`LinEtAl2021`). 
 
-For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS. 
+For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS.
+
+.. _srw-sd-feature:
+
+SRW Smoke & Dust (SRW-SD) Features
+====================================
+
+The SRW Smoke & Dust (SRW-SD) features enable the SRW App to simulate the transport and dispersion of smoke and dust aerosols from wildfire emissions. SRW-SD processes fire emission data from satellite observations, including :term:`FRP` data from :term:`RAVE` sources, to initialize smoke tracer fields in the atmospheric model. For detailed information on configuring and running smoke and dust simulations, see :numref:`Chapter %s <srw-sd>`.
+
+SRW-SD supports multiple emission modeling approaches:
+
+* **Current-day emissions**: Using emissions estimated from satellite observations on the same day as the simulation.
+* **Traditional persistence**: Using biomass burning emissions estimated from satellite observations of the previous day.
+* **Modulated persistence**: Emissions are forecasted based on a fire weather index that dictates the diurnal cycle of fire activity (considered experimental).
+
+SRW-SD includes regridding and interpolation utilities to transform emission data from observational grids to the model's native grid. Integration with the :term:`FV3` atmospheric model allows smoke and dust tracers to be advected and dispersed by the simulated winds, providing forecasts of smoke plume transport and air quality impacts.
+
+Configuration templates for smoke and dust applications are available in ``config.smoke_dust.yaml``, and specialized workflow configurations enable users to run smoke and dust simulations alongside standard meteorological forecasts.
 
 .. _uwtools:
 
