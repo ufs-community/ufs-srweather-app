@@ -14,7 +14,7 @@ consistent workflows across different systems and cloud platforms.
 
 Two container options are provided:
 
-* **Intel-based container:** uses Intel compilers and Intel MPI.
+* **Intel-based container:** uses Intel compilers and MPI to build and Intel runtime environment to run.
 * **GNU-based container:** uses fully open-source GNU compilers and OpenMPI.
 
 Additional differences between the containers are that the Intel-based image includes pre-built SRW App binaries. 
@@ -150,8 +150,8 @@ Obtain or Build the Intel-Based Singularity Container
      - /glade/work/epicufsrt/contrib/containers
    * - Gaea-C6 [#fn]_
      - /gpfs/f6/bil-fire8/world-shared/containers
-   * - Hera
-     - /scratch1/NCEPDEV/nems/role.epic/containers
+   * - Ursa
+     - /scratch3/NCEPDEV/nems/role.epic/containers
    * - NOAA Cloud [#fn]_
      - /contrib/EPIC/containers
    * - Orion/Hercules
@@ -166,13 +166,13 @@ It is practical to set an environment variable to point to the container:
 
 .. code-block:: console
 
-   export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev.img
+   export img=/path/to/ubuntu22.04-intel-srw-release-public-v3.0.0-rt.img
 
 Users may convert the read-only image in a shared location to a writable sandbox in user's space:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu22.04-intel-ue-1.6.0-srw-dev $img
+   singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0-rt $img
 
 Signature warnings may be ignored.
 
@@ -180,22 +180,14 @@ Signature warnings may be ignored.
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu22.04-intel-ue-1.6.0-srw-dev \
-        docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-dev
+   singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0-rt \
+        docker://noaaepic/ubuntu22.04-intel2023.2.1-srw:ue160-fms202401-release3-rt
 
-A release-tagged container may be built in a similar way:
+Set an environment variable to point to your sandbox container:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu22.04-intel-srw-release-public-v3.0.0 \
-        docker://noaaepic/ubuntu22.04-intel21.10-srw:ue160-fms202401-release3
-        
-
-Set an environment variable to point to your sandbox container: 
- 
-.. code-block:: console
-
-   export img=/path/to/ubuntu22.04-intel-ue-1.6.0-srw-dev
+   export img=/path/to/ubuntu22.04-intel-srw-release-public-v3.0.0-rt
 
 .. _RunContainer:
 
@@ -255,14 +247,14 @@ where:
 
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``, ``intel-oneapi-compilers/2022.2.1``, ``intel/2023.2.0``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``, ``intel-oneapi-mpi/2021.7.1``, ``cray-mpich/8.1.28``)
-   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``derecho``, ``noaacloud``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options.
-   * ``-i`` indicates the full path to the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu22.04-intel-ue-1.6.0-srw-dev`` or ``ubuntu22.04-intel-ue-1.6.0-srw-dev.img`` by default).
+   * ``<platform>`` refers to the local machine (e.g., ``ursa``, ``derecho``, ``noaacloud``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options.
+   * ``-i`` indicates the full path to the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu22.04-intel-srw-release-public-v3.0.0-rt`` or ``ubuntu22.04-intel-srw-release-public-v3.0.0-rt.img`` by default).
 
-For example, on Hera, the command would be:
+For example, on Ursa, the command would be:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=$img
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=ursa -i=$img
 
 .. attention::
 
@@ -323,21 +315,21 @@ Follow the steps below to configure the out-of-the-box SRW App case with an auto
       .. note::
          On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
 
-   #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths to the initial conditions files. For example, on Hera, add: 
+   #. Edit the ``task_get_extrn_ics:`` section of the ``config.yaml`` to include the correct data paths to the initial conditions files. For example, on Ursa, add:
 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch3/NCEPDEV/nems/role.epic/ursa/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
-      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
+      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`.
 
-   #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Hera, add: 
+   #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Ursa, add:
 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch3/NCEPDEV/nems/role.epic/ursa/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 
 .. _GenerateWorkflowC: 
