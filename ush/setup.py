@@ -1735,6 +1735,8 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                       FV3_HRRR, FV3_HRRR_gf, and RRFS_sas""" ))
             if fire_conf["FIRE_NUM_TASKS"] < 1:
                 raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
+            if fire_conf["OMP_NUM_THREADS_FIRE"] < 1:
+                raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
             if fire_conf["FIRE_NUM_TASKS"] > 1:
                 raise ValueError("FIRE_NUM_TASKS > 1 not yet supported")
 
