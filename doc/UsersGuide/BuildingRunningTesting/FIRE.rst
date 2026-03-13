@@ -98,10 +98,10 @@ The fire module has the ability to print out additional messages to the log file
    fire:
      FIRE_PRINT_MSG: 1
 
-The fire module now supports OpenMP parallelization. By default, parallelization is off, but it can be enabled by setting ``OMP_NUM_THREADS_FIRE`` to a value greater than 1. In testing we have observed a 10-25% speedup with ``OMP_NUM_THREADS_FIRE: 2`` vs 1, with only marginal additional speedup for ``OMP_NUM_THREADS_FIRE>2``.
+The fire module now supports OpenMP parallelization. By default, parallelization is off, but it can be enabled by setting ``OMP_NUM_THREADS_FIRE`` to a value greater than 1. In testing with the default case (200x200 domain) we have observed a 10-25% speedup with ``OMP_NUM_THREADS_FIRE: 2`` vs 1, with only marginal additional speedup for ``OMP_NUM_THREADS_FIRE>2``. However, larger domains may benefit from additional parallel threads.
 
 .. code-block:: console
-   
+
    fire:
      OMP_NUM_THREADS_FIRE: 2
 
