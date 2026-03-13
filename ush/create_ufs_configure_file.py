@@ -108,6 +108,7 @@ def create_ufs_configure_file(run_dir,cfg):
       "runseq": runseq,
       "AQM_pb": "",
       "FIRE_pb": "",
+      "FIRE_omp_num_threads_line": "",
       "dt_atmos": cfg["DT_ATMOS"],
       "print_esmf": cfg["PRINT_ESMF"],
       "cpl_aqm": cfg["CPL_AQM"]
