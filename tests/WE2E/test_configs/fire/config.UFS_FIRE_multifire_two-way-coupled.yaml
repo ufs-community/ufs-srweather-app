@@ -73,6 +73,8 @@ fire:
   FIRE_UPWINDING: 9
   FIRE_LSM_ZCOUPLING: False
   FIRE_LSM_ZCOUPLING_REF: 60.0
+  OMP_NUM_THREADS_FIRE: 2
+  WIND_VINTERP_OPT: 1
 task_run_fcst:
   fv3:
     execution:
