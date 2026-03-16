@@ -55,6 +55,8 @@ def create_ufs_configure_file(run_dir,cfg):
             f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
         atm_diag_line = ''
         fire_petlist_bounds = f'{fire_start} {fire_end}'
+        fire_omp_num_threads_line = \
+            f"\nFIRE_omp_num_threads:            {cfg['OMP_NUM_THREADS_FIRE']}"
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM -> FIRE\n",
                    "    FIRE -> ATM :remapmethod=conserve\n",
@@ -114,6 +116,7 @@ def create_ufs_configure_file(run_dir,cfg):
         settings["AQM_pb"] = aqm_petlist_bounds
     if cfg["UFS_FIRE"]:
         settings["FIRE_pb"] = fire_petlist_bounds
+        settings["FIRE_omp_num_threads_line"] = fire_omp_num_threads_line
 
     print_info_msg(
         dedent(

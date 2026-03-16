@@ -461,7 +461,7 @@ def generate_FV3LAM_wflow(
         ]
 
         # These settings do not get added to namelist, or are handled elsewhere
-        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "envvars"]
+        pass_settings = ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS", "OMP_NUM_THREADS_FIRE", "envvars"]
         pass_settings.extend(each_ignit)
 
         for setting in expt_config["fire"]:
