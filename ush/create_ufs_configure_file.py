@@ -31,9 +31,11 @@ def create_ufs_configure_file(run_dir,cfg):
 
     # Set necessary variables for each coupled configuration
 
-    atm_end = str(int(cfg["PE_MEMBER01"]) - int(cfg["FIRE_NUM_TASKS"] * cfg['OMP_NUM_THREADS_FIRE']) - 1)
+    atm_end = str(int(cfg["PE_MEMBER01"]) -
+                  int(cfg["FIRE_NUM_TASKS"] * cfg['OMP_NUM_THREADS_FIRE']) - 1)
     aqm_end = str(int(cfg["LAYOUT_X"]) * int(cfg["LAYOUT_Y"]) - 1)
-    fire_start = str(int(cfg["PE_MEMBER01"]) - int(cfg["FIRE_NUM_TASKS"] * cfg['OMP_NUM_THREADS_FIRE']))
+    fire_start = str(int(cfg["PE_MEMBER01"]) -
+                     int(cfg["FIRE_NUM_TASKS"] * cfg['OMP_NUM_THREADS_FIRE']))
     fire_end = str(int(cfg["PE_MEMBER01"]) - 1)
 
     atm_petlist_bounds = f'0 {atm_end}'
