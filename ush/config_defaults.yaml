@@ -1842,7 +1842,7 @@ task_run_fcst:
   #
   QUILTING: true
 
-  PE_MEMBER01: !int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + fire.FIRE_NUM_TASKS if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + fire.FIRE_NUM_TASKS }}'
+  PE_MEMBER01: !int '{{ task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X + task_run_fcst.WRTCMP_write_groups * task_run_fcst.WRTCMP_write_tasks_per_group) + (fire.FIRE_NUM_TASKS * fire.OMP_NUM_THREADS_FIRE) if task_run_fcst.QUILTING else task_run_fcst.fv3.execution.threads * (task_run_fcst.LAYOUT_Y * task_run_fcst.LAYOUT_X) + (fire.FIRE_NUM_TASKS * fire.OMP_NUM_THREADS_FIRE) }}'
 
   WRTCMP_write_groups: ""
   WRTCMP_write_tasks_per_group: ""
@@ -3109,14 +3109,17 @@ fire:
   # The fire behavior component’s output timestep
   # 
   # FIRE_NUM_TASKS
-  # Number of MPI tasks assigned to the FIRE_BEHAVIOR component.
+  # Number of MPI tasks assigned to the fire behavior component.
   #
+  # OMP_NUM_THREADS_FIRE
+  # Number of OpenMP tasks assigned to the fire behavior component.
   envvars:
     UFS_FIRE: False
     FIRE_INPUT_DIR: ""
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300
   FIRE_NUM_TASKS: 0
+  OMP_NUM_THREADS_FIRE: 1
 
 
   # The following options control namelist values in the Community Fire
@@ -3206,4 +3209,10 @@ fire:
   FIRE_IGNITION_RADIUS: 250
   FIRE_IGNITION_START_TIME: 6480
   FIRE_IGNITION_END_TIME: 7000
+
+  # WIND_VINTERP_OPT
+  # Option for which wind variable should be used for driving fire behavior
+  #   0: Use prognostic 3-d wind
+  #   1: Use diagnosed 10-meter wind
+  WIND_VINTERP_OPT: 0
 

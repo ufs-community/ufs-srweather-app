@@ -126,7 +126,7 @@ class TestUfsFire(AbstractIntegrationTest):
 
     def test_namelist_creation(self) -> None:
         base_params = {
-            "time": {"dt", "interval_output"},
+            "time": {"dt", "interval_output", "num_tiles"},
             "atm": {"interval_atm", "kde"},
             "fire": {
                 "fire_num_ignitions",
@@ -137,6 +137,7 @@ class TestUfsFire(AbstractIntegrationTest):
                 "fire_upwinding",
                 "fire_lsm_zcoupling",
                 "fire_lsm_zcoupling_ref",
+                "wind_vinterp_opt",
             },
         }
         multifire_params = (

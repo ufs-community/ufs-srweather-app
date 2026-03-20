@@ -471,6 +471,8 @@ def generate_FV3LAM_wflow(
                 fire_nml_dict["time"]["dt"] = expt_config["fire"][setting]
             elif setting == "OUTPUT_DT_FIRE":
                 fire_nml_dict["time"]["interval_output"] = expt_config["fire"][setting]
+            elif setting == "OMP_NUM_THREADS_FIRE":
+                fire_nml_dict["time"]["num_tiles"] = expt_config["fire"][setting]
             else:
                 # For all other settings in config.yaml, convert to lowercase
                 # and enter into namelist.fire's &fire section

@@ -33,7 +33,8 @@ AQM_attributes::
 {% if ufs_fire %}
 # FIRE #
 FIRE_model:                     fire_behavior
-FIRE_petlist_bounds:            {{ FIRE_pb }}
+FIRE_petlist_bounds:            {{ FIRE_pb }}{{
+FIRE_omp_num_threads_line }}
 FIRE_attributes::
   Verbosity = high
   Diagnostic = 0

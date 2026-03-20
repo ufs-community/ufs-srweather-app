@@ -98,6 +98,14 @@ The fire module has the ability to print out additional messages to the log file
    fire:
      FIRE_PRINT_MSG: 1
 
+The fire module now supports OpenMP parallelization. By default, parallelization is off, but it can be enabled by setting ``OMP_NUM_THREADS_FIRE`` to a value greater than 1. In testing with the default case (200x200 domain) we have observed a 10-25% speedup with ``OMP_NUM_THREADS_FIRE: 2`` vs 1, with only marginal additional speedup for ``OMP_NUM_THREADS_FIRE>2``. However, larger domains may benefit from additional parallel threads.
+
+.. code-block:: console
+
+   fire:
+     OMP_NUM_THREADS_FIRE: 2
+
+
 Additional boundary conditions file
 -----------------------------------
 
@@ -147,6 +155,8 @@ Here is one example of settings that can be specified for a UFS FIRE simulation:
 In this case, a single fire (``FIRE_NUM_IGNITIONS: 1``) of radius 250 meters (``FIRE_IGNITION_RADIUS: 250``) is ignited at latitude 40.609˚N (``FIRE_IGNITION_START_LAT: 40.609``), 105.879˚W (``FIRE_IGNITION_START_LON: -105.879``) 6480 seconds after the start of the simulation (``FIRE_IGNITION_START_TIME: 6480``) with a rate of spread specified as 0.05 m/s (``FIRE_IGNITION_ROS: 0.05``). This "ignition" ends 7000 seconds after the start of the simulation (``FIRE_IGNITION_END_TIME: 7000``), after which the fire behavior is completely governed by the physics of the fire behavior model (integrated every 0.5 seconds as specified by ``OUTPUT_DT_FIRE``), the input fuel conditions, and the simulated atmospheric conditions. This simulated fire will feed back heat and moisture flux to the dynamical core, multiplied by a factor set by the user (``FIRE_ATM_FEEDBACK``).
 
 The CFBM creates output files in :term:`netCDF` format, with the naming scheme ``fire_output_YYYY-MM-DD_hh:mm:ss.nc``. In this case the output files are written every 30 minutes (``OUTPUT_DT_FIRE: 1800``).
+
+Users can also modify the wind profile used in the CFBM with the setting ``WIND_VINTERP_OPT``. By default, the full prognostic wind field from the atmospheric model is used to calculate a wind profile for spreading the fire. Setting ``WIND_VINTERP_OPT: 1`` changes this to use only the diagnostic 10m wind, which is less compute-intensive and therefore runs faster.
 
 .. note::
 

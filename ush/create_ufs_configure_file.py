@@ -31,9 +31,11 @@ def create_ufs_configure_file(run_dir,cfg):
 
     # Set necessary variables for each coupled configuration
 
-    atm_end = str(int(cfg["PE_MEMBER01"]) - int(cfg["FIRE_NUM_TASKS"]) -1)
+    atm_end = str(int(cfg["PE_MEMBER01"]) -
+                  int(cfg["FIRE_NUM_TASKS"] * cfg['OMP_NUM_THREADS_FIRE']) - 1)
     aqm_end = str(int(cfg["LAYOUT_X"]) * int(cfg["LAYOUT_Y"]) - 1)
-    fire_start = str(int(cfg["PE_MEMBER01"]) - int(cfg["FIRE_NUM_TASKS"]))
+    fire_start = str(int(cfg["PE_MEMBER01"]) -
+                     int(cfg["FIRE_NUM_TASKS"] * cfg['OMP_NUM_THREADS_FIRE']))
     fire_end = str(int(cfg["PE_MEMBER01"]) - 1)
 
     atm_petlist_bounds = f'0 {atm_end}'
@@ -55,6 +57,8 @@ def create_ufs_configure_file(run_dir,cfg):
             f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
         atm_diag_line = ''
         fire_petlist_bounds = f'{fire_start} {fire_end}'
+        fire_omp_num_threads_line = \
+            f"\nFIRE_omp_num_threads:            {cfg['OMP_NUM_THREADS_FIRE']}"
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM -> FIRE\n",
                    "    FIRE -> ATM :remapmethod=conserve\n",
@@ -106,6 +110,7 @@ def create_ufs_configure_file(run_dir,cfg):
       "runseq": runseq,
       "AQM_pb": "",
       "FIRE_pb": "",
+      "FIRE_omp_num_threads_line": "",
       "dt_atmos": cfg["DT_ATMOS"],
       "print_esmf": cfg["PRINT_ESMF"],
       "cpl_aqm": cfg["CPL_AQM"]
@@ -114,6 +119,7 @@ def create_ufs_configure_file(run_dir,cfg):
         settings["AQM_pb"] = aqm_petlist_bounds
     if cfg["UFS_FIRE"]:
         settings["FIRE_pb"] = fire_petlist_bounds
+        settings["FIRE_omp_num_threads_line"] = fire_omp_num_threads_line
 
     print_info_msg(
         dedent(
