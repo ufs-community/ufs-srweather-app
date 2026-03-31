@@ -156,6 +156,7 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                  r"https://mrms\.ncep\.noaa\.gov",
                                r"https://github\.com/ufs-community/ufs/wiki/.*": 
                                  r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs/.*",
+                               r"http://www.fvcom.org/": r"https://fvcom.smast.umassd.edu/",
                                }
 
 
