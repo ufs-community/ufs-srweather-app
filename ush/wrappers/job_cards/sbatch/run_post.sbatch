@@ -34,8 +34,5 @@ done
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c6 --partition=batch --export=NONE
 
-# Jet     differences:
-##SBATCH --partition=sjet,vjet,kjet,xjet
-
 # Orion   differences:
 ##SBATCH --partition=orion
