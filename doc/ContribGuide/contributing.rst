@@ -228,14 +228,11 @@ Here is the template that is provided when developers click "Create pull request
    <!-- Add an X to check off a box. -->
 
    - [ ] derecho.intel
-   - [ ] gaea.intel
-   - [ ] gaea-c6.intel
-   - [ ] hera.gnu
-   - [ ] hera.intel
+   - [ ] gaeac6.intel
    - [ ] hercules.intel
-   - [ ] jet.intel
    - [ ] orion.intel
-   - [ ] wcoss2.intel
+   - [ ] ursa.gnu
+   - [ ] ursa.intel  
    - [ ] NOAA Cloud (indicate which platform)
    - [ ] Jenkins
    - [ ] fundamental test suite
@@ -278,7 +275,6 @@ Here is the template that is provided when developers click "Create pull request
    - [ ] run_we2e_fundamental_tests
    - [ ] run_we2e_comprehensive_tests
    - [ ] Needs Cheyenne test 
-   - [ ] Needs Jet test 
    - [ ] Needs Hera test 
    - [ ] Needs Orion test 
    - [ ] help wanted

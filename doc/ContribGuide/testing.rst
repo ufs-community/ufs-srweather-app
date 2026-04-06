@@ -47,19 +47,17 @@ Additionally, users can potentially access the directories where the Jenkins tes
    * - Tier-1 Platform
      - Location of Jenkins experiment directories
    * - Derecho
-     - /glade/derecho/scratch/epicufsrt/jenkins/workspace
-   * - Gaea
-     - /gpfs/f5/epic/scratch/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/gaea
-   * - Hera (Intel)
-     - /scratch2/NAGAPE/epic/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#__2/hera
-   * - Hera (GNU)
-     - /scratch2/NAGAPE/epic/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/hera
+     - /glade/derecho/scratch/epicufsrt/jenkins/workspace/s-srweather-app_pipeline_PR-#/derecho
+   * - Gaea C6
+     - /gpfs/f6/epic/scratch/role.epic/jenkins/workspace/s-srweather-app_pipeline_PR-#/gaeac6
    * - Hercules
-     - /work/noaa/epic/role-epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/hercules
-   * - Jet
-     - /lfs1/NAGAPE/epic/role.epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/jet
+     - /work2/noaa/epic/role-epic/jenkins/workspace/s-srweather-app_pipeline_PR-#/hercules
    * - Orion
-     - /work/noaa/epic/role-epic/jenkins/workspace/fs-srweather-app_pipeline_PR-#/orion
+     - /work/noaa/epic/role-epic/jenkins/workspace/s-srweather-app_pipeline_PR-#/orion
+   * - Ursa (GNU)
+     - /scratch3/NAGAPE/epic/role-epic/jenkins/workspace/s-srweather-app_pipeline_PR-#/ursa
+   * - Ursa (Intel)
+     - /scratch3/NAGAPE/epic/role-epic/jenkins/workspace/s-srweather-app_pipeline_PR-#_2/ursa
 
 where ``#`` is the PR number.
 

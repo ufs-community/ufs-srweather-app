@@ -18,4 +18,4 @@ EPIC;Mark Potts (@mark-a-potts);HPC systems
 EPIC;Edward Snyder (@EdwardSnyder-NOAA);WE2E testing, input data
 GLERL;David Wright (@dmwright526);FVCOM integration, output visualization, preprocessing tasks
 EPIC;Ratko Vasic (@RatkoVasic-NOAA);Workflow, testing, and spack-stack maintenance
-NSSL;Yunheng Wang (@ywangwof);HPC systems, code management, and regional workflow (especially on Stampede, Jet and NSSL computers)
+NSSL;Yunheng Wang (@ywangwof);HPC systems, code management, and regional workflow (especially on Stampede and NSSL computers)

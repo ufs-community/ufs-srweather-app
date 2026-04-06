@@ -52,19 +52,19 @@ yes,yes,grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_GFS_v16,RRFS_CONUS_25km,FV3_
 ,yes,pregen_grid_orog_sfc_climo,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,6,17,
 ,yes,specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2021061500,6,6,19,
 ,yes,specify_template_filenames,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019070100,6,6,28,
-,hera/jet/orion/gaea/gaea-c6,get_from_AWS_ics_GEFS_lbcs_GEFS_fmt_grib2_2022040400_ensemble_2mems,RRFS_CONUS_3km,FV3_HRRR,GEFS,GEFS,2022040400,6,805,45,
-,hera/jet/orion/gaea/gaea-c6,get_from_NOMADS_ics_FV3GFS_lbcs_FV3GFS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,*2 days ago*,6,12,40,Retrieves online data and runs a forecast valid 00z 2 days previous to the test date
-,hera/jet,custom_ESGgrid_Great_Lakes_snow_8km,*custom*,FV3_RAP,RAP,RAP,2023021700,6,,,
-,hera/jet,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_grib2_2019061200,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061200,6,6,19,
-,hera/jet,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_nemsio_2019061200,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061200,6,10,23,
-,hera/jet,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_nemsio_2021032018,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2021032018,6,10,23,
-,hera/jet,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_netcdf_2022060112_48h,RRFS_CONUS_25km,FV3_GFS_v16,FV3GFS,FV3GFS,2022060112,48,55,43,
-,hera/jet,get_from_HPSS_ics_GDAS_lbcs_GDAS_fmt_netcdf_2022040400_ensemble_2mems,RRFS_CONUS_3km,FV3_HRRR,GDAS,GDAS,2022040400,6,765,48,
-,hera/jet,get_from_HPSS_ics_GSMGFS_lbcs_GSMGFS,RRFS_CONUS_25km,FV3_GFS_v15p2,GSMGFS,GSMGFS,2019052000,6,10,25,
-,hera/jet,get_from_HPSS_ics_HRRR_lbcs_RAP,RRFS_CONUScompact_25km,FV3_HRRR,HRRR,RAP,2020080100,6,14,30,
-,hera/jet,get_from_HPSS_ics_RAP_lbcs_RAP,RRFS_CONUS_25km,FV3_HRRR,RAP,RAP,2019052000,6,17,35,
-,hera/jet,long_fcst,RRFS_CONUScompact_25km,FV3_RAP,FV3GFS,FV3GFS,2023060112,108,50,,
-,hera/jet,MET_ensemble_verification_only_vx_time_lag,RRFS_CONUS_3km,*none*,*none*,*none*,2021050500,6,3,30,
+,ursa/orion/gaeac6,get_from_AWS_ics_GEFS_lbcs_GEFS_fmt_grib2_2022040400_ensemble_2mems,RRFS_CONUS_3km,FV3_HRRR,GEFS,GEFS,2022040400,6,805,45,
+,ursa/orion/gaeac6,get_from_NOMADS_ics_FV3GFS_lbcs_FV3GFS,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,*2 days ago*,6,12,40,Retrieves online data and runs a forecast valid 00z 2 days previous to the test date
+,ursa,custom_ESGgrid_Great_Lakes_snow_8km,*custom*,FV3_RAP,RAP,RAP,2023021700,6,,,
+,ursa,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_grib2_2019061200,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061200,6,6,19,
+,ursa,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_nemsio_2019061200,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061200,6,10,23,
+,ursa,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_nemsio_2021032018,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2021032018,6,10,23,
+,ursa,get_from_HPSS_ics_FV3GFS_lbcs_FV3GFS_fmt_netcdf_2022060112_48h,RRFS_CONUS_25km,FV3_GFS_v16,FV3GFS,FV3GFS,2022060112,48,55,43,
+,ursa,get_from_HPSS_ics_GDAS_lbcs_GDAS_fmt_netcdf_2022040400_ensemble_2mems,RRFS_CONUS_3km,FV3_HRRR,GDAS,GDAS,2022040400,6,765,48,
+,ursa,get_from_HPSS_ics_GSMGFS_lbcs_GSMGFS,RRFS_CONUS_25km,FV3_GFS_v15p2,GSMGFS,GSMGFS,2019052000,6,10,25,
+,ursa,get_from_HPSS_ics_HRRR_lbcs_RAP,RRFS_CONUScompact_25km,FV3_HRRR,HRRR,RAP,2020080100,6,14,30,
+,ursa,get_from_HPSS_ics_RAP_lbcs_RAP,RRFS_CONUS_25km,FV3_HRRR,RAP,RAP,2019052000,6,17,35,
+,ursa,long_fcst,RRFS_CONUScompact_25km,FV3_RAP,FV3GFS,FV3GFS,2023060112,108,50,,
+,ursa,MET_ensemble_verification_only_vx_time_lag,RRFS_CONUS_3km,*none*,*none*,*none*,2021050500,6,3,30,
 ,,aqm_grid_AQM_NA13km_suite_GFS_v16,AQM_NA_13km,FV3_GFS_v16,FV3GFS,FV3GFS,2023021700 2023021706,6,,,This is an air-quality model test that requires special compilation to run; not supported in this release
 ,,grid_RRFS_NA_3km_ics_FV3GFS_lbcs_FV3GFS_suite_RRFS_v1beta,RRFS_NA_3km,FV3_RRFS_v1beta,FV3GFS,FV3GFS,2019070100,3,,,The RRFS_NA_3km domain currently has segfault problems--this test is not run
 ,,subhourly_post,RRFS_CONUScompact_25km,FV3_RRFS_v1beta,HRRR,RAP,2020081000,3,,,Subhourly post tasks are currently broken--these tests are not run

@@ -147,7 +147,7 @@ where ``HHH`` corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
+Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/BuildingRunningTesting/InputsOutputs.html#output-files>`__.
 
 .. COMMENT: Add crosslink in UPP docs; add ref here. 
 
@@ -172,7 +172,7 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
    * :doc:`3D Native Hybrid Level Fields <../../tables/SRW_NATLEV_table>`
    * :doc:`3D Pressure Level Fields <../../tables/SRW_PRSLEV_table>`
 
-Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
+Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/BuildingRunningTesting/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
 .. COMMENT: Add crosslink to UPP docs; then update here. 
 
