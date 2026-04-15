@@ -25,6 +25,7 @@ end
 load("ufs-pyenv")
 load("conda")
 setenv("SRW_ENV", "srw_app")
+setenv("LD_PRELOAD", "/apps/gnu/gcc-13.2.0/lib64/libstdc++.so.6")
 
 -- Declare Intel library variable for Azure
 if os.getenv("PW_CSP") == "azure" then
