@@ -1737,8 +1737,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                 raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
             if fire_conf["OMP_NUM_THREADS_FIRE"] < 1:
                 raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
-            if fire_conf["FIRE_NUM_TASKS"] > 1:
-                raise ValueError("FIRE_NUM_TASKS > 1 not yet supported")
 
             if fire_conf["FIRE_NUM_IGNITIONS"] > 5:
                 raise ValueError("Only 5 or fewer fire ignitions supported")
