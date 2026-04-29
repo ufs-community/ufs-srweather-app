@@ -31,7 +31,7 @@ else if ( "$L_MACHINE" == linux ) then
 
    module purge
 
-else if ( "$L_MACHINE" == singularity ) then
+else if ( "$L_MACHINE" == container ) then
    set ENV="/usr/share/lmod/lmod/init/csh"
    source $ENV
 

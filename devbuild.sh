@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # usage instructions
 usage () {
 cat << EOF_USAGE
@@ -19,6 +18,8 @@ OPTIONS
         ATM    (default) Atmosphere only
         ATMAQ  Online-CMAQ (air quality)
         ATMF   UFS_FIRE (coupled Community Fire Behavior Model)
+  -v, --verbose
+      build with verbose output
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
   --enable-options="OPTION1,OPTION2,..."
@@ -52,8 +53,6 @@ OPTIONS
       number of build jobs; defaults to 4
   --use-sub-modules
       Use sub-component modules instead of top-level level SRW modules
-  -v, --verbose
-      build with verbose output
 
 TARGETS
    default = builds the default list of components for the specified application
@@ -98,53 +97,94 @@ EOF_SETTINGS
 
 # env. variables saved into singularity container environment file ufs-srw.env
 env_vars () {
-  local vars_file="$1"
 
-cat >"${vars_file}" <<EOF_ENV
+cat >"${SRW_ENV}" <<EOF_ENV
 PATH=${SRW_DIR}/${BIN_DIR}:${PATH}
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
-CPATH=${CPATH}
+HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH:-}
+HDF5_USE_FILE_LOCKING=FALSE
+ESMFMKFILE=${ESMFMKFILE:-}
+CRTM_FIX=${CRTM_FIX:-}
+
 EOF_ENV
 }
 
 # Singularity gnu containers: make a wrapper script template for the UFS SRW binaries 
 srw_binary_wrapper() {
-  local wrapper="$1"
-  local bind_dir=${BIND_DIR:-/home}
-  if [[ -n "${BIND_ADD:-}" ]]; then
-     local bind_add="-B ${BIND_ADD}"
+  local img=""
+  local bind_add=""
+  local container=""
+  if [[ -n "${APPTAINER_CONTAINER:-}" ]]; then
+     container=APPTAINER
+     img="${APPTAINER_CONTAINER}"
+     bind_dirs=${APPTAINER_BIND:-}
+  elif [[ -n "${SINGULARITY_CONTAINER:-}" ]]; then
+     container=SINGULARITY
+     img="${SINGULARITY_CONTAINER}"
+     bind_dirs=${SINGULARITY_BIND:-}
+  else
+     printf "ERROR: PLATFORM = container is defined\n" >&2
+     printf "  but no expected container environment variables found \n" >&2
+     exit 65
   fi
-  local srw_env=${SRW_ENV:-}
-  local img_sif=${IMG:-/full/path/to/container/image.sif}
-cat >"${wrapper}" <<EOF_WRAP
+  printf "container = $container \n" >&2
+  local containerbin=${container,,}
+  if [[ -n "${bind_dirs:-}" ]]; then
+    IFS=',' read -r -a add_dirs <<< "${bind_dirs}}"
+    for add_dir in "${add_dirs[@]}"; do
+      bind_add="${bind_add} -B ${add_dir}"
+    done
+  else
+    bind_add="-B $(echo "${SRW_DIR}" | cut -d'/' -f1-2)"  # local filesystem to bind-mount into the container
+  fi
+
+# write a wrapper file 
+cat >"${SRW_WRAP}" <<EOF_WRAP
 #!/bin/bash
 set -x
 
-export SINGULARITYENV_FI_PROVIDER=tcp
-export SINGULARITY_SHELL=/bin/bash
+export ${container}_FI_PROVIDER=tcp
+export ${container}_SHELL=/bin/bash
 
-img=${img_sif}
+img=${img}
 cmd=\$(basename "\$0")
 arg="\$@"
 
-export SINGULARITYENV_PMIX_MCA_gds=hash
-export SINGULARITYENV_OMPI_MCA_btl="^openib"
-
-if ip link show eth0 &>/dev/null; then
-    export SINGULARITYENV_OMPI_MCA_btl_tcp_if_include=eth0
-fi
-
-export SINGULARITYENV_OMPI_MCA_pml=ob1
-export SINGULARITYENV_OMPI_MCA_btl_vader_single_copy_mechanism=none
-export SINGULARITYENV_OMPI_MCA_mca_base_component_show_load_errors=0
-
-SINGULARITY=\$(which singularity)
-
-"\${SINGULARITY}" exec --env-file ${srw_env} \
--B ${bind_dir} ${bind_add:-} \${img} \$cmd \$arg
 EOF_WRAP
 
-    chmod +x "${wrapper}"
+# Add compiler-specific variables
+if [[ ${COMPILER} == intel ]]; then
+    cat >>"${SRW_WRAP}" <<EOF_WRAP
+export ${container}ENV_FI_PROVIDER_PATH=${FI_PROVIDER_PATH}    
+EOF_WRAP
+elif [[ ${COMPILER} == gnu ]]; then
+    cat >>"${SRW_WRAP}" <<EOF_WRAP
+export ${container}ENV_PMIX_MCA_gds=hash
+export ${container}ENV_PMIX_MCA_psec=native
+export ${container}ENV_OMPI_MCA_btl="^openib"
+
+if ip link show eth0 &>/dev/null; then
+    export ${container}ENV_OMPI_MCA_btl_tcp_if_include=eth0
+    export ${container}ENV_OMPI_MCA_oob_tcp_if_include=eth0
+fi
+
+export ${container}ENV_OMPI_MCA_pml=ob1
+export ${container}ENV_OMPI_MCA_btl_vader_single_copy_mechanism=none
+export ${container}ENV_OMPI_MCA_btl_sm_single_copy_mechanism=none
+export ${container}ENV_OMPI_MCA_mca_base_component_show_load_errors=0
+EOF_WRAP
+fi
+
+# Complete writing into a wrapper file
+cat >>"${SRW_WRAP}" <<EOF_WRAP
+
+CONTAINERBIN=\$(which ${containerbin})
+
+"\${CONTAINERBIN}" exec --env-file ${SRW_ENV} \
+${bind_add:-} \${img} \$cmd 
+EOF_WRAP
+
+    chmod +x "${SRW_WRAP}"
 }
 
 # print usage error and exit
@@ -258,6 +298,7 @@ if [ -z $PLATFORM ] ; then
 fi
 # set PLATFORM (MACHINE)
 MACHINE="${PLATFORM}"
+
 printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 
 
@@ -286,7 +327,7 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
     time mamba env create -n srw_app --file environment.yml
-    if [ "${PLATFORM}" = "singularity"  ] ; then
+    if [ "${PLATFORM}" == "container"  ] ; then
        conda activate srw_app
        conda install -y -c conda-forge netcdf4
        conda deactivate
@@ -311,7 +352,6 @@ fi
 
 # Conda environment should have linux utilities to perform these tasks on macos.
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR="${BUILD_DIR:-${SRW_DIR}/build}"
 INSTALL_DIR=${INSTALL_DIR:-$SRW_DIR}
 CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
@@ -346,7 +386,7 @@ if [ -z "${COMPILER}" ] ; then
     orion|hercules) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     derecho) COMPILER=intel ;;
-    macos|singularity) COMPILER=gnu ;;
+    macos|singularity|apptainer) COMPILER=gnu ;;
     odin|noaacloud) COMPILER=intel ;;
     *)
       COMPILER=intel
@@ -399,7 +439,7 @@ else
     while true; do
       if [[ $(ps -o stat= -p ${LCL_PID}) != *"+"* ]] ; then
         printf "ERROR: Build directory already exists\n" >&2
-        printf "  BUILD_DIR=${BUILD_DIR}\n\n" >&2
+        printf "  BUILD_DIR=${BUILD_DIR}\n" >&2
         usage >&2
         exit 64
       fi
@@ -419,7 +459,6 @@ else
     done
   fi
 fi
-
 # cmake settings
 CMAKE_SETTINGS="\
  -DBUILD_MACHINE=${MACHINE}\
@@ -463,7 +502,7 @@ printf "... Load MODULE_FILE and create BUILD directory ...\n"
 if [ $USE_SUB_MODULES = true ]; then
     #helper to try and load module
     function load_module() {
-
+        
         set +e
         #try most specialized modulefile first
         MODF="$1${PLATFORM}.${COMPILER}"
@@ -529,12 +568,11 @@ else
     if [[ "${PLATFORM}" == "macos" ]]; then
         export LDFLAGS+=" -L$MPI_ROOT/lib "
     fi
-    if [[ "${PLATFORM}" == "singularity" && "${COMPILER}" == "gnu" ]]; then
+    if [[ "${PLATFORM}" == "container" && "${COMPILER}" == "gnu" ]]; then
       export SRW_ENV="${SRW_DIR}/ufs-srw.env"
       export SRW_WRAP="${SRW_DIR}/srw.sh"
-      export BIND_DIR="$(echo "$SRW_DIR" | cut -d'/' -f1-2)"
-      env_vars ${SRW_ENV}
-      srw_binary_wrapper ${SRW_WRAP}
+      env_vars 
+      srw_binary_wrapper 
     fi
 fi
 module list
@@ -567,6 +605,28 @@ else
            mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
        fi
     fi
+fi
+
+if [[ "${PLATFORM}" = "container" && "${CLEAN}" == "false" && "${BUILD}" == "false" ]]; then
+   printf "Final step for PLATFORM=${PLATFORM} is to link executables to a wrapper script\n" >&2
+   if [ "{BIN_DIR}" == "exec" ]; then
+      printf '!!!WARNING!!! for PLATFORM=container binaries directory "${BIN_DIR}"\n '
+      printf ' needs to differ from "exec". Specify --bin-dir=bin if rerunning the devbuild.sh\n '
+      printf ' or link the executables to a wrapper script manually, and adjust the search\n '
+      printf ' path in $SRW_ENV file \n' >&2
+   else
+      [[ -d "${SRW_DIR}/exec" ]] && rm -rf "${SRW_DIR}/exec" 
+      mkdir ${SRW_DIR}/exec
+      cd ${SRW_DIR}/${BIN_DIR}
+      for file in *; do
+         echo $file
+         if [[ "$file" != "build_settings.yaml" ]]; then
+             ln -s ${SRW_WRAP} ${SRW_DIR}/exec/$file
+         else
+             cp -pv $file ${SRW_DIR}/exec/.
+         fi
+      done
+   fi
 fi
 
 # Copy config/python directories from component to main directory (EE2 compliance)
