@@ -24,14 +24,14 @@
            "longname",     "snow water mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
-# prognostic Grau water mixing ratio
+# prognostic graupel mixing ratio
  "TRACER", "atmos_mod", "graupel"
            "longname",     "graupel mixing ratio"
            "units",        "kg/kg"
        "profile_type", "fixed", "surface_value=1.e30" /
 # prognostic cloud water number concentration
  "TRACER", "atmos_mod", "water_nc"
-           "longname",     "cloud  liquid water  number concentration"
+           "longname",     "cloud liquid water number concentration"
            "units",        "/kg"
        "profile_type", "fixed", "surface_value=0.0" /
 # prognostic cloud ice number concentration
