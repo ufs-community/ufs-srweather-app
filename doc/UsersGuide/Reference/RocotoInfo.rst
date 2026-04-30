@@ -9,7 +9,7 @@ Rocoto is a Ruby program that communicates with the batch system on an
 :term:`HPC` system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
 system as the task dependencies allow and runs one instance of the workflow for a set of user-defined
 :term:`cycles <cycle>`. More information about Rocoto can be found on the 
-`Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+`Rocoto Wiki <https://github.com/NOAA-GSL/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
 which resides in the ``parm`` directory. When the ``generate_FV3LAM_wflow.py`` script is run, 
@@ -19,7 +19,7 @@ and task interdependencies. The generated XML file is then copied to the experim
 ``$EXPTDIR/FV3LAM_wflow.xml``.
 
 There are a number of Rocoto commands available to run and monitor the workflow; users can find more information in the
-complete `Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__.
+complete `Rocoto documentation <https://noaa-gsl.github.io/rocoto/>`__.
 Descriptions and examples of commonly used commands are discussed below.
 
 .. _RocotoRunCmd:
@@ -50,7 +50,7 @@ Users will need to include the absolute or relative path to these files when run
 It is important to note that the ``rocotorun`` process is iterative; the command must be executed
 many times before the entire workflow is completed, usually every 1-10 minutes. This command can be
 placed in the user’s :term:`crontab`, and cron will call it with a specified frequency. More information on
-this command can be found in the `Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__.
+this command can be found in the `Rocoto documentation <https://noaa-gsl.github.io/rocoto/>`__.
 
 The first time the ``rocotorun`` command is executed for a workflow, the files ``FV3LAM_wflow.db`` and
 ``FV3LAM_wflow_lock.db`` are created.  There is usually no need for the user to modify these files.
@@ -130,7 +130,7 @@ on the grid size and computational resources available), the output of the ``roc
 When the workflow runs to completion, all tasks will be marked as SUCCEEDED. The log file for each task
 is located in ``$EXPTDIR/log``. If any task fails, the corresponding log file can be checked for error
 messages. Optional arguments for the ``rocotostat`` command can be found in the 
-`Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__.
+`Rocoto documentation <https://noaa-gsl.github.io/rocoto/>`__.
 
 .. _rocotocheck:
 
