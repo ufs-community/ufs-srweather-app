@@ -6,8 +6,10 @@ a singularity/apptainer container
 whatis([===[Loads libraries needed for running the UFS SRW App in
 a singularity/apptainer container]===])
 
-
 load("conda")
+load("singularity")
+load("contrib")
+load("rocoto/1.3.7")
 
 if mode() == "load" then
    execute{cmd="conda activate srw_app", modeA={"load"}}

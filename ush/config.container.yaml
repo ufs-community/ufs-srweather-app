@@ -16,7 +16,7 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: gnu
-  BUILD_MOD_FN: wflow_singularity 
+  BUILD_MOD_FN: wflow_container 
 task_get_extrn_ics:
   envvars:
     EXTRN_MDL_NAME_ICS: FV3GFS

@@ -130,9 +130,9 @@ srw_binary_wrapper() {
   printf "container = $container \n" >&2
   local containerbin=${container,,}
   if [[ -n "${bind_dirs:-}" ]]; then
-    IFS=',' read -r -a add_dirs <<< "${bind_dirs}}"
+    IFS=',' read -r -a add_dirs <<< "${bind_dirs}"
     for add_dir in "${add_dirs[@]}"; do
-      bind_add="${bind_add} -B ${add_dir}"
+      bind_add="${bind_add} -B $add_dir"
     done
   else
     bind_add="-B $(echo "${SRW_DIR}" | cut -d'/' -f1-2)"  # local filesystem to bind-mount into the container
@@ -181,7 +181,7 @@ cat >>"${SRW_WRAP}" <<EOF_WRAP
 CONTAINERBIN=\$(which ${containerbin})
 
 "\${CONTAINERBIN}" exec --env-file ${SRW_ENV} \
-${bind_add:-} \${img} \$cmd 
+${bind_add:-} \$img \$cmd \$arg
 EOF_WRAP
 
     chmod +x "${SRW_WRAP}"
