@@ -200,7 +200,6 @@ case "${CCPP_PHYS_SUITE}" in
     varmap_file="GFSphys_var_map.txt"
     ;;
 #
-  "FV3_RRFS_v1beta" | \
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
