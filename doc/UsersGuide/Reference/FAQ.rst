@@ -376,3 +376,8 @@ Users should try reducing the number of MPI tasks allocated to the ``make_ics`` 
            ppn: 12
 
 If the issue persists, try increasing the grid size by a bit and reducing the tasks per node, ``ppn``, further.
+
+Can the UFS SRW App be built and run on non-Tier-1 platforms?
+=============================================================
+
+Yes, the UFS SRW App can be built and run on systems outside of the officially supported Tier-1 platforms; however, work on non-Tier-1 platforms is not currently supported and these environments are not part of the standard regression testing infrastructure. Community experience suggests that the SRW App can run on non-NOAA HPC systems and other computing environments by installing dependencies with spack-stack, adapting site or workflow configuration files, and adjusting module or compiler settings to match the local environment. Because configurations and system environments vary widely across non-Tier-1 platforms, users may need to perform additional troubleshooting or customization to successfully build and run the application.
