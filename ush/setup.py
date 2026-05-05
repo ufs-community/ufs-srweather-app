@@ -996,7 +996,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Warn if user has specified a large timestep inappropriately
     ccpp_physics_suite = workflow_config["CCPP_PHYS_SUITE"]
-    hires_ccpp_suites = ["FV3_RRFS_v1beta","FV3_WoFS_v0", "FV3_HRRR", "FV3_HRRR_gf", "RRFS_sas"]
+    hires_ccpp_suites = ["FV3_WoFS_v0", "FV3_HRRR", "FV3_HRRR_gf", "RRFS_sas"]
 
     # Gather the pre-defined grid parameters, if needed
     if (predef_grid := workflow_config["PREDEF_GRID_NAME"]) != "":
