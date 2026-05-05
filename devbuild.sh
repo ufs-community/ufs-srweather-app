@@ -568,7 +568,7 @@ else
     if [[ "${PLATFORM}" == "macos" ]]; then
         export LDFLAGS+=" -L$MPI_ROOT/lib "
     fi
-    if [[ "${PLATFORM}" == "container" && "${COMPILER}" == "gnu" ]]; then
+    if [[ "${PLATFORM}" == "container" ]]; then
       export SRW_ENV="${SRW_DIR}/ufs-srw.env"
       export SRW_WRAP="${SRW_DIR}/srw.sh"
       env_vars 
@@ -610,8 +610,8 @@ fi
 if [[ "${PLATFORM}" = "container" && "${CLEAN}" == "false" && "${BUILD}" == "false" ]]; then
    printf "Final step for PLATFORM=${PLATFORM} is to link executables to a wrapper script\n" >&2
    if [ "{BIN_DIR}" == "exec" ]; then
-      printf '!!!WARNING!!! for PLATFORM=container binaries directory "${BIN_DIR}"\n '
-      printf ' needs to differ from "exec". Specify --bin-dir=bin if rerunning the devbuild.sh\n '
+      printf 'PLATFORM=container: a directory name for binaries is  "${BIN_DIR}"\n '
+      printf ' needs to differ from "exec". Specify --bin-dir=bin when rerunning the devbuild.sh\n '
       printf ' or link the executables to a wrapper script manually, and adjust the search\n '
       printf ' path in $SRW_ENV file \n' >&2
    else
