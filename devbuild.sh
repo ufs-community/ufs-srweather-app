@@ -143,7 +143,7 @@ cat >"${SRW_WRAP}" <<EOF_WRAP
 #!/bin/bash
 set -x
 
-export ${container}_FI_PROVIDER=tcp
+export ${container}ENV_FI_PROVIDER=tcp
 export ${container}_SHELL=/bin/bash
 
 img=${img}
