@@ -1715,13 +1715,12 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                     ("UFS_FIRE == True but UFS SRW has not been built for fire coupling;",
                     "see users guide for details")
                 )
-            fire_input_file = Path(fire_conf_vars["FIRE_INPUT_DIR"], "geo_em.d01.nc")
-            if not Path(fire_input_file).is_file():
+            if not Path(fire_conf_vars["FIRE_GEO_EM_FILE"]).is_file():
                 raise FileNotFoundError(
                     dedent(
                         f"""
-                    The fire input file (geo_em.d01.nc) does not exist in the specified directory:
-                    {fire_conf["FIRE_INPUT_DIR"]}
+                    The specified fire input file does not exist:
+                    {fire_conf_vars["FIRE_GEO_EM_FILE"]}
                     Check that the specified path is correct, and the file exists and is readable
                     """
                     )

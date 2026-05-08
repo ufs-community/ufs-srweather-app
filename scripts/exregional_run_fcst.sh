@@ -831,7 +831,7 @@ if [ $(boolify "${UFS_FIRE}") = "TRUE" ]; then
 $settings"
   fi
   # Link fire input file
-  create_symlink_to_file ${FIRE_INPUT_DIR}/geo_em.d01.nc geo_em.d01.nc FALSE
+  create_symlink_to_file ${FIRE_GEO_EM_FILE} geo_em.d01.nc FALSE
 fi
 #
 #-----------------------------------------------------------------------
