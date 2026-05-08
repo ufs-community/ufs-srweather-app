@@ -12,10 +12,51 @@ pre-built software stack for the SRW App. This eliminates the need to compile
 large dependency software stacks on every machine, reduces setup time, and supports
 consistent workflows across different systems and cloud platforms.
 
-Two container options are provided:
+This section distinguishes the following container workflows:
 
-* **Intel-based container:** uses Intel compilers and MPI to build and Intel runtime environment to run.
-* **GNU-based container:** uses fully open-source GNU compilers and OpenMPI.
+* **Intel-based pre-built SRW runtime container workflow:** 
+  This workflow uses a container that includes a pre-built SRW App v3.0
+  executable and its runtime environment. The pre-built application is staged
+  from the container and then used to run the community test case.
+
+* **Containerized software-stack workflow for building and running the SRW App:** 
+  This workflow uses a container that provides the software stack needed to
+  build and run the UFS SRW App from source. The first step depends on the
+  container option being used. Users may use a staged GNU-based or Intel-based
+  software-stack container available on Tier 1 NOAA RDHPC platforms, or they may
+  build a GNU-based or Intel-capable Singularity/Apptainer image from Docker
+  Hub on another supported system. After the container is available, the
+  remaining steps are the same for all of these options: clone the SRW App
+  source code, build the application using the containerized software stack, and
+  run the community test case.
+  
+.. note:: **Compilers and MPI in the containers**
+
+   * **GNU-based containers**, whether staged locally or built from Docker Hub,
+     include the open-source GNU Compiler suite 13.3.1 and Open MPI 4.1.6
+     or 5.0.7. These containers can be used to build the SRW App from source
+     after cloning the application repository.
+
+   * **Intel-based pre-staged containers** on Tier 1 NOAA RDHPC platforms
+     include Intel oneAPI compilers and MPI. Similar Intel software 
+     components are available on the host systems. Use the containerized 
+     compilers and MPI to build the SRW App when using the software-stack workflow.
+
+   * **Intel-capable Docker Hub workflows** require additional steps. The final
+     Docker Hub image does not include Intel oneAPI software because those
+     components were removed to comply with Intel's End User License Agreement
+     (EULA). A workaround is provided to reinstall the Intel oneAPI compilers
+     and Intel MPI into a writable sandbox container, then assemble or convert
+     the sandbox into a final container image with all required dependencies in
+     place.
+
+
+The staged software-stack and GNU Docker Hub workflows are different from the
+Intel-based pre-built SRW runtime workflow. In those workflows, the container
+provides the software stack required to build the SRW App, while the SRW App
+source code and executables are built by the user. In the Intel-based pre-built
+runtime workflow, the container already provides the SRW App v3.0 executable
+and runtime environment.
 
 Additional differences between the containers are that the Intel-based image includes pre-built SRW App binaries. 
 When using the GNU-based container, users download UFS SRW App (develop branch) from GitHub and build it interactively by 
@@ -24,11 +65,12 @@ shelling into the container.
 This guide demonstrates how to:
 
 * Build a Singularity/Apptainer image containing a software stack
-* Use the resulting container image to build the UFS SRW Application (for GNU-based container) or stage the containerized pre-built UFS SRW App on a host system (Intel-based container) 
+* Use the resulting container image to build the UFS SRW Application or stage the
+  containerized pre-built UFS SRW App on a host system (Intel-based pre-built SRW App container) 
 * Use the container to run the provided “out-of-the-box” community test case.
 
 Both workflows rely on `Singularity/Apptainer <https://apptainer.org/docs/user/1.2/introduction.html>`__ 
-to transform a DockerHub-based container into a Singularity/Apptainer 
+to transform a Docker Hub-based container into a Singularity/Apptainer 
 image or a writable container sandbox. The SRW Application is executed only through this Singularity/Apptainer image (or sandbox)
 suitable for HPC systems or compute environments where users do not have root privileges, required for running Docker.
 
@@ -64,7 +106,8 @@ Users must have **Singularity** or **Apptainer** installed on their compute plat
 Apptainer is fully compatible with Singularity, and commands shown here using ``singularity`` may be 
 replaced with ``apptainer`` as appropriate.
 
-On many HPC systems, Singularity/Apptainer may be available as a loadable module:
+On many HPC systems, Singularity/Apptainer may be available as a loadable
+module:
 
 .. code-block:: console
 
@@ -72,18 +115,23 @@ On many HPC systems, Singularity/Apptainer may be available as a loadable module
    # or
    module load apptainer
 
-When not available system-wide, Apptainer could be installed on the Linux-based system following `Apptainer Installation Guide <https://apptainer.org/docs/admin/1.2/installation.html>`__. This will include the installation of all dependencies. 
+When not available system-wide, Apptainer could be installed on Linux-based
+system following `Apptainer Installation Guide
+<https://apptainer.org/docs/admin/1.2/installation.html>`__. 
+This will include the installation of all dependencies. 
 
 Compiler and MPI Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Although containers provide a complete SRW software stack, MPI-based execution still
-depends on the compilers and MPI implementation available through the host system.
+Although containers may provide a complete SRW software stack or software libraries
+to build the SRW App, runtime execution still depends on compilers and/or
+binary-compatible MPI implementation on the host system.
 
 * The **Intel-based container** requires Intel compilers and Intel MPI (or the
   Intel oneAPI toolkit).
-* The **GNU-based container** requires GNU compilers (GCC 12+ recommended) and an
-  MPI library compatible with OpenMPI (e.g., system OpenMPI or Cray-MPICH).
+* The **GNU-based container** may need GNU compilers (GCC 12+ recommended), an
+  binary-level-compatible version of MPI library, or MPI initialization tool 
+  (e.g., host system OpenMPI or Slurm-based PMI/PMIx plugin).
 
 Users must choose a container consistent with the host environment's compiler and
 MPI availability.
@@ -654,7 +702,7 @@ Edit the ``config.yaml`` to configure following:
 
  
 Generate Workflow
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 Load the modulefile **wflow_singularity** containing host system compiler and MPI modules, which starts
 the conda environment (srw_app) for running the workflow:
