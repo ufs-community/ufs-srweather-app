@@ -125,17 +125,17 @@ We tested several combinations of parallelization methods using a 15-hour one-wa
       - MPI 2
       - MPI 4
     * - OpenMP 1
-      - 2820.200802
-      - 1577.748477
-      - 1343.323408
+      - 2820.20
+      - 1577.75
+      - 1343.32
     * - OpenMP 2
-      - 2168.499091
-      - 1372.190139
-      - 1334.157103
+      - 2168.50
+      - 1372.19
+      - 1334.16
     * - OpenMP 4
-      - 1867.509120
-      - 1373.244105
-      - 1340.811422
+      - 1867.51
+      - 1373.24
+      - 1340.81
 
 Additional boundary conditions file
 -----------------------------------
