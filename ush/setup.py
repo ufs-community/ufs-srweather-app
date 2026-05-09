@@ -61,6 +61,7 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
                    invalid sections/keys or (3) it does not contain mandatory information or (4)
                    an invalid datetime format is used.
     """
+    logger = logging.getLogger(__name__)
 
     ushdir = Path(ushdir)
 
@@ -114,6 +115,17 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     # Load the rocoto workflow default file
     default_workflow = ushdir.parent / "parm" / "wflow" / "default_workflow.yaml"
     workflow_config = get_yaml_config(default_workflow)
+
+    # Check user config for envvars not placed in the envvars section
+    errmsg=''
+    for section in user_config:
+        if envvars:=default_config[section].get("envvars"):
+            for k,v in envvars.items():
+                if k in user_config[section]:
+                    errmsg+=f"\n{section}:{k} should be {section}:envvars:{k}"
+    if errmsg:
+        logger.critical("Found invalid variable(s) in user config:")
+        raise ValueError(errmsg)
 
     # Update default config with other loaded config file. Order matters.
     for cfg in (
