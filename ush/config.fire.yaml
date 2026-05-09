@@ -52,7 +52,7 @@ fire:
     UFS_FIRE: True
   # Uncomment to override the input directory location. An example netCDF for this configuration is
   # staged on Tier 1 platform and set in the platform-specific YAML files.
-#    FIRE_INPUT_DIR: /path/to/directory/containing/geo_em.d01.nc
+#    FIRE_GEO_EM_FILE: /path/to/geo_em.d01.nc
   FIRE_NUM_TASKS: 1
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300

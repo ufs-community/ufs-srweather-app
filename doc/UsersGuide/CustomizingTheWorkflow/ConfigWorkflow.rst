@@ -2130,6 +2130,9 @@ Non-default parameters for the Community Fire Behavior Model (CFBM) in SRW are s
 ``FIRE_INPUT_DIR``: (Default: "")
    Directory where fire input file (geo_em.d01.nc) can be found
 
+``FIRE_GEO_EM_FILE``: (default: '{{ [fire.envvars.FIRE_INPUT_DIR, "geo_em.d01.nc"]|path_join}}')
+   Full path to fire input geo_em netCDF file
+
 ``DT_FIRE``: (Default: 0.5)
    The fire behavior component’s integration timestep in seconds
 

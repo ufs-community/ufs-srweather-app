@@ -39,8 +39,8 @@ task_plot_allvars:
 fire:
   envvars:
     UFS_FIRE: True
-    FIRE_INPUT_DIR: '{{ platform.WE2E_TEST_DATA }}/UFS_FIRE/{{ workflow.DATE_FIRST_CYCL }}'
-  FIRE_NUM_TASKS: 1
+    FIRE_GEO_EM_FILE: '{{ platform.WE2E_TEST_DATA }}/UFS_FIRE/{{ workflow.DATE_FIRST_CYCL }}/geo_em.d01.nc'
+  FIRE_NUM_TASKS: 2
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 600
   FIRE_NUM_IGNITIONS: 2

@@ -3102,6 +3102,9 @@ fire:
   # FIRE_INPUT_DIR
   # Directory where fire input file (geo_em.d01.nc) can be found
   #
+  # FIRE_GEO_EM_FILE
+  # Full path to fire input geo_em netCDF file
+  #
   # DT_FIRE
   # The fire behavior component’s integration timestep
   #
