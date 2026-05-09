@@ -4,7 +4,7 @@
 Read in the configuration YAMLs and prepare a self-consistent
 experiment configuration file.
 """
-# pylint: disable=too-many-lines, too-many-branches, logging-fstring-interpolation
+# pylint: disable=too-many-lines, too-many-branches, logging-fstring-interpolation, too-many-statements
 
 import base64
 import datetime
@@ -61,8 +61,6 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
                    invalid sections/keys or (3) it does not contain mandatory information or (4)
                    an invalid datetime format is used.
     """
-    logger = logging.getLogger(__name__)
-
     ushdir = Path(ushdir)
 
     # Load the default and user configs.
