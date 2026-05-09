@@ -124,8 +124,7 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
                 if k in user_config[section]:
                     errmsg+=f"\n{section}:{k} should be {section}:envvars:{k}"
     if errmsg:
-        logger.critical("Found invalid variable(s) in user config:")
-        raise ValueError(errmsg)
+        raise ValueError("Found invalid variable(s) in user config:" + errmsg)
 
     # Update default config with other loaded config file. Order matters.
     for cfg in (
