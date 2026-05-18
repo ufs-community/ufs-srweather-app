@@ -15,17 +15,17 @@ consistent workflows across different systems and cloud platforms.
 This section distinguishes the following container workflows:
 
 * **Intel-based pre-built SRW runtime container workflow:** 
-  This workflow uses a container that includes a pre-built SRW App v3.0
+  this workflow uses a container that includes a pre-built SRW App v3.0
   executable and its runtime environment. The pre-built application is staged
   from the container and then used to run the community test case.
 
 * **Containerized software-stack workflow for building and running the SRW App:** 
-  This workflow uses a container that provides the software stack needed to
+  this workflow uses a container that provides the software stack needed to
   build and run the UFS SRW App from source. The first step depends on the
   container option being used. Users may use a staged GNU-based or Intel-based
   software-stack container available on Tier 1 NOAA RDHPC platforms, or they may
   build a GNU-based or Intel-capable Singularity/Apptainer image from Docker
-  Hub on another supported system. After the container is available, the
+  Hub on non-supported systems. After the container is available, the
   remaining steps are the same for all of these options: clone the SRW App
   source code, build the application using the containerized software stack, and
   run the community test case.
@@ -129,7 +129,7 @@ binary-compatible MPI implementation on the host system.
 
 * The **Intel-based container** requires Intel compilers and Intel MPI (or the
   Intel oneAPI toolkit).
-* The **GNU-based container** may need GNU compilers (GCC 12+ recommended), an
+* The **GNU-based container** may need GNU compilers (GCC 12+ recommended), a
   binary-level-compatible version of MPI library, or MPI initialization tool 
   (e.g., host system OpenMPI or Slurm-based PMI/PMIx plugin).
 
