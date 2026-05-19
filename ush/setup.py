@@ -117,6 +117,9 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     # Check user config for envvars not placed in the envvars section
     errmsg=''
     for section in user_config:
+        # "rocoto:" section needs special treatment since it isn't in defaults
+        if section=="rocoto":
+            continue
         if envvars:=default_config[section].get("envvars"):
             for k,v in envvars.items():
                 if k in user_config[section]:
