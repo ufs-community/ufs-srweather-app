@@ -32,15 +32,14 @@ This section distinguishes the following container workflows:
   
 .. note:: **Compilers and MPI in the containers**
 
-   * **GNU-based containers**, whether staged locally or built from Docker Hub,
-     include the open-source GNU Compiler suite 13.3.1 and Open MPI 4.1.6
-     or 5.0.7. These containers can be used to build the SRW App from source
-     after cloning the application repository.
-
    * **Intel-based pre-staged containers** on Tier 1 NOAA RDHPC platforms
      include Intel oneAPI compilers and MPI. Similar Intel software 
      components are available on the host systems. Use the containerized 
      compilers and MPI to build the SRW App when using the software-stack workflow.
+
+   * **GNU-based containers**, whether staged locally or built from Docker Hub,
+     include the open-source GNU Compiler Open MPI. These containers can be used
+     to build the SRW App from source after cloning the application repository.
 
    * **Intel-capable Docker Hub workflows** require additional steps. The final
      Docker Hub image does not include Intel oneAPI software because those
@@ -50,29 +49,40 @@ This section distinguishes the following container workflows:
      the sandbox into a final container image with all required dependencies in
      place.
 
+   (more details in :ref:`Compiler and MPI Requirements <CompilerMPIReqC>`)
+   
 
-The staged software-stack and GNU Docker Hub workflows are different from the
-Intel-based pre-built SRW runtime workflow. In those workflows, the container
-provides the software stack required to build the SRW App, while the SRW App
-source code and executables are built by the user. In the Intel-based pre-built
-runtime workflow, the container already provides the SRW App v3.0 executable
-and runtime environment.
+This guide covers two container-based approaches for using the SRW App. 
 
-Additional differences between the containers are that the Intel-based image includes pre-built SRW App binaries. 
-When using the GNU-based container, users download UFS SRW App (develop branch) from GitHub and build it interactively by 
-shelling into the container.
+In the Intel-based pre-built runtime workflow, the container already provides
+the SRW App v3.0 executable and runtime environment. Users stage the container
+and run the provided out-of-the-box community test case without building the SRW
+App from source
+(:ref:`Intel-Based Container Workflow with a Pre-build SRW App
+<DownloadContainerIntelC>`).
+
+In the software-stack workflow, the container provides the compiler, MPI library,
+and pre-built spack-stack libraries required to build the SRW App. Users clone
+the SRW App source code, build the application inside the container, and run the
+generated workflow from the host system
+(:ref:`Containerized Software-Stack Workflow for Building from Source
+<ContainerSoftwareStackWorkflowC>`).
 
 This guide demonstrates how to:
 
-* Build a Singularity/Apptainer image containing a software stack
-* Use the resulting container image to build the UFS SRW Application or stage the
-  containerized pre-built UFS SRW App on a host system (Intel-based pre-built SRW App container) 
-* Use the container to run the provided “out-of-the-box” community test case.
+* Build or obtain a Singularity/Apptainer images that contains the required
+  software stack;
+* Stage the Intel-based pre-built SRW App container on a host system, or:
+* Build the UFS SRW Application from source inside the container;
+* Run the provided out-of-the-box community test case.
 
-Both workflows rely on `Singularity/Apptainer <https://apptainer.org/docs/user/1.2/introduction.html>`__ 
+Both workflows rely on `Singularity/Apptainer
+<https://apptainer.org/docs/user/1.2/introduction.html>`_ 
 to transform a Docker Hub-based container into a Singularity/Apptainer 
-image or a writable container sandbox. The SRW Application is executed only through this Singularity/Apptainer image (or sandbox)
-suitable for HPC systems or compute environments where users do not have root privileges, required for running Docker.
+image or a writable container sandbox. The SRW Application is executed only through
+this Singularity/Apptainer image or sandbox suitable for HPC systems or shared compute
+environments where users do not have root privileges, required for running Docker
+(another popular container solution).
 
 The basic "out-of-the-box" case described in this User's Guide builds a weather forecast for 
 June 15-16, 2019. Multiple convective weather events during these two days produced over 200 
@@ -87,24 +97,20 @@ and :term:`FV3`-based GFS raw external model data for initialization.
    For a non-container Quick Start Guide, see :numref:`Section %s <NCQuickstart>`.
    For detailed build instructions without containers, see :numref:`Section %s <BuildSRW>`.
 
+.. _PrerequsitesC:
+
 -------------------
 Prerequisites 
 -------------------
 
 The following prerequisites apply to **all** container workflows.
 
+.. _ContainerSoftrareInstallC:
 
 Singularity/Apptainer Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Users must have **Singularity** or **Apptainer** installed on their compute platform. 
-
-.. note::
-
-   As of November 2021, the Linux-supported version of Singularity has been `renamed <https://apptainer.org/news/community-announcement-20211130/>`__ to *Apptainer*. Apptainer has maintained compatibility with Singularity, so ``singularity`` commands should work with either Singularity or Apptainer (see compatibility details `here <https://apptainer.org/docs/user/1.2/singularity_compatibility.html>`__.)
-
-Apptainer is fully compatible with Singularity, and commands shown here using ``singularity`` may be 
-replaced with ``apptainer`` as appropriate.
 
 On many HPC systems, Singularity/Apptainer may be available as a loadable
 module:
@@ -117,29 +123,121 @@ module:
 
 When not available system-wide, Apptainer could be installed on Linux-based
 system following `Apptainer Installation Guide
-<https://apptainer.org/docs/admin/1.2/installation.html>`__. 
+<https://apptainer.org/docs/admin/latest/installation.html>`__. 
 This will include the installation of all dependencies. 
+
+Further information on Singularity/Apptainer is available at:
+
+- Singularity/Apptainer container solution for HPC systems:
+  `https://en.wikipedia.org/wiki/Apptainer#History
+  <https://en.wikipedia.org/wiki/Apptainer#History>`_
+
+- SingularityCE:
+  `https://sylabs.io/singularity/ <https://sylabs.io/singularity/>`_
+- SingularityCE Documentation:
+  `https://docs.sylabs.io/ <https://docs.sylabs.io/>`_
+  `https://docs.sylabs.io/guides/latest/user-guide/ <https://docs.sylabs.io/guides/latest/user-guide/>`_
+
+- Apptainer:
+  `https://apptainer.org/ <https://apptainer.org/>`_
+- Apptainer Documentation:
+  `https://apptainer.org/docs/ <https://apptainer.org/docs/>`_
+  `https://apptainer.org/docs/user/latest/ <https://apptainer.org/docs/user/latest/>`_
+
+- NOAA RDHPCs Documentation:
+  `https://docs.rdhpcs.noaa.gov/software/containers
+  <https://docs.rdhpcs.noaa.gov/software/containers>`_
+
+Apptainer is fully compatible with Singularity, and commands shown here using ``singularity``
+may be replaced with ``apptainer`` as appropriate.
+
+.. note::
+
+   In this chapter, ``<container-command>`` means either ``singularity`` or
+   ``apptainer``, depending on the software available on the target platform.
+   When using Apptainer, prefer the ``APPTAINER_`` environment-variable prefix
+   instead of the legacy ``SINGULARITY_`` prefix. Compatibility with
+   ``SINGULARITY_`` variables may vary by Apptainer version, site installation,
+   and local configuration.
+
+Some platforms provide Singularity/Apptainer by default. Others require a module
+load before building or running the container.
+
+.. list-table:: Container software used on NOAA RDHPC Tier 1 platforms
+   :widths: 25 25 30
+   :header-rows: 1
+
+   * - Machine
+     - Container command
+     - Module to load
+   * - Ursa
+     - ``apptainer``
+     - none required
+   * - Gaea
+     - ``apptainer``
+     - none required
+   * - Hercules/Orion
+     - ``singularity``
+     - ``module load singularity``
+   * - Derecho
+     - ``apptainer``
+     - ``module load apptainer``
+   * - NOAA Cloud AWS/Azure
+     - ``singularity``
+     - none required
+  
+.. _CompilerMPIReqC:
 
 Compiler and MPI Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Although containers may provide a complete SRW software stack or software libraries
-to build the SRW App, runtime execution still depends on compilers and/or
-binary-compatible MPI implementation on the host system.
+Although containers may provide a complete SRW software stack or the software
+libraries needed to build the SRW App, runtime execution still depends on
+compatible MPI support on the host system. In the Tier 1 platform
+examples,  Slurm launches MPI tasks the host system. The
+host-side MPI startup then communicates with the binary-compatible MPI library
+inside the container: Intel MPI for Intel-based containers, or OpenMPI built
+with PMI2 support for GNU-based containers . On unsupported systems,
+or when MPI jobs are launched with ``mpirun`` or ``mpiexec`` instead of
+``srun``, users may need to adapt the workflow and load host compilers and 
+corresponding MPI libraries that are binary-compatible with the containerized
+versions. 
 
-* The **Intel-based container** requires Intel compilers and Intel MPI (or the
-  Intel oneAPI toolkit).
-* The **GNU-based container** may need GNU compilers (GCC 12+ recommended), a
-  binary-level-compatible version of MPI library, or MPI initialization tool 
-  (e.g., host system OpenMPI or Slurm-based PMI/PMIx plugin).
+* The **Intel-based container** requires Intel compilers and Intel MPI through
+  the Intel OneAPI toolkit.
+    
+    * Intel-based image with a pre-built SRW App: includes Intel oneAPI
+      2023.2.1, with the C/C++/Fortran 2021.10.0 compilers and Intel MPI
+      2021.9.0.
 
-Users must choose a container consistent with the host environment's compiler and
+    * Intel-based software-stack image pre-staged on supported Tier 1
+      platforms: includes Intel oneAPI 2024.2.1, with C/C++ 2024.2.1,
+      Fortran 2021.13.1, and Intel MPI 2021.13.
+      
+    * Intel-capable container image: provides software libraries built with
+      Intel oneAPI 2024.2.1, similar to the pre-staged Intel-based software-stack
+      image. Because this image does not include the full Intel compiler and MPI
+      installation, users must reinstall the matching Intel oneAPI components in a
+      writable sandbox before building a final fully capable container image.
+        
+* The **GNU-based container** may require compatible GNU compilers and MPI
+   support on the host system. GCC 12 or newer is recommended. The container
+   image includes GNU Compiler Collection 13.3.1 and OpenMPI 4.1.6, configured
+   with PMI2 support from Slurm 24.05.4-1, and should be used with a
+   binary-compatible host MPI library or MPI startup mechanism, such as host
+   OpenMPI or a Slurm-based PMI/PMIx plugin. 
+
+Users must choose a container image consistent with the host environment's compiler and
 MPI availability.
 
 .. note::
 
-   Building a singularity container image/sandbox relies on user's temporary space (TMP); these requirements are much higher for 
-   Intel-based container. The example is given in :ref:`Appendix` on setting up TMP spaces for singularity to avoid exceeding default TMP space quotas.
+   Building a singularity/apptainer container image or sandbox relies on user's
+   temporary space (TMP); these requirements are much higher for Intel-based
+   containers. The example is given in :ref:`Appendix` on setting up TMP spaces
+   for container software to avoid exceeding default TMP space quotas.
+
+.. _DownloadStageDataC:
 
 ----------------------------------------
 Download and Stage Input Data
@@ -170,11 +268,11 @@ On **Level 2–4 Systems**, users must download and unpack the data manually:
 
 For more information about data organization, see :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App.
 
-.. _DownloadCodeC:
+.. _DownloadContainerIntelC:
 
-----------------------------------------
-Intel-Based Container Workflow
-----------------------------------------
+-------------------------------------------------------
+Intel-Based Container Workflow with a Pre-build SRW App
+-------------------------------------------------------
 
 The Intel-based workflow uses a pre-built container that includes the SRW App
 software stack built with Intel compilers and Intel MPI. This workflow is
@@ -188,24 +286,26 @@ Obtain or Build the Intel-Based Singularity Container
 
 **On Level 1 systems**, pre-built images exist at system-specific shared paths.
 
+.. |containers-note| replace:: :sup:`(*)`
+
 .. list-table:: Locations of pre-built containers
    :widths: 20 50
    :header-rows: 1
 
    * - Machine
      - File Location
-   * - Derecho [#fn]_
+   * - Derecho |containers-note|
      - /glade/work/epicufsrt/contrib/containers
-   * - Gaea-C6 [#fn]_
+   * - Gaea-C6 |containers-note|
      - /gpfs/f6/bil-fire8/world-shared/containers
    * - Ursa
      - /scratch3/NCEPDEV/nems/role.epic/containers
-   * - NOAA Cloud [#fn]_
+   * - NOAA Cloud |containers-note|
      - /contrib/EPIC/containers
    * - Orion/Hercules
      - /work/noaa/epic/role-epic/contrib/containers
 
-.. [#fn] On these systems, container testing shows inconsistent results. 
+|containers-note| On these systems, container testing shows inconsistent results. 
 
 .. note::
    * The NOAA Cloud containers are accessible only to those with EPIC resources. 
@@ -389,7 +489,6 @@ Generate the Workflow
 
    This section assumes that Rocoto is installed on the user's machine. If it is not, the user may need to allocate a compute node (described in the :ref:`Appendix <allocate-compute-node>`) and run the workflow using standalone scripts as described in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
-
 Generate workflow:
 
 .. code-block:: console
@@ -437,42 +536,201 @@ When all tasks show ``SUCCEEDED``, the experiment has completed successfully.
 
 For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for guidance on how to run the workflow without Rocoto. 
 
-----------------------------------------
-GNU-Based Container Workflow
-----------------------------------------
+.. _ContainerSoftwareStackWorkflowC:
 
-The GNU-based workflow uses a fully open-source toolchain (GCC + OpenMPI). This
-workflow is recommended for environments where open-source compilers are
-preferred or where Intel toolchains are not available.
+---------------------------------------------------------------
+Containerized Software-Stack Workflow for Building from Source
+---------------------------------------------------------------
+
+This workflow uses a container that provides compilers, MPI libraries, and
+pre-built spack-stack software libraries required to build and run the SRW App.
+Users download the SRW App source code, build it inside the container, and run
+the generated workflow from the host system through container wrapper scripts.
+
+The workflow supports the following container options:
+
+* a staged GNU-based or Intel oneAPI-based software-stack containers on supported
+  NOAA RDHPC Tier 1 platforms;
+* a GNU-based container image built from Docker Hub on systems where a staged
+  image is not available;
+* an Intel-capable container image prepared from Docker Hub, followed by a
+  local Intel oneAPI compiler and MPI reinstall step. This final option is
+  described as a placeholder below and must be completed for the target site.
+
+After the container image is available, the remaining workflow is the same for
+GNU and Intel containers: clone the SRW App, open an interactive shell inside
+the container, build the application, exit the container, configure the
+workflow, and run the community test case from the host system.
+
+.. _SelectSoftwareStackContainerC:
+
+Select or Build a Software-Stack Container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Option 1: Use a staged NOAA RDHPC Tier 1 container**
+
+On supported Tier 1 platforms, GNU-based and Intel oneAPI-based software-stack
+container images are available in shared locations, as shown in the table below.
+GNU-based container has typed of these containers include the compilers and corresponding MPI libraries, and the software stack.
 
 
-Build the GNU Container from Docker Hub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. list-table:: Locations of pre-built container images on supported systems
+   :widths: 20 50
+   :header-rows: 1
 
-Load Singularity or Apptainer module if needed:
+   * - Machine
+     - File Location
+   * - Ursa
+     - /scratch3/NCEPDEV/nems/role.epic/containers
+   * - Gaea-C6 
+     - /gpfs/f6/bil-fire8/world-shared/containers
+   * - Orion/Hercules
+     - /work/noaa/epic/role-epic/contrib/containers
+   * - Derecho [#fn1]_
+     - /glade/work/epicufsrt/contrib/containers
+   * - NOAA Cloud [#fn2]_
+     - /contrib/EPIC/containers
+
+
+.. [#fn1] Software-stack container support on Derecho is still a work in progress.
+.. [#fn2] NOAA Cloud containers are accessible only to users with EPIC resources through
+   the Parallel Works dashboard.
+
+Use one of the following approaches to define the ``IMG`` variable as the full
+path to the container image that will be used for the SRW App build and runtime
+workflow
 
 .. code-block:: console
 
-   module load singularity
+   # For GNU-based container image define:
+   export IMG=<full-container-path>/rocky9-gcc13-ss192-ompi416.sif
+   # for Intel-based container image define:
+   export IMG=<full-container-path>/rocky9-oneapi2024.2-ss192.sif
 
-Build a Singularity/Apptainer container image from the DockerHub image:
+Proceed to :ref:`downloading the SRW an submodules <DownloadSRWC>`.
+
+**Option 2: Build a GNU-based container from Docker Hub**
+
+If a staged GNU image is not available, build a Singularity/Apptainer image from
+Docker Hub. 
 
 .. code-block:: console
 
-   singularity build rocky9-ss192-gcc13.sif \
-        docker://noaaepic/rocky9-gcc13.3.1-spack-stack:v1.9.2-ufs-wm-srw
+   singularity build rocky9-gcc13-ss192-ompi416.sif \
+      docker://noaaepic/rocky9-gcc13.3.1-spack-stack:v1.9.2-ufs-env-ompi416
 
-The file *rocky9-ss192-gcc13.sif* built is in Singularity Image Format (*.sif*).
+   export IMG=${PWD}/rocky9-gcc13-ss192-ompi416.sif
 
-Set the environment variable for convenience and later use:
+If the build fails because of cache or temporary-space limits, you may need to clear
+the default temporary directories (e.g, *${HOME}/.singularity/cache* or
+*${HOME}/.apptainer/cache*) and proceed to allocate more temporary space as 
+outlined in :ref:`Appendix`.
 
-.. code-block:: console
+After the image is built, proceed to :ref:`downloading the SRW an submodules <DownloadSRWC>`.
 
-   export IMG=${PWD}/rocky9-ss192-gcc13.sif
+**Option 3: Prepare an Intel-capable container from Docker Hub**
+
+.. important::
+
+   This subsection is reserved for site-specific instructions.
+
+   Add instructions here for preparing a container with an Intel-compiled
+   software stack and reinstalling Intel oneAPI compilers and Intel MPI from
+   Intel's Docker Hub image. The final procedure should describe how to:
+
+   * build or obtain the Intel-capable base image;
+   * create a writable sandbox;
+   * reinstall the required Intel oneAPI compiler and MPI components;
+   * verify that the Intel compiler, Intel MPI, and spack-stack libraries are
+     available inside the sandbox;
+   * convert or assemble the sandbox into a usable Singularity/Apptainer image;
+   * define ``IMG`` as the full path to the resulting image or sandbox.
+
+The examples in the following steps use local names for images and sandboxes.
+In general, use the full path to each image or sandbox unless a specific step
+instructs otherwise.
+
+#. Pull a Singularity/Apptainer image from Docker Hub.
+
+   .. code-block:: console
+
+      singularity pull rocky9-oneapi2024.2-ss192_tmp.sif \
+         docker://noaaepic/rocky9-oneapi2024.2-spack-stack:v1.9.2-ufs-wm-env
+
+ 
+#. Create a writable sandbox. You may need to bind host directories into the
+   container. At a minimum, bind the top-level filesystem that contains your
+   current directory, ``/<top-level-dir>``, and any additional directories
+   required for container builds. These may include system-dependent temporary
+   build space, scratch space used as the default ``/tmp``, or ``/local``.
+   Each bind path must be listed with a preceding ``-B`` flag.
+
+   .. code-block:: console
+
+      singularity build -B /<top-level-dir> --sandbox --fix-perms rocky9-oneapi2024.2-ss192 \
+         rocky9-oneapi2024.2-ss192_tmp.sif
+
+#.  Copy the helper scripts out of the image or sandbox.
+
+   .. code-block:: console
+
+      singularity exec rocky9-oneapi2024.2-ss192_tmp.sif cp /opt/intel-sandbox.sh .
+      singularity exec rocky9-oneapi2024.2-ss192_tmp.sif cp /opt/compilers_cp.sh .
+
+   These scripts retrieve the Intel compiler and MPI components and reinstall
+   them for use with the software-stack sandbox.
+
+#. Create a sandbox with the original Intel oneAPI compilers by running the
+   ``intel-sandbox.sh`` script from the same directory that contains the
+   software-stack sandbox ``rocky9-oneapi2024.2-ss192``.
+
+   .. code-block:: console
+
+      ./intel-sandbox.sh
+
+   After this step, an additional ``intel-sandbox`` container will be available.
+
+#. Copy the required software and libraries from ``intel-sandbox`` to the
+   original software-stack sandbox by running the ``compilers_cp.sh`` script.
+   Include only the names of the source sandbox, ``intel-sandbox``, and target
+   sandbox, ``rocky9-oneapi2024.2-ss192``; do not provide their full paths.
+
+   .. code-block:: console
+
+      ./compilers_cp.sh intel-sandbox rocky9-oneapi2024.2-ss192
+
+   After this step, the software-stack sandbox contains the compilers, MPI, and
+   required software stack. The original temporary image,
+   ``rocky9-oneapi2024.2-ss192_tmp.sif``, and the Intel sandbox,
+   ``intel-sandbox``, can then be removed.
+
+   The assembled sandbox can be used for runs, but it is large compared to a
+   compressed image. For production runs, convert the sandbox into a SIF image,
+   as shown in the next step.
+
+#. Build a Singularity/Apptainer container image from the updated sandbox. Bind
+   host directories as needed.
+
+   .. code-block:: console
+
+      singularity build -B /<top-level-dir> --fix-perms rocky9-oneapi2024.2-ss192.sif \
+         rocky9-oneapi2024.2-ss192
+
+   After the image is built successfully, the sandbox can be removed. Finally, 
+   define the ``IMG`` variable for use in later steps.
+   
+   .. code-block:: console
+
+      export IMG=<full-container-path>/rocky9-oneapi2024.2-ss192.sif
+   
+Proceed with downloading, building, and running the SRW App.
+
+.. _DownloadSRWC:
 
 Download the UFS SRW App and Submodules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Clone the UFS SRW App develop branch from the GitHub repository as is done when  :ref:`Building the SRW App <BuildSRW>`.
+Clone the UFS SRW App develop branch from the GitHub repository as is done
+when  :ref:`Building the SRW App <BuildSRW>`.
 
 .. include:: ../../doc-snippets/clone.rst
 
@@ -488,80 +746,83 @@ Save the environment variable SRW for later use:
 
    export SRW=${PWD}
 
+.. _ShellInteractiveC:
 
-Enter the GNU Container with Platform-Specific Bindings 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Shell into the Software-Stack Container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Open an interactive shell inside the container before building the SRW App. Bind
+the top-level host filesystem that contains the SRW App checkout, the input
+data, and the intended experiment directories. If additional site filesystems
+are required, bind them with additional ``-B`` options.
 
-Shell into the existing Singularity container image in order to build the SRW App interactively. 
-Python/conda environment and UFS SRW App binaries will then be built while running inside the container. 
-Some platforms
-may require additional user host system directories to be specified with ``-B`` option (bind) 
-to make them available inside the container. This could be required, for example, 
-for **conda**-related configurations to be stored in a user home directory that resides on a different 
-file system from the current directory. Below are given examples on how to shell into the 
-container on some Level 1 Platforms.
-NOAA RDHPCs:
+.. code-block:: console
 
-* NOAA AWS/Azure:
+   <container-command> shell -B </top_dir> [-B </bind_add>] -e ${IMG}
 
-  .. code-block:: console
+.. list-table:: Typical bind directories on NOAA RDHPC Tier 1 platforms
+   :widths: 25 35 40
+   :header-rows: 1
 
-     singularity shell -B /contrib -e $IMG
+   * - Machine
+     - Main bind directory ``</top_dir>``
+     - Additional bind directory ``</bind_add>``
+   * - Derecho
+     - ``/glade``
+     - none
+   * - Ursa
+     - ``/scratch3``
+     - ``/scratch4``
+   * - Gaea-C6
+     - ``/gpfs``
+     - ``/ncrc/home2``
+   * - Hercules/Orion
+     - ``/work``
+     - ``/work2``; ``/local`` if required by the workflow
+   * - NOAA Cloud AWS/Azure
+     - ``/contrib``
+     - ``/lustre`` if attached to the cluster and used for testing
 
-* Hercules / Orion:
+Examples:
 
-  .. code-block:: console
+.. code-block:: console
 
-     singularity shell -B /work -B /local -e $IMG
+   # Ursa
+   apptainer shell -B /scratch3 -B /scratch4 -e ${IMG}
 
-* Ursa:
+   # Gaea-C6
+   apptainer shell -B /gpfs -B /ncrc/home2 -e ${IMG}
 
-  .. code-block:: console
+   # Hercules or Orion
+   singularity shell -B /work -B /work2 -B /local -e ${IMG}
 
-     singularity shell -B /scratch3 -e $IMG
+   # NOAA Cloud AWS or Azure
+   singularity shell -B /contrib -B /lustre -e ${IMG}
 
-* Gaea:
+After the shell starts, the prompt changes to ``Apptainer>`` or
+``Singularity>``.
 
-  .. code-block:: console
-
-     singularity shell -B /gpfs -B /ncrc/home2 -e $IMG
-
+.. _BuildSRWInsideContainerC:
 
 Build SRW Executables and Conda Environments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Inside the container, set environmental variables that help to generate consistent build and 
-run-time environment:
-
-Specify location of the Singularity image:
-
-.. code-block:: console
-
-   export IMG=/full/path/to/rocky9-ss192-gcc13.sif
-
-Optional platform-specific paths that require to be accessible by the container at runtime:
-
-.. code-block:: console
-
-   export BIND_ADD=/local   # Orion/Hercules, needed during run-time for interaction with Slurm job scheduler
-   export BIND_ADD=/var     # Gaea-C6
-
-Build executables using devbuild.sh script, in a similar way as described in  :ref:`Building Executables <BuildExecutables>`, 
+Inside the container, build executables using ``devbuild.sh`` script,
+in a similar way as described in  :ref:`Building Executables <BuildExecutables>`, 
 except placing binaries into the ``bin`` directory. 
-This is the essential difference, as the default ``exec`` directory where the SRW App expects to find binaries 
-will be set up to contain wrappers for the actual binaries.
+This is the essential difference, since the default ``exec`` directory
+where the SRW App expects to find binaries, 
+will be used to contain wrapper scripts for the actual binaries.
 
 .. code-block:: console
 
-   ./devbuild.sh --bin-dir=bin --platform=singularity --compiler=gnu \
-        | tee log.devbuild.sh_001
+   ./devbuild.sh --bin-dir=bin --platform=container --compiler=gnu \
+        | tee log.devbuild.001
 
 When all the conda environments and binaries are successfully built, exit from the container:
 
 .. code-block:: console
 
    exit
-
 
 Use Wrapper Scripts and Runtime Environment Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -576,141 +837,132 @@ Verify the following configuration in the ``srw.sh``:
 * ``img`` variable points to the correct ``.sif`` GNU container image file, absolute path
 * ``-B`` binds all host directories, required for access inside the container at runtime, including staged data locations
 
+Prepare the Workflow Module File
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Link Executables to Wrapper Scripts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The following code below is run interactively to create links to executables in ``exec`` directory to a wrapper script. 
-Make sure the $SRW variable is properly set, as done after downloading the UFS SRW App repository and dependencies. 
+Prepare a workflow module file in the ``./modulefiles`` directory. A sample
+container workflow module file, ``wflow_container.lua``, is provided and may be
+kept for reference.
 
-.. code-block:: console
+The examples below assume that standard platform names are used:
 
-   cd $SRW
-   export wrapper_script=${SRW}/srw.sh
+* ``ursa``
+* ``gaeac6``
+* ``orion``
+* ``hercules``
+* ``noaacloud``
 
-   mkdir -p exec
-   cd bin
-
-   for file in *; do
-       echo $file
-       if [[ "$file" != "build_settings.yaml" ]]; then
-           ln -s $wrapper_script ../exec/$file
-       else
-           cp -pv $file ../exec/.
-       fi
-   done
-
-
-Add Loading Host Modules to the Workflow Modulefile 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Host-system GNU module and corresponding MPI module need to be used and
-loaded to interact with GNU-built libraries and SRW App binaries. Users need to determine
-their availability on a host system, and add these modules to ``modulefiles/wflow_singularity.lua``
-modulefile. If Singularity/Apptainer software requires a module to be loaded, it needs to be added as well.
-The rocoto module can be added, if crontab option to launch job tasks is enabled.
-The examples below show added modules for running the test on selected Tier 1 platforms.
-
-For Orion and Hercules the loaded modules are as follows:
+On NOAA RDHPC Tier 1 systems, copy the workflow module file for the target
+platform to ``wflow_container.lua``:
 
 .. code-block:: console
 
-   load("gcc/12.2.0")
-   load("openmpi/4.1.4")
+   cd modulefiles
+   cp wflow_<platform>.lua wflow_container.lua
+
+For example:
+
+.. code-block:: console
+
+   cp wflow_ursa.lua wflow_container.lua
+
+Some platforms require loading a container runtime module before Singularity or
+Apptainer can be used. On those systems, add the appropriate module load command
+to the platform workflow module file. For example, on Hercules and Orion, add
+the following line to ``wflow_hercules.lua`` or ``wflow_orion.lua``:
+
+.. code-block:: lua
+
    load("singularity")
-   load("contrib")
-   load("rocoto/1.3.7")
-
-
-For AWS, Azure:
-
-.. code-block:: console
-
-   load("gnu/13.2.0")
-   load("openmpi/4.1.6")
-   load("rocoto/1.3.7")
-
-For Ursa:
-
-.. code-block:: console
-
-   load("gcc/12.4.0")
-   load("openmpi/4.1.6")
-   load("rocoto")
-
-For Gaea:
-
-.. code-block:: console
-   
-   load("gcc-native/13.2")
-   prepend_path("MODULEPATH","/ncrc/proj/epic/rocoto/modulefiles")
-   load("rocoto")
-
-Prepare Configuration Files 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-1. A machine configuration file ``singularity.yaml`` needs to be configured in ``$SRW/ush/machine`` directory. 
-It contains variables to set the system job scheduler, node count information, queue and partition names for use
-with batch job scheduler, locations of fix climatology files and model data input files, as well
-as workflow manager configuration.
-
-Depending on host system job scheduler and GNU and MPI modules that were added to ``wflow_singularity.lua``
-in the previous step, MPI jobs on user system are expected to be launched with either **mpirun** or **srun**.
-Edit the following variables to specify the MPI jobs launch command that fits your system: 
-``RUN_CMD_FCST``, ``RUN_CMD_POST``, ``RUN_CMD_UTILS``, ``RUN_CMD_PRDGEN``.
-The default launch command is set to **mpirun**; set it to **srun --mpi=pmi2** when using Slurm to 
-interact with container-installed MPI plugins for Slurm (PMI or PMI2). 
-For example, if the default variable is set:
-
-.. code-block:: console
-
- RUN_CMD_FCST: mpirun -n ${nprocs}
-
-change it to the following to use Slurm-based MPI job launch:
-
-.. code-block:: console
-
- RUN_CMD_FCST: srun --mpi=pmi2 -n ${nprocs}
 
 .. note::
-   
-   The Tier 1 Platforms that were tested and require use of ``srun --mpi=pmi2`` are **Gaea-C6**, 
-   **Hercules**, **Orion**. The Tier 1 systems **Ursa**, **NOAA-AWS** and **NOAA-Azure** allow the 
-   MPI job launch using both ``srun`` and  ``mpirun``.
 
-Additional edits to the ``singularity.yaml`` to configure for your system include:
-
-* ``WORKFLOW_MANAGER`` - workflow manager; rocoto (default), ``rocoto:`` section for job tasks
-* ``NCORES_PER_NODE`` - number of cores available per node on the platform
-* ``SCHED`` - job scheduler; slurm (default)
-* ``FIX*`` - paths to staged fix climatology datasets
-* ``data:`` section: staged external model input files
-* ``RUN_CMD_*`` variables, including MPI launch commands
+   The exact container runtime module may vary by platform. Use the module name
+   provided by the target system, such as ``singularity`` or ``apptainer``.
 
 
-2. Configuration file for the community test case, ``config.yaml`` is expected to be located in 
-``ush`` directory. Use a singularity GNU template for the community test case:
+.. _PrepareConfigurationFilesC:
+
+Prepare Configuration Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adapt the configuration files for the target platform and for the community
+test case.
+
+First, prepare the main SRW App configuration file:
 
 .. code-block:: console
 
-   cp ${SRW}/ush/config.singularity.yaml ${SRW}/ush/config.yaml
+   cd ../ush
+   cp config.container.yaml config.yaml
 
-Edit the ``config.yaml`` to configure following:
+Edit ``./ush/config.yaml`` and set the following variables as needed:
 
-* ``ACCOUNT`` - account for running jobs on your compute platform (if required)
-* ``EXPT_SUBDIR`` - experiment directory; a default is ``test_community``
-* ``USE_CRON_TO_RELAUNCH`` - set to **false** (default); may set to **true** if system allow use of cron/crontab to launch job tasks
+.. code-block:: yaml
 
- 
-Generate Workflow
-^^^^^^^^^^^^^^^^^
+   ACCOUNT: epic
+   COMPILER: gnu
+   USE_CRON_TO_RELAUNCH: false
+   EXPT_SUBDIR: test_community
 
-Load the modulefile **wflow_singularity** containing host system compiler and MPI modules, which starts
+Set ``ACCOUNT`` to the account or project name used on the target system. Set
+``COMPILER`` to the compiler used by the container software stack, such as
+``gnu`` or ``intel``. Set ``USE_CRON_TO_RELAUNCH`` to ``true`` only on systems
+where cron-based relaunching is allowed. Modify ``EXPT_SUBDIR`` if a different
+experiment directory name is desired.
+
+Next, prepare the machine file:
+
+.. code-block:: console
+
+   cd machines
+   cp <platform>.yaml container.yaml
+
+For example:
+
+.. code-block:: console
+
+   cp ursa.yaml container.yaml
+
+Edit ``./ush/machines/container.yaml`` for the container workflow. Modify
+``NCORES_PER_NODE`` if the default value does not match the target platform or
+the resources requested for the test.
+
+Set the run commands to use ``srun`` with the ``pmi2`` MPI interface:
+
+.. code-block:: yaml
+
+   RUN_CMD_FCST: srun --mpi=pmi2 -n $nprocs
+   RUN_CMD_POST: srun --mpi=pmi2 -n $nprocs
+   RUN_CMD_PRDGEN: srun --mpi=pmi2 -n $nprocs
+   RUN_CMD_UTILS: srun --mpi=pmi2 -n $nprocs
+
+Adapt ``SCHED_NATIVE_CMD`` for the target platform. On Gaea-C6, set:
+
+.. code-block:: yaml
+
+   SCHED_NATIVE_CMD: --clusters=c6
+
+For Hercules, Orion, Ursa, and NOAA Cloud, remove the ``SCHED_NATIVE_CMD`` line
+from ``container.yaml``.
+
+.. note::
+
+   AQM and NEXUS have not been tested with the container workflow.
+
+.. _GenerateWorkflowSoftwareStackC:
+
+Generate Workflow for Software-Stack Container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Load the modulefile **wflow_container** that load any host
+modulefiles if needed and starts
 the conda environment (srw_app) for running the workflow:
 
 .. code-block:: console
 
    module use $SRW/modulefiles
-   module load wflow_singularity
+   module load wflow_container
 
 Generate the workflow:
 
@@ -807,6 +1059,12 @@ Proceed with exporting the variables:
    export SINGULARITY_CACHEDIR=/absolute/path/to/writable/directory/cache
    export SINGULARITY_TMPDIR=/absolute/path/to/writable/directory/tmp
 
+When using Apptainer, use the ``APPTAINER_`` environment-variable prefix
+instead of the legacy ``SINGULARITY_`` prefix. Compatibility with
+``SINGULARITY_`` variables may vary by Apptainer version, site installation,
+and local configuration.
+
+
 .. _allocate-compute-node:
 
 Allocating a Compute Node 
@@ -827,7 +1085,8 @@ On **PBS** systems:
    qsub -I -lwalltime=<time> -A <account> \
         -q <destination> -lselect=1:ncpus=36:mpiprocs=36
 
-After allocation:
+After allocation you may or may not need to connect to the allocated host. Connect by
+``ssh`` if required:
 
 .. code-block:: console
 
