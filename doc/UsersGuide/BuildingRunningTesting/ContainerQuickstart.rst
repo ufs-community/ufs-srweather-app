@@ -554,8 +554,7 @@ The workflow supports the following container options:
 * a GNU-based container image built from Docker Hub on systems where a staged
   image is not available;
 * an Intel-capable container image prepared from Docker Hub, followed by a
-  local Intel oneAPI compiler and MPI reinstall step. This final option is
-  described as a placeholder below and must be completed for the target site.
+  local Intel oneAPI compiler and MPI reinstall step. 
 
 After the container image is available, the remaining workflow is the same for
 GNU and Intel containers: clone the SRW App, open an interactive shell inside
