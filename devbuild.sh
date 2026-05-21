@@ -623,7 +623,7 @@ if [[ "${PLATFORM}" = "container" && "${CLEAN}" == "false" && "${BUILD}" == "fal
          if [[ "$file" != "build_settings.yaml" ]]; then
              ln -s ${SRW_WRAP} ${SRW_DIR}/exec/$file
          else
-             cp -pv $file ${SRW_DIR}/exec/.
+             cp -v $file ${SRW_DIR}/exec/.
          fi
       done
    fi

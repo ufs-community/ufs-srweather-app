@@ -135,7 +135,7 @@ Further information on Singularity/Apptainer is available at:
 - SingularityCE:
   `https://sylabs.io/singularity/ <https://sylabs.io/singularity/>`_
 - SingularityCE Documentation:
-  `https://docs.sylabs.io/ <https://docs.sylabs.io/>`_
+  `https://https://sylabs.io/docs/ <https://sylabs.io/docs/>`_
   `https://docs.sylabs.io/guides/latest/user-guide/ <https://docs.sylabs.io/guides/latest/user-guide/>`_
 
 - Apptainer:
