@@ -197,7 +197,7 @@ compatible MPI support on the host system. In the Tier 1 platform
 examples,  Slurm launches MPI tasks the host system. The
 host-side MPI startup then communicates with the binary-compatible MPI library
 inside the container: Intel MPI for Intel-based containers, or OpenMPI built
-with PMI2 support for GNU-based containers . On unsupported systems,
+with PMI2 support for GNU-based containers. On unsupported systems,
 or when MPI jobs are launched with ``mpirun`` or ``mpiexec`` instead of
 ``srun``, users may need to adapt the workflow and load host compilers and 
 corresponding MPI libraries that are binary-compatible with the containerized
@@ -607,7 +607,7 @@ workflow
    # for Intel-based container image define:
    export IMG=<full-container-path>/rocky9-oneapi2024.2-ss192.sif
 
-Proceed to :ref:`downloading the SRW an submodules <DownloadSRWC>`.
+Proceed to :ref:`downloading the SRW and submodules <DownloadSRWC>`.
 
 **Option 2: Build a GNU-based container from Docker Hub**
 
@@ -626,56 +626,40 @@ the default temporary directories (e.g, *${HOME}/.singularity/cache* or
 *${HOME}/.apptainer/cache*) and proceed to allocate more temporary space as 
 outlined in :ref:`Appendix`.
 
-After the image is built, proceed to :ref:`downloading the SRW an submodules <DownloadSRWC>`.
+After the image is built, proceed to :ref:`downloading the SRW and submodules <DownloadSRWC>`.
 
 **Option 3: Prepare an Intel-capable container from Docker Hub**
 
-.. important::
-
-   This subsection is reserved for site-specific instructions.
-
-   Add instructions here for preparing a container with an Intel-compiled
-   software stack and reinstalling Intel oneAPI compilers and Intel MPI from
-   Intel's Docker Hub image. The final procedure should describe how to:
-
-   * build or obtain the Intel-capable base image;
-   * create a writable sandbox;
-   * reinstall the required Intel oneAPI compiler and MPI components;
-   * verify that the Intel compiler, Intel MPI, and spack-stack libraries are
-     available inside the sandbox;
-   * convert or assemble the sandbox into a usable Singularity/Apptainer image;
-   * define ``IMG`` as the full path to the resulting image or sandbox.
+This workflow starts from an Intel-capable software-stack image available on
+Docker Hub, creates a writable sandbox, reinstalls the required Intel oneAPI
+compiler and MPI components, and then converts the updated sandbox into a
+Singularity/Apptainer image.
 
 The examples in the following steps use local names for images and sandboxes.
 In general, use the full path to each image or sandbox unless a specific step
 instructs otherwise.
 
-#. Pull a Singularity/Apptainer image from Docker Hub.
-
-   .. code-block:: console
-
-      singularity pull rocky9-oneapi2024.2-ss192_tmp.sif \
-         docker://noaaepic/rocky9-oneapi2024.2-spack-stack:v1.9.2-ufs-wm-env
-
- 
-#. Create a writable sandbox. You may need to bind host directories into the
+#. Create a writable sandbox from the Docker Hub image.
+   Include bind-mounting host directories into the
    container. At a minimum, bind the top-level filesystem that contains your
-   current directory, ``/<top-level-dir>``, and any additional directories
+   current directory, ``</top_dir>``, and any additional directories, ``/bind_add``,
    required for container builds. These may include system-dependent temporary
    build space, scratch space used as the default ``/tmp``, or ``/local``.
-   Each bind path must be listed with a preceding ``-B`` flag.
+   Each bind path must be listed with a preceding ``-B`` flag. Typical bind
+   directories for supported NOAA RDHPC Tier 1 platforms are listed in 
+   :numref:`ContainerBindDirectoriesTable`.
 
    .. code-block:: console
 
-      singularity build -B /<top-level-dir> --sandbox --fix-perms rocky9-oneapi2024.2-ss192 \
-         rocky9-oneapi2024.2-ss192_tmp.sif
+      singularity build -B </top_dir> -B </bind_add> --sandbox --fix-perms rocky9-oneapi2024.2-ss192 \
+         docker://noaaepic/rocky9-oneapi2024.2-spack-stack:v1.9.2-ufs-wm-env
 
-#.  Copy the helper scripts out of the image or sandbox.
+#. Copy the helper scripts out of the sandbox.
 
    .. code-block:: console
 
-      singularity exec rocky9-oneapi2024.2-ss192_tmp.sif cp /opt/intel-sandbox.sh .
-      singularity exec rocky9-oneapi2024.2-ss192_tmp.sif cp /opt/compilers_cp.sh .
+      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/intel-sandbox.sh .
+      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/compilers_cp.sh .
 
    These scripts retrieve the Intel compiler and MPI components and reinstall
    them for use with the software-stack sandbox.
@@ -688,7 +672,7 @@ instructs otherwise.
 
       ./intel-sandbox.sh
 
-   After this step, an additional ``intel-sandbox`` container will be available.
+   After this step, an additional ``intel-sandbox`` sandbox container will be available.
 
 #. Copy the required software and libraries from ``intel-sandbox`` to the
    original software-stack sandbox by running the ``compilers_cp.sh`` script.
@@ -700,16 +684,14 @@ instructs otherwise.
       ./compilers_cp.sh intel-sandbox rocky9-oneapi2024.2-ss192
 
    After this step, the software-stack sandbox contains the compilers, MPI, and
-   required software stack. The original temporary image,
-   ``rocky9-oneapi2024.2-ss192_tmp.sif``, and the Intel sandbox,
-   ``intel-sandbox``, can then be removed.
+   required software stack. The Intel sandbox, ``intel-sandbox``, can then be removed.
 
    The assembled sandbox can be used for runs, but it is large compared to a
    compressed image. For production runs, convert the sandbox into a SIF image,
    as shown in the next step.
 
 #. Build a Singularity/Apptainer container image from the updated sandbox. Bind
-   host directories as needed.
+   host directories as required.
 
    .. code-block:: console
 
@@ -757,7 +739,9 @@ are required, bind them with additional ``-B`` options.
 
 .. code-block:: console
 
-   <container-command> shell -B </top_dir> [-B </bind_add>] -e ${IMG}
+   singularity shell -B </top_dir> [-B </bind_add>] -e ${IMG}
+
+.. _ContainerBindDirectoriesTable:
 
 .. list-table:: Typical bind directories on NOAA RDHPC Tier 1 platforms
    :widths: 25 35 40
