@@ -3102,6 +3102,9 @@ fire:
   # FIRE_INPUT_DIR
   # Directory where fire input file (geo_em.d01.nc) can be found
   #
+  # FIRE_GEO_EM_FILE
+  # Full path to fire input geo_em netCDF file
+  #
   # DT_FIRE
   # The fire behavior component’s integration timestep
   #
@@ -3116,6 +3119,7 @@ fire:
   envvars:
     UFS_FIRE: False
     FIRE_INPUT_DIR: ""
+    FIRE_GEO_EM_FILE: '{{ [fire.envvars.FIRE_INPUT_DIR, "geo_em.d01.nc"]|path_join}}'
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300
   FIRE_NUM_TASKS: 0

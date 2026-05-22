@@ -4,7 +4,7 @@
 Read in the configuration YAMLs and prepare a self-consistent
 experiment configuration file.
 """
-# pylint: disable=too-many-lines, too-many-branches, logging-fstring-interpolation
+# pylint: disable=too-many-lines, too-many-branches, logging-fstring-interpolation, too-many-statements
 
 import base64
 import datetime
@@ -61,7 +61,6 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
                    invalid sections/keys or (3) it does not contain mandatory information or (4)
                    an invalid datetime format is used.
     """
-
     ushdir = Path(ushdir)
 
     # Load the default and user configs.
@@ -114,6 +113,19 @@ def load_config_for_setup(ushdir, default_config_path, user_config_path):
     # Load the rocoto workflow default file
     default_workflow = ushdir.parent / "parm" / "wflow" / "default_workflow.yaml"
     workflow_config = get_yaml_config(default_workflow)
+
+    # Check user config for envvars not placed in the envvars section
+    errmsg=''
+    for section in user_config:
+        # "rocoto:" section needs special treatment since it isn't in defaults
+        if section=="rocoto":
+            continue
+        if envvars:=default_config[section].get("envvars"):
+            for k,v in envvars.items():
+                if k in user_config[section]:
+                    errmsg+=f"\n{section}:{k} should be {section}:envvars:{k}"
+    if errmsg:
+        raise ValueError("Found invalid variable(s) in user config:" + errmsg)
 
     # Update default config with other loaded config file. Order matters.
     for cfg in (
@@ -987,7 +999,7 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Warn if user has specified a large timestep inappropriately
     ccpp_physics_suite = workflow_config["CCPP_PHYS_SUITE"]
-    hires_ccpp_suites = ["FV3_RRFS_v1beta","FV3_WoFS_v0", "FV3_HRRR", "FV3_HRRR_gf", "RRFS_sas"]
+    hires_ccpp_suites = ["FV3_WoFS_v0", "FV3_HRRR", "FV3_HRRR_gf", "RRFS_sas"]
 
     # Gather the pre-defined grid parameters, if needed
     if (predef_grid := workflow_config["PREDEF_GRID_NAME"]) != "":
@@ -1715,13 +1727,12 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                     ("UFS_FIRE == True but UFS SRW has not been built for fire coupling;",
                     "see users guide for details")
                 )
-            fire_input_file = Path(fire_conf_vars["FIRE_INPUT_DIR"], "geo_em.d01.nc")
-            if not Path(fire_input_file).is_file():
+            if not Path(fire_conf_vars["FIRE_GEO_EM_FILE"]).is_file():
                 raise FileNotFoundError(
                     dedent(
                         f"""
-                    The fire input file (geo_em.d01.nc) does not exist in the specified directory:
-                    {fire_conf["FIRE_INPUT_DIR"]}
+                    The specified fire input file does not exist:
+                    {fire_conf_vars["FIRE_GEO_EM_FILE"]}
                     Check that the specified path is correct, and the file exists and is readable
                     """
                     )
@@ -1737,8 +1748,6 @@ def setup(ushdir, user_config_fn="config.yaml", debug: bool = False):
                 raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
             if fire_conf["OMP_NUM_THREADS_FIRE"] < 1:
                 raise ValueError("FIRE_NUM_TASKS must be > 0 if UFS_FIRE is True")
-            if fire_conf["FIRE_NUM_TASKS"] > 1:
-                raise ValueError("FIRE_NUM_TASKS > 1 not yet supported")
 
             if fire_conf["FIRE_NUM_IGNITIONS"] > 5:
                 raise ValueError("Only 5 or fewer fire ignitions supported")

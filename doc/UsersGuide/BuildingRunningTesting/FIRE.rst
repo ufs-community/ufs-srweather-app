@@ -98,13 +98,44 @@ The fire module has the ability to print out additional messages to the log file
    fire:
      FIRE_PRINT_MSG: 1
 
-The fire module now supports OpenMP parallelization. By default, parallelization is off, but it can be enabled by setting ``OMP_NUM_THREADS_FIRE`` to a value greater than 1. In testing with the default case (200x200 domain) we have observed a 10-25% speedup with ``OMP_NUM_THREADS_FIRE: 2`` vs 1, with only marginal additional speedup for ``OMP_NUM_THREADS_FIRE>2``. However, larger domains may benefit from additional parallel threads.
+The fire module supports both OpenMP and MPI parallelization; they can be used individually or together. By default, parallelization is off, but it can be enabled at runtime with the following settings.
+
+OpenMP parallelization can be activated by setting ``OMP_NUM_THREADS_FIRE`` to a value greater than 1.
 
 .. code-block:: console
 
    fire:
      OMP_NUM_THREADS_FIRE: 2
 
+MPI parallelization can be activated by setting ``FIRE_NUM_TASKS`` to a value greater than 1.
+
+.. code-block:: console
+
+   fire:
+     FIRE_NUM_TASKS: 2
+
+We tested several combinations of parallelization methods using a 15-hour one-way coupled (ATM->FIRE) forecast; the results are shown in the table below. As a summary, MPI parallelization shows more efficient speedup per core than OpenMP parallelization, though multiple combinations resulted in significant speedup. Scaling from single-core to 2 MPI tasks resulted in nearly linear speedup (45% reduction in wallclock time). It is likely that larger domains will benefit more from additional tasks, both for OpenMP and MPI.
+
+.. list-table:: Tests of different parallelization options with 200x200 3km atmospheric grid, 200x200 100m fire grid
+    :header-rows: 1
+    :stub-columns: 1
+
+    * - Timings for parallel tests (s) 
+      - MPI 1
+      - MPI 2
+      - MPI 4
+    * - OpenMP 1
+      - 2820.20
+      - 1577.75
+      - 1343.32
+    * - OpenMP 2
+      - 2168.50
+      - 1372.19
+      - 1334.16
+    * - OpenMP 4
+      - 1867.51
+      - 1373.24
+      - 1340.81
 
 Additional boundary conditions file
 -----------------------------------
@@ -119,7 +150,9 @@ Once the file is acquired/created, you will need to specify its location in your
 
    fire:
      envvars:
-       FIRE_INPUT_DIR: /directory/containing/geo_em/file
+       FIRE_GEO_EM_FILE: /directory/containing/geo_em/file/geo_em.d01.nc
+
+Note that you can use a different filename if you prefer.
 
 Specifying a fire ignition
 ---------------------------
@@ -138,7 +171,7 @@ Here is one example of settings that can be specified for a UFS FIRE simulation:
    fire:
      envvars:
        UFS_FIRE: True
-       FIRE_INPUT_DIR: /home/fire_input
+       FIRE_GEO_EM_FILE: /home/fire_input/geo_em.d01.nc
      DT_FIRE: 0.5
      OUTPUT_DT_FIRE: 1800
      FIRE_NUM_IGNITIONS: 1
