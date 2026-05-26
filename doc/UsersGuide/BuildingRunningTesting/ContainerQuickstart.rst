@@ -570,7 +570,8 @@ Select or Build a Software-Stack Container
 
 On supported Tier 1 platforms, GNU-based and Intel oneAPI-based software-stack
 container images are available in shared locations, as shown in the table below.
-GNU-based container has typed of these containers include the compilers and corresponding MPI libraries, and the software stack.
+These containers include compilers, corresponding software and MPI libraries,
+and the software stack.
 
 
 .. list-table:: Locations of pre-built container images on supported systems
