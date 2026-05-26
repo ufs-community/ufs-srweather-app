@@ -899,7 +899,7 @@ Next, prepare the machine file:
 
 .. code-block:: console
 
-   cd machines
+   cd machine
    cp <platform>.yaml container.yaml
 
 For example:
@@ -908,7 +908,7 @@ For example:
 
    cp ursa.yaml container.yaml
 
-Edit ``./ush/machines/container.yaml`` for the container workflow. Modify
+Edit ``./ush/machine/container.yaml`` for the container workflow. Modify
 ``NCORES_PER_NODE`` if the default value does not match the target platform or
 the resources requested for the test.
 
