@@ -616,8 +616,7 @@ Docker Hub.
 
 .. code-block:: console
 
-   singularity build rocky9-gcc13-ss192-ompi416.sif \
-      docker://noaaepic/rocky9-gcc13.3.1-spack-stack:v1.9.2-ufs-env-ompi416
+   singularity build rocky9-gcc13-ss192-ompi416.sif docker://noaaepic/rocky9-gcc13.3.1-spack-stack:v1.9.2-ufs-env-ompi416
 
    export IMG=${PWD}/rocky9-gcc13-ss192-ompi416.sif
 
@@ -654,12 +653,11 @@ instructs otherwise.
       singularity build -B </top_dir> -B </bind_add> --sandbox --fix-perms rocky9-oneapi2024.2-ss192 \
          docker://noaaepic/rocky9-oneapi2024.2-spack-stack:v1.9.2-ufs-wm-env
 
-#. Copy the helper scripts out of the sandbox.
+#. Copy the helper scripts, *intel-sandbox.sh* and *compilers_cp.sh* out of the sandbox.
 
    .. code-block:: console
 
-      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/intel-sandbox.sh .
-      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/compilers_cp.sh .
+      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/*.sh .
 
    These scripts retrieve the Intel compiler and MPI components and reinstall
    them for use with the software-stack sandbox.
@@ -686,6 +684,9 @@ instructs otherwise.
    After this step, the software-stack sandbox contains the compilers, MPI, and
    required software stack. The Intel sandbox, ``intel-sandbox``, can then be removed.
 
+   If users encounter problems building or combining sandboxes with SingularityCE,
+   refer to :ref:`Note on possible SingularityCE restrictions <NoteBuildSandboxC>`.
+
    The assembled sandbox can be used for runs, but it is large compared to a
    compressed image. For production runs, convert the sandbox into a SIF image,
    as shown in the next step.
@@ -706,6 +707,33 @@ instructs otherwise.
       export IMG=<full-container-path>/rocky9-oneapi2024.2-ss192.sif
    
 Proceed with downloading, building, and running the SRW App.
+
+.. _NoteBuildSandboxC:
+
+.. note::
+
+   Site-specific SingularityCE installations may restrict image and sandbox
+   builds more than Apptainer installations. These restrictions are configured
+   by system administrators for security reasons and therefore vary by system.
+   If users encounter errors when building images or sandboxes with
+   SingularityCE, they should use Apptainer for the build step when it is
+   available. SingularityCE can still be used later to run the completed
+   container image.
+
+   On Tier 1 platforms **Orion** and **Hercules**, for example, users who want
+   to build the Intel sandbox and then create a combined sandbox that includes
+   the full software stack and spack-stack libraries can load Apptainer with:
+
+   .. code-block:: shell
+
+      module load spack-managed-x86-64_v3/v1.0 apptainer/1.3.3
+
+   Here, the Apptainer module is loaded in a specific module environment that is
+   not easily combined with other host modules. However, this environment is
+   needed only while building the sandbox or image. After the final combined
+   image has been created, the Apptainer module environment can be unloaded, and
+   the more readily available SingularityCE module can be used for container
+   runtime.
 
 .. _DownloadSRWC:
 
@@ -732,10 +760,12 @@ Save the environment variable SRW for later use:
 
 Shell into the Software-Stack Container
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Open an interactive shell inside the container before building the SRW App. Bind
-the top-level host filesystem that contains the SRW App checkout, the input
-data, and the intended experiment directories. If additional site filesystems
-are required, bind them with additional ``-B`` options.
+Open an interactive shell inside the container before building the SRW App.
+Bind-mount all host filesystems and directories that contain the SRW App, input
+data, and experiment directories. These filesystems are identified during the
+build stage and recorded in the runtime environment files so that the required
+paths are accessible inside the container at runtime.
+Any additional host directory can be added with a preceding ``-B`` flag.
 
 .. code-block:: console
 
