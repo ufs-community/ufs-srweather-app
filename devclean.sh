@@ -20,8 +20,8 @@ OPTIONS
   -c, --conda
       Remove "conda" directory and conda_loc file in SRW main directory
   --container
-      For cleaning builds within the SRW containers, will remove the "container-bin"
-      directory rather than "exec". Has no effect if \`-b\` is not specified.
+      For cleaning builds within the SRW containers, will remove the "bin"
+      directory in addition to "exec". Has no effect if \`-b\` is not specified.
   -f, --force
       Remove directories as requested, without asking for user confirmation of their deletion.
   -s, --sub-modules
@@ -100,11 +100,10 @@ if [ ${REMOVE_BUILD} == true ]; then
     "${SRW_DIR}/include" \
     "${SRW_DIR}/lib" \
     "${SRW_DIR}/lib64" \
+    "${SRW_DIR}/exec" \
   )
   if [ ${CONTAINER} == true ]; then
-    removal_list+=("${SRW_DIR}/container-bin")
-  else
-    removal_list+=("${SRW_DIR}/exec")
+    removal_list+=("${SRW_DIR}/bin")
   fi
 fi
 

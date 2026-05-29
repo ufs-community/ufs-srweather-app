@@ -38,7 +38,7 @@ elif [ "$L_MACHINE" = linux ]; then
 
    module purge
 
-elif [ "$L_MACHINE" = singularity ]; then
+elif [ "$L_MACHINE" = container ]; then
    if [ -f "/usr/share/lmod/lmod/init/bash" ]; then 
       export BASH_ENV="/usr/share/lmod/lmod/init/bash"
       source $BASH_ENV
