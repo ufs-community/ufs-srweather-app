@@ -10,10 +10,6 @@ prepend_path("MODULEPATH","/ncrc/proj/epic/c6/modulefiles/")
 load("rocoto/1.3.7")
 load("conda")
 
-pushenv("MKLROOT", "/opt/intel/oneapi/mkl/2023.2.0/")
-
 if mode() == "load" then
-   LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate srw_app
-]===])
+   execute{cmd="conda activate srw_app", modeA={"load"}}
 end
