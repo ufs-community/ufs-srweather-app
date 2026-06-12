@@ -128,6 +128,9 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://www.naturalearthdata.com/downloads/',
                     r'https://www.xquartz.org/',
                     r'https://doi.org/10.5194/gmd-14-5487-2021',
+                    r'https://gsl.noaa.gov/',
+                    r'https://gsl.noaa.gov/research/predictions',
+                    r'https://fvcom.smast.umassd.edu',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
