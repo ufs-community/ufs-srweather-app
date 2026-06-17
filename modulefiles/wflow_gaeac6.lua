@@ -11,5 +11,7 @@ load("rocoto/1.3.7")
 load("conda")
 
 if mode() == "load" then
-   execute{cmd="conda activate srw_app", modeA={"load"}}
+   LmodMsgRaw([===[Please do the following to activate conda:
+       > conda activate srw_app
+]===])
 end
