@@ -4,7 +4,7 @@
 SRW Smoke & Dust (SRW-SD) Features
 ==================================
 
-This chapter provides instructions for running an example six-hour forecast for July 22, 2019 at 0z using SRW Smoke & Dust (SRW-SD) features. These features have been merged into the SRW App from the UFS WM. This experimental forecast uses RAP data for :term:`ICs` and :term:`LBCs`, the ``RRFS_CONUS_3km`` predefined grid, and the ``FV3_HRRR_gf`` physics suite. This physics suite is similar to the NOAA operational HRRR v4 suite (Dowell et al., 2022), with the addition of the Grell-Freitas deep convective parameterization. `Scientific documentation for the HRRR_gf suite <https://dtcenter.ucar.edu/GMTB/v7.0.0/sci_doc/_h_r_r_r_gf_page.html>`_ and `technical documentation <https://ccpp-techdoc.readthedocs.io/en/v7.0.0/>`_ are available with the CCPP v7.0.0 release but may differ slightly from the version available in the SRW App.
+This chapter provides instructions for running an example six-hour forecast for July 22, 2019 at 0z using SRW Smoke & Dust (SRW-SD) features. These features have been merged into the SRW App from the UFS WM. This experimental forecast uses RAP data for :term:`ICs` and :term:`LBCs`, the ``RRFS_CONUS_3km`` predefined grid, and the ``FV3_HRRR_gf`` physics suite. This physics suite is similar to the NOAA operational HRRR v4 suite (Dowell et al., 2022), with the addition of the Grell-Freitas deep convective parameterization. `Scientific documentation for the HRRR_gf suite <https://ncar.github.io/ccpp-physics/V7/_h_r_r_r_gf_page.html>`_ and `technical documentation <https://ccpp-techdoc.readthedocs.io/en/v7.0.0/>`_ are available with the CCPP v7.0.0 release but may differ slightly from the version available in the SRW App.
 
 .. note::
 
