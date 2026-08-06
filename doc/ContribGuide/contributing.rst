@@ -9,7 +9,7 @@ Fork and PR Overview
    
    Thank you to the Unified Workflow (UW) team for allowing us to adapt their Fork and PR Model overview for use in the SRW App. The original can be viewed in the `uwtools` :uw:`documentation <sections/contributor_guide/fork_pr_model.html>`.
 
-Contributions to the ``ufs-srweather-app`` project are made via a :github-docs:`Fork<pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks>` and :github-docs:`Pull Request (PR)<pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>` model. GitHub provides a thorough description of this contribution model in their `Contributing to a project` :github-docs:`Quickstart<get-started/exploring-projects-on-github/contributing-to-a-project>`, but the steps, with respect to ``ufs-srweather-app`` contributions, can be summarized as:
+Contributions to the ``ufs-srweather-app`` project are made via a :github-docs:`Fork<pull-requests/reference/forks>` and :github-docs:`Pull Request (PR)<pull-requests/reference/pull-requests>` model. GitHub provides a thorough description of this contribution model in their `Contributing to a project` :github-docs:`Quickstart<get-started/exploring-projects-on-github/contributing-to-a-project>`, but the steps, with respect to ``ufs-srweather-app`` contributions, can be summarized as:
 
 #. :github-docs:`Create an issue <issues/tracking-your-work-with-issues/using-issues/creating-an-issue>` to document proposed changes.
 #. :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#creating-your-own-copy-of-a-project>` the :srw-repo:`ufs-srweather-app repository<>` into your personal GitHub account.
@@ -18,7 +18,7 @@ Contributions to the ``ufs-srweather-app`` project are made via a :github-docs:`
 #. :github-docs:`Make, commit, and push changes<get-started/exploring-projects-on-github/contributing-to-a-project#making-and-pushing-changes>` in your clone / to your fork. 
 #. When your work is complete, :github-docs:`create a pull request (PR)<get-started/exploring-projects-on-github/contributing-to-a-project#making-a-pull-request>` to merge your changes. 
 
-For future contributions, you may delete and then recreate your fork or configure the official ``ufs-srweather-app`` repository as a :github-docs:`remote repository<pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork>` on your clone and :github-docs:`sync upstream changes<pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork>` to stay up-to-date with the official repository.
+For future contributions, you may delete and then recreate your fork or configure the official ``ufs-srweather-app`` repository as a :github-docs:`remote repository<pull-requests/how-tos/work-with-forks/configuring-a-remote-repository-for-a-fork>` on your clone and :github-docs:`sync upstream changes<pull-requests/how-tos/work-with-forks/syncing-a-fork>` to stay up-to-date with the official repository.
 
 
 Development and Testing Process
@@ -179,7 +179,7 @@ All changes to the SRW App ``develop`` branch should be handled via GitHub’s "
 
 * Ensure that your PR is targeting the base repository ``ufs-community/ufs-srweather-app`` and an appropriate base branch (usually ``develop``).
 * **Complete PR template.** Your PR will appear pre-populated with a :ref:`template <pr-template>` that you should complete. Provide an informative synopsis of your contribution, then mark appropriate checklist items by placing an "X" between their square brackets. You may tidy up the description by removing boilerplate text and non-selected checklist items. View :ref:`useful PR template guidance <pr-template-guidance>` and information on :ref:`best practices <tips-best-practices>` for completing each section below.  
-* **Create draft PR.** Use the pull-down arrow on the green button below the description to initially create a :github-docs:`draft pull request<pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests>`. 
+* **Create draft PR.** Use the pull-down arrow on the green button below the description to initially create a :github-docs:`draft pull request<pull-requests/reference/pull-requests>`. 
 
    * Once your draft PR is open, visit its *Files changed* tab and add comments to any lines of code where you think reviewers will benefit from more explanation. Try to save time by proactively answering questions you suspect reviewers will ask.
 
