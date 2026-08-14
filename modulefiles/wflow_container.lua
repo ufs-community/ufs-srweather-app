@@ -8,7 +8,7 @@ a singularity/apptainer container]===])
 
 load("conda")
 load("rocoto")
-load("singularity")
+--load("singularity")
 
 if mode() == "load" then
    execute{cmd="conda activate srw_app", modeA={"load"}}

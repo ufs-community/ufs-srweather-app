@@ -1428,12 +1428,32 @@ task_get_extrn_lbcs:
     # EXTRN_MDL_NAME_LBCS is set to "FV3GFS"), this variable specifies the
     # format of the model files to use when generating the LBCs.
     #
+    # EXTRN_MDL_LBCS_MAX_FCST_HRS:
+    # The maximum forecast hour available from a single cycle of the model
+    # specified in EXTRN_MDL_NAME_LBCS (e.g. 48 for HRRR). Leave unset (the
+    # default) if a single cycle already covers the full FCST_LEN_HRS, which
+    # is the case for most models/configs. If set and less than FCST_LEN_HRS,
+    # the get_extrn_lbcs task will automatically bridge to subsequent cycles
+    # of the same model (see EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS) to obtain LBCs
+    # for forecast hours beyond what the base cycle can provide.
+    #
+    # EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS:
+    # Only used when EXTRN_MDL_LBCS_MAX_FCST_HRS is set and less than
+    # FCST_LEN_HRS. Number of hours to jump forward to select each subsequent
+    # bridge cycle (e.g. 24 to always use the next day's cycle at the same
+    # hour). If a candidate bridge cycle does not have enough forecast hours
+    # available (e.g. it turns out to be a short-range-only cycle), the
+    # search steps forward hour by hour until a usable cycle is found, but
+    # will not search past the next on-schedule bridge cycle.
+    #
     #-----------------------------------------------------------------------
     #
     EXTRN_MDL_NAME_LBCS: "FV3GFS"
     LBC_SPEC_INTVL_HRS: 6
     EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if task_get_extrn_lbcs.envvars.EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
     FV3GFS_FILE_FMT_LBCS: "netcdf"
+    EXTRN_MDL_LBCS_MAX_FCST_HRS: ""
+    EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS: 24
     #
     #-----------------------------------------------------------------------
     #
