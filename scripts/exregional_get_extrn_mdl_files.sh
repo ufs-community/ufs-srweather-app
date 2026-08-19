@@ -257,58 +257,26 @@ if [ $RUN_ENVIR = "nco" ]; then
 else
     EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
-cmd="
-python3 -u ${USHdir}/retrieve_data.py \
-  --debug \
-  --file_set ${file_set} \
-  --config ${PARMdir}/data_locations.yml \
-  --cycle_date ${EXTRN_MDL_CDATE} \
-  --data_stores ${data_stores} \
-  --data_type ${EXTRN_MDL_NAME} \
-  --fcst_hrs ${fcst_hrs[@]} \
-  --ics_or_lbcs ${ICS_OR_LBCS} \
-  --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \
-  --summary_file ${EXTRN_DEFNS} \
-  $additional_flags"
 
-$cmd
-export err=$?
-if [ $err -ne 0 ]; then
-  message_txt="Call to retrieve_data.py failed with a non-zero exit status.
-The command was:
-${cmd}
-"
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
-fi
-#
-#-----------------------------------------------------------------------
-#
-# If the base cycle above could not cover the full LBC forecast length,
-# bridge in later cycles of the same external model, jumping forward by
-# EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS each time. If a candidate bridge cycle
-# does not have enough forecast hours available, search forward hour by
-# hour (but not past the next on-schedule bridge cycle) for one that does.
-#
-#-----------------------------------------------------------------------
-#
 if [ "${ICS_OR_LBCS}" = "LBCS" ] && [ "${lbcs_bridging}" = "YES" ]; then
-
-  # Capture the real staging directory now, before sourcing any bridge
-  # summary file below -- each one defines its own EXTRN_MDL_STAGING_DIR
-  # (set to that bridge's own output_path), and sourcing it would
-  # otherwise clobber this variable for the rest of the script.
+  #
+  #-----------------------------------------------------------------------
+  #
+  # The requested LBC forecast length exceeds what a single cycle of
+  # EXTRN_MDL_NAME_LBCS can provide (EXTRN_MDL_LBCS_MAX_FCST_HRS). Retrieve
+  # the LBCs in EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS-sized chunks. Before each
+  # chunk, check whether a fresher (later, on-schedule) cycle of the same
+  # external model has become available and, if so, switch to it -- always
+  # prefer the freshest available guidance. This check repeats every
+  # EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS for the whole run (no permanent
+  # opt-out); whenever the fresher cycle is not yet available, that chunk
+  # simply falls back to extending whichever cycle is currently in use, up
+  # to its own EXTRN_MDL_LBCS_MAX_FCST_HRS.
+  #
+  #-----------------------------------------------------------------------
+  #
   lbcs_staging_dir="${EXTRN_MDL_STAGING_DIR}${mem_dir}"
-
   base_defns_fp="${lbcs_staging_dir}/${EXTRN_DEFNS}"
-  EXTRN_MDL_FNS=()
-  EXTRN_MDL_FHRS=()
-  . "${base_defns_fp}"
-  combined_fns=( "${EXTRN_MDL_FNS[@]}" )
-  combined_fhrs=( "${EXTRN_MDL_FHRS[@]}" )
 
   bridge_additional_flags=""
   bridge_data_stores="${EXTRN_MDL_DATA_STORES}"
@@ -320,8 +288,8 @@ if [ "${ICS_OR_LBCS}" = "LBCS" ] && [ "${lbcs_bridging}" = "YES" ]; then
   fi
   if [ -n "${input_file_path:-}" ] ; then
     # input_file_path may contain date/time templates (e.g. {yyyymmddhh})
-    # that retrieve_data.py fills in per-call using each bridge cycle's
-    # own --cycle_date, so the same staging convention used for the base
+    # that retrieve_data.py fills in per-call using each cycle's own
+    # --cycle_date, so the same staging convention used for the nominal
     # cycle also works for locally-staged bridge cycles.
     bridge_data_stores="disk ${EXTRN_MDL_DATA_STORES}"
     bridge_additional_flags="$bridge_additional_flags --input_file_path ${input_file_path}"
@@ -330,55 +298,78 @@ if [ "${ICS_OR_LBCS}" = "LBCS" ] && [ "${lbcs_bridging}" = "YES" ]; then
     bridge_additional_flags="$bridge_additional_flags --symlink"
   fi
 
-  offset=${base_last_time}
-  source_cdate=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS} hours" "+%Y%m%d%H" )
+  combined_fns=()
+  combined_fhrs=()
 
+  # State for the rolling freshness check: current_cdate is the cycle
+  # presently in use, current_cycle_start_offset is the relative forecast
+  # hour at which that cycle's own hour 0 aligns.
+  current_cdate=${EXTRN_MDL_CDATE}
+  current_cycle_start_offset=${TIME_OFFSET_HRS}
+
+  offset=${TIME_OFFSET_HRS}
   while [ "${offset}" -lt "${last_time}" ]; do
 
-    block_len=$(( last_time - offset ))
-    if [ "${block_len}" -gt "${EXTRN_MDL_LBCS_MAX_FCST_HRS}" ]; then
-      block_len=${EXTRN_MDL_LBCS_MAX_FCST_HRS}
+    chunk_end=$(( offset + EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS ))
+    if [ "${chunk_end}" -gt "${last_time}" ]; then
+      chunk_end=${last_time}
     fi
 
-    found=NO
-    search_hrs=0
-    candidate_cdate=${source_cdate}
-    while [ "${search_hrs}" -lt "${EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS}" ]; do
+    use_cdate=${current_cdate}
+    use_start_offset=${current_cycle_start_offset}
+    fetched_dir=""
+    fetched_defns=""
 
-      bridge_dir="${lbcs_staging_dir}/bridge_${candidate_cdate}"
-      mkdir -p "${bridge_dir}"
-      bridge_defns="bridge_${candidate_cdate}.sh"
+    # Every EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS, check whether a fresher
+    # (later, on-schedule) cycle of the external model has become
+    # available, and prefer it if so. This check repeats every interval,
+    # for the whole run -- there is no permanent opt-out. If the fresher
+    # cycle is not available, this chunk simply falls back to extending
+    # whichever cycle is currently in use.
+    n_intervals=$(( offset / EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS ))
+    ideal_cdate=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + $(( n_intervals * EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS )) hours" "+%Y%m%d%H" )
 
-      bridge_cmd="
+    if [ "${ideal_cdate}" -gt "${current_cdate}" ]; then
+
+      trial_dir="${lbcs_staging_dir}/fcst_cycle_${ideal_cdate}"
+      mkdir -p "${trial_dir}"
+      trial_defns="fcst_cycle_${ideal_cdate}.sh"
+      trial_len=$(( chunk_end - offset ))
+
+      trial_cmd="
       python3 -u ${USHdir}/retrieve_data.py \
         --debug \
         --file_set ${file_set} \
         --config ${PARMdir}/data_locations.yml \
-        --cycle_date ${candidate_cdate} \
+        --cycle_date ${ideal_cdate} \
         --data_stores ${bridge_data_stores} \
         --data_type ${EXTRN_MDL_NAME} \
-        --fcst_hrs ${LBC_SPEC_INTVL_HRS} ${block_len} ${LBC_SPEC_INTVL_HRS} \
+        --fcst_hrs ${LBC_SPEC_INTVL_HRS} ${trial_len} ${LBC_SPEC_INTVL_HRS} \
         --ics_or_lbcs ${ICS_OR_LBCS} \
-        --output_path ${bridge_dir} \
-        --summary_file ${bridge_defns} \
+        --output_path ${trial_dir} \
+        --summary_file ${trial_defns} \
         $bridge_additional_flags"
 
-      if $bridge_cmd; then
-        found=YES
-        break
+      if $trial_cmd; then
+        use_cdate=${ideal_cdate}
+        use_start_offset=${offset}
+        fetched_dir=${trial_dir}
+        fetched_defns=${trial_defns}
+        current_cdate=${use_cdate}
+        current_cycle_start_offset=${use_start_offset}
       fi
 
-      candidate_cdate=$( $DATE_UTIL --utc --date "${candidate_cdate:0:8} ${candidate_cdate:8:2} UTC + 1 hours" "+%Y%m%d%H" )
-      search_hrs=$(( search_hrs + 1 ))
+    fi
 
-    done
+    rel_start=$(( offset - use_start_offset + LBC_SPEC_INTVL_HRS ))
+    rel_end=$(( chunk_end - use_start_offset ))
 
-    if [ "${found}" != "YES" ]; then
-      message_txt="Unable to bridge LBCs for the external model (EXTRN_MDL_NAME):
+    if [ "${rel_end}" -gt "${EXTRN_MDL_LBCS_MAX_FCST_HRS}" ]; then
+      message_txt="Unable to obtain LBCs for the external model (EXTRN_MDL_NAME):
   EXTRN_MDL_NAME = \"${EXTRN_MDL_NAME}\"
-No cycle in the ${EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS}-hour window starting at
-${source_cdate} had forecast hours ${LBC_SPEC_INTVL_HRS} through ${block_len}
-available (needed to cover relative forecast hours $((offset + LBC_SPEC_INTVL_HRS)) through $((offset + block_len)))."
+Cycle ${use_cdate} cannot provide forecast hour ${rel_end} (its own limit is
+EXTRN_MDL_LBCS_MAX_FCST_HRS=${EXTRN_MDL_LBCS_MAX_FCST_HRS} h), and no fresher
+cycle is available to cover relative forecast hours $((offset + LBC_SPEC_INTVL_HRS)) through ${chunk_end}."
       if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
         err_exit "${message_txt}"
       else
@@ -386,19 +377,50 @@ available (needed to cover relative forecast hours $((offset + LBC_SPEC_INTVL_HR
       fi
     fi
 
+    if [ -z "${fetched_dir}" ]; then
+      fetched_dir="${lbcs_staging_dir}/fcst_cycle_${use_cdate}"
+      mkdir -p "${fetched_dir}"
+      fetched_defns="fcst_cycle_${use_cdate}_$(printf %03d ${rel_start})-$(printf %03d ${rel_end}).sh"
+
+      fetch_cmd="
+      python3 -u ${USHdir}/retrieve_data.py \
+        --debug \
+        --file_set ${file_set} \
+        --config ${PARMdir}/data_locations.yml \
+        --cycle_date ${use_cdate} \
+        --data_stores ${bridge_data_stores} \
+        --data_type ${EXTRN_MDL_NAME} \
+        --fcst_hrs ${rel_start} ${rel_end} ${LBC_SPEC_INTVL_HRS} \
+        --ics_or_lbcs ${ICS_OR_LBCS} \
+        --output_path ${fetched_dir} \
+        --summary_file ${fetched_defns} \
+        $bridge_additional_flags"
+
+      if ! $fetch_cmd; then
+        message_txt="Call to retrieve_data.py failed with a non-zero exit status.
+The command was:
+${fetch_cmd}
+"
+        if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+          err_exit "${message_txt}"
+        else
+          print_err_msg_exit "${message_txt}"
+        fi
+      fi
+    fi
+
     EXTRN_MDL_FNS=()
     EXTRN_MDL_FHRS=()
-    . "${bridge_dir}/${bridge_defns}"
+    . "${fetched_dir}/${fetched_defns}"
     for idx in "${!EXTRN_MDL_FNS[@]}"; do
-      rel_fhr=$(( offset + EXTRN_MDL_FHRS[$idx] ))
+      rel_fhr=$(( use_start_offset + EXTRN_MDL_FHRS[$idx] ))
       new_fn="bridge.f$(printf %03d ${rel_fhr}).$(basename ${EXTRN_MDL_FNS[$idx]})"
-      ln -sf "${bridge_dir}/${EXTRN_MDL_FNS[$idx]}" "${lbcs_staging_dir}/${new_fn}"
+      ln -sf "${fetched_dir}/${EXTRN_MDL_FNS[$idx]}" "${lbcs_staging_dir}/${new_fn}"
       combined_fns+=( "${new_fn}" )
       combined_fhrs+=( "${rel_fhr}" )
     done
 
-    offset=$(( offset + block_len ))
-    source_cdate=$( $DATE_UTIL --utc --date "${candidate_cdate:0:8} ${candidate_cdate:8:2} UTC + ${EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS} hours" "+%Y%m%d%H" )
+    offset=${chunk_end}
 
   done
 
@@ -410,6 +432,34 @@ available (needed to cover relative forecast hours $((offset + LBC_SPEC_INTVL_HR
     echo "EXTRN_MDL_FHRS=( ${combined_fhrs[@]} )"
   } > "${base_defns_fp}"
 
+else
+  cmd="
+  python3 -u ${USHdir}/retrieve_data.py \
+    --debug \
+    --file_set ${file_set} \
+    --config ${PARMdir}/data_locations.yml \
+    --cycle_date ${EXTRN_MDL_CDATE} \
+    --data_stores ${data_stores} \
+    --data_type ${EXTRN_MDL_NAME} \
+    --fcst_hrs ${fcst_hrs[@]} \
+    --ics_or_lbcs ${ICS_OR_LBCS} \
+    --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \
+    --summary_file ${EXTRN_DEFNS} \
+    $additional_flags"
+
+  $cmd
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to retrieve_data.py failed with a non-zero exit status.
+The command was:
+${cmd}
+"
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
 
 #
