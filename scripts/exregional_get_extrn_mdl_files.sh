@@ -333,8 +333,8 @@ if [ "${ICS_OR_LBCS}" = "LBCS" ] && [ "${lbcs_bridging}" = "YES" ]; then
 
       trial_dir="${lbcs_staging_dir}/fcst_cycle_${ideal_cdate}"
       mkdir -p "${trial_dir}"
-      trial_defns="fcst_cycle_${ideal_cdate}.sh"
       trial_len=$(( chunk_end - offset ))
+      trial_defns="fcst_cycle_${ideal_cdate}_$(printf %03d $(( offset + LBC_SPEC_INTVL_HRS )))-$(printf %03d ${chunk_end}).sh"
 
       trial_cmd="
       python3 -u ${USHdir}/retrieve_data.py \
@@ -415,7 +415,7 @@ ${fetch_cmd}
     for idx in "${!EXTRN_MDL_FNS[@]}"; do
       rel_fhr=$(( use_start_offset + EXTRN_MDL_FHRS[$idx] ))
       new_fn="bridge.f$(printf %03d ${rel_fhr}).$(basename ${EXTRN_MDL_FNS[$idx]})"
-      ln -sf "${fetched_dir}/${EXTRN_MDL_FNS[$idx]}" "${lbcs_staging_dir}/${new_fn}"
+      ln -sf "fcst_cycle_${use_cdate}/${EXTRN_MDL_FNS[$idx]}" "${lbcs_staging_dir}/${new_fn}"
       combined_fns+=( "${new_fn}" )
       combined_fhrs+=( "${rel_fhr}" )
     done
