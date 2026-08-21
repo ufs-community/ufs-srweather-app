@@ -100,7 +100,6 @@ srw_binary_wrapper() {
   local img=""
   local bind_add=""
   local container=""
-  local module_list=""
   if [[ -n "${APPTAINER_CONTAINER:-}" ]]; then
      container=APPTAINER
      img="${APPTAINER_CONTAINER}"
@@ -143,12 +142,10 @@ EOF_WRAP
 # provide (in place of a baked ufs-srw.env file) PATH, LD_LIBRARY_PATH,
 # ESMFMKFILE, CRTM_FIX, etc. inside the container.
 if [[ ${COMPILER} == intel ]]; then
-    module_list="intel impi"
     cat >>"${SRW_WRAP}" <<EOF_WRAP
 export ${container}ENV_FI_PROVIDER_PATH=${FI_PROVIDER_PATH}
 EOF_WRAP
 elif [[ ${COMPILER} == gnu ]]; then
-    module_list="gnu openmpi"
     cat >>"${SRW_WRAP}" <<EOF_WRAP
 export ${container}ENV_PMIX_MCA_gds=hash
 export ${container}ENV_PMIX_MCA_psec=native
@@ -181,8 +178,9 @@ CONTAINERBIN=\$(which ${containerbin})
 "\${CONTAINERBIN}" exec ${bind_add:-} \$img bash -c '
 source /usr/share/lmod/lmod/init/bash
 module use /opt/modulefiles
-module load '"${module_list}"'
-export PATH='"${SRW_DIR}/${BIN_DIR}"':\$PATH
+module use ${SRW_DIR}/modulefiles
+module load ${MODULE_FILE}
+export PATH=${SRW_DIR}/${BIN_DIR}:\$PATH
 exec "\$@"
 ' bash \$cmd \$arg
 EOF_WRAP
