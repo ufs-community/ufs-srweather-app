@@ -203,7 +203,7 @@ platform:
   NCORES_PER_NODE: ""
   TASKTHROTTLE: 1000
   CYCLETHROTTLE: 200
-  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
+  BUILD_MOD_FN: '{{ "wflow_container" if user.MACHINE == "CONTAINER" else "build_" ~ user.MACHINE|lower() ~ "_" ~ workflow.COMPILER }}'
   WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
   BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
   RUN_VER_FN: 'run.ver.{{ user.MACHINE|lower() }}'
