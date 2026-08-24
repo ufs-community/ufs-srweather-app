@@ -838,18 +838,20 @@ When all the conda environments and binaries are successfully built, exit from t
 
    exit
 
-Use Wrapper Scripts and Runtime Environment Files
+Use the Wrapper Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In addition to binaries and conda installs, successful build produces:
 
 * ``srw.sh`` — wrapper to launch tasks within the container
-* ``ufs-srw.env`` — runtime environment settings and environment variables
+
+Each binary in the ``bin`` directory is symlinked to this single wrapper script. At run time, ``srw.sh`` starts the container and, before handing off to the actual binary, loads the same Lmod modulefile that was used to build the code (e.g., ``build_container_gnu`` or ``build_container_intel``) from inside the container.
 
 Verify the following configuration in the ``srw.sh``:
 
 * ``img`` variable points to the correct ``.sif`` GNU container image file, absolute path
 * ``-B`` binds all host directories, required for access inside the container at runtime, including staged data locations
+* the ``module load`` line inside the ``bash -c`` block loads the correct build modulefile for the compiler used (``build_container_gnu`` or ``build_container_intel``)
 
 Prepare the Workflow Module File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
