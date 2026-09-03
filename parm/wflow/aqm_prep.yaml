@@ -73,6 +73,7 @@ metatask_nexus_emission:
         value:  '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nodes: '{{ task_nexus_emission.execution.batchargs.nodes }}:ppn={{ task_nexus_emission.execution.batchargs.tasks_per_node }}'
     walltime: '{{ task_nexus_emission.execution.batchargs.walltime }}'
+    exclusive: '{{ task_nexus_emission.execution.batchargs.exclusive }}'
     envars:
       <<: *default_vars
       nspt: "#nspt#"
