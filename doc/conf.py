@@ -132,6 +132,10 @@ linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compil
                     r'https://gsl.noaa.gov/research/predictions',
                     r'https://fvcom.smast.umassd.edu',
                     r'https://www.nssl.noaa.gov/',
+                    r'https://epic.noaa.gov/unified-post-processor/',
+                    r'https://epic.noaa.gov/',
+                    r'https://ufs.epic.noaa.gov/applications/',
+                    r'https://ufs.epic.noaa.gov/',
                    ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
