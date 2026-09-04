@@ -95,21 +95,7 @@ Settings:
 EOF_SETTINGS
 }
 
-# env. variables saved into singularity container environment file ufs-srw.env
-env_vars () {
-
-cat >"${SRW_ENV}" <<EOF_ENV
-PATH=${SRW_DIR}/${BIN_DIR}:${PATH}
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
-HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH:-}
-HDF5_USE_FILE_LOCKING=FALSE
-ESMFMKFILE=${ESMFMKFILE:-}
-CRTM_FIX=${CRTM_FIX:-}
-
-EOF_ENV
-}
-
-# Singularity gnu containers: make a wrapper script template for the UFS SRW binaries 
+# Singularity gnu containers: make a wrapper script template for the UFS SRW binaries
 srw_binary_wrapper() {
   local img=""
   local bind_add=""
@@ -152,10 +138,12 @@ arg="\$@"
 
 EOF_WRAP
 
-# Add compiler-specific variables
+# Add compiler-specific variables and pick the runtime modules that
+# provide (in place of a baked ufs-srw.env file) PATH, LD_LIBRARY_PATH,
+# ESMFMKFILE, CRTM_FIX, etc. inside the container.
 if [[ ${COMPILER} == intel ]]; then
     cat >>"${SRW_WRAP}" <<EOF_WRAP
-export ${container}ENV_FI_PROVIDER_PATH=${FI_PROVIDER_PATH}    
+export ${container}ENV_FI_PROVIDER_PATH=${FI_PROVIDER_PATH}
 EOF_WRAP
 elif [[ ${COMPILER} == gnu ]]; then
     cat >>"${SRW_WRAP}" <<EOF_WRAP
@@ -175,13 +163,26 @@ export ${container}ENV_OMPI_MCA_mca_base_component_show_load_errors=0
 EOF_WRAP
 fi
 
-# Complete writing into a wrapper file
+# Complete writing into a wrapper file. Rather than passing a baked
+# environment file to the container (--env-file), load the containerized
+# Lmod modules for this compiler at run time, inside the container, and
+# then hand off to the actual binary (cmd) and its arguments (arg).
 cat >>"${SRW_WRAP}" <<EOF_WRAP
 
 CONTAINERBIN=\$(which ${containerbin})
 
-"\${CONTAINERBIN}" exec --env-file ${SRW_ENV} \
-${bind_add:-} \$img \$cmd \$arg
+# cmd and arg are passed as positional parameters to the inner bash (after
+# the "bash" placeholder for \$0), not interpolated into the script text,
+# so their contents are never re-parsed as shell syntax -- "\$@" below just
+# reassembles them as literal argv, the same as a direct unquoted call.
+"\${CONTAINERBIN}" exec ${bind_add:-} \$img bash -c '
+source /usr/share/lmod/lmod/init/bash
+module use /opt/modulefiles
+module use ${SRW_DIR}/modulefiles
+module load ${MODULE_FILE}
+export PATH=${SRW_DIR}/${BIN_DIR}:\$PATH
+exec "\$@"
+' bash \$cmd \$arg
 EOF_WRAP
 
     chmod +x "${SRW_WRAP}"
@@ -569,10 +570,8 @@ else
         export LDFLAGS+=" -L$MPI_ROOT/lib "
     fi
     if [[ "${PLATFORM}" == "container" ]]; then
-      export SRW_ENV="${SRW_DIR}/ufs-srw.env"
       export SRW_WRAP="${SRW_DIR}/srw.sh"
-      env_vars 
-      srw_binary_wrapper 
+      srw_binary_wrapper
     fi
 fi
 module list
@@ -612,8 +611,8 @@ if [[ "${PLATFORM}" = "container" && "${CLEAN}" == "false" && "${BUILD}" == "fal
    if [ "{BIN_DIR}" == "exec" ]; then
       printf 'PLATFORM=container: a directory name for binaries is  "${BIN_DIR}"\n '
       printf ' needs to differ from "exec". Specify --bin-dir=bin when rerunning the devbuild.sh\n '
-      printf ' or link the executables to a wrapper script manually, and adjust the search\n '
-      printf ' path in $SRW_ENV file \n' >&2
+      printf ' or link the executables to a wrapper script manually, and adjust the module\n '
+      printf ' list in the srw_binary_wrapper function in devbuild.sh \n' >&2
    else
       [[ -d "${SRW_DIR}/exec" ]] && rm -rf "${SRW_DIR}/exec" 
       mkdir ${SRW_DIR}/exec

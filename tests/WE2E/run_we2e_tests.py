@@ -722,7 +722,10 @@ if __name__ == "__main__":
 
     # Set defaults that need other argument values
     if user_args.modulefile is None:
-        user_args.modulefile = f"build_{user_args.machine.lower()}_{user_args.compiler}"
+        if user_args.machine.lower() == "container":
+            user_args.modulefile = "wflow_container"
+        else:
+            user_args.modulefile = f"build_{user_args.machine.lower()}_{user_args.compiler}"
     if user_args.procs < 1:
         raise argparse.ArgumentTypeError(
             "You can not have less than one parallel process; select a valid value "

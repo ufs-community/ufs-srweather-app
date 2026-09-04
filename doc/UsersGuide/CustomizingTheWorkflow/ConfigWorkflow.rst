@@ -100,8 +100,8 @@ If non-default parameters are selected for the variables in this section, they s
 ``CYCLETHROTTLE``: (Default: 200)
   The number of active forecast cycles that can be run simultaneously via Rocoto.
 
-``BUILD_MOD_FN``: (Default: ``'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'``)
-   Name of an alternative build modulefile to use if running on an unsupported platform. It is set automatically for supported machines.
+``BUILD_MOD_FN``: (Default: ``'{{ "build_" ~ user.MACHINE|lower() ~ "_" ~ workflow.COMPILER if user.MACHINE != "CONTAINER" else "wflow_container" }}'``)
+   Name of an alternative build modulefile to use if running on an unsupported platform. It is set automatically for supported machines. For all machines, this defaults to ``build_<machine>_<compiler>``, except when ``MACHINE: CONTAINER``, in which case ``wflow_container`` is used instead, so it no longer needs to be set explicitly for container runs.
 
 ``WFLOW_MOD_FN``: (Default: ``'wflow_{{ user.MACHINE|lower() }}'``)
    Name of an alternative workflow modulefile to use if running on an unsupported platform. It is set automatically for supported machines.
@@ -914,6 +914,12 @@ For each workflow task, certain parameter values must be passed to the job sched
 
 ``FV3GFS_FILE_FMT_LBCS``: (Default: "nemsio")
    If using the FV3GFS model as the source of the :term:`LBCs` (i.e., if ``EXTRN_MDL_NAME_LBCS: "FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
+
+``EXTRN_MDL_LBCS_MAX_FCST_HRS``: (Default: "")
+   The maximum forecast hour available from a single cycle of the model specified in ``EXTRN_MDL_NAME_LBCS`` (e.g., 48 for HRRR). Leave unset (the default) if a single cycle already covers the full ``FCST_LEN_HRS``, which is the case for most models/configurations. If set and less than ``FCST_LEN_HRS``, the ``get_extrn_lbcs`` task will automatically bridge to subsequent cycles of the same model (see ``EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS`` below) to obtain LBCs for forecast hours beyond what the base cycle can provide.
+
+``EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS``: (Default: 24)
+   Only used when ``EXTRN_MDL_LBCS_MAX_FCST_HRS`` is set and less than ``FCST_LEN_HRS``. The number of hours between checks for a fresher (later) cycle of ``EXTRN_MDL_NAME_LBCS`` to bridge to (e.g., 6 to check for a new cycle every 6 hours). Before each ``EXTRN_MDL_LBCS_BRIDGE_INTVL_HRS``-sized chunk of forecast hours is retrieved, the workflow checks whether a fresher on-schedule cycle is available and switches to it if so, always preferring the freshest available guidance. If the fresher cycle is not yet available (e.g., in real-time operation), the chunk falls back to extending whichever cycle is currently in use, up to that cycle's own ``EXTRN_MDL_LBCS_MAX_FCST_HRS``. This check repeats every interval for the remainder of the run.
 
 File and Directory Parameters
 --------------------------------

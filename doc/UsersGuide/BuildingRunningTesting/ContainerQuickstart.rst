@@ -179,13 +179,25 @@ load before building or running the container.
    * - Hercules/Orion
      - ``singularity``
      - ``module load singularity``
+   * -
+     - ``apptainer`` (*)
+     - ``module load spack-managed-x86-64_v3/v1.0 apptainer``
    * - Derecho
      - ``apptainer``
      - ``module load apptainer``
    * - NOAA Cloud AWS/Azure
      - ``singularity``
      - none required
+
+(*) - The ``apptainer`` module on Hercules/Orion is a Spack-managed
+install that loads a separate environment, which may not combine well
+with other system modules. The ``apptainer`` enables certain container
+build features
+that are otherwise limited in ``singularity`` module by security
+constraints. The ``singularity`` module could further be used for compile
+and runtime environments.
   
+
 .. _CompilerMPIReqC:
 
 Compiler and MPI Requirements
@@ -650,14 +662,15 @@ instructs otherwise.
 
    .. code-block:: console
 
-      singularity build -B </top_dir> -B </bind_add> --sandbox --fix-perms rocky9-oneapi2024.2-ss192 \
+      singularity build  --sandbox --fix-perms rocky9-oneapi2024.2-ss192 \
          docker://noaaepic/rocky9-oneapi2024.2-spack-stack:v1.9.2-ufs-wm-env
 
 #. Copy the helper scripts, *intel-sandbox.sh* and *compilers_cp.sh* out of the sandbox.
 
    .. code-block:: console
 
-      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/*.sh .
+      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/intel-sandbox.sh .
+      singularity exec rocky9-oneapi2024.2-ss192 cp /opt/compilers_cp.sh .
 
    These scripts retrieve the Intel compiler and MPI components and reinstall
    them for use with the software-stack sandbox.
@@ -696,7 +709,7 @@ instructs otherwise.
 
    .. code-block:: console
 
-      singularity build -B /<top-level-dir> --fix-perms rocky9-oneapi2024.2-ss192.sif \
+      singularity build --fix-perms rocky9-oneapi2024.2-ss192.sif \
          rocky9-oneapi2024.2-ss192
 
    After the image is built successfully, the sandbox can be removed. Finally, 
@@ -838,18 +851,20 @@ When all the conda environments and binaries are successfully built, exit from t
 
    exit
 
-Use Wrapper Scripts and Runtime Environment Files
+Use the Wrapper Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In addition to binaries and conda installs, successful build produces:
 
 * ``srw.sh`` — wrapper to launch tasks within the container
-* ``ufs-srw.env`` — runtime environment settings and environment variables
+
+Each binary in the ``bin`` directory is symlinked to this single wrapper script. At run time, ``srw.sh`` starts the container and, before handing off to the actual binary, loads the same Lmod modulefile that was used to build the code (e.g., ``build_container_gnu`` or ``build_container_intel``) from inside the container.
 
 Verify the following configuration in the ``srw.sh``:
 
 * ``img`` variable points to the correct ``.sif`` GNU container image file, absolute path
 * ``-B`` binds all host directories, required for access inside the container at runtime, including staged data locations
+* the ``module load`` line inside the ``bash -c`` block loads the correct build modulefile for the compiler used (``build_container_gnu`` or ``build_container_intel``)
 
 Prepare the Workflow Module File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
