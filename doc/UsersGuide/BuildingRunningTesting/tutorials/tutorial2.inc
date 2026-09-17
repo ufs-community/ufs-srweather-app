@@ -1,6 +1,6 @@
-.. _fcst4:
+.. _fcst2:
 
-Sample Forecast #4: Halloween Storm
+Sample Forecast #2: Halloween Storm
 =======================================
 
 **Objectives:** 
@@ -278,7 +278,7 @@ Examining Forecast Plots at Peak Intensity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This experiment will be looking at plots from HRRR and RAP input files while the Halloween Storm is at or approaching peak intensity. 
 
-.. _fcst4_250wind:
+.. _fcst2_250wind:
 
 250mb Wind
 ``````````
@@ -298,7 +298,7 @@ In the 250mb wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` plots 
 
       *HRRR Plot for 250mb Wind*
 
-.. _fcst4_10mwind:
+.. _fcst2_10mwind:
 
 10m Wind
 ``````````
@@ -318,7 +318,7 @@ In the 10m wind plots below, the ``halloweenHRRR`` and ``halloweenRAP`` are once
 
       *HRRR Plot for 10m Winds*
 
-.. _fcst4_refc:
+.. _fcst2_refc:
 
 Composite Reflectivity 
 ````````````````````````

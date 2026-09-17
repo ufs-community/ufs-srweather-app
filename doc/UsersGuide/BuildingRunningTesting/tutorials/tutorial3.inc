@@ -1,7 +1,7 @@
 
-.. _fcst6:
+.. _fcst3:
 
-Sample Forecast #6: Choose Your Own Adventure!
+Sample Forecast #3: Choose Your Own Adventure!
 ================================================
 
 **Objective:** Create a forecast of your choice on a custom grid using publicly available data. 
