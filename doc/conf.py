@@ -176,6 +176,11 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["_themes", ]
 html_logo= "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
+rst_prolog = """
+.. attention::
+   **The UFS Short-Range Weather Application will be deprecated on October 18, 2026**
+
+"""
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

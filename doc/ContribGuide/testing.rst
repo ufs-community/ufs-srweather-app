@@ -32,10 +32,9 @@ Testing on Jenkins
 
 `Jenkins <https://www.jenkins.io/>`__ is an "open source automation server" that automates code testing. For the Jenkins automated testing labels, it should be noted that **ONLY** code managers should apply these labels and only after at least one code manager has given approval to the PR.  The PR will not be merged until all Jenkins-based builds and testing have successfully passed.
 
-The following automated testing labels are available for the SRW App:
+The following automated testing label is available for the SRW App:
 
    * ``run_we2e_coverage_tests``
-   * *Coming Soon:* ``run_we2e_comprehensive_tests``
 
 Due to a security issue on Jenkins, where all Jenkins usernames are exposed, access to Jenkins logs through the Jenkins API has been disabled for the public. However, users can visit the `EPIC Health Dashboard <https://noaa-epic-dashboard.s3.amazonaws.com/index.html>`__ and click the *Jenkins Artifacts* tab to access the log files for their PR. On that page, users can identify their PR number, pull the ``we2e_test_logs-{machine}-{compiler}.tgz`` file (where ``{machine}`` is the Tier-1 platform that failed and ``{compiler}`` is the compiler used for the failed test), untar and ungzip the file, and look through the logs from the test that failed.
 
