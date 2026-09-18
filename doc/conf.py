@@ -99,6 +99,8 @@ pygments_style = 'sphinx'
 # Documentation-wide substitutions
 
 rst_prolog = """
+.. attention::
+   **The UFS Short-Range Weather Application will be deprecated on October 18, 2026**
 .. |wflow_env| replace:: ``srw_app``
 .. |graphics_env| replace:: ``regional_workflow``
 .. |cmaq_env| replace:: ``regional_workflow_cmaq``
